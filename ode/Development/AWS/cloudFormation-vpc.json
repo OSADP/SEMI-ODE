@@ -1,6 +1,7 @@
 
 {
   "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Base VPC Template for 1 Availability Zone Environment for ODE.",
   "Resources": {
     "vpce0f3ba85": {
       "Type": "AWS::EC2::VPC",
@@ -576,8 +577,8 @@
         "CidrIP": "0.0.0.0/0"
       }
     }
-  },
-  "Description": "Base VPC Template for 1 Availability Zone Environment"
+  }
+  
 }
 
 
