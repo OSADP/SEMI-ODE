@@ -1,0 +1,14 @@
+QUERY:{
+   "systemQueryName": "SDPC 2.2",
+	"dialogID":"154",
+	"startDateOperator":"GTE",
+	"endDateOperator":"LTE",
+	"nwLat":"43.652969118285434",
+	"nwLon":"-85.94707489013672",
+	"seLat":"36.6529960449823",
+	"seLon":"-74.66651916503906",
+	"orderByOrder":"-1",
+	"skip":"0",
+	"limit":"100",
+	"resultEncoding":"hex"
+}

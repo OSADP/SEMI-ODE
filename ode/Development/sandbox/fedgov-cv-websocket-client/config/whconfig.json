@@ -1,0 +1,21 @@
+{
+    "warehouseURL": "wss://ec2-54-211-216-181.compute-1.amazonaws.com:443/whtools22/websocket",
+    "keystoreFile": "config/keystore-all",
+    "keystorePassword": "password",
+
+    "casURL": "https://ec2-54-211-88-131.compute-1.amazonaws.com/accounts/v1/tickets",
+    "casUserName": "Musavi_hamid@bah.com",
+    "casPassword": "CV2015",
+    
+    "requestDir": "requests",
+    "responseDir": "responses",
+    
+    "logMessages": false,
+    "writeToDisk": true,
+    "binaryFiles": false,
+    
+    "systemDepositName": "SDC 2.2",
+    "encodeType": "HEX",
+    "depositFileDir": "deposits",
+    "depositDelay": 200 
+}
