@@ -101,7 +101,7 @@ public class ResponseHandler {
 			try {
 				if (wsConfig.binaryFiles) {
 					if (resultEncoding.equals("full")) {
-						textOutputStream = getTextFileOutputStream("msg", "json");
+						textOutputStream = getTextFileOutputStream(messageTypePrefix);
 						IOUtils.write(message + NEW_LINE, textOutputStream);
 					} else {
 						byte[] bytes = null;
@@ -125,7 +125,7 @@ public class ResponseHandler {
 						}
 					}
 				} else {
-					textOutputStream = getTextFileOutputStream("msg", "txt");
+					textOutputStream = getTextFileOutputStream(messageTypePrefix);
 					IOUtils.write(message + NEW_LINE, textOutputStream);
 				}
 			} catch (IOException e) {
@@ -177,8 +177,8 @@ public class ResponseHandler {
 	private OutputStream getBinaryFileOutputStream(String prefix) {
 		FileOutputStream fos = null;
 		try {
-			String fileName = String.format("%s_%s_%s_%s.ber", prefix, sdf.format(new Date()), 
-					System.currentTimeMillis(), fileCounter++);
+			String fileName = String.format("%s_%s_%s_%s.%s", prefix, sdf.format(new Date()), 
+					System.currentTimeMillis(), fileCounter++, resultEncoding);
 			File f = new File(wsConfig.responseDir,fileName);
 			fos = new FileOutputStream(f);
 		} catch (FileNotFoundException e) {
@@ -187,13 +187,13 @@ public class ResponseHandler {
 		return fos;
 	}
 	
-	private OutputStream getTextFileOutputStream(String prefix, String ext) {
+	private OutputStream getTextFileOutputStream(String prefix) {
 		if (textFileOutStream != null) {
 			return textFileOutStream;
 		} else {
 			try {
 				String fileName = String.format("%s_%s_%s.%s", 
-						prefix, sdf.format(new Date()), System.currentTimeMillis(), ext);
+						prefix, sdf.format(new Date()), System.currentTimeMillis(), resultEncoding);
 				File f = new File(wsConfig.responseDir,fileName);
 				textFileOutStream = new FileOutputStream(f);
 			} catch (FileNotFoundException e) {

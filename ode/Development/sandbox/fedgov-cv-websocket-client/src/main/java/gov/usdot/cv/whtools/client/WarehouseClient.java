@@ -153,7 +153,6 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 //		wsClient.connect();
 
 		
-		final ResponseHandler responseHandler = new ResponseHandler(wsConfig);
 
 		RequestHandler watcher = new RequestHandler(wsConfig.requestDir, new AbstractFileListener() {
 			@Override
@@ -162,6 +161,7 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 					String request = FileUtils.readFileToString(file);
 					logger.info("Sending request " + request);
 					
+					ResponseHandler responseHandler = new ResponseHandler(wsConfig);
 					WarehouseClient wsClient = WarehouseClient.configure(wsConfig, responseHandler);
 					logger.info("Opening WebSocket to " + wsConfig.warehouseURL);
 					wsClient.connectBlocking();
@@ -191,6 +191,7 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 			@Override
 			public void sendRequest(File file) {
 				try {
+					ResponseHandler responseHandler = new ResponseHandler(wsConfig);
 					WarehouseClient wsClient = WarehouseClient.configure(wsConfig, responseHandler);
 					String depositMessageFormat = "DEPOSIT: { \"systemDepositName\": \"%s\", \"encodeType\": \"%s\", \"encodedMsg\": \"%s\" }";
 					if (wsConfig.encodeType.equals(ENCODE_TYPE_HEX) || wsConfig.encodeType.equals(ENCODE_TYPE_BASE64)) {
