@@ -12,13 +12,14 @@ public class OdeVehicleSituationData {
 	private String accelSet;
 	private String brakes;
 	private VehicleSize size;
-
+	private String vsmEventFlag;
 	public OdeVehicleSituationData() {
 	}
 
 	public OdeVehicleSituationData(OdeDateTime dateTime, Location3D location,
 			String speed, Integer heading, String steeringAngle,
-			String accelSet, String brakes, VehicleSize size) {
+			String accelSet, String brakes, VehicleSize size,
+			String vsmEventFlag) {
 		super();
 		this.dateTime = dateTime;
 		this.location = location;
@@ -28,6 +29,7 @@ public class OdeVehicleSituationData {
 		this.accelSet = accelSet;
 		this.brakes = brakes;
 		this.size = size;
+		this.vsmEventFlag = vsmEventFlag;
 	}
 
 	public OdeDateTime getDateTime() {
@@ -92,6 +94,14 @@ public class OdeVehicleSituationData {
 
 	public void setSize(VehicleSize size) {
 		this.size = size;
+	}
+
+	public String getVsmEventFlag() {
+		return vsmEventFlag;
+	}
+
+	public void setVsmEventFlag(String vsmEventFlag) {
+		this.vsmEventFlag = vsmEventFlag;
 	}
 
 	public String toJson() {

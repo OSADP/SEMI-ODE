@@ -106,7 +106,8 @@ public class OssReaderJsonWriter {
 										OdeHexTool.getHex(fund.getSteeringAngle().byteArrayValue()),
 										OdeHexTool.getHex(fund.getAccelSet().byteArrayValue()),
 										OdeHexTool.getHex(fund.getBrakes().byteArrayValue()),
-										size);
+										size,
+										OdeHexTool.getHex(fund.getVsmEventFlag().byteArrayValue()));
 						numPDUs++;
 						jsonOut.println(vsd.toJson());
 						if (trace)
