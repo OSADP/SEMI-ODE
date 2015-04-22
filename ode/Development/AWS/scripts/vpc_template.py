@@ -1,16 +1,63 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+Generates Cloud Formation Script for ODE
+
+Info on the python library used to generate the script
+https://github.com/cloudtools/troposphere
+
+"""
 
 import os
-from troposphere import Ref, Tags, Template
-from troposphere.ec2 import NetworkAcl, Route, \
+from troposphere import Ref, Tags, Template,Parameter,  Base64, FindInMap, GetAtt, Join, Output
+from troposphere.ec2 import Instance, NetworkAcl, Route, \
     VPCGatewayAttachment, SubnetRouteTableAssociation, Subnet, RouteTable, \
     VPC, NetworkAclEntry, InternetGateway, SecurityGroupRule, SecurityGroup, SecurityGroupIngress
 
-t = Template()
+# ODE Specific Resources
+import mappings
 
 ref_stack_id = Ref('AWS::StackId')
 ref_region = Ref('AWS::Region')
 ref_stack_name = Ref('AWS::StackName')
 quad_zero_ip = '0.0.0.0/0'
+
+
+t = Template()
+t.add_description("""\
+ODE Cloud Formation Template to create VPC with multiple public and \
+private, security groups and route tables. \
+Subnet are sized for 250 host each.""")
+
+
+instanceType_param = t.add_parameter(Parameter(
+    'LiferayPortal',
+    Type='String',
+    Description='Liferay Portal EC2 instance type',
+    Default='m1.small',
+    AllowedValues=[
+        't1.micro',
+        't2.micro', 't2.small', 't2.medium',
+        'm1.small', 'm1.medium', 'm1.large', 'm1.xlarge',
+        'm2.xlarge', 'm2.2xlarge', 'm2.4xlarge',
+        'm3.medium', 'm3.large', 'm3.xlarge', 'm3.2xlarge',
+        'c1.medium', 'c1.xlarge',
+        'c3.large', 'c3.xlarge', 'c3.2xlarge', 'c3.4xlarge', 'c3.8xlarge',
+        'g2.2xlarge',
+        'r3.large', 'r3.xlarge', 'r3.2xlarge', 'r3.4xlarge', 'r3.8xlarge',
+        'i2.xlarge', 'i2.2xlarge', 'i2.4xlarge', 'i2.8xlarge',
+        'hi1.4xlarge',
+        'hs1.8xlarge',
+        'cr1.8xlarge',
+        'cc2.8xlarge',
+        'cg1.4xlarge',
+    ],
+    ConstraintDescription='must be a valid EC2 instance type.',
+))
+
+
+t.add_mapping(mappings.AWSInstanceType2Arch['logicalName'], mappings.AWSInstanceType2Arch['mapping'])
+t.add_mapping(mappings.AWSRegionArch2AMI['logicalName'], mappings.AWSRegionArch2AMI['mapping'])
 
 VPC = t.add_resource(
     VPC(
@@ -148,6 +195,31 @@ t.add_resource(
 #         CidrBlock='0.0.0.0/0',
 #     ))
 
+pulic_api_sg = t.add_resource(
+    SecurityGroup(
+        title='publicAPISG1',
+        GroupDescription='Enable Access to the Portal GUI and Rest APIs',
+        VpcId=Ref(VPC),
+        Tags=Tags(Name='Public Portal Security Group'),
+        SecurityGroupIngress=[
+            SecurityGroupRule(              # SSH
+                IpProtocol='tcp',
+                FromPort='22',
+                ToPort='22',
+                CidrIp=quad_zero_ip), # TODO IP address of BAH Office, Home office, etc
+            SecurityGroupRule(
+                IpProtocol='tcp',
+                FromPort='80',
+                ToPort='80',
+                CidrIp=quad_zero_ip),
+            SecurityGroupRule(
+                IpProtocol='tcp',
+                FromPort='443',
+                ToPort='443',
+                CidrIp=quad_zero_ip)]
+    ))
+
+
 hadoop_cluser_sg = t.add_resource(
     SecurityGroup(
         title='HadoopClusterSG1',
@@ -186,7 +258,7 @@ hadoop_cluser_sg = t.add_resource(
 '''
  Necessary to create separate Security Group Ingress Rule objects to avoid
  circular references errors ( which are not caught during template validation )
- Allow all TCP, ICMP and UDP traffic  within  Hadoop Cluster SG
+ Allow all TCP, ICMP and UDP traffic within  Hadoop Cluster SG
 '''
 # TODO: Develop specific Port list and refine security rules based on protocol port
 SecurityGroupIngress(
@@ -215,6 +287,22 @@ SecurityGroupIngress(
     FromPort='0',
     GroupId=Ref(hadoop_cluser_sg),
     SourceSecurityGroupId=Ref(hadoop_cluser_sg))
+
+
+# TODO Liferay  Configure Instance
+# instance = t.add_resource(
+#     Instance(
+#         'WebServerInstance',
+#         ImageId =
+#     ))
+
+#
+# ipAddress = t.add_resource(
+#     EIP('IPAddress',
+#         DependsOn='AttachGateway',
+#         Domain='vpc',
+#         InstanceId=Ref(instance)
+#         ))
 
 json_path = os.path.join('..','ODE_cfn_vpc_template.json')
 with open(json_path, 'w') as f:
