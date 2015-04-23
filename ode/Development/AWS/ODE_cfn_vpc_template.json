@@ -1,0 +1,282 @@
+{
+  "Resources": {
+    "AttachGateway": {
+      "Properties": {
+        "InternetGatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment"
+    },
+    "HadoopClusterSG1": {
+      "Properties": {
+        "GroupDescription": "Enable Hadoop Cluster and Ambari services to work",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "80",
+            "IpProtocol": "tcp",
+            "ToPort": "80"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "7180",
+            "IpProtocol": "tcp",
+            "ToPort": "7180"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "8080",
+            "IpProtocol": "tcp",
+            "ToPort": "8080"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "8081",
+            "IpProtocol": "tcp",
+            "ToPort": "8081"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Cluster Security Group"
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "InternetGateway": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          }
+        ]
+      },
+      "Type": "AWS::EC2::InternetGateway"
+    },
+    "Route": {
+      "DependsOn": "AttachGateway",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "RouteTableId": {
+          "Ref": "publicRouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "hadoopClusterICPM1": {
+      "Properties": {
+        "FromPort": "-1",
+        "GroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "IpProtocol": "icmp",
+        "SourceSecurityGroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "ToPort": "-1"
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "hadoopClusterTCP1": {
+      "Properties": {
+        "FromPort": "0",
+        "GroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "ToPort": "65535"
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "hadoopClusterUDP1": {
+      "Properties": {
+        "FromPort": "0",
+        "GroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "IpProtocol": "udp",
+        "SourceSecurityGroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "ToPort": "65535"
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "odeVPC": {
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": "true",
+        "EnableDnsSupport": "true",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DEV VPC"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::VPC"
+    },
+    "privateDatabasSubnet1": {
+      "Properties": {
+        "CidrBlock": "10.0.32.0/24",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Private Database Subnet1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "privateDatabaseRouteAssoc2": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "privateRouteTable1"
+        },
+        "SubnetId": {
+          "Ref": "privateDatabasSubnet1"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "privateHadoopRouteAssoc1": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "privateRouteTable1"
+        },
+        "SubnetId": {
+          "Ref": "privateHadoopSubnet1"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "privateHadoopSubnet1": {
+      "Properties": {
+        "CidrBlock": "10.0.16.0/24",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Private Hadoop Subnet1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "privateRouteTable1": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "publicRouteTable": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "publicSubnet1": {
+      "Properties": {
+        "CidrBlock": "10.0.1.0/24",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Public Tools Subnet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "publicSubnetRouteTableAssoc1": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "publicRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "publicSubnet1"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "publicToolsSubnet1": {
+      "Properties": {
+        "CidrBlock": "10.0.8.0/24",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "publicToolsSubnetRouteTableAssoc1": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "publicRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "publicToolsSubnet1"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    }
+  }
+}
