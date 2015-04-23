@@ -12,7 +12,8 @@ import os
 from troposphere import Ref, Tags, Template,Parameter,  Base64, FindInMap, GetAtt, Join, Output
 from troposphere.ec2 import Instance, NetworkAcl, Route, \
     VPCGatewayAttachment, SubnetRouteTableAssociation, Subnet, RouteTable, \
-    VPC, NetworkAclEntry, InternetGateway, SecurityGroupRule, SecurityGroup, SecurityGroupIngress
+    VPC, NetworkAclEntry, InternetGateway, SecurityGroupRule, SecurityGroup, SecurityGroupIngress, EIP,\
+    EIPAssociation, NetworkInterfaceProperty
 
 # ODE Specific Resources
 import mappings
@@ -30,20 +31,20 @@ private, security groups and route tables. \
 Subnet are sized for 250 host each.""")
 
 
-instanceType_param = t.add_parameter(Parameter(
-    'LiferayPortal',
+liferay_instance_type_param = t.add_parameter(Parameter(
+    'liferayPortalInstance',
     Type='String',
     Description='Liferay Portal EC2 instance type',
-    Default='m1.small',
+    Default='c3.large',
     AllowedValues=[
-        't1.micro',
+        #'t1.micro',
         't2.micro', 't2.small', 't2.medium',
-        'm1.small', 'm1.medium', 'm1.large', 'm1.xlarge',
-        'm2.xlarge', 'm2.2xlarge', 'm2.4xlarge',
+       # 'm1.small', 'm1.medium', 'm1.large', 'm1.xlarge',      # PV64 Architecutre
+        #'m2.xlarge', 'm2.2xlarge', 'm2.4xlarge',
         'm3.medium', 'm3.large', 'm3.xlarge', 'm3.2xlarge',
-        'c1.medium', 'c1.xlarge',
+       # 'c1.medium', 'c1.xlarge',                              # PV64 Architecutre
         'c3.large', 'c3.xlarge', 'c3.2xlarge', 'c3.4xlarge', 'c3.8xlarge',
-        'g2.2xlarge',
+       # 'g2.2xlarge',                                          # PV64 Architecutre
         'r3.large', 'r3.xlarge', 'r3.2xlarge', 'r3.4xlarge', 'r3.8xlarge',
         'i2.xlarge', 'i2.2xlarge', 'i2.4xlarge', 'i2.8xlarge',
         'hi1.4xlarge',
@@ -52,12 +53,15 @@ instanceType_param = t.add_parameter(Parameter(
         'cc2.8xlarge',
         'cg1.4xlarge',
     ],
-    ConstraintDescription='must be a valid EC2 instance type.',
+    ConstraintDescription='Must be a valid EC2 instance type.',
 ))
 
 
-t.add_mapping(mappings.AWSInstanceType2Arch['logicalName'], mappings.AWSInstanceType2Arch['mapping'])
-t.add_mapping(mappings.AWSRegionArch2AMI['logicalName'], mappings.AWSRegionArch2AMI['mapping'])
+t.add_mapping(mappings.AWSInstanceType2Arch[mappings.logicalName],
+              mappings.AWSInstanceType2Arch[mappings.mapping])
+
+t.add_mapping(mappings.AWSRegionArch2AMI[mappings.logicalName],
+              mappings.AWSRegionArch2AMI[mappings.mapping])
 
 VPC = t.add_resource(
     VPC(
@@ -73,16 +77,16 @@ public_tools_subnet = t.add_resource(
         'publicToolsSubnet1',
         CidrBlock='10.0.8.0/24',
         VpcId=Ref(VPC),
-        Tags=Tags(
+        Tags=Tags( Name="Public Tools Subnet",
             Application=ref_stack_id)))
 
-public_subnet = t.add_resource(
+public_api_subnet = t.add_resource(
     Subnet(
         'publicSubnet1',
         CidrBlock='10.0.1.0/24',
         VpcId=Ref(VPC),
         Tags=Tags(
-            Name="Public Tools Subnet")))
+            Name="Public API Subnet")))
 
 private_hadoop_subnet = t.add_resource(
     Subnet(
@@ -131,7 +135,7 @@ route = t.add_resource(
 t.add_resource(
     SubnetRouteTableAssociation(
         'publicSubnetRouteTableAssoc1',
-        SubnetId=Ref(public_subnet),
+        SubnetId=Ref(public_api_subnet),
         RouteTableId=Ref(routeTable),
     ))
 
@@ -206,7 +210,7 @@ pulic_api_sg = t.add_resource(
                 IpProtocol='tcp',
                 FromPort='22',
                 ToPort='22',
-                CidrIp=quad_zero_ip), # TODO IP address of BAH Office, Home office, etc
+                CidrIp=quad_zero_ip), # TODO IP address of BAH Office, Home office, Bastion Host etc
             SecurityGroupRule(
                 IpProtocol='tcp',
                 FromPort='80',
@@ -290,19 +294,29 @@ SecurityGroupIngress(
 
 
 # TODO Liferay  Configure Instance
-# instance = t.add_resource(
-#     Instance(
-#         'WebServerInstance',
-#         ImageId =
-#     ))
 
-#
-# ipAddress = t.add_resource(
-#     EIP('IPAddress',
-#         DependsOn='AttachGateway',
-#         Domain='vpc',
-#         InstanceId=Ref(instance)
-#         ))
+eip1 = t.add_resource(EIP(
+    "EIP1",
+    Domain="vpc",
+))
+
+liferay_ec2_instance = t.add_resource(Instance(
+    "liferayInstance1",
+
+    ImageId=FindInMap('AWSRegionArch2AMI',
+             Ref('AWS::Region'), FindInMap( 'AWSInstanceType2Arch', Ref(liferay_instance_type_param), 'Arch')),
+    InstanceType = Ref(liferay_instance_type_param),
+    NetworkInterfaces=[
+        NetworkInterfaceProperty(
+            GroupSet=[
+                    Ref(pulic_api_sg)],
+                AssociatePublicIpAddress='true',
+                DeviceIndex='0',
+                DeleteOnTermination='true',
+                SubnetId=Ref(public_api_subnet) )
+    ],
+    Tags=Tags(Name="Liferay Portal Server",)
+))
 
 json_path = os.path.join('..','ODE_cfn_vpc_template.json')
 with open(json_path, 'w') as f:
