@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 public class AppContext {
    private static Logger logger = LoggerFactory.getLogger(AppContext.class);
 
-   public static final String WEBSERVERROOT = "WebServerRoot";
-   public static final String DBNAME = "dbname";
-   public static final String DBHOST = "dbhost";
+   public static final String WEB_SERVER_ROOT = "web.server.root";
+   public static final String LIFERAY_DB_NAME = "liferay.db.name";
+   public static final String LIFERAY_DB_HOST = "liferay.db.host";
 
    public static final String MAIL_SMTP_HOST = "mail.smtp.host";
    public static final String MAIL_SMTP_PORT = "mail.smtp.port";
@@ -23,12 +23,20 @@ public class AppContext {
    public static final String MAIL_PASSWORD = "mail.password";
 
    public static final String JSESSIONID_KEY = "JSESSIONID";
-   public static final String SDX_WEBSOCKET_URL = "sdx.websocket.url";
-   public static final String SDX_KEYSTORE_FILE_PATH = "sdx.keystoreFilePath";
-   public static final String SDX_KEYSTORE_PASSWORD = "sdx.keystorePassword";
-   public static final String SDX_CAS_URL = "sdx.casURL";
-   public static final String SDX_CAS_USERNAME = "sdx.casUserName";
-   public static final String SDX_CAS_PASSWORD = "sdx.casPassword";
+   public static final String DDS_DOMAIN_NAME = "dds.domain.name";
+   public static final String DDS_RESOURCE_IDENTIFIER = "dds.resource.identifier";
+   public static final String DDS_KEYSTORE_FILE_PATH = "dds.keystore.file.path";
+   public static final String DDS_KEYSTORE_PASSWORD = "dds.keystore.password";
+   public static final String DDS_CAS_URL = "dds.cas.url";
+   public static final String DDS_CAS_USERNAME = "dds.cas.username";
+   public static final String DDS_CAS_PASSWORD = "dds.cas.password";
+
+	public static final String REQUEST_FILE_DIR = "request.file.dir";
+	public static final String RESPONSE_FILE_DIR = "response.file.dir";
+	public static final String DEPOSIT_FILE_DIR = "deposit.file.dir";
+	public static final String DEPOSIT_SYSTEM_NAME = "deposit.system.name";
+	public static final String DEPOSIT_ENCODE_TYPE = "deposit.encode.type";
+	public static final String DEPOSIT_DELAY = "deposit.delay";
 
    private static AppContext instance = null;
 

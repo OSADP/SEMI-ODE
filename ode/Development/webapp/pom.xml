@@ -1,124 +1,135 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.springframework.samples.service.service</groupId>
   <artifactId>ode</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
-  
-    <properties>
 
-		<!-- Generic properties -->
-		<java.version>1.6</java.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		
-		<!-- Web -->
-		<jsp.version>2.2</jsp.version>
-		<jstl.version>1.2</jstl.version>
-		<servlet.version>2.5</servlet.version>
-		
+   <scm>
+      <connection>scm:git:https://hamidmusavi@buildforge.cnsi.com:9443/scm/ode/ode-repo.git</connection>
+      <developerConnection>scm:git:https://hamidmusavi@buildforge.cnsi.com:9443/scm/ode/ode-repo.git</developerConnection>
+      <tag>HEAD</tag>
+      <url>https://hamidmusavi@buildforge.cnsi.com:9443/scm/ode/ode-repo.git</url>
+   </scm>
 
-		<!-- Spring -->
-		<spring-framework.version>3.2.3.RELEASE</spring-framework.version>
+  <properties>
 
-		<!-- Hibernate / JPA -->
-		<hibernate.version>4.2.1.Final</hibernate.version>
+    <!-- Generic properties -->
+    <java.version>1.6</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<!-- Logging -->
-		<logback.version>1.0.13</logback.version>
-		<slf4j.version>1.7.5</slf4j.version>
+    <!-- Web -->
+    <jsp.version>2.2</jsp.version>
+    <jstl.version>1.2</jstl.version>
+    <servlet.version>2.5</servlet.version>
 
-		<!-- Test -->
-		<junit.version>4.11</junit.version>
 
-	</properties>
-	
-	<dependencies>
-	
-		<!-- Spring MVC -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>${spring-framework.version}</version>
-		</dependency>
-		
-		<!-- Other Web dependencies -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>${jstl.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${servlet.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>${jsp.version}</version>
-			<scope>provided</scope>
-		</dependency>
-	
-		<!-- Spring and Transactions -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-			<version>${spring-framework.version}</version>
-		</dependency>
+    <!-- Spring -->
+    <spring-framework.version>3.2.3.RELEASE</spring-framework.version>
 
-		<!-- Logging with SLF4J & LogBack -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>${logback.version}</version>
-			<scope>runtime</scope>
-		</dependency>
+    <!-- Hibernate / JPA -->
+    <hibernate.version>4.2.1.Final</hibernate.version>
 
-		<!-- Hibernate -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>${hibernate.version}</version>
-		</dependency>
+    <!-- Logging -->
+    <logback.version>1.0.13</logback.version>
+    <slf4j.version>1.7.5</slf4j.version>
 
-		
-		<!-- Test Artifacts -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring-framework.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
+    <!-- Test -->
+    <junit.version>4.11</junit.version>
 
-		<dependency>
-		  <groupId>org.apache.httpcomponents</groupId>
-		  <artifactId>httpcore</artifactId>
-		  <version>4.4</version>
-		</dependency>
-		<dependency>
-		  <groupId>org.apache.httpcomponents</groupId>
-		  <artifactId>httpclient</artifactId>
-		  <version>4.4</version>
-		</dependency>
-		<dependency>
-		  <groupId>org.java-websocket</groupId>
-		  <artifactId>Java-WebSocket</artifactId>
-		  <version>1.3.0</version>
-		</dependency>
+    <finalLocation>${project.build.directory}/${project.artifactId}-${project.version}</finalLocation>
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+  </properties>
+
+  <dependencies>
+
+    <!-- Spring MVC -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>${spring-framework.version}</version>
+    </dependency>
+
+    <!-- Other Web dependencies -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>${jstl.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>${servlet.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>${jsp.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Spring and Transactions -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+      <version>${spring-framework.version}</version>
+    </dependency>
+
+    <!-- Logging with SLF4J & LogBack -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Hibernate -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+      <version>${hibernate.version}</version>
+    </dependency>
+
+
+    <!-- Test Artifacts -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>${spring-framework.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+      <version>4.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.java-websocket</groupId>
+      <artifactId>Java-WebSocket</artifactId>
+      <version>1.3.0</version>
+    </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-core-asl</artifactId>
@@ -129,5 +140,187 @@
       <artifactId>jackson-mapper-asl</artifactId>
       <version>1.9.13</version>
     </dependency>
-	</dependencies>	
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-servlet-core</artifactId>
+      <version>2.17</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>5.1.3.Final</version>
+    </dependency>
+  </dependencies>
+
+   <!-- Added on 4/22/2015 -->
+   <build>
+      <directory>${project.basedir}/target</directory>
+      <finalName>${project.artifactId}</finalName>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.0</version>
+            <configuration>
+               <source>1.8</source>
+               <target>1.8</target>
+            </configuration>
+         </plugin>
+         
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>2.3.2</version>
+            <executions>
+               <execution>
+                  <id>default-jar</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>jar</goal>
+                  </goals>
+                  <configuration>
+                     <!-- <excludes>
+                        <exclude>**/launcher/*</exclude>
+                     </excludes> -->
+                     <outputDirectory>${finalLocation}</outputDirectory>
+                     <finalName>${project.build.finalName}</finalName>
+                     <archive>
+                        <manifestEntries>
+                           <Version>${project.version}</Version>
+                           <Date>${timestamp}</Date>
+                           <Permissions>all-permissions</Permissions>
+                           <Application-Name>ODE</Application-Name>
+                        </manifestEntries>
+                        <!--<manifest>
+                           <addClasspath>true</addClasspath>
+                           <classpathPrefix>lib/</classpathPrefix>
+                           <mainClass>com.bah.ode.Main</mainClass>
+                        </manifest>-->
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                     </archive>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.8</version>
+            <executions>
+               <execution>
+                  <id>copy-dependencies</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>copy-dependencies</goal>
+                  </goals>
+                  <configuration>
+                     <outputDirectory>${finalLocation}/lib</outputDirectory>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.6</version>
+            <executions>
+               <execution>
+                  <id>copy-resources</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                     <outputDirectory>${finalLocation}</outputDirectory>
+                     <resources>
+                        <resource>
+                           <directory>${project.basedir}</directory>
+                           <include>log4j.properties</include>
+                           </resource>
+                     </resources>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         
+         <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+               <descriptors>
+                  <descriptor>assembly.xml</descriptor>
+               </descriptors>
+               <finalName>${project.artifactId}-${project.version}</finalName>
+               <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+            <executions>
+               <execution>
+                  <id>make-assembly</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>single</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+         
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-eclipse-plugin</artifactId>
+            <version>2.8</version>
+            <configuration>
+               <classpathContainers>
+                  <classpathContainer>
+                     org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7
+                  </classpathContainer>
+               </classpathContainers>
+            </configuration>
+         </plugin>
+         
+      </plugins>
+      
+      <pluginManagement>
+         <plugins><plugin>
+            <groupId>org.eclipse.m2e</groupId>
+            <artifactId>lifecycle-mapping</artifactId>
+            <version>1.0.0</version>
+            <configuration>
+               <lifecycleMappingMetadata>
+                  <pluginExecutions>
+                     <pluginExecution>
+                        <pluginExecutionFilter>
+                           <groupId>org.apache.maven.plugins</groupId>
+                           <artifactId>maven-dependency-plugin</artifactId>
+                           <versionRange>[2.0,)</versionRange>
+                           <goals>
+                              <goal>copy-dependencies</goal>
+                           </goals>
+                        </pluginExecutionFilter>
+                        <action>
+                           <execute />
+                        </action>
+                     </pluginExecution>
+                  </pluginExecutions>
+               </lifecycleMappingMetadata>
+            </configuration>
+         </plugin></plugins>
+      </pluginManagement>
+      
+      <resources>
+         <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+            <includes>
+               <include>**/version.properties</include>
+            </includes>
+         </resource>
+      </resources>
+      
+   </build>
 </project>

@@ -10,24 +10,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bah.ode.sdx.client.ws;
+package com.bah.ode.dds.client.ws;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class ConfigException extends Exception {
 
-public class RequestHandler {
+	private static final long serialVersionUID = -1011704637837676718L;
 
-   private static final Logger logger = LoggerFactory
-         .getLogger(RequestHandler.class);
+	public ConfigException(String message) {
+		super(message);
+    }
+	
+	public ConfigException(Throwable cause) {
+		super(cause);
+    }
 
-   private WarehouseClient wsClient;
-
-   public RequestHandler(WarehouseClient wsClient) {
-      this.wsClient = wsClient;
-   }
-
-   private void sendRequest(String request) {
-      logger.info("Sending request " + request);
-      wsClient.send(request);
-   }
+    public ConfigException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -10,9 +10,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bah.ode.sdx.client.ws;
+package com.bah.ode.dds.client.ws;
 
 import java.io.IOException;
+import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -54,8 +55,8 @@ public class CASClient {
 		casClient.appContext = appContext;
 		
 		SSLContext sslContext = SSLBuilder.buildSSLContext(
-				appContext.getParam(AppContext.SDX_KEYSTORE_FILE_PATH),
-				appContext.getParam(AppContext.SDX_KEYSTORE_PASSWORD));
+				appContext.getParam(AppContext.DDS_KEYSTORE_FILE_PATH),
+				appContext.getParam(AppContext.DDS_KEYSTORE_PASSWORD));
 
 		casClient.sslSocketFactory = SSLBuilder
 				.buildSSLConnectionSocketFactory(sslContext);
@@ -63,22 +64,26 @@ public class CASClient {
 		return casClient;
 	}
 	
-	public String login() throws ClientProtocolException, IOException, CASLoginException {
+	public String login()
+			throws ClientProtocolException, IOException, CASLoginException {
 
 		String ticketGrantingTicket = getTicketGrantingTicket(
-				appContext.getParam(AppContext.SDX_CAS_URL),
-		      appContext.getParam(AppContext.SDX_CAS_USERNAME),
-		      appContext.getParam(AppContext.SDX_CAS_PASSWORD));
+				appContext.getParam(AppContext.DDS_CAS_URL),
+		      appContext.getParam(AppContext.DDS_CAS_USERNAME),
+		      appContext.getParam(AppContext.DDS_CAS_PASSWORD));
 		logger.info("Got ticketGrantingTicket " + ticketGrantingTicket);
-		
+
+		String ddsHttpWebSocketUrl = new URL("https://", 
+			appContext.getParam(AppContext.DDS_DOMAIN_NAME), -1,
+			appContext.getParam(AppContext.DDS_RESOURCE_IDENTIFIER)).toExternalForm();
 		String serviceTicket = getServiceTicket(
-		      appContext.getParam(AppContext.SDX_WEBSOCKET_URL),
+		      ddsHttpWebSocketUrl,
 				ticketGrantingTicket, 
-				appContext.getParam(AppContext.SDX_CAS_URL));
+				appContext.getParam(AppContext.DDS_CAS_URL));
 		logger.info("Got serviceTicket " + serviceTicket);
 		
 		String sessionID = getServiceCall(
-		      appContext.getParam(AppContext.SDX_WEBSOCKET_URL),
+				ddsHttpWebSocketUrl,
 		      serviceTicket);
 		logger.info("Successful CAS login with sessionID " + sessionID);
 
