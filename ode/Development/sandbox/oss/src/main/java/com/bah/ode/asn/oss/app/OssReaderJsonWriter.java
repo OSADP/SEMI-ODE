@@ -10,13 +10,13 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.dsrc.DDateTime;
 import com.bah.ode.asn.oss.dsrc.Position3D;
 import com.bah.ode.asn.oss.semi.FundamentalSituationalStatus;
 import com.bah.ode.asn.oss.semi.VehSitDataMessage;
 import com.bah.ode.asn.oss.semi.VehSitDataMessage.Bundle;
 import com.bah.ode.asn.oss.semi.VehSitRecord;
-import com.bah.ode.asn.oss.Oss;
 import com.oss.asn1.Coder;
 import com.oss.asn1printer.DataPrinter;
 
@@ -101,13 +101,13 @@ public class OssReaderJsonWriter {
 								new OdeVehicleSituationData(
 										dateTime, 
 										location, 
-										OdeHexTool.getHex(fund.getSpeed().byteArrayValue()),
-										fund.getHeading().intValue(),
-										OdeHexTool.getHex(fund.getSteeringAngle().byteArrayValue()),
-										OdeHexTool.getHex(fund.getAccelSet().byteArrayValue()),
-										OdeHexTool.getHex(fund.getBrakes().byteArrayValue()),
+										fund.getSpeed(),
+										fund.getHeading(),
+										fund.getSteeringAngle(),
+										fund.getAccelSet(),
+										fund.getBrakes(),
 										size,
-										OdeHexTool.getHex(fund.getVsmEventFlag().byteArrayValue()));
+										fund.getVsmEventFlag());
 						numPDUs++;
 						jsonOut.println(vsd.toJson());
 						if (trace)
