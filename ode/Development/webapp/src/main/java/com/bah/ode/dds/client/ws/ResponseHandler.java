@@ -17,12 +17,12 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ResponseHandler {
 
@@ -69,7 +69,7 @@ public class ResponseHandler {
 			try {
 				JsonNode rootNode = mapper.readTree(jsonMessage);
 				messageTypePrefix = dialogIDPrefixLookup.get(rootNode.get("dialogID").asInt());
-				resultEncoding = rootNode.get("resultEncoding").getTextValue();
+				resultEncoding = rootNode.get("resultEncoding").textValue();
 			} catch (Exception e) {
 				logger.error("Error processing Start Tag", e);
 			}

@@ -1,5 +1,4 @@
-package com.bah.ode.api.sample;
-
+package com.bah.ode.server;
 import java.io.IOException;
 
 import javax.servlet.Servlet;
@@ -12,28 +11,28 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.bah.ode.context.AppContext;
 
-/**
- * Servlet implementation class DDSRequestServlet
- */
-public class SampleJavaServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public SampleJavaServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+public class InitServlet extends HttpServlet {
+
+	/**
+	 * 
+	 */
+   private static final long serialVersionUID = 9096568500786025585L;
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public InitServlet() {
+		super();
+	}
 
 	/**
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException {
-      ServletContext servletContext = config.getServletContext();
+		ServletContext servletContext = config.getServletContext();
 
-      AppContext appContext = AppContext.getInstance();
-      appContext.init(servletContext);
+		AppContext appContext = AppContext.getInstance();
+		appContext.init(servletContext);
 	}
 
 	/**
@@ -65,5 +64,4 @@ public class SampleJavaServlet extends HttpServlet {
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 	}
-
 }

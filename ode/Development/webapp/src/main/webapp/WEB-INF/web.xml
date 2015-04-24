@@ -114,23 +114,23 @@
   </servlet-mapping>
 
   <servlet>
-    <description>This servlet handles a downstream data request by placing an approprate upstream data request.</description>
-    <display-name>SampleJavaServlet</display-name>
-    <servlet-name>SampleJavaServlet</servlet-name>
-    <servlet-class>com.bah.ode.api.sample.SampleJavaServlet</servlet-class>
+    <description>InitServlet is intended to perform eager initializations for ODE application.</description>
+    <display-name>InitServlet</display-name>
+    <servlet-name>InitServlet</servlet-name>
+    <servlet-class>com.bah.ode.server.InitServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
-    <servlet-name>SampleJavaServlet</servlet-name>
+    <servlet-name>InitServlet</servlet-name>
     <url-pattern>/api/sample/javax/*</url-pattern>
   </servlet-mapping>
 
    <servlet>
-      <servlet-name>SampleJaxRsResource</servlet-name>
+      <servlet-name>RESTfulServices</servlet-name>
       <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
       <init-param>
            <param-name>jersey.config.server.provider.packages</param-name>
-           <param-value>com.bah.ode.api.sample</param-value>
+           <param-value>com.bah.ode.api</param-value>
       </init-param>
       <init-param>
            <param-name>jersey.config.server.provider.scanning.recursive</param-name>
@@ -140,7 +140,7 @@
    </servlet>
  
    <servlet-mapping>
-      <servlet-name>SampleJaxRsResource</servlet-name>
-      <url-pattern>/api/sample/*</url-pattern>
+      <servlet-name>RESTfulServices</servlet-name>
+      <url-pattern>/api/*</url-pattern>
    </servlet-mapping>
 </web-app>
