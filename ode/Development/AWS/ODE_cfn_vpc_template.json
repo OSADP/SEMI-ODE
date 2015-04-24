@@ -1,4 +1,183 @@
 {
+  "Description": "ODE Cloud Formation Template to create VPC with multiple public and private, security groups and route tables. Subnet are sized for 250 host each.",
+  "Mappings": {
+    "AWSInstanceType2Arch": {
+      "c1.medium": {
+        "Arch": "PV64"
+      },
+      "c1.xlarge": {
+        "Arch": "PV64"
+      },
+      "c3.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "c3.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "c3.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "c3.large": {
+        "Arch": "HVM64"
+      },
+      "c3.xlarge": {
+        "Arch": "HVM64"
+      },
+      "cc2.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "cr1.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "g2.2xlarge": {
+        "Arch": "HVMG2"
+      },
+      "hi1.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "hs1.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "i2.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "i2.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "i2.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "i2.xlarge": {
+        "Arch": "HVM64"
+      },
+      "m1.large": {
+        "Arch": "PV64"
+      },
+      "m1.medium": {
+        "Arch": "PV64"
+      },
+      "m1.small": {
+        "Arch": "PV64"
+      },
+      "m1.xlarge": {
+        "Arch": "PV64"
+      },
+      "m2.2xlarge": {
+        "Arch": "PV64"
+      },
+      "m2.4xlarge": {
+        "Arch": "PV64"
+      },
+      "m2.xlarge": {
+        "Arch": "PV64"
+      },
+      "m3.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "m3.large": {
+        "Arch": "HVM64"
+      },
+      "m3.medium": {
+        "Arch": "HVM64"
+      },
+      "m3.xlarge": {
+        "Arch": "HVM64"
+      },
+      "r3.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "r3.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "r3.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "r3.large": {
+        "Arch": "HVM64"
+      },
+      "r3.xlarge": {
+        "Arch": "HVM64"
+      },
+      "t1.micro": {
+        "Arch": "PV64"
+      },
+      "t2.medium": {
+        "Arch": "HVM64"
+      },
+      "t2.micro": {
+        "Arch": "HVM64"
+      },
+      "t2.small": {
+        "Arch": "HVM64"
+      }
+    },
+    "AWSRegionArch2AMI": {
+      "us-east-1": {
+        "HVM64": "ami-a0e8eec8"
+      },
+      "us-west-1": {
+        "HVM64": "ami-9d0719d8"
+      },
+      "us-west-2": {
+        "HVM64": "ami-3d80df0d"
+      }
+    }
+  },
+  "Outputs": {
+    "URL": {
+      "Description": "Liferay Server application URL with EIP",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "liferayInstance1",
+                "PublicIp"
+              ]
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "liferayPortalInstance": {
+      "AllowedValues": [
+        "t2.micro",
+        "t2.small",
+        "t2.medium",
+        "m3.medium",
+        "m3.large",
+        "m3.xlarge",
+        "m3.2xlarge",
+        "c3.large",
+        "c3.xlarge",
+        "c3.2xlarge",
+        "c3.4xlarge",
+        "c3.8xlarge",
+        "r3.large",
+        "r3.xlarge",
+        "r3.2xlarge",
+        "r3.4xlarge",
+        "r3.8xlarge",
+        "i2.xlarge",
+        "i2.2xlarge",
+        "i2.4xlarge",
+        "i2.8xlarge",
+        "hi1.4xlarge",
+        "hs1.8xlarge",
+        "cr1.8xlarge",
+        "cc2.8xlarge",
+        "cg1.4xlarge"
+      ],
+      "ConstraintDescription": "Must be a valid EC2 instance type.",
+      "Default": "c3.large",
+      "Description": "Liferay Portal EC2 instance type",
+      "Type": "String"
+    }
+  },
   "Resources": {
     "AttachGateway": {
       "Properties": {
@@ -10,6 +189,12 @@
         }
       },
       "Type": "AWS::EC2::VPCGatewayAttachment"
+    },
+    "EIP1": {
+      "Properties": {
+        "Domain": "vpc"
+      },
+      "Type": "AWS::EC2::EIP"
     },
     "HadoopClusterSG1": {
       "Properties": {
@@ -57,6 +242,18 @@
         }
       },
       "Type": "AWS::EC2::SecurityGroup"
+    },
+    "IPAddress": {
+      "DependsOn": "AttachGateway",
+      "Properties": {
+        "Domain": {
+          "Ref": "odeVPC"
+        },
+        "InstanceId": {
+          "Ref": "liferayInstance1"
+        }
+      },
+      "Type": "AWS::EC2::EIP"
     },
     "InternetGateway": {
       "Properties": {
@@ -125,6 +322,52 @@
         "ToPort": "65535"
       },
       "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "liferayInstance1": {
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                {
+                  "Ref": "liferayPortalInstance"
+                },
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": {
+          "Ref": "liferayPortalInstance"
+        },
+        "NetworkInterfaces": [
+          {
+            "AssociatePublicIpAddress": "true",
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "publicAPISG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "publicSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Liferay Portal Server"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::Instance"
     },
     "odeVPC": {
       "Properties": {
@@ -208,6 +451,41 @@
       },
       "Type": "AWS::EC2::RouteTable"
     },
+    "publicAPISG1": {
+      "Properties": {
+        "GroupDescription": "Enable Access to the Portal GUI and Rest APIs",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "80",
+            "IpProtocol": "tcp",
+            "ToPort": "80"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "443",
+            "IpProtocol": "tcp",
+            "ToPort": "443"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Public Portal Security Group"
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
     "publicRouteTable": {
       "Properties": {
         "Tags": [
@@ -230,7 +508,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "Public Tools Subnet"
+            "Value": "Public API Subnet"
           }
         ],
         "VpcId": {
@@ -259,6 +537,10 @@
             "Value": {
               "Ref": "AWS::StackId"
             }
+          },
+          {
+            "Key": "Name",
+            "Value": "Public Tools Subnet"
           }
         ],
         "VpcId": {
