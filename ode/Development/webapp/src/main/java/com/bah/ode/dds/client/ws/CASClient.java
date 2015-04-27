@@ -67,24 +67,23 @@ public class CASClient {
 	public String login()
 			throws ClientProtocolException, IOException, CASLoginException {
 
+		String casUrl = appContext.getParam(AppContext.DDS_CAS_URL);
+		
 		String ticketGrantingTicket = getTicketGrantingTicket(
-				appContext.getParam(AppContext.DDS_CAS_URL),
+				casUrl,
 		      appContext.getParam(AppContext.DDS_CAS_USERNAME),
 		      appContext.getParam(AppContext.DDS_CAS_PASSWORD));
 		logger.info("Got ticketGrantingTicket " + ticketGrantingTicket);
 
-		String ddsHttpWebSocketUrl = new URL("https://", 
-			appContext.getParam(AppContext.DDS_DOMAIN_NAME), -1,
-			appContext.getParam(AppContext.DDS_RESOURCE_IDENTIFIER)).toExternalForm();
+		String ddsHttpWebSocketUrl = new URL("https", 
+      		appContext.getParam(AppContext.DDS_DOMAIN),
+      		Integer.parseInt(appContext.getParam(AppContext.DDS_PORT)),
+      		appContext.getParam(AppContext.DDS_RESOURCE_IDENTIFIER)).toExternalForm();
 		String serviceTicket = getServiceTicket(
-		      ddsHttpWebSocketUrl,
-				ticketGrantingTicket, 
-				appContext.getParam(AppContext.DDS_CAS_URL));
+				casUrl, ticketGrantingTicket,	ddsHttpWebSocketUrl);
 		logger.info("Got serviceTicket " + serviceTicket);
 		
-		String sessionID = getServiceCall(
-				ddsHttpWebSocketUrl,
-		      serviceTicket);
+		String sessionID = getServiceCall(ddsHttpWebSocketUrl, serviceTicket);
 		logger.info("Successful CAS login with sessionID " + sessionID);
 
 		return sessionID;

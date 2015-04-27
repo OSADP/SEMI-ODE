@@ -12,9 +12,8 @@
  */
 package com.bah.ode.dds.client.ws;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -35,7 +34,8 @@ public class SSLBuilder {
 			KeyManagementException {
 
 		KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-		FileInputStream instream = new FileInputStream(new File(keystoreFile));
+		
+		InputStream instream = SSLBuilder.class.getClassLoader().getResourceAsStream(keystoreFile);
 		try {
 			trustStore.load(instream, storePassword.toCharArray());
 		} finally {
