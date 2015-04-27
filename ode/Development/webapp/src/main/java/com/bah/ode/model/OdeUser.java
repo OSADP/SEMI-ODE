@@ -1,6 +1,6 @@
 package com.bah.ode.model;
 
-public class OdeUser extends OdeSerializable {
+public class OdeUser extends OdeObject {
 
 	/**
 	 * 

@@ -6,7 +6,7 @@ import java.io.Serializable;
 //import com.fasterxml.jackson.databind.SerializationFeature;
 
 @SuppressWarnings("serial")
-public class OdeSerializable implements Serializable {
+public class OdeObject implements Serializable {
 
 //	public String toJson() {
 //		String msg = null;

@@ -2,7 +2,7 @@ package com.bah.ode.model;
 
 
 @SuppressWarnings("serial")
-public class AbstractRequest extends OdeSerializable {
+public class AbstractRequest extends OdeObject {
 
    private Double nwLat;
    private Double nwLon;
