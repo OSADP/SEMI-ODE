@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-Contains Mapping values for ODE VPC
+Contains Mapping values for Servers in ODE VPC
 
 Info on the python library used to generate the script
 https://github.com/cloudtools/troposphere
@@ -9,6 +9,12 @@ https://github.com/cloudtools/troposphere
 """
 logicalName = 'logicalName'
 mapping = 'mapping'
+us_east_1 = 'us-east-1'
+us_west_1 = 'us-west-1'
+us_west_2 = 'us-west-2'
+PV64 = 'PV64'
+HVM64 = 'HVM64'
+HVMG2 = 'HVMG2' # GPU Isntance
 
 AWSInstanceType2Arch = {
     logicalName :'AWSInstanceType2Arch',
@@ -52,54 +58,88 @@ AWSInstanceType2Arch = {
     }}
 
 """
-Bitnami Liferay Images
+Liferay powered by Bitnami (HVM)
+OS Linux/Unix, Ubuntu 14.04
+https://aws.amazon.com/marketplace/pp/B00NPHLT1E
 
-https://bitnami.com/stack/liferay/cloud/amazon
 """
 AWSRegionArch2AMI = {
     logicalName: 'AWSRegionArch2AMI',
     mapping : {
-        'us-east-1': { 'HVM64': 'ami-a0e8eec8', # Private AMI Image   #'ami-4e90d426', # Market Place liferay Public bitnami ubuntu
-                       #'PV64': 'ami-50842d38',
-                      #'HVMG2': 'ami-3a329952'
-                       },
-        'us-west-2': { 'HVM64': 'ami-3d80df0d',# market palce place bitnami image
-                      #'PV64': 'ami-af86c69f',
-                      #'HVMG2': 'ami-47296a77'
-                      },
-        'us-west-1': { 'HVM64': 'ami-9d0719d8',  # liferay bitnami ubuntu
-                      #'PV64': 'ami-c7a8a182',
-                      #'HVMG2': 'ami-331b1376'},
-                      },
-        # 'eu-west-1': {'PV64': 'ami-aa8f28dd',
-        #               'HVM64': 'ami-748e2903',
-        #               'HVMG2': 'ami-00913777'},
-        # 'ap-southeast-1': {'PV64': 'ami-20e1c572',
-        #                    'HVM64': 'ami-d6e1c584',
-        #                    'HVMG2': 'ami-fabe9aa8'},
-        # 'ap-northeast-1': {'PV64': 'ami-21072820',
-        #                    'HVM64': 'ami-35072834',
-        #                    'HVMG2': 'ami-5dd1ff5c'},
-        # 'ap-southeast-2': {'PV64': 'ami-8b4724b1',
-        #                    'HVM64': 'ami-fd4724c7',
-        #                    'HVMG2': 'ami-e98ae9d3'},
-        # 'sa-east-1': {'PV64': 'ami-9d6cc680',
-        #               'HVM64': 'ami-956cc688',
-        #               'HVMG2': 'NOT_SUPPORTED'},
-        # 'cn-north-1': {'PV64': 'ami-a857c591',
-        #                'HVM64': 'ami-ac57c595',
-        #                'HVMG2': 'NOT_SUPPORTED'},
-        # 'eu-central-1': {'PV64': 'ami-a03503bd',
-        #                  'HVM64': 'ami-b43503a9',
-        #                  'HVMG2': 'ami-b03503ad'},
+        'us-east-1': {'HVM64': 'ami-a0e8eec8'},    # Private AMI Image   #'ami-4e90d426', # Market Place Liferay Public bitnami ubuntu
+        'us-west-2': {'HVM64': 'ami-6df5ac5d'},    # market place image
+        'us-west-1': {'HVM64': 'ami-088b924d'}     # market place image
     }}
 
 """
+ Ambari Server and Hadoop Cluster Images
+ OS: CentOS 6 (x86_64) - with Updates HVM
+ AWS: https://aws.amazon.com/marketplace/pp/B00NQAYLWO
+
+ CentOS 6 x86_64 (2014_09_29) EBS HVM
+ CentOS 6 x86_64 (2014_09_29) EBS HVM-74e73035-3435-48d6-88e0-89cc02ad83ee-ami-a8a117c0.2
+"""
+centos_65_AWSRegionArch2AMI = {
+    logicalName: 'centos65AWSRegionArch2AMI',
+    mapping : {
+        us_east_1: {HVM64: 'ami-c2a818aa'},    # market place image
+        us_west_1: {HVM64: 'ami-57cfc412'},    # market place image
+        us_west_2: {HVM64: 'ami-81d092b1'}     # market place image
+    }}
+
+"""
+ Ubuntu 14.04 Trusty 64 hvm-ssd instances
+ ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20150325
+
+ http://cloud-images.ubuntu.com/locator/
+
+"""
+ubuntu_14_AWSRegionArch2AMI = {
+    logicalName: 'ubuntu14AWSRegionArch2AMI',
+    mapping : {
+        us_east_1: {HVM64: 'ami-d05e75b8'},
+        us_west_1:{ HVM64: 'ami-df6a8b9b'},
+        us_west_2: {HVM64: 'ami-5189a661'}
+    }}
+
+"""
+ Ubuntu Server 12.04 LTS (HVM)
+ ubuntu/images/hvm-ssd/ubuntu-precise-12.04-amd64-server-20150127-f4f523b3-d6b3-42a4-82e8-5f264cf4cf91-ami-f2bbff9a.2
+
+http://cloud-images.ubuntu.com/locator/
+"""
+ubuntu_12_AWSRegionArch2AMI = {
+    logicalName: 'ubuntu12AWSRegionArch2AMI',
+    mapping : {
+        us_east_1: {HVM64: 'ami-427a392a'},
+        us_west_1:{ HVM64: 'ami-82bba3c7'},
+        us_west_2: {HVM64: 'ami-2b471c1b'}
+    }}
+
+"""
+aws ec2 describe-images --region us-xxxx-n --filter "Name=name,Values=amzn-ami-vpc-nat-hvm-2015*"
+-query Images[*].{Name:Name,Arch:Architecture,Description:Description,Id:ImageId,CreationDate:CreationDate,RootVolumeType:RootDeviceType}
+
+Amazon Linux AMI VPC NAT x86_64 HVM
+amzn-ami-vpc-nat-hvm-2015.03.0.x86_64-ebs
+"""
+
+ami_nat_instanceAWSRegionArch2AMI = {
+    logicalName: 'amazonNATInstance',
+    mapping :{
+            us_east_1 : {HVM64: 'ami-b0210ed8'},
+            us_west_1 : {HVM64: 'ami-ada746e9'},
+            us_west_2 : {HVM64: 'ami-75ae8245'}
+    }}
+
+"""
+Instance Mapping Template
+
 AWSRegionArch2AMI = {
     logicalName: 'AWSRegionArch2AMI',
     mapping : {
-        'us-east-1': { 'PV64': None
-                      'HVM64': None
+        'us-east-1': { 'PV64': None,
+                      'HVM64': None,
                       'HVMG2': None'},
         'us-west-2': {'PV64': None,
                       'HVM64': None,
