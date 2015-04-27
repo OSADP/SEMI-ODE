@@ -1,7 +1,5 @@
 package com.bah.ode.api.data;
 
-import java.net.URL;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -18,10 +16,6 @@ import com.bah.ode.dds.client.ws.ResponseHandler;
 import com.bah.ode.dds.client.ws.WarehouseClient;
 import com.bah.ode.model.DdsRequest;
 
-class Sub {
-	public String id;
-}
-
 @Path("/ints")
 public class IntersectionDataService extends AbstractService {
 
@@ -29,50 +23,49 @@ public class IntersectionDataService extends AbstractService {
 	      .getLogger(IntersectionDataService.class);
 
 	private AppContext appContext;
-	private URL ddsWsUrl;
 	
 	public IntersectionDataService() {
 	   super();
 	   
 	   this.appContext = AppContext.getInstance();
-	   
-		try {
-	      ddsWsUrl = new URL("https",
-	      		appContext.getParam(AppContext.DDS_DOMAIN),
-	      		Integer.parseInt(appContext.getParam(AppContext.DDS_PORT)),
-	      		appContext.getParam(AppContext.DDS_RESOURCE_IDENTIFIER));
-      } catch (Exception e) {
-	      logger.error("Error initializing.", e);
-      }
    }
 
 	@GET
 	@Path("/{enc}")
-	public Response requestSubscription(@PathParam("enc") String enc,
-	      @QueryParam("nwLat") double nwLat, @QueryParam("nwLat") double nwLon,
-	      @QueryParam("nwLat") double seLat, @QueryParam("nwLat") double seLon) {
+	public Response requestSubscription(
+	      @QueryParam("nwLat") double nwLat, @QueryParam("nwLon") double nwLon,
+	      @QueryParam("seLat") double seLat, @QueryParam("seLon") double seLon) {
+		
+		logger.info("Received {}", getUriInfo());
+		DdsRequest request = null;
 		try {
-			DdsRequest request = new DdsRequest();
-			request.setNwLat(nwLat);
-			request.setNwLon(nwLon);
-			request.setSeLat(seLat);
-			request.setSeLon(seLon);
+			request = (DdsRequest) DdsRequest.create()
+					.setDialogID(DdsRequest.Dialog.ISD)
+					.setResultEncoding(DdsRequest.ResultEncoding.BASE_64)
+					.setSystemSubName(DdsRequest.SystemSubName.SDC)
+					.setNwLat(nwLat)
+					.setNwLon(nwLon)
+					.setSeLat(seLat)
+					.setSeLon(seLon);
 			
-	      ResponseHandler responseHandler = new ResponseHandler(
-	      		AppContext.getInstance());
+			
+	      ResponseHandler responseHandler = new ResponseHandler(appContext);
 	      WarehouseClient wsClient = WarehouseClient.configure(
-	      		AppContext.getInstance(), responseHandler);
-	      logger.info("Opening WebSocket connection " + ddsWsUrl.toExternalForm());
+	      		appContext, responseHandler);
 	      
+			logger.info("Connecting to {}", wsClient.getURI());
 	      wsClient.connectBlocking();
-	      wsClient.send(request.toString());
+	      
+	      String subreq = request.subscriptionRequest();
+			logger.info("Sending subscription request: {}", subreq);
+	      
+	      wsClient.send(request.subscriptionRequest());
 			
 		} catch (Exception e) {
 			throw new WebApplicationException(e);
 		}
-		Sub sub = new Sub();
 		
-		return Response.ok(sub).build();
+		return Response.ok(request).build();
 	}
 
 	@GET
@@ -84,10 +77,8 @@ public class IntersectionDataService extends AbstractService {
 		} catch (Exception e) {
 			throw new WebApplicationException(e);
 		}
-		Sub sub = new Sub();
-		sub.id = subId;
 		
-		return Response.ok(sub).build();
+		return Response.ok().build();
 	}
 
 	@GET

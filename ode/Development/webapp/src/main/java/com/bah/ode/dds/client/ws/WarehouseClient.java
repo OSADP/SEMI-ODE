@@ -12,27 +12,19 @@
  */
 package com.bah.ode.dds.client.ws;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.net.ssl.SSLContext;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.FileUtils;
 import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_17;
@@ -47,10 +39,6 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 
 	private static final Logger logger = LoggerFactory
 	      .getLogger(WarehouseClient.class);
-
-	private final static String ENCODE_TYPE_HEX = "HEX";
-	private final static String ENCODE_TYPE_BASE64 = "Base64";
-	private final static String ENCODE_TYPE_BER = "BER";
 
 	private ResponseHandler handler;
 	private AtomicLong numMsgs = new AtomicLong();
@@ -73,6 +61,7 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 	      KeyManagementException, KeyStoreException, NoSuchAlgorithmException,
 	      CertificateException, IOException, CASLoginException {
 
+      logger.info("Logging in to {}", appContext.getParam(AppContext.DDS_CAS_URL));
 		CASClient casClient = CASClient.configure(appContext);
 		String jSessionID = casClient.login();
 
@@ -86,6 +75,7 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 				appContext.getParam(AppContext.DDS_RESOURCE_IDENTIFIER),
 				null, null);
 		
+      logger.info("Opening connection to {}", ddsWsUri.toString());
 		WarehouseClient wsClient = new WarehouseClient(ddsWsUri,	new Draft_17(), headers); // more about drafts here:
 		// http://github.com/TooTallNate/Java-WebSocket/wiki/Drafts
 		wsClient.handler = handler;
