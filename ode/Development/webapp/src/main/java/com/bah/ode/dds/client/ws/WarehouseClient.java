@@ -21,6 +21,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.net.ssl.SSLContext;
@@ -39,6 +40,12 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 
 	private static final Logger logger = LoggerFactory
 	      .getLogger(WarehouseClient.class);
+	
+	private static ConcurrentHashMap<String, WarehouseClient> clients = new ConcurrentHashMap<String, WarehouseClient>();
+
+	public static ConcurrentHashMap<String, WarehouseClient> getClients() {
+		return clients;
+	}
 
 	private ResponseHandler handler;
 	private AtomicLong numMsgs = new AtomicLong();
@@ -53,6 +60,16 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 
 	public long incrementNumMsgs() {
 		return numMsgs.incrementAndGet();
+	}
+
+	private String sessionId;
+	
+	public String getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(String sessionId) {
+		this.sessionId = sessionId;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -79,12 +96,15 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 		WarehouseClient wsClient = new WarehouseClient(ddsWsUri,	new Draft_17(), headers); // more about drafts here:
 		// http://github.com/TooTallNate/Java-WebSocket/wiki/Drafts
 		wsClient.handler = handler;
+		wsClient.setSessionId(jSessionID);
 
 		SSLContext wsSSLContext = SSLBuilder.buildSSLContext(
 		      appContext.getParam(AppContext.DDS_KEYSTORE_FILE_PATH),
 		      appContext.getParam(AppContext.DDS_KEYSTORE_PASSWORD));
-		wsClient.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(
-		      wsSSLContext));
+		
+		wsClient.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(wsSSLContext));
+		
+		clients.put(jSessionID, wsClient);
 		
 		return wsClient;
 	}
@@ -109,7 +129,7 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 	public void onClose(int code, String reason, boolean remote) {
 		// The codecodes are documented in class
 		// org.java_websocket.framing.CloseFrame
-		logger.info("Connection closed by " + (remote ? "remote peer" : "us"));
+		logger.info("Connection closed by " + (remote ? "remote peer" : "us") + " reason: " + reason);
 	}
 
 	@Override

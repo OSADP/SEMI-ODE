@@ -55,9 +55,9 @@ public class DdsRequest extends BaseRequest{
 	}
 
 	private final int vsmType = 31;
-   private SystemSubName systemSubName;
-   private Dialog dialogID;
-   private ResultEncoding resultEncoding;
+   private String 	systemSubName;
+   private int 		dialogID;
+   private String 	resultEncoding;
    
    public static DdsRequest create() {
    	return new DdsRequest();
@@ -71,35 +71,36 @@ public class DdsRequest extends BaseRequest{
    	return this;
    }
    
-	public SystemSubName getSystemSubName() {
+	public int getVsmType() {
+		return vsmType;
+	}
+
+	
+	public String getSystemSubName() {
 		return systemSubName;
 	}
 
-	public DdsRequest setSystemSubName(SystemSubName systemSubName) {
+	public DdsRequest setSystemSubName(String systemSubName) {
 		this.systemSubName = systemSubName;
 		return this;
 	}
 
-	public Dialog getDialogID() {
+	public int getDialogID() {
 		return dialogID;
 	}
 
-	public DdsRequest setDialogID(Dialog dialogID) {
+	public DdsRequest setDialogID(int dialogID) {
 		this.dialogID = dialogID;
 		return this;
 	}
 
-	public ResultEncoding getResultEncoding() {
+	public String getResultEncoding() {
 		return resultEncoding;
 	}
 
-	public DdsRequest setResultEncoding(ResultEncoding resultEncoding) {
+	public DdsRequest setResultEncoding(String resultEncoding) {
 		this.resultEncoding = resultEncoding;
 		return this;
-	}
-
-	public int getVsmType() {
-		return vsmType;
 	}
 
 	public String subscriptionRequest() {
