@@ -14,13 +14,17 @@ package gov.usdot.cv.whtools.client;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -30,11 +34,54 @@ import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 public class SSLBuilder {
 
 	public static SSLContext buildSSLContext(String keystoreFile,
-			String storePassword) throws KeyStoreException,
-			NoSuchAlgorithmException, CertificateException, IOException,
-			KeyManagementException {
+	      String storePassword) throws KeyStoreException,
+	      NoSuchAlgorithmException, CertificateException, IOException,
+	      KeyManagementException, UnrecoverableKeyException {
+//
+//		// SSLContext protocols: TLS, SSL, SSLv3
+////		SSLContext sc = SSLContext.getInstance("SSLv3");
+//		SSLContext sc = SSLContext.getInstance("TLSv1");
+//		System.out.println("\nSSLContext class: " + sc.getClass());
+//		System.out.println("   Protocol: " + sc.getProtocol());
+//		System.out.println("   Provider: " + sc.getProvider());
+//
+//		// SSLContext algorithms: SunX509
+//		KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+//		System.out.println("\nKeyManagerFactory class: " + kmf.getClass());
+//		System.out.println("   Algorithm: " + kmf.getAlgorithm());
+//		System.out.println("   Provider: " + kmf.getProvider());
+//
+//		// KeyStore types: JKS
+////		String ksName = "herong.jks";
+////		char ksPass[] = "HerongJKS".toCharArray();
+////		char ctPass[] = "My1stKey".toCharArray();
+//		KeyStore ks = KeyStore.getInstance("JKS");
+//		ks.load(new FileInputStream(keystoreFile), storePassword.toCharArray());
+//		System.out.println("\nKeyStore class: " + ks.getClass());
+//		System.out.println("   Type: " + ks.getType());
+//		System.out.println("   Provider: " + ks.getProvider());
+//		System.out.println("   Size: " + ks.size());
+//
+//		// Generating KeyManager list
+//		kmf.init(ks, storePassword.toCharArray());
+//		KeyManager[] kmList = kmf.getKeyManagers();
+//		System.out.println("\nKeyManager class: " + kmList[0].getClass());
+//		System.out.println("   # of key manager: " + kmList.length);
+//
+//		// Generating SSLSocketFactory
+//		sc.init(kmList, null, null);
+//		return sc;
 
-		KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+		SSLContext sslcontext = buildSSLContextApache(keystoreFile,
+				storePassword);
+		return sslcontext;
+	}
+
+	private static SSLContext buildSSLContextApache(String keystoreFile,
+         String storePassword) throws KeyStoreException, FileNotFoundException,
+         IOException, NoSuchAlgorithmException, CertificateException,
+         KeyManagementException {
+	   KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
 		FileInputStream instream = new FileInputStream(new File(keystoreFile));
 		try {
 			trustStore.load(instream, storePassword.toCharArray());
@@ -46,8 +93,8 @@ public class SSLBuilder {
 		SSLContext sslcontext = SSLContexts.custom()
 				.loadTrustMaterial(trustStore, new TrustSelfSignedStrategy())
 				.build();
-		return sslcontext;
-	}
+	   return sslcontext;
+   }
 
 	public static SSLConnectionSocketFactory buildSSLConnectionSocketFactory(
 			SSLContext sslcontext) {

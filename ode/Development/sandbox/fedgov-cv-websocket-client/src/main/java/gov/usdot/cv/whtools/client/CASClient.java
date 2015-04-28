@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,7 +51,7 @@ public class CASClient {
 	
 	public static CASClient configure(WarehouseConfig wsConfig) throws KeyManagementException,
 			KeyStoreException, NoSuchAlgorithmException, CertificateException,
-			IOException {
+			IOException, UnrecoverableKeyException {
 
 		CASClient casClient = new CASClient();
 		casClient.wsConfig = wsConfig;

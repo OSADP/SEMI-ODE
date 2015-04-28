@@ -61,7 +61,7 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 	public static WarehouseClient configure(WarehouseConfig wsConfig, ResponseHandler handler)
 			throws URISyntaxException, KeyManagementException,
 			KeyStoreException, NoSuchAlgorithmException, CertificateException,
-			IOException, CASLoginException {
+			IOException, CASLoginException, UnrecoverableKeyException {
 		
 		CASClient casClient = CASClient.configure(wsConfig);
 		String jSessionID = casClient.login();
@@ -70,8 +70,7 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 		Map headers = new HashMap();
 		headers.put(
 				"Cookie",
-				CASClient.JSESSIONID_KEY + "="
-						+ jSessionID);
+				CASClient.JSESSIONID_KEY + "=" + jSessionID);
 
 		WarehouseClient wsClient = new WarehouseClient(new URI(wsConfig.warehouseURL),
 				new Draft_17(), headers); // more about drafts here:
