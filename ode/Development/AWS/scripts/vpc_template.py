@@ -22,6 +22,7 @@ ref_stack_id = Ref('AWS::StackId')
 ref_region = Ref('AWS::Region')
 ref_stack_name = Ref('AWS::StackName')
 quad_zero_ip = '0.0.0.0/0'
+bah_office_ip = '128.229.4.2/32'
 
 
 t = Template()
@@ -34,7 +35,7 @@ Subnet are sized for 250 host each.""")
 liferay_instance_type_param = t.add_parameter(Parameter(
     'liferayPortalInstance',
     Type='String',
-    Description='Liferay Portal EC2 instance type',
+    Description='Liferay Portal EC2 Instance type',
     Default='c3.large',
     AllowedValues=[
         #'t1.micro',
@@ -57,11 +58,40 @@ liferay_instance_type_param = t.add_parameter(Parameter(
 ))
 
 
+amazon_NAT_instance_type_param = t.add_parameter(Parameter(
+    'amazonNATInstanceType',
+    Type='String',
+    Description='Amazon NAT Server EC2 Instance type',
+    Default='t2.small',
+    AllowedValues=[
+        #'t1.micro',
+        't2.micro', 't2.small', 't2.medium',
+       # 'm1.small', 'm1.medium', 'm1.large', 'm1.xlarge',      # PV64 Architecutre
+        #'m2.xlarge', 'm2.2xlarge', 'm2.4xlarge',
+        'm3.medium', 'm3.large', 'm3.xlarge', 'm3.2xlarge',
+       # 'c1.medium', 'c1.xlarge',                              # PV64 Architecutre
+        'c3.large', 'c3.xlarge', 'c3.2xlarge', 'c3.4xlarge', 'c3.8xlarge',
+       # 'g2.2xlarge',                                          # PV64 Architecutre
+       #  'r3.large', 'r3.xlarge', 'r3.2xlarge', 'r3.4xlarge', 'r3.8xlarge',
+        # 'i2.xlarge', 'i2.2xlarge', 'i2.4xlarge', 'i2.8xlarge',
+        # 'hi1.4xlarge',
+        # 'hs1.8xlarge',
+        # 'cr1.8xlarge',
+        # 'cc2.8xlarge',
+        # 'cg1.4xlarge',
+    ],
+    ConstraintDescription='Must be a valid EC2 instance type.',
+))
+
 t.add_mapping(mappings.AWSInstanceType2Arch[mappings.logicalName],
               mappings.AWSInstanceType2Arch[mappings.mapping])
-
+# Liferay Mappings
 t.add_mapping(mappings.AWSRegionArch2AMI[mappings.logicalName],
               mappings.AWSRegionArch2AMI[mappings.mapping])
+
+# Amazon NAT Instance
+t.add_mapping(mappings.ami_nat_instanceAWSRegionArch2AMI[mappings.logicalName],
+              mappings.ami_nat_instanceAWSRegionArch2AMI[mappings.mapping])
 
 VPC = t.add_resource(
     VPC(
@@ -153,18 +183,7 @@ private_route_Table = t.add_resource(
         Tags=Tags(
             Application=ref_stack_id)))
 
-# Private Route Table needed only if using
-# NAT Instance to provide 'Internet' access
-#
-# private_route_table = t.add_resource(
-#     Route(
-#         'privateRoute1',
-#         DependsOn='AttachGateway',
-#         GatewayId=Ref('InternetGateway'),
-#         DestinationCidrBlock='local',
-#         RouteTableId=Ref(private_route_Table),
-#     ))
-#
+
 t.add_resource(
     SubnetRouteTableAssociation(
         'privateHadoopRouteAssoc1',
@@ -292,33 +311,67 @@ SecurityGroupIngress(
     GroupId=Ref(hadoop_cluser_sg),
     SourceSecurityGroupId=Ref(hadoop_cluser_sg))
 
+# TODO NAT Instance Configuration
+amazon_nat_instance = t.add_resource(Instance(
+    'amazonNATInstance1',
+    ImageId=FindInMap(mappings.ami_nat_instanceAWSRegionArch2AMI[mappings.logicalName],
+                        ref_region,FindInMap('AWSInstanceType2Arch',Ref(amazon_NAT_instance_type_param),'Arch')),
+    SourceDestCheck=False,
+    Tags=Tags(Name="NAT Server",),
+    SecurityGroupIds=[Ref(hadoop_cluser_sg), Ref(pulic_api_sg)],
+    SubnetId=Ref(public_api_subnet),
+    ))
+
+# Private Route Table needed only if using
+# NAT Instance to provide 'Internet' access
+
+private_route_table = t.add_resource(
+    Route(
+        'privateInternetRoute1',
+        DependsOn='AttachGateway',
+        InstanceId = Ref(amazon_nat_instance),
+        DestinationCidrBlock=quad_zero_ip,
+        RouteTableId=Ref(private_route_Table),
+    ))
 
 # TODO Liferay  Configure Instance
 
-eip1 = t.add_resource(EIP(
-    "EIP1",
-    Domain="vpc",
-))
-
 liferay_ec2_instance = t.add_resource(Instance(
     "liferayInstance1",
-
     ImageId=FindInMap('AWSRegionArch2AMI',
              Ref('AWS::Region'), FindInMap( 'AWSInstanceType2Arch', Ref(liferay_instance_type_param), 'Arch')),
     InstanceType = Ref(liferay_instance_type_param),
     NetworkInterfaces=[
         NetworkInterfaceProperty(
-            GroupSet=[
-                    Ref(pulic_api_sg)],
-                AssociatePublicIpAddress='true',
-                DeviceIndex='0',
-                DeleteOnTermination='true',
-                SubnetId=Ref(public_api_subnet) )
+            GroupSet=[Ref(pulic_api_sg)],
+            AssociatePublicIpAddress='true',
+            DeviceIndex='0',
+            DeleteOnTermination='true',
+            SubnetId=Ref(public_api_subnet) )
     ],
     Tags=Tags(Name="Liferay Portal Server",)
 ))
+
+ipAddress = t.add_resource(
+    EIP('IPAddress',
+        DependsOn='AttachGateway',
+        Domain=Ref(VPC),
+        InstanceId=Ref(liferay_ec2_instance)
+        ))
+
+t.add_output(
+    [Output('URL',
+            Description='Liferay Server application URL with EIP',
+            Value=Join('',
+                   ['http://', GetAtt(liferay_ec2_instance.title, 'PublicIp')]) # Would not validate against the aws cli
+                                                                                # when using Ref(liferay_ec2_instance)
+            )]
+    )
 
 json_path = os.path.join('..','ODE_cfn_vpc_template.json')
 with open(json_path, 'w') as f:
     f.write(t.to_json(indent=2))
 print ('DONE')
+
+import subprocess # Validate with aws commandline tool
+subprocess.call("aws cloudformation validate-template --template-body file://{0}".format(json_path))
