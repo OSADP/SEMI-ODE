@@ -71,7 +71,7 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 	public void setSessionId(String sessionId) {
 		this.sessionId = sessionId;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public static WarehouseClient configure(AppContext appContext,
 	      ResponseHandler handler) throws URISyntaxException,
@@ -81,6 +81,7 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
       logger.info("Logging in to {}", appContext.getParam(AppContext.DDS_CAS_URL));
 		CASClient casClient = CASClient.configure(appContext);
 		String jSessionID = casClient.login();
+		logger.info("Session ID: ", jSessionID);
 
 		@SuppressWarnings("rawtypes")
 		Map headers = new HashMap();
@@ -93,7 +94,7 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 				null, null);
 		
       logger.info("Opening connection to {}", ddsWsUri.toString());
-		WarehouseClient wsClient = new WarehouseClient(ddsWsUri,	new Draft_17(), headers); // more about drafts here:
+      WarehouseClient wsClient = new WarehouseClient(ddsWsUri,	new Draft_17(), headers); // more about drafts here:
 		// http://github.com/TooTallNate/Java-WebSocket/wiki/Drafts
 		wsClient.handler = handler;
 		wsClient.setSessionId(jSessionID);

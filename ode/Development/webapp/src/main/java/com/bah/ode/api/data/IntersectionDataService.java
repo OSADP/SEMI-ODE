@@ -6,6 +6,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,10 +52,10 @@ public class IntersectionDataService extends AbstractService {
 					.setSeLon(seLon);
 			
 			
-	      ResponseHandler responseHandler = new ResponseHandler(appContext);
+	      ResponseHandler responseHandler = new ResponseHandler(appContext, null);
 	      wsClient = WarehouseClient.configure(appContext, responseHandler);
 	      
-			logger.info("Connecting to {} with Session ID: ", wsClient.getURI(), wsClient.getSessionId());
+			logger.info("Connecting to {}: ", wsClient.getURI());
 	      wsClient.connectBlocking();
 	      
 	      String subreq = request.subscriptionRequest();
@@ -72,6 +73,7 @@ public class IntersectionDataService extends AbstractService {
 	@GET
 	@Path("/stop")
 	public Response stopSubscription(@QueryParam("sessionId") String sessionId) {
+		Response response;
 		
 		logger.info("Received {}", getUriInfo().getRequestUri().toString());
 
@@ -80,14 +82,18 @@ public class IntersectionDataService extends AbstractService {
 			logger.info("Stopping : {}", sessionId);
 	      
 			wsClient = WarehouseClient.getClients().remove(sessionId);
-			
-	      wsClient.close();
-			
+			if (wsClient == null) {
+				response = Response.status(Status.NOT_FOUND).entity(JsonUtils.toJson("sessionId", sessionId)).build();
+				logger.error("Session ID Not Found: {}", sessionId);
+			} else {
+				wsClient.close();
+				response = Response.ok(JsonUtils.toJson("sessionId", sessionId)).build();
+			}
 		} catch (Exception e) {
 			throw new WebApplicationException(e);
 		}
 		
-		return Response.ok(JsonUtils.toJson("sessionId", sessionId)).build();
+		return response;
 	}
 
 	@GET

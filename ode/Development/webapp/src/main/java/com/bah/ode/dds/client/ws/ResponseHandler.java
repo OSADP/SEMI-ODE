@@ -17,6 +17,8 @@ package com.bah.ode.dds.client.ws;
 //import java.util.HashMap;
 //import java.util.Map;
 
+import javax.websocket.RemoteEndpoint.Async;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,22 +46,29 @@ public class ResponseHandler {
 //	}
 //	
 	private AppContext appContext;
+	private Async async;
+	
 //	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss.SSS");
 //	
 //	private ObjectMapper mapper = new ObjectMapper();
 //	private String messageTypePrefix = "msg";
 //	private String resultEncoding = "full";
 	
-	public ResponseHandler(AppContext appContext) {
+	public ResponseHandler(AppContext appContext, Async async) {
 		this.appContext = appContext;
+		this.async = async;
 	}
 	
 	public void handleMessage(String message) {
 		if (message.startsWith(START_TAG) || message.startsWith(STOP_TAG) || 
 			 message.startsWith(CONNECTED_TAG) || message.startsWith(ERROR_TAG)) {
 			logger.info(message);
+		} else {
+			if (async != null)
+				async.sendText(message);
+			else
+				System.out.println(message);
 		}
-		System.out.println(message);
 	}
 	
 //	private void processStartTag(String message) {

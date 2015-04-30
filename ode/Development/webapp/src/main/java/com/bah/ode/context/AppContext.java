@@ -61,7 +61,7 @@ public class AppContext {
 
       while (parmNames.hasMoreElements()) {
          String param = parmNames.nextElement();
-         logger.info("Configuration Parameter {}:{}", param,
+         logger.debug("Configuration Parameter {}:{}", param,
                context.getInitParameter(param));
       }
    }
