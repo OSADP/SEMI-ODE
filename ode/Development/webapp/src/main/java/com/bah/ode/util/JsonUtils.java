@@ -1,4 +1,4 @@
-package com.bah.util;
+package com.bah.ode.util;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

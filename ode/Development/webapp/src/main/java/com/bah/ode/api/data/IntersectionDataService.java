@@ -13,10 +13,11 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.api.AbstractService;
 import com.bah.ode.context.AppContext;
+import com.bah.ode.dds.client.ws.IsdResponseHandler;
 import com.bah.ode.dds.client.ws.ResponseHandler;
 import com.bah.ode.dds.client.ws.WarehouseClient;
 import com.bah.ode.model.DdsRequest;
-import com.bah.util.JsonUtils;
+import com.bah.ode.util.JsonUtils;
 
 @Path("/ints")
 public class IntersectionDataService extends AbstractService {
@@ -52,7 +53,7 @@ public class IntersectionDataService extends AbstractService {
 					.setSeLon(seLon);
 			
 			
-	      ResponseHandler responseHandler = new ResponseHandler(appContext, null);
+	      ResponseHandler responseHandler = new IsdResponseHandler(appContext, null);
 	      wsClient = WarehouseClient.configure(appContext, responseHandler);
 	      
 			logger.info("Connecting to {}: ", wsClient.getURI());

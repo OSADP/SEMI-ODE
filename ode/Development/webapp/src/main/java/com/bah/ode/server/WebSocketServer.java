@@ -14,12 +14,15 @@ import javax.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.api.ws.OdeStatus;
 import com.bah.ode.context.AppContext;
+import com.bah.ode.dds.client.ws.IsdResponseHandler;
 import com.bah.ode.dds.client.ws.ResponseHandler;
+import com.bah.ode.dds.client.ws.VsdResponseHandler;
 import com.bah.ode.dds.client.ws.WarehouseClient;
 import com.bah.ode.model.DdsRequest;
 import com.bah.ode.model.OdeRequest;
-import com.bah.util.JsonUtils;
+import com.bah.ode.util.JsonUtils;
 
 /**
  * @ServerEndpoint gives the relative name for the end point This will be
@@ -53,32 +56,45 @@ public class WebSocketServer {
 				+ "Request Type: {}, "
 				+ "Data Type Requested: {}", sessionId, rtype, dtype);
 		
-		String msg = null;
+		OdeStatus msg = new OdeStatus();
 		try {
-			msg = "Connection Established.";
-			
 			if (rtype.equals("sub")) {
+		      ResponseHandler responseHandler = null; 
 				if (dtype.equals("ints")) {
-					
-			      ResponseHandler responseHandler = new ResponseHandler(appContext,
-			      		session.getAsyncRemote());
+			      responseHandler = new IsdResponseHandler(appContext, session.getAsyncRemote());
+				} else if (dtype.equals("vehs")) {
+			      responseHandler = new VsdResponseHandler(appContext, session.getAsyncRemote());
+				}
+				
+				if (null != responseHandler) {
 			      WarehouseClient wsClient = 
 			      		WarehouseClient.configure(appContext, responseHandler);
 			      
 			      sessions.put(sessionId, wsClient);
 			      
 					logger.info("Connecting to {}: ", wsClient.getURI());
-			      wsClient.connectBlocking();
+			      wsClient.connect();
 			      
+			      msg.setCode(OdeStatus.Code.SUCCESS);
+					msg.setMessage("Connection Established.");
+				} else {
+					msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
+					   .setMessage(String.format("Invalid data type %s requested. Valid data types are 'ints', 'vehs', 'aggs'", dtype));
+					logger.error(msg.toString());
 				}
+			} else {
+				msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
+			   .setMessage(String.format("Invalid request type %s. Valid request types are 'sub', 'qry'", rtype));
+				logger.error(msg.toString());
 			}
 			
 		} catch (Exception ex) {
-			msg = String.format("Error processing connection request %s", 
-					session.getRequestURI());
-			logger.error(msg, ex);
+			msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
+		   .setMessage(String.format("Error processing connection request %s", 
+					session.getRequestURI()));
+			logger.error(msg.toString(), ex);
 		}
-		return msg;
+		return msg.toJson();
 	}
 
 	/**
@@ -100,24 +116,53 @@ public class WebSocketServer {
 		
       WarehouseClient wsClient = sessions.get(sessionId);
       
+		OdeStatus msg = new OdeStatus();
 		try {
-			odeRequest = (OdeRequest) JsonUtils.fromJson(message, OdeRequest.class);
+			if (rtype.equals("sub")) {
+				odeRequest = (OdeRequest) JsonUtils.fromJson(message, OdeRequest.class);
+	
+				DdsRequest ddsRequest = null;
+				if (dtype.equals("ints")) {
+					ddsRequest = (DdsRequest) DdsRequest.create()
+							.setDialogID(DdsRequest.Dialog.ISD.getId())
+							.setResultEncoding(DdsRequest.ResultEncoding.BASE_64.getEnc())
+							.setSystemSubName(DdsRequest.SystemSubName.SDC.getName())
+							.setNwLat(odeRequest.getNwLat())
+							.setNwLon(odeRequest.getNwLon())
+							.setSeLat(odeRequest.getSeLat())
+							.setSeLon(odeRequest.getSeLon());
+					
+				} else if (dtype.equals("vehs")) {
+					ddsRequest = (DdsRequest) DdsRequest.create()
+							.setDialogID(DdsRequest.Dialog.VSD.getId())
+							.setResultEncoding(DdsRequest.ResultEncoding.BASE_64.getEnc())
+							.setSystemSubName(DdsRequest.SystemSubName.SDC.getName())
+							.setNwLat(odeRequest.getNwLat())
+							.setNwLon(odeRequest.getNwLon())
+							.setSeLat(odeRequest.getSeLat())
+							.setSeLon(odeRequest.getSeLon());
+				}
+				
+				if (null != ddsRequest) {
+			      String subreq = ddsRequest.subscriptionRequest();
+					logger.info("Sending subscription request: {}", subreq);
+			      
+			      wsClient.send(subreq);
+				} else {
+					msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
+				   	.setMessage(String.format("Invalid data type %s requested. Valid data types are 'ints', 'vehs', 'aggs'", dtype));
+					logger.error(msg.toString());
+				}
+			} else {
+				msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
+			   .setMessage(String.format("Invalid request type %s. Valid request types are 'sub', 'qry'", rtype));
+				logger.error(msg.toString());
+			}
 			
-			DdsRequest ddsRequest = (DdsRequest) DdsRequest.create()
-					.setDialogID(DdsRequest.Dialog.ISD.getId())
-					.setResultEncoding(DdsRequest.ResultEncoding.BASE_64.getEnc())
-					.setSystemSubName(DdsRequest.SystemSubName.SDC.getName())
-					.setNwLat(odeRequest.getNwLat())
-					.setNwLon(odeRequest.getNwLon())
-					.setSeLat(odeRequest.getSeLat())
-					.setSeLon(odeRequest.getSeLon());
-			
-	      String subreq = ddsRequest.subscriptionRequest();
-			logger.info("Sending subscription request: {}", subreq);
-	      
-	      wsClient.send(subreq);
 		} catch (Exception ex) {
-			logger.error("Error procesing request {}.", message, ex);
+			msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
+		   .setMessage(String.format("Error procesing request %s.", session.getRequestURI()));
+			logger.error(msg.toString(), ex);
 		}
 		return message;
 	}
@@ -134,7 +179,8 @@ public class WebSocketServer {
 	{
 		String sessionId = session.getId();
       WarehouseClient wsClient = sessions.remove(sessionId);
-      wsClient.close();
+      if (wsClient != null)
+      	wsClient.close();
 		
 		logger.info("Session {} disconnected.", sessionId);
 		if (reason != null)

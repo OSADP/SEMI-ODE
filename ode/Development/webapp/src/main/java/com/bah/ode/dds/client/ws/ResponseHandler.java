@@ -12,10 +12,10 @@
  */
 package com.bah.ode.dds.client.ws;
 
-//import java.io.IOException;
-//import java.text.SimpleDateFormat;
-//import java.util.HashMap;
-//import java.util.Map;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.websocket.RemoteEndpoint.Async;
 
@@ -23,73 +23,52 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
-//import com.fasterxml.jackson.databind.JsonNode;
-//import com.fasterxml.jackson.databind.ObjectMapper;
+import com.bah.ode.model.DdsRequest;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ResponseHandler {
+public abstract class ResponseHandler {
 
 	private static final Logger logger = LoggerFactory.getLogger(ResponseHandler.class);
 	
-//	private static final String NEW_LINE = System.getProperty("line.separator");
-	private static final String CONNECTED_TAG = "CONNECTED:";
-	private static final String START_TAG = "START:";
-	private static final String STOP_TAG = "STOP:";
-	private static final String ERROR_TAG = "ERROR:";
-//	private static final Map<Integer,String> dialogIDPrefixLookup = new HashMap<Integer,String>();
-//	private static int fileCounter = 0;
-//	
-//	static {
-//		dialogIDPrefixLookup.put(-1, "all");
-//		dialogIDPrefixLookup.put(154, "vsd");
-//		dialogIDPrefixLookup.put(156, "adv");
-//		dialogIDPrefixLookup.put(162, "isd");
-//	}
-//	
-	private AppContext appContext;
-	private Async async;
+	protected static final String CONNECTED_TAG = "CONNECTED:";
+	protected static final String START_TAG = "START:";
+	protected static final String STOP_TAG = "STOP:";
+	protected static final String ERROR_TAG = "ERROR:";
 	
-//	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss.SSS");
-//	
-//	private ObjectMapper mapper = new ObjectMapper();
-//	private String messageTypePrefix = "msg";
-//	private String resultEncoding = "full";
+	private AppContext appContext;
+	protected Async async;
+	
+	private ObjectMapper mapper = new ObjectMapper();
+	private String messageTypePrefix = "msg";
+	private String resultEncoding = "full";
 	
 	public ResponseHandler(AppContext appContext, Async async) {
 		this.appContext = appContext;
 		this.async = async;
 	}
 	
-	public void handleMessage(String message) {
-		if (message.startsWith(START_TAG) || message.startsWith(STOP_TAG) || 
-			 message.startsWith(CONNECTED_TAG) || message.startsWith(ERROR_TAG)) {
-			logger.info(message);
-		} else {
-			if (async != null)
-				async.sendText(message);
-			else
-				System.out.println(message);
+	public abstract void handleMessage(String message);
+	
+	private void processStartTag(String message) {
+		if (message.startsWith(START_TAG)) {
+			// default values in case parsing fails
+			messageTypePrefix = "msg";
+			resultEncoding = "full";
+			String jsonMessage = message.substring(START_TAG.length());
+			try {
+				JsonNode rootNode = mapper.readTree(jsonMessage);
+				messageTypePrefix = DdsRequest.Dialog.getById(rootNode.get("dialogID").asInt()).name();
+				resultEncoding = rootNode.get("resultEncoding").textValue();
+			} catch (Exception e) {
+				logger.error("Error processing Start Tag", e);
+			}
 		}
 	}
 	
-//	private void processStartTag(String message) {
-//		if (message.startsWith(START_TAG)) {
-//			// default values in case parsing fails
-//			messageTypePrefix = "msg";
-//			resultEncoding = "full";
-//			String jsonMessage = message.substring(START_TAG.length());
-//			try {
-//				JsonNode rootNode = mapper.readTree(jsonMessage);
-//				messageTypePrefix = dialogIDPrefixLookup.get(rootNode.get("dialogID").asInt());
-//				resultEncoding = rootNode.get("resultEncoding").textValue();
-//			} catch (Exception e) {
-//				logger.error("Error processing Start Tag", e);
-//			}
-//		}
-//	}
-//	
-//   private void processStopTag(String message) throws IOException {
-//      if (message.startsWith(STOP_TAG)) {
-//      }
-//   }
+   private void processStopTag(String message) throws IOException {
+      if (message.startsWith(STOP_TAG)) {
+      }
+   }
 
 }

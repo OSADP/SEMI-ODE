@@ -1,6 +1,6 @@
 package com.bah.ode.model;
 
-import com.bah.util.JsonUtils;
+import com.bah.ode.util.JsonUtils;
 
 @SuppressWarnings("serial")
 public class DdsRequest extends BaseRequest{
@@ -19,6 +19,17 @@ public class DdsRequest extends BaseRequest{
 		
 		public int getId() {
 			return id;
+		}
+		
+		public static Dialog getById(int id) {
+			Dialog result = null;
+			for (Dialog d : Dialog.values()) {
+				if (d.getId() == id) {
+					result = d;
+					break;
+				}
+			}
+			return result;
 		}
 	}
 
