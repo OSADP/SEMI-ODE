@@ -12,7 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.asn.OdeDateTime;
 import com.bah.ode.asn.OdeHexTool;
-import com.bah.ode.asn.OdeLocation3D;
+import com.bah.ode.asn.OdePosition3D;
+import com.bah.ode.asn.OdeVehicleSize;
 import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.dsrc.AccelerationSet4Way;
 import com.bah.ode.asn.oss.dsrc.BrakeSystemStatus;
@@ -34,7 +35,7 @@ public class OdeVehicleData {
 
 	private String groupId;
 	private OdeDateTime dateTime;
-	private OdeLocation3D location;
+	private OdePosition3D location;
 	private String speed;
 	private Integer heading;
 	private String steeringAngle;
@@ -46,7 +47,7 @@ public class OdeVehicleData {
 	public OdeVehicleData() {
 	}
 
-	public OdeVehicleData(GroupID groupId, OdeDateTime dateTime, OdeLocation3D location,
+	public OdeVehicleData(GroupID groupId, OdeDateTime dateTime, OdePosition3D location,
 			TransmissionAndSpeed speed, Heading heading, SteeringWheelAngle steeringAngle,
 			AccelerationSet4Way accelSet, BrakeSystemStatus brakes, OdeVehicleSize size,
 			VsmEventFlag vsmEventFlag) 
@@ -80,11 +81,11 @@ public class OdeVehicleData {
 		this.dateTime = dateTime;
 	}
 
-	public OdeLocation3D getLocation() {
+	public OdePosition3D getLocation() {
 		return location;
 	}
 
-	public void setLocation(OdeLocation3D location) {
+	public void setLocation(OdePosition3D location) {
 		this.location = location;
 	}
 
@@ -175,7 +176,7 @@ public class OdeVehicleData {
 								time.getSecond().intValue());
 						
 						Position3D pos = vsr.getPos();
-						OdeLocation3D location = new OdeLocation3D(
+						OdePosition3D location = new OdePosition3D(
 								pos.getLat().longValue(),
 								pos.get_long().longValue(),
 								OdeHexTool.getHex(pos.getElevation().byteArrayValue()));

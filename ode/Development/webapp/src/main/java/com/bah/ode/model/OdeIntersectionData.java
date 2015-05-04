@@ -11,8 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.asn.OdeDateTime;
+import com.bah.ode.asn.OdeGroupId;
 import com.bah.ode.asn.OdeHexTool;
-import com.bah.ode.asn.OdeLocation3D;
+import com.bah.ode.asn.OdeMapData;
+import com.bah.ode.asn.OdePosition3D;
+import com.bah.ode.asn.OdeSpatData;
 import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.dsrc.AccelerationSet4Way;
 import com.bah.ode.asn.oss.dsrc.BrakeSystemStatus;
@@ -36,7 +39,7 @@ public class OdeIntersectionData {
 	private static Logger logger = LoggerFactory.getLogger(OdeIntersectionData.class);
 
 	private OdeGroupId groupId;
-	private OdeLocation3D serviceRegion;
+	private OdePosition3D serviceRegion;
 	private OdeMapData mapData;
 	private OdeSpatData spatData;
 	
@@ -52,11 +55,11 @@ public class OdeIntersectionData {
 		return this;
 	}
 
-	public OdeLocation3D getServiceRegion() {
+	public OdePosition3D getServiceRegion() {
 		return serviceRegion;
 	}
 
-	public OdeIntersectionData setServiceRegion(OdeLocation3D serviceRegion) {
+	public OdeIntersectionData setServiceRegion(OdePosition3D serviceRegion) {
 		this.serviceRegion = serviceRegion;
 		return this;
 	}

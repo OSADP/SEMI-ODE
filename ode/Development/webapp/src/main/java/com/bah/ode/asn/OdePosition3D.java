@@ -1,11 +1,11 @@
 package com.bah.ode.asn;
 
-public class OdeLocation3D {
+public class OdePosition3D {
 	private Long latitude;
 	private Long longitude;
 	private String elevation;
 	
-	public OdeLocation3D(Long latitude, Long longitude, String elevation) {
+	public OdePosition3D(Long latitude, Long longitude, String elevation) {
 	   super();
 	   this.latitude = latitude;
 	   this.longitude = longitude;

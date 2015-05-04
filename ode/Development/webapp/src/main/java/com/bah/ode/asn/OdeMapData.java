@@ -1,6 +1,5 @@
-package com.bah.ode.model;
+package com.bah.ode.asn;
 
-import com.bah.ode.asn.OdeLocation3D;
 import com.bah.ode.asn.oss.dsrc.MapData;
 
 public class OdeMapData {
@@ -8,7 +7,7 @@ public class OdeMapData {
 	private OdeIntersectionID id;
 	private OdeLayerType layerType;
 	private OdeLayerId layerId;
-	private OdeLocation3D refPoint;
+	private OdePosition3D refPoint;
 
 	public OdeMapData(MapData mapData) {
 	   // TODO Auto-generated constructor stub

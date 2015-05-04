@@ -12,7 +12,8 @@ import java.util.logging.SimpleFormatter;
 
 import com.bah.ode.asn.OdeDateTime;
 import com.bah.ode.asn.OdeHexTool;
-import com.bah.ode.asn.OdeLocation3D;
+import com.bah.ode.asn.OdePosition3D;
+import com.bah.ode.asn.OdeVehicleSize;
 import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.dsrc.DDateTime;
 import com.bah.ode.asn.oss.dsrc.Position3D;
@@ -21,7 +22,6 @@ import com.bah.ode.asn.oss.semi.VehSitDataMessage;
 import com.bah.ode.asn.oss.semi.VehSitDataMessage.Bundle;
 import com.bah.ode.asn.oss.semi.VehSitRecord;
 import com.bah.ode.model.OdeVehicleData;
-import com.bah.ode.model.OdeVehicleSize;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.oss.asn1.Coder;
@@ -97,7 +97,7 @@ public class OssReaderJsonWriter {
 								time.getSecond().intValue());
 						
 						Position3D pos = vsr.getPos();
-						OdeLocation3D location = new OdeLocation3D(
+						OdePosition3D location = new OdePosition3D(
 								pos.getLat().longValue(),
 								pos.get_long().longValue(),
 								OdeHexTool.getHex(pos.getElevation().byteArrayValue()));

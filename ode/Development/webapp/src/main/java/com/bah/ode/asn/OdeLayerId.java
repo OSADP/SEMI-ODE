@@ -1,4 +1,4 @@
-package com.bah.ode.model;
+package com.bah.ode.asn;
 
 public class OdeLayerId {
 

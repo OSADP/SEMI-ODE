@@ -1,4 +1,4 @@
-package com.bah.ode.model;
+package com.bah.ode.asn;
 
 import com.bah.ode.asn.oss.semi.SpatRecord;
 
