@@ -27,48 +27,54 @@ public class OdeDateTime {
 		return year;
 	}
 
-	public void setYear(Integer year) {
+	public OdeDateTime setYear(Integer year) {
 		this.year = year;
+		return this;
 	}
 
 	public Integer getMonth() {
 		return month;
 	}
 
-	public void setMonth(Integer month) {
+	public OdeDateTime setMonth(Integer month) {
 		this.month = month;
+		return this;
 	}
 
 	public Integer getDay() {
 		return day;
 	}
 
-	public void setDay(Integer day) {
+	public OdeDateTime setDay(Integer day) {
 		this.day = day;
+		return this;
 	}
 
 	public Integer getHour() {
 		return hour;
 	}
 
-	public void setHour(Integer hour) {
+	public OdeDateTime setHour(Integer hour) {
 		this.hour = hour;
+		return this;
 	}
 
 	public Integer getMinute() {
 		return minute;
 	}
 
-	public void setMinute(Integer minute) {
+	public OdeDateTime setMinute(Integer minute) {
 		this.minute = minute;
+		return this;
 	}
 
 	public Integer getSecond() {
 		return second;
 	}
 
-	public void setSecond(Integer second) {
+	public OdeDateTime setSecond(Integer second) {
 		this.second = second;
+		return this;
 	}
 
    

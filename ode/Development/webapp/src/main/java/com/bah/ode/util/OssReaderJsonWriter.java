@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import com.bah.ode.asn.OdeDateTime;
-import com.bah.ode.asn.OdeHexTool;
 import com.bah.ode.asn.OdePosition3D;
 import com.bah.ode.asn.OdeVehicleSize;
 import com.bah.ode.asn.oss.Oss;
@@ -100,7 +99,7 @@ public class OssReaderJsonWriter {
 						OdePosition3D location = new OdePosition3D(
 								pos.getLat().longValue(),
 								pos.get_long().longValue(),
-								OdeHexTool.getHex(pos.getElevation().byteArrayValue()));
+								pos.getElevation().byteArrayValue());
 						
 						FundamentalSituationalStatus fund = vsr.getFundamental();
 						

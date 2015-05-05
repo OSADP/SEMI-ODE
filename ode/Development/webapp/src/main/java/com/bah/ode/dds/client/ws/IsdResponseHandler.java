@@ -13,6 +13,7 @@ import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.semi.IntersectionSituationData;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeIntersectionData;
+import com.bah.ode.util.CodecUtils;
 import com.bah.ode.util.JsonUtils;
 import com.oss.asn1.Coder;
 
@@ -30,10 +31,10 @@ public class IsdResponseHandler extends ResponseHandler {
 				message.startsWith(CONNECTED_TAG) || message.startsWith(ERROR_TAG)) {
 			logger.trace(message);
 		} else {
-			OdeIntersectionData intData = OdeIntersectionData.fromBase64(message);
+//			OdeIntersectionData intData = OdeIntersectionData.create(CodecUtils.fromBase64(message));
 			if (async != null) {
 //				async.sendText(JsonUtils.toJson(intData));
-				InputStream ins = new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(message));
+				InputStream ins = new ByteArrayInputStream(CodecUtils.fromBase64(message));
 				
 				Coder coder = Oss.getBERCoder();
 				try {
@@ -46,7 +47,7 @@ public class IsdResponseHandler extends ResponseHandler {
 				} finally {
 				}
 			} else {
-				System.out.println(JsonUtils.toJson(intData));
+//				System.out.println(JsonUtils.toJson(intData));
 			}
 		}
    }

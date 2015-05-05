@@ -2,49 +2,44 @@ package com.bah.ode.model;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.asn.OdeDateTime;
+import com.bah.ode.asn.OdeGeoRegion;
 import com.bah.ode.asn.OdeGroupId;
-import com.bah.ode.asn.OdeHexTool;
 import com.bah.ode.asn.OdeMapData;
-import com.bah.ode.asn.OdePosition3D;
 import com.bah.ode.asn.OdeSpatData;
 import com.bah.ode.asn.oss.Oss;
-import com.bah.ode.asn.oss.dsrc.AccelerationSet4Way;
-import com.bah.ode.asn.oss.dsrc.BrakeSystemStatus;
-import com.bah.ode.asn.oss.dsrc.DDateTime;
-import com.bah.ode.asn.oss.dsrc.Heading;
-import com.bah.ode.asn.oss.dsrc.MapData;
-import com.bah.ode.asn.oss.dsrc.Position3D;
-import com.bah.ode.asn.oss.dsrc.SteeringWheelAngle;
-import com.bah.ode.asn.oss.dsrc.TransmissionAndSpeed;
-import com.bah.ode.asn.oss.semi.FundamentalSituationalStatus;
-import com.bah.ode.asn.oss.semi.IntersectionRecord;
 import com.bah.ode.asn.oss.semi.IntersectionSituationData;
-import com.bah.ode.asn.oss.semi.SpatRecord;
-import com.bah.ode.asn.oss.semi.VehSitDataMessage;
-import com.bah.ode.asn.oss.semi.VehSitDataMessage.Bundle;
-import com.bah.ode.asn.oss.semi.VehSitRecord;
-import com.bah.ode.asn.oss.semi.VsmEventFlag;
 import com.oss.asn1.Coder;
 
 public class OdeIntersectionData {
 	private static Logger logger = LoggerFactory.getLogger(OdeIntersectionData.class);
 
 	private OdeGroupId groupId;
-	private OdePosition3D serviceRegion;
+	private OdeGeoRegion serviceRegion;
 	private OdeMapData mapData;
 	private OdeSpatData spatData;
 	
 	public OdeIntersectionData() {
 	}
+
+	public OdeIntersectionData(OdeGroupId groupId, OdeGeoRegion serviceRegion,
+         OdeMapData mapData, OdeSpatData spatData) {
+	   super();
+	   this.groupId = groupId;
+	   this.serviceRegion = serviceRegion;
+	   this.mapData = mapData;
+	   this.spatData = spatData;
+   }
+
+	public OdeIntersectionData(IntersectionSituationData isd) {
+		this.setGroupId(new OdeGroupId(isd.getGroupID()));
+		this.setServiceRegion(new OdeGeoRegion(isd.getServiceRegion()));
+		this.setMapData(new OdeMapData(isd.getIntersectionRecord().getMapData()));
+		this.setSpatData(new OdeSpatData(isd.getIntersectionRecord().getSpatData()));
+   }
 
 	public OdeGroupId getGroupId() {
 		return groupId;
@@ -55,11 +50,11 @@ public class OdeIntersectionData {
 		return this;
 	}
 
-	public OdePosition3D getServiceRegion() {
+	public OdeGeoRegion getServiceRegion() {
 		return serviceRegion;
 	}
 
-	public OdeIntersectionData setServiceRegion(OdePosition3D serviceRegion) {
+	public OdeIntersectionData setServiceRegion(OdeGeoRegion serviceRegion) {
 		this.serviceRegion = serviceRegion;
 		return this;
 	}
@@ -82,21 +77,17 @@ public class OdeIntersectionData {
 		return this;
 	}
 
-	public static OdeIntersectionData fromBase64(String base64) {
-		InputStream ins = new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(base64));
-		OdeIntersectionData intData = new OdeIntersectionData();
+	public static OdeIntersectionData create(byte[] intersectionData) {
+		InputStream ins = new ByteArrayInputStream(intersectionData);
+		OdeIntersectionData intData = null;
 		
 		Coder coder = Oss.getBERCoder();
 		try {
-			IntersectionSituationData value = new IntersectionSituationData();
-			coder.decode(ins, value);
+			IntersectionSituationData isd = new IntersectionSituationData();
+			coder.decode(ins, isd);
 			ins.close();
 			
-			IntersectionRecord intRec = value.getIntersectionRecord();
-			
-			intData.setGroupId(new OdeGroupId(value.getGroupID()))
-			       .setMapData(new OdeMapData(intRec.getMapData()))
-			       .setSpatData(new OdeSpatData(intRec.getSpatData()));
+			intData = new OdeIntersectionData(isd);
 			
 		} catch (Exception e) {
 			logger.error("Error decoding ", e);

@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.asn.OdeDateTime;
-import com.bah.ode.asn.OdeHexTool;
 import com.bah.ode.asn.OdePosition3D;
 import com.bah.ode.asn.OdeVehicleSize;
 import com.bah.ode.asn.oss.Oss;
@@ -28,6 +27,7 @@ import com.bah.ode.asn.oss.semi.VehSitDataMessage;
 import com.bah.ode.asn.oss.semi.VehSitDataMessage.Bundle;
 import com.bah.ode.asn.oss.semi.VehSitRecord;
 import com.bah.ode.asn.oss.semi.VsmEventFlag;
+import com.bah.ode.util.CodecUtils;
 import com.oss.asn1.Coder;
 
 public class OdeVehicleData {
@@ -53,16 +53,16 @@ public class OdeVehicleData {
 			VsmEventFlag vsmEventFlag) 
 	{
 		super();
-		this.groupId = OdeHexTool.getHex(groupId != null ? groupId.byteArrayValue() : "".getBytes());
+		this.groupId = CodecUtils.toHex(groupId != null ? groupId.byteArrayValue() : "".getBytes());
 		this.dateTime = dateTime;
 		this.location = location;
-		this.speed = OdeHexTool.getHex(speed != null ? speed.byteArrayValue() : "".getBytes());
+		this.speed = CodecUtils.toHex(speed != null ? speed.byteArrayValue() : "".getBytes());
 		this.heading = heading != null ? heading.intValue() : 0;
-		this.steeringAngle = OdeHexTool.getHex(steeringAngle != null ? steeringAngle.byteArrayValue() : "".getBytes());
-		this.accelSet = OdeHexTool.getHex(accelSet != null ? accelSet.byteArrayValue() : "".getBytes());
-		this.brakes = OdeHexTool.getHex(brakes != null ? brakes.byteArrayValue() : "".getBytes());
+		this.steeringAngle = CodecUtils.toHex(steeringAngle != null ? steeringAngle.byteArrayValue() : "".getBytes());
+		this.accelSet = CodecUtils.toHex(accelSet != null ? accelSet.byteArrayValue() : "".getBytes());
+		this.brakes = CodecUtils.toHex(brakes != null ? brakes.byteArrayValue() : "".getBytes());
 		this.size = size;
-		this.vsmEventFlag = OdeHexTool.getHex(vsmEventFlag != null ? vsmEventFlag.byteArrayValue() : "".getBytes());
+		this.vsmEventFlag = CodecUtils.toHex(vsmEventFlag != null ? vsmEventFlag.byteArrayValue() : "".getBytes());
 	}
 
 	public String getGroupId() {
@@ -179,7 +179,7 @@ public class OdeVehicleData {
 						OdePosition3D location = new OdePosition3D(
 								pos.getLat().longValue(),
 								pos.get_long().longValue(),
-								OdeHexTool.getHex(pos.getElevation().byteArrayValue()));
+								pos.elevation.byteArrayValue());
 						
 						FundamentalSituationalStatus fund = vsr.getFundamental();
 						
