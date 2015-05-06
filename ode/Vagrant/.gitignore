@@ -1,0 +1,7 @@
+# Ignore special vagrant files
+#
+# Ignore Installation files because of their large size 190+MB each
+#
+/*/.vagrant
+/ode-common/spark-1.2.0-bin-hadoop1.tgz
+/ode-liferay/bitnami-liferay-6.2-6-linux-x64-installer.run
