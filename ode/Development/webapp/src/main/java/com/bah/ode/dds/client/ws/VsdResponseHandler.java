@@ -20,20 +20,17 @@ public class VsdResponseHandler extends ResponseHandler {
    }
 
 	@Override
-   public void handleMessage(String message) {
+   public void onMessage(String message) {
 		if (message.startsWith(START_TAG) || message.startsWith(STOP_TAG) || 
 				message.startsWith(CONNECTED_TAG) || message.startsWith(ERROR_TAG)) {
 			logger.trace(message);
 		} else {
 			List<OdeVehicleData> vehData = OdeVehicleData.fromBase64(message);
-			if (async != null)
+			if (async != null) {
 				for (OdeVehicleData veh : vehData) {
 					async.sendText(JsonUtils.toJson(veh));
 				}
-			else
-				for (OdeVehicleData veh : vehData) {
-					System.out.println(JsonUtils.toJson(veh));
-				}
+			}
 		}
    }
 }

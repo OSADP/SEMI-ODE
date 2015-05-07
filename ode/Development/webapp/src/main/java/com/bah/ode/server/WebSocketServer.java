@@ -1,6 +1,6 @@
 package com.bah.ode.server;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.io.IOException;
 
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
@@ -16,10 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.api.ws.OdeStatus;
 import com.bah.ode.context.AppContext;
+import com.bah.ode.dds.client.ws.DdsClient;
 import com.bah.ode.dds.client.ws.IsdResponseHandler;
 import com.bah.ode.dds.client.ws.ResponseHandler;
 import com.bah.ode.dds.client.ws.VsdResponseHandler;
-import com.bah.ode.dds.client.ws.WarehouseClient;
 import com.bah.ode.model.DdsRequest;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.util.JsonUtils;
@@ -35,8 +35,9 @@ import com.bah.ode.util.JsonUtils;
 public class WebSocketServer {
 	private static Logger logger = LoggerFactory.getLogger(WebSocketServer.class);
 	private AppContext appContext = AppContext.getInstance();
-	private static ConcurrentHashMap<String, WarehouseClient> sessions =
-			new ConcurrentHashMap<String, WarehouseClient>();
+	private ResponseHandler responseHandler;
+	DdsClient wsClient = null; 
+
 	
 	/**
 	 * @OnOpen allows us to intercept the creation of a new session. The session
@@ -44,7 +45,7 @@ public class WebSocketServer {
 	 *         we'll let the user know that the handshake was successful.
 	 */
 	@OnOpen
-	public String onOpen(
+	public void onOpen(
 			Session session, 
 			EndpointConfig endpointConfig,
 			@PathParam("rtype") String rtype,
@@ -59,7 +60,6 @@ public class WebSocketServer {
 		OdeStatus msg = new OdeStatus();
 		try {
 			if (rtype.equals("sub")) {
-		      ResponseHandler responseHandler = null; 
 				if (dtype.equals("ints")) {
 			      responseHandler = new IsdResponseHandler(appContext, session.getAsyncRemote());
 				} else if (dtype.equals("vehs")) {
@@ -67,34 +67,28 @@ public class WebSocketServer {
 				}
 				
 				if (null != responseHandler) {
-			      WarehouseClient wsClient = 
-			      		WarehouseClient.configure(appContext, responseHandler);
+					wsClient = DdsClient.create(appContext, responseHandler);
 			      
-			      sessions.put(sessionId, wsClient);
-			      
-					logger.info("Connecting to {}: ", wsClient.getURI());
-			      wsClient.connect();
-			      
-			      msg.setCode(OdeStatus.Code.SUCCESS);
+					msg.setCode(OdeStatus.Code.SUCCESS);
 					msg.setMessage("Connection Established.");
+					session.getAsyncRemote().sendText(msg.toJson());
 				} else {
 					msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
 					   .setMessage(String.format("Invalid data type %s requested. Valid data types are 'ints', 'vehs', 'aggs'", dtype));
 					logger.error(msg.toString());
 				}
 			} else {
-				msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
+				msg.setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR)
 			   .setMessage(String.format("Invalid request type %s. Valid request types are 'sub', 'qry'", rtype));
 				logger.error(msg.toString());
 			}
 			
 		} catch (Exception ex) {
-			msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
+			msg.setCode(OdeStatus.Code.SOURCE_CONNECTION_ERROR)
 		   .setMessage(String.format("Error processing connection request %s", 
 					session.getRequestURI()));
 			logger.error(msg.toString(), ex);
 		}
-		return msg.toJson();
 	}
 
 	/**
@@ -103,7 +97,7 @@ public class WebSocketServer {
 	 * String.
 	 */
 	@OnMessage
-	public String onMessage(
+	public void onMessage(
 			Session session, 
 			String message,
 			boolean last,
@@ -114,11 +108,9 @@ public class WebSocketServer {
 		OdeRequest odeRequest = null;
 		logger.info("Request from {}: {}", sessionId, message);
 		
-      WarehouseClient wsClient = sessions.get(sessionId);
-      
 		OdeStatus msg = new OdeStatus();
 		try {
-			if (rtype.equals("sub")) {
+			if (rtype.equals("sub") && wsClient != null) {
 				odeRequest = (OdeRequest) JsonUtils.fromJson(message, OdeRequest.class);
 	
 				DdsRequest ddsRequest = null;
@@ -164,7 +156,6 @@ public class WebSocketServer {
 		   .setMessage(String.format("Error procesing request %s.", session.getRequestURI()));
 			logger.error(msg.toString(), ex);
 		}
-		return message;
 	}
 
 	/**
@@ -177,13 +168,17 @@ public class WebSocketServer {
 			Session session,
 			CloseReason reason)
 	{
-		String sessionId = session.getId();
-      WarehouseClient wsClient = sessions.remove(sessionId);
-      if (wsClient != null)
-      	wsClient.close();
+   	String sessionId = session.getId();
+      try {
+	      if (wsClient != null)
+		         wsClient.close();
 		
-		logger.info("Session {} disconnected.", sessionId);
-		if (reason != null)
-			logger.info("Reason: {}", reason.getCloseCode());
+			logger.info("Session {} disconnected.", sessionId);
+			if (reason != null)
+				logger.info("Reason: {}", reason.getCloseCode());
+			
+      } catch (IOException e) {
+			logger.error("Error closing session " + sessionId, e);
+      }
 	}
 }

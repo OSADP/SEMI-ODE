@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.api.AbstractService;
 import com.bah.ode.context.AppContext;
+import com.bah.ode.dds.client.ws.DdsClient;
 import com.bah.ode.dds.client.ws.IsdResponseHandler;
 import com.bah.ode.dds.client.ws.ResponseHandler;
-import com.bah.ode.dds.client.ws.WarehouseClient;
 import com.bah.ode.model.DdsRequest;
 import com.bah.ode.util.JsonUtils;
 
@@ -26,6 +26,7 @@ public class IntersectionDataService extends AbstractService {
 	      .getLogger(IntersectionDataService.class);
 
 	private AppContext appContext;
+   private DdsClient wsClient = null;
 	
 	public IntersectionDataService() {
 	   super();
@@ -41,7 +42,6 @@ public class IntersectionDataService extends AbstractService {
 		
 		logger.info("Received {}", getUriInfo());
 		DdsRequest request = null;
-      WarehouseClient wsClient = null;
 		try {
 			request = (DdsRequest) DdsRequest.create()
 					.setDialogID(DdsRequest.Dialog.ISD.getId())
@@ -54,10 +54,7 @@ public class IntersectionDataService extends AbstractService {
 			
 			
 	      ResponseHandler responseHandler = new IsdResponseHandler(appContext, null);
-	      wsClient = WarehouseClient.configure(appContext, responseHandler);
-	      
-			logger.info("Connecting to {}: ", wsClient.getURI());
-	      wsClient.connectBlocking();
+	      wsClient = wsClient.create(appContext, responseHandler);
 	      
 	      String subreq = request.subscriptionRequest();
 			logger.info("Sending subscription request: {}", subreq);
@@ -68,7 +65,7 @@ public class IntersectionDataService extends AbstractService {
 			throw new WebApplicationException(e);
 		}
 		
-		return Response.ok(JsonUtils.toJson("sessionId", wsClient.getSessionId())).build();
+		return Response.ok().build();
 	}
 
 	@GET
@@ -78,11 +75,9 @@ public class IntersectionDataService extends AbstractService {
 		
 		logger.info("Received {}", getUriInfo().getRequestUri().toString());
 
-		WarehouseClient wsClient = null;
 		try {
 			logger.info("Stopping : {}", sessionId);
 	      
-			wsClient = WarehouseClient.getClients().remove(sessionId);
 			if (wsClient == null) {
 				response = Response.status(Status.NOT_FOUND).entity(JsonUtils.toJson("sessionId", sessionId)).build();
 				logger.error("Session ID Not Found: {}", sessionId);

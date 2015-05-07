@@ -78,14 +78,22 @@ h2 {
 		        "use strict";
 		
 		        var ws = null;
+		        var started = false;
+		        var connected = false;
 		
-		        function setConnected(connected) {
+		        function setConnectionState(c, s) {
+		        	   connected = c;
+		        	   started = s;
+		        	   
+		        	   if (!connected)
+		        		   started = false;
+		        	   
 		            document.getElementById('connect').disabled = connected;
-		            document.getElementById('disconnect').disabled = !connected;
-		            document.getElementById('start').disabled = !connected;
+                  document.getElementById('disconnect').disabled = !connected;
+                  document.getElementById('start').disabled = (started || !connected);
 		        }
 		
-		        function connect() {
+	           function connect() {
 		            var requestUri = document.getElementById('requestUri').value;
 		            if (requestUri == '') {
 		                alert('Please select server side connection implementation.');
@@ -100,14 +108,21 @@ h2 {
 		                return;
 		            }
 		            ws.onopen = function (event) {
-                      setConnected(true);
+                      setConnectionState(true, false);
 		                log('Info: WebSocket connection opened.');
 		            };
 		            ws.onmessage = function (event) {
+		               if (!started) {
+		                     var message = JSON.parse(event.data);
+		                     if (message["code"] != "SUCCESS") {
+		                         setConnectionState(true, true);
+		                     }
+		               }
+		            
                  	   log(event.data);
 		            };
 		            ws.onclose = function (event) {
-		                setConnected(false);
+                      setConnectionState(false, false);
 		                log('Info: WebSocket connection closed, Code: ' + event.code + (event.reason == "" ? "" : ", Reason: " + event.reason));
 		            };
 		        }
@@ -117,7 +132,7 @@ h2 {
 		                ws.close();
 		                ws = null;
 		            }
-		            setConnected(false);
+                  setConnectionState(false, false);
 		        }
 		
 		        function start() {
@@ -141,6 +156,7 @@ h2 {
 		            } else {
 		                document.getElementById('requestUri').value = 'wss://' + window.location.host + requestUri;
 		            }
+                  setConnectionState(false, false);
 		        }
 		
 		        function log(msgOrData) {
@@ -219,13 +235,12 @@ h2 {
          -->
 			<div id="destination">
 				<hr />
-				<h2>Destination:</h2>
-				<br /> <input id="screen" type="checkbox" checked="checked"
-					value="screen" /> <label for="screen">On Screen</label><br /> <input
-					id="file" type="checkbox" value="file" /> <label for="file">File
-					Path</label>
-				<button id="browse" onclick="browse();">Browse...</button>
-				<input id="filePath" type="text" size="500" style="width: 350px" /><br />
+				<h2>Destination:</h2><br />
+				<input id="screen" type="checkbox" checked="checked" value="screen" />
+				  <label for="screen">On Screen</label><br />
+				<input id="file" type="checkbox" value="file" />
+				  <label for="file">Server File Path</label><br />
+				<a href="https://ode/download/">https://ode/download/</a><br />
 				<br />
 			</div>
 		</div>
@@ -233,7 +248,7 @@ h2 {
 	<div id="console-container">
 		<div>
 			<hr />
-			<button id="connect" onclick="connect();">Connect</button>
+			<button id="connect" disabled="disabled" onclick="connect();">Connect</button>
 			<button id="start" disabled="disabled" onclick="start();">Start</button>
 			<button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
 		</div>
