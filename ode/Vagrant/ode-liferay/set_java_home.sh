@@ -1,0 +1,1 @@
+echo "JAVA_HOME=/opt/bitnami/java" >> /opt/spark/conf/spark-env.sh
