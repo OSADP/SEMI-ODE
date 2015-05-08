@@ -14,192 +14,198 @@ package com.bah.ode.dds.client.ws;
 
 import java.io.IOException;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLContext;
+import javax.ws.rs.core.Response.Status;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
+import com.bah.ode.wrapper.HttpClientFactory;
+import com.bah.ode.wrapper.HttpClientFactory.HttpClient;
+import com.bah.ode.wrapper.HttpClientFactory.HttpException;
+import com.bah.ode.wrapper.HttpClientFactory.HttpResponse;
 
 public class CASClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(CASClient.class);
 
 	private AppContext appContext;
-	private SSLConnectionSocketFactory sslSocketFactory;
+	private HttpClientFactory httpClientFactory;
 	
-	public static CASClient configure(AppContext appContext) throws KeyManagementException,
-			KeyStoreException, NoSuchAlgorithmException, CertificateException,
-			IOException {
+	public static CASClient configure(AppContext appContext, SSLContext sslContext)
+			throws CASException {
 
-		CASClient casClient = new CASClient();
-		casClient.appContext = appContext;
-		
-		SSLContext sslContext = SSLBuilder.buildSSLContext(
-				appContext.getParam(AppContext.DDS_KEYSTORE_FILE_PATH),
-				appContext.getParam(AppContext.DDS_KEYSTORE_PASSWORD));
+      CASClient casClient = new CASClient();
+		try {
+	      casClient.appContext = appContext;
+	      
+	      casClient.httpClientFactory = HttpClientFactory.build(sslContext);
 
-		casClient.sslSocketFactory = SSLBuilder
-				.buildSSLConnectionSocketFactory(sslContext);
-
-		return casClient;
+      } catch (Exception e) {
+      	throw casClient.new CASException(e);
+      }
+      return casClient;
 	}
 	
-	public String login()
-			throws ClientProtocolException, IOException, CASLoginException {
+	public String login() throws CASException {
 
-		String casUrl = appContext.getParam(AppContext.DDS_CAS_URL);
-		
-		String ticketGrantingTicket = getTicketGrantingTicket(
-				casUrl,
-		      appContext.getParam(AppContext.DDS_CAS_USERNAME),
-		      appContext.getParam(AppContext.DDS_CAS_PASSWORD));
-		logger.info("Got ticketGrantingTicket " + ticketGrantingTicket);
+		try {
+	      String casUrl = appContext.getParam(AppContext.DDS_CAS_URL);
+	      
+	      String ticketGrantingTicket = getTicketGrantingTicket(
+	      		casUrl,
+	            appContext.getParam(AppContext.DDS_CAS_USERNAME),
+	            appContext.getParam(AppContext.DDS_CAS_PASSWORD));
+	      logger.info("Got ticketGrantingTicket " + ticketGrantingTicket);
 
-		String ddsHttpWebSocketUrl = new URL("https", 
-      		appContext.getParam(AppContext.DDS_DOMAIN),
-      		Integer.parseInt(appContext.getParam(AppContext.DDS_PORT)),
-      		appContext.getParam(AppContext.DDS_RESOURCE_IDENTIFIER)).toExternalForm();
-		String serviceTicket = getServiceTicket(
-				casUrl, ticketGrantingTicket,	ddsHttpWebSocketUrl);
-		logger.info("Got serviceTicket " + serviceTicket);
-		
-		String sessionID = getServiceCall(ddsHttpWebSocketUrl, serviceTicket);
-		logger.info("Successful CAS login with sessionID " + sessionID);
+	      String ddsHttpWebSocketUrl = new URL("https", 
+	      		appContext.getParam(AppContext.DDS_DOMAIN),
+	      		Integer.parseInt(appContext.getParam(AppContext.DDS_PORT)),
+	      		appContext.getParam(AppContext.DDS_RESOURCE_IDENTIFIER)).toExternalForm();
+	      String serviceTicket = getServiceTicket(
+	      		casUrl, ticketGrantingTicket,	ddsHttpWebSocketUrl);
+	      logger.info("Got serviceTicket " + serviceTicket);
+	      
+	      String sessionID = getServiceCall(ddsHttpWebSocketUrl, serviceTicket);
+	      logger.info("Successful CAS login with sessionID " + sessionID);
 
-		return sessionID;
+	      return sessionID;
+      } catch (Exception e) {
+      	throw new CASException(e);
+      }
 	}
 
 	private String getTicketGrantingTicket(String server, String username,
 			String password)
-			throws ClientProtocolException, IOException, CASLoginException {
+			throws CASException {
 
-		CloseableHttpClient httpclient = HttpClients.custom()
-				.setSSLSocketFactory(sslSocketFactory).build();
+		HttpClient httpClient = httpClientFactory.createHttpClient();
 		try {
 
-			HttpUriRequest request = RequestBuilder.post().setUri(server)
-					.addParameter("username", username)
-					.addParameter("password", password).build();
-			CloseableHttpResponse response = httpclient.execute(request);
+			ConcurrentHashMap<String, String> params = new ConcurrentHashMap<String, String>();
+			params.put("username", username);
+			params.put("password", password);
+			HttpResponse response = httpClient.post(server, null, params, null);
 			
-			int statusCode = response.getStatusLine().getStatusCode();
-			String responseBody = EntityUtils.toString(response.getEntity());
+			Status statusCode = response.getStatusCode();
+			String responseBody = response.getBody();
 
-			if (statusCode == HttpStatus.SC_CREATED) { //201
+			if (statusCode == Status.CREATED) { //201
 				Matcher matcher = Pattern.compile(".*action=\".*/(.*?)\".*")
 						.matcher(responseBody);
 				if (matcher.matches()) {
 					return matcher.group(1);
 				} else {
-					throw new CASLoginException("CAS getTicketGrantingTicket failed. No ticket found in body: " + responseBody);
+					throw new CASException("CAS getTicketGrantingTicket failed. No ticket found in body: " + responseBody);
 				}
 			} else {
-				throw new CASLoginException("CAS getTicketGrantingTicket failed. Response code: " + statusCode + " body: " + responseBody);
+				throw new CASException("CAS getTicketGrantingTicket failed. Response code: " + statusCode + " body: " + responseBody);
 			}
 			
-		} finally {
-			httpclient.close();
+		} catch (Exception e) {
+			throw new CASException(e);
+      } finally {
+			try {
+	         httpClient.close();
+         } catch (HttpException e) {
+   			throw new CASException(e);
+         }
 		}
 	}
 
 	private String getServiceTicket(String server, String ticketGrantingTicket,
 			String service)
-			throws ClientProtocolException, IOException, CASLoginException {
+			throws CASException {
 
-		CloseableHttpClient httpclient = HttpClients.custom()
-				.setSSLSocketFactory(sslSocketFactory).build();
+		HttpClient httpClient = httpClientFactory.createHttpClient();
+
 		try {
 
-			HttpUriRequest request = RequestBuilder.post()
-					.setUri(server + "/" + ticketGrantingTicket)
-					.addParameter("service", service).build();
+			HttpResponse response = httpClient.post(
+					server + "/" + ticketGrantingTicket,
+					null, Collections.singletonMap("service", service), null);
+			
+			Status statusCode = response.getStatusCode();
+			String responseBody = response.getBody();
 
-			CloseableHttpResponse response = httpclient.execute(request);
-			int statusCode = response.getStatusLine().getStatusCode();
-			String responseBody = EntityUtils.toString(response.getEntity());
-
-			if (statusCode == HttpStatus.SC_OK) { //200
+			if (statusCode == Status.OK) { //200
 				return responseBody;
 			} else {
-				throw new CASLoginException("CAS getServiceTicket failed. Response code: " + statusCode + " body: " + responseBody);
+				throw new CASException("CAS getServiceTicket failed. Response code: " + statusCode + " body: " + responseBody);
 			}
 			
-		} finally {
-			httpclient.close();
+		} catch (HttpException e) {
+			throw new CASException(e);
+      } finally {
+			try {
+	         httpClient.close();
+         } catch (HttpException e) {
+   			throw new CASException(e);
+         }
 		}
 	}
 
-	private String getServiceCall(String service, String serviceTicket) throws IOException, CASLoginException {
+	private String getServiceCall(String service, String serviceTicket) 
+			throws IOException, CASException {
 
-		CookieStore cookieStore = new BasicCookieStore();
-		CloseableHttpClient httpclient = HttpClients.custom()
-				.setDefaultCookieStore(cookieStore).setSSLSocketFactory(sslSocketFactory)
-				.build();
+		HttpClient httpClient = httpClientFactory.createHttpClient();
 
 		try {
 
-			HttpUriRequest request = RequestBuilder.get().setUri(service)
-					.addParameter("ticket", serviceTicket).build();
+			HttpResponse response = httpClient.get(service,
+					null, Collections.singletonMap("ticket", serviceTicket));
 
-			CloseableHttpResponse response = httpclient.execute(request);
-			int statusCode = response.getStatusLine().getStatusCode();
-			String responseBody = EntityUtils.toString(response.getEntity());
+			Status statusCode = response.getStatusCode();
+			String responseBody = response.getBody();
 
-			if (statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_NOT_FOUND) { //200 or 404
-				return getSessionID(cookieStore);
+			if (statusCode == Status.OK || statusCode == Status.NOT_FOUND) { //200 or 404
+				return getSessionID(httpClient.getCookies());
 			} else {
-				throw new CASLoginException("CAS getServiceCall failed. Response code: " + statusCode + " body: " + responseBody);
+				throw new CASException("CAS getServiceCall failed. Response code: " + statusCode + " body: " + responseBody);
 			}
 			
-		} finally {
-			httpclient.close();
+		} catch (HttpException e) {
+			throw new CASException(e);
+      } finally {
+			try {
+	         httpClient.close();
+         } catch (HttpException e) {
+   			throw new CASException(e);
+         }
 		}
 	}
 
-	private String getSessionID(CookieStore cookieStore) {
+	private String getSessionID(Map<String, String> cookies) {
 		String sessionID = "";
-		for (Cookie c : cookieStore.getCookies()) {
-			if (c.getName().equals(AppContext.JSESSIONID_KEY)) {
-				sessionID = c.getValue();
+		for (String c : cookies.keySet()) {
+			if (c.equals(AppContext.JSESSIONID_KEY)) {
+				sessionID = cookies.get(c);
 				break;
 			}
 		}
 		return sessionID;
 	}
 	
-	public class CASLoginException extends Exception {
+	public class CASException extends Exception {
 
 		private static final long serialVersionUID = 3103235434315019560L;
 		
-		public CASLoginException(String message) {
+		public CASException(String message) {
 			super(message);
 		}
 
-		public CASLoginException(Throwable cause) {
+		public CASException(Throwable cause) {
 			super(cause);
 		}
 
-		public CASLoginException(String message, Throwable cause) {
+		public CASException(String message, Throwable cause) {
 			super(message, cause);
 		}
 	}

@@ -1,14 +1,10 @@
 package com.bah.ode.dds.client.ws;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
-import com.bah.ode.dds.client.ws.CASClient.CASLoginException;
+import com.bah.ode.dds.client.ws.CASClient.CASException;
+import com.bah.ode.wrapper.SSLBuilder;
+import com.bah.ode.wrapper.SSLBuilder.SSLException;
 
 @ClientEndpoint
 public class DdsClient extends Endpoint {
@@ -41,33 +39,31 @@ public class DdsClient extends Endpoint {
 	private ResponseHandler handler;
    private Configurator configurator = new DdsClientConfigurator();
 
-	@SuppressWarnings("unchecked")
 	public static DdsClient create(AppContext appContext,
-	      ResponseHandler handler) throws URISyntaxException,
-	      KeyManagementException, KeyStoreException, NoSuchAlgorithmException,
-	      CertificateException, IOException, CASLoginException, DeploymentException {
+	      ResponseHandler handler) 
+	      		throws CASException, NumberFormatException, 
+	      		URISyntaxException, SSLException, DeploymentException, IOException {
 
       logger.info("Logging in to {}", appContext.getParam(AppContext.DDS_CAS_URL));
       DdsClient wsClient = new DdsClient();
 		wsClient.handler = handler;
 
-      CASClient casClient = CASClient.configure(appContext);
+      InputStream keystoreStream = 
+      		CASClient.class.getClassLoader()
+      		.getResourceAsStream(appContext.getParam(AppContext.DDS_KEYSTORE_FILE_PATH));
+
+		SSLContext sslContext = SSLBuilder.buildSSLContext(keystoreStream, 
+				appContext.getParam(AppContext.DDS_KEYSTORE_PASSWORD));
+		
+      CASClient casClient = CASClient.configure(appContext, sslContext);
       wsClient.casSessionId = casClient.login();
 		logger.info("Session ID: {}", wsClient.casSessionId);
-
-//		@SuppressWarnings("rawtypes")
-//		Map headers = new HashMap();
-//		headers.put("Cookie", AppContext.JSESSIONID_KEY + "=" + jSessionID);
 
 		URI ddsWsUri = new URI("wss", null, 
       		appContext.getParam(AppContext.DDS_DOMAIN),
       		Integer.parseInt(appContext.getParam(AppContext.DDS_PORT)),
 				appContext.getParam(AppContext.DDS_RESOURCE_IDENTIFIER),
 				null, null);
-		
-		SSLContext sslContext = SSLBuilder.buildSSLContext(
-		      appContext.getParam(AppContext.DDS_KEYSTORE_FILE_PATH),
-		      appContext.getParam(AppContext.DDS_KEYSTORE_PASSWORD));
 		
       logger.info("Opening connection to {}", ddsWsUri.toString());
       
@@ -102,17 +98,6 @@ public class DdsClient extends Endpoint {
 		logger.info("Connection closed. Reason: {}", reason);
 		this.userSession = null;
    }
-
-//   /**
-//    * Callback hook for Message Events. This method will be invoked when a client send a message.
-//    *
-//    * @param message The text message
-//    */
-//   @OnMessage
-//   public void onMessage(String message) {
-//   	if (handler != null)
-//   		handler.handleMessage(message);
-//   }
 
    @OnError
    public void OnError(Session userSession, Throwable t) {
