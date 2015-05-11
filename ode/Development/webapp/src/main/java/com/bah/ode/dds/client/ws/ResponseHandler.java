@@ -13,10 +13,8 @@
 package com.bah.ode.dds.client.ws;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map;
 
+import javax.websocket.MessageHandler;
 import javax.websocket.RemoteEndpoint.Async;
 
 import org.slf4j.Logger;
@@ -27,7 +25,7 @@ import com.bah.ode.model.DdsRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public abstract class ResponseHandler {
+public abstract class ResponseHandler implements MessageHandler.Whole<String> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ResponseHandler.class);
 	
@@ -48,7 +46,7 @@ public abstract class ResponseHandler {
 		this.async = async;
 	}
 	
-	public abstract void handleMessage(String message);
+//	public abstract void handleMessage(String message);
 	
 	private void processStartTag(String message) {
 		if (message.startsWith(START_TAG)) {
@@ -69,6 +67,10 @@ public abstract class ResponseHandler {
    private void processStopTag(String message) throws IOException {
       if (message.startsWith(STOP_TAG)) {
       }
+   }
+
+	public void disable() {
+		async = null;
    }
 
 }

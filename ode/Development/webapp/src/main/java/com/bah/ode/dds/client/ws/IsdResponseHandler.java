@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import javax.websocket.RemoteEndpoint.Async;
-import javax.xml.bind.DatatypeConverter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.semi.IntersectionSituationData;
 import com.bah.ode.context.AppContext;
-import com.bah.ode.model.OdeIntersectionData;
 import com.bah.ode.util.CodecUtils;
 import com.bah.ode.util.JsonUtils;
 import com.oss.asn1.Coder;
@@ -26,7 +24,7 @@ public class IsdResponseHandler extends ResponseHandler {
    }
 
 	@Override
-   public void handleMessage(String message) {
+   public void onMessage(String message) {
 		if (message.startsWith(START_TAG) || message.startsWith(STOP_TAG) || 
 				message.startsWith(CONNECTED_TAG) || message.startsWith(ERROR_TAG)) {
 			logger.trace(message);
@@ -41,13 +39,13 @@ public class IsdResponseHandler extends ResponseHandler {
 					IntersectionSituationData value = new IntersectionSituationData();
 					coder.decode(ins, value);
 					ins.close();
-					async.sendText(JsonUtils.toJson(value));
+					
+					if (async != null)
+						async.sendText(JsonUtils.toJson(value));
 				} catch (Exception e) {
 					logger.error("Error decoding ", e);
 				} finally {
 				}
-			} else {
-//				System.out.println(JsonUtils.toJson(intData));
 			}
 		}
    }
