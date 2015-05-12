@@ -12,6 +12,26 @@ public class OdeException extends Exception {
    
    OdeStatus.Code code;
    
+   public OdeException() {
+      super();
+      this.code = OdeStatus.Code.FAILURE;
+   }
+
+   public OdeException(Throwable cause) {
+      super(cause);
+      this.code = OdeStatus.Code.FAILURE;
+   }
+
+   public OdeException (String message) {
+      super(message);
+      this.code = OdeStatus.Code.FAILURE;
+   }
+
+   public OdeException (String message, Throwable cause) {
+      super(message, cause);
+      this.code = OdeStatus.Code.FAILURE;
+   }
+
    public OdeException (OdeStatus.Code code, String message) {
    	super(message);
    	this.code = code;
@@ -20,16 +40,6 @@ public class OdeException extends Exception {
    public OdeException (OdeStatus.Code code, String message, Throwable cause) {
    	super(message, cause);
    	this.code = code;
-   }
-
-   public OdeException (String message) {
-   	super(message);
-   	this.code = OdeStatus.Code.FAILURE;
-   }
-
-   public OdeException (String message, Throwable cause) {
-   	super(message, cause);
-   	this.code = OdeStatus.Code.FAILURE;
    }
 
    public String toJson() {

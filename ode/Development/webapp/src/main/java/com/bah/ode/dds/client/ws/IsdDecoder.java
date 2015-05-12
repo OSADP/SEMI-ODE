@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.websocket.DecodeException;
-import javax.websocket.Decoder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,27 +12,23 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.semi.IntersectionSituationData;
 import com.bah.ode.model.DdsData;
-import com.bah.ode.model.OdeIntersectionData;
 import com.bah.ode.util.CodecUtils;
 import com.oss.asn1.Coder;
 
-public class IsdDecoder extends DdsDecoder implements Decoder.Text<OdeIntersectionData> {
+public class IsdDecoder extends DdsDecoder {
 
 	private static final Logger logger = LoggerFactory.getLogger(IsdDecoder.class);
 
 	@Override
-   public OdeIntersectionData decode(String message) throws DecodeException {
-		OdeIntersectionData iData = new OdeIntersectionData();
-		DdsData ddsData = new DdsData();
-		if (!isControlMessage(message)) {
-	//			OdeIntersectionData intData = OdeIntersectionData.create(CodecUtils.fromBase64(message));
-	//			async.sendText(JsonUtils.toJson(intData));
+   public DdsData decode(String message) throws DecodeException {
+		DdsData ddsData = super.decode(message);
+		// if it's not a control message decode it as a ASN.1 message
+		if (ddsData.getControlMessage() == null) {
 			InputStream ins = new ByteArrayInputStream(CodecUtils.fromBase64(message));
 			
 			Coder coder = Oss.getBERCoder();
 			try {
 				ddsData.setIsd(new IntersectionSituationData());
-				iData.setDdsData(ddsData);
 				coder.decode(ins, ddsData.getIsd());
 			} catch (Exception e) {
 				logger.error("Error decoding ", e);
@@ -44,11 +39,8 @@ public class IsdDecoder extends DdsDecoder implements Decoder.Text<OdeIntersecti
 					logger.warn("Error closing input stream: ", e);
 	         }
 			}
-		} else {
-			ddsData.setControlMessage(new ControlMessage());
 		}
-		iData.setDdsData(ddsData);
-		return iData;
+		return ddsData;
    }
 
 	@Override

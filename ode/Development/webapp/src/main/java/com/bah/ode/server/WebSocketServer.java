@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.api.ws.OdeStatus;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.DdsClientFactory;
+import com.bah.ode.dds.client.ws.IsdDecoder;
+import com.bah.ode.dds.client.ws.VsdDecoder;
 import com.bah.ode.model.DdsRequest;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.util.JsonUtils;
@@ -57,9 +59,15 @@ public class WebSocketServer {
 		try {
 			if (rtype.equals("sub")) {
 				if (dtype.equals("ints")) {
-			      wsClient = DdsClientFactory.createIsdClient(appContext, session.getAsyncRemote());
+			      wsClient = DdsClientFactory.create(
+			      		appContext, 
+			      		session.getAsyncRemote(),
+			      		IsdDecoder.class);
 				} else if (dtype.equals("vehs")) {
-			      wsClient = DdsClientFactory.createVsdClient(appContext, session.getAsyncRemote());
+			      wsClient = DdsClientFactory.create(
+			      		appContext, 
+			      		session.getAsyncRemote(),
+			      		VsdDecoder.class);
 				}
 				
 				if (null != wsClient) {
