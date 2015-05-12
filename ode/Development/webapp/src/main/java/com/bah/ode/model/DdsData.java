@@ -11,6 +11,15 @@ public class DdsData {
 	private IntersectionSituationData isd;
 	private VehSitDataMessage vsd;
 	private AdvisorySituationData asd;
+	private String fullMessage;
+	
+	public boolean haveData() {
+		return controlMessage != null ||
+				isd != null             ||
+				vsd != null             ||
+				asd != null					||
+				fullMessage != null;
+	}
 	
 	public ControlMessage getControlMessage() {
 		return controlMessage;
@@ -45,6 +54,15 @@ public class DdsData {
 
 	public DdsData setAsd(AdvisorySituationData asd) {
 		this.asd = asd;
+		return this;
+	}
+
+	public String getFullMessage() {
+		return fullMessage;
+	}
+
+	public DdsData setFullMessage(String fullMessage) {
+		this.fullMessage = fullMessage;
 		return this;
 	}
 

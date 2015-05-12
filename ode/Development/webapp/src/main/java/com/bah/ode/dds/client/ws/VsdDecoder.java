@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.websocket.DecodeException;
-import javax.websocket.Decoder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,29 +12,23 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.semi.VehSitDataMessage;
 import com.bah.ode.model.DdsData;
-import com.bah.ode.model.OdeVehicleData;
 import com.bah.ode.util.CodecUtils;
 import com.oss.asn1.Coder;
 
-public class VsdDecoder extends DdsDecoder implements Decoder.Text<OdeVehicleData> {
+public class VsdDecoder extends DdsDecoder {
 
 	private static final Logger logger = LoggerFactory.getLogger(VsdDecoder.class);
 
 	@Override
-   public OdeVehicleData decode(String message) throws DecodeException {
-		OdeVehicleData vData = new OdeVehicleData();
-		
-		DdsData ddsData = new DdsData();
-		if (!isControlMessage(message)) {
-			
-	//			OdeVehicleData intData = OdeVehicleData.create(CodecUtils.fromBase64(message));
-	//			async.sendText(JsonUtils.toJson(intData));
+   public DdsData decode(String message) throws DecodeException {
+		DdsData ddsData = super.decode(message);
+		// if it's not a control message decode it as a ASN.1 message
+		if (ddsData.getControlMessage() == null) {
 			InputStream ins = new ByteArrayInputStream(CodecUtils.fromBase64(message));
 			
 			Coder coder = Oss.getBERCoder();
 			try {
 				ddsData.setVsd(new VehSitDataMessage());
-				vData.setDdsData(ddsData);
 				coder.decode(ins, ddsData.getVsd());
 			} catch (Exception e) {
 				logger.error("Error decoding ", e);
@@ -46,11 +39,8 @@ public class VsdDecoder extends DdsDecoder implements Decoder.Text<OdeVehicleDat
 					logger.warn("Error closing input stream: ", e);
 	         }
 			}
-		} else {
-			ddsData.setControlMessage(new ControlMessage());
 		}
-		vData.setDdsData(ddsData);
-		return vData;
+		return ddsData;
    }
 
 	@Override

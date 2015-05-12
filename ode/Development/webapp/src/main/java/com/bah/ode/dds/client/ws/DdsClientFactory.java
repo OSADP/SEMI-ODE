@@ -12,14 +12,13 @@ import javax.websocket.RemoteEndpoint.Async;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.asn.oss.semi.VehSitRecord;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.CASClient.CASException;
-import com.bah.ode.model.OdeIntersectionData;
-import com.bah.ode.model.OdeVehicleData;
+import com.bah.ode.model.DdsData;
 import com.bah.ode.wrapper.SSLBuilder;
 import com.bah.ode.wrapper.SSLBuilder.SSLException;
 import com.bah.ode.wrapper.WebSocketClient;
+import com.bah.ode.wrapper.WebSocketMessageDecoder;
 
 public class DdsClientFactory {
 	
@@ -30,10 +29,12 @@ public class DdsClientFactory {
 	private static SSLContext sslContext = null;
 	private static CASClient casClient = null;
 	
-	public static WebSocketClient<OdeIntersectionData>
-		createIsdClient(AppContext appContext, Async async) throws DdsClientException {
+	public static WebSocketClient<DdsData>
+		create(AppContext appContext, Async async, 
+				Class<? extends WebSocketMessageDecoder> decoderClass) 
+						throws DdsClientException {
 		
-      WebSocketClient<OdeIntersectionData> isdClient = null; 
+      WebSocketClient<DdsData> ddsClient = null; 
 		try {
 	      
 			init(appContext);
@@ -43,44 +44,17 @@ public class DdsClientFactory {
    				"Cookie", Collections.singletonMap(
    						AppContext.JSESSIONID_KEY, casClient.getSessionID()));
 			
-			isdClient = new WebSocketClient<OdeIntersectionData>(
+			ddsClient = new WebSocketClient<DdsData>(
 	      		uri, sslContext,
 	      		null, 
 	      		cookieHeader,
-					new IsdMessageHandler(appContext, async),
-					Collections.singletonList(IsdDecoder.class));
+					new DdsMessageHandler(async),
+					Collections.singletonList(decoderClass));
 	      
       } catch (Exception e) {
       	throw new DdsClientException(e);
       }
-      return isdClient;
-	}
-
-	public static WebSocketClient<OdeVehicleData>
-	createVsdClient(AppContext appContext, Async async) 
-			throws DdsClientException {
-	
-   WebSocketClient<OdeVehicleData> vsdClient = null; 
-	try {
-      
-		init(appContext);
-
-		Map<String, Map<String, String>> cookieHeader =
-				Collections.singletonMap(
-				"Cookie", Collections.singletonMap(
-						AppContext.JSESSIONID_KEY, casClient.getSessionID()));
-		
-		vsdClient = new WebSocketClient<OdeVehicleData>(
-      		uri, sslContext,
-      		null, 
-      		cookieHeader,
-				new VsdMessageHandler(appContext, async),
-				Collections.singletonList(VsdDecoder.class));
-      
-	   } catch (Exception e) {
-	   	throw new DdsClientException(e);
-	   }
-	   return vsdClient;
+      return ddsClient;
 	}
 
 	private static void init(AppContext appContext) throws URISyntaxException,
