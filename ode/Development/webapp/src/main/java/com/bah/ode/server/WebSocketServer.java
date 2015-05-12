@@ -1,7 +1,5 @@
 package com.bah.ode.server;
 
-import java.io.IOException;
-
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
@@ -16,13 +14,12 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.api.ws.OdeStatus;
 import com.bah.ode.context.AppContext;
-import com.bah.ode.dds.client.ws.DdsClient;
-import com.bah.ode.dds.client.ws.IsdResponseHandler;
-import com.bah.ode.dds.client.ws.ResponseHandler;
-import com.bah.ode.dds.client.ws.VsdResponseHandler;
+import com.bah.ode.dds.client.ws.DdsClientFactory;
 import com.bah.ode.model.DdsRequest;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.util.JsonUtils;
+import com.bah.ode.wrapper.WebSocketClient;
+import com.bah.ode.wrapper.WebSocketClient.WebSocketException;
 
 /**
  * @ServerEndpoint gives the relative name for the end point This will be
@@ -35,8 +32,7 @@ import com.bah.ode.util.JsonUtils;
 public class WebSocketServer {
 	private static Logger logger = LoggerFactory.getLogger(WebSocketServer.class);
 	private AppContext appContext = AppContext.getInstance();
-	private ResponseHandler responseHandler;
-	DdsClient wsClient = null; 
+	WebSocketClient<?> wsClient = null; 
 
 	
 	/**
@@ -61,14 +57,13 @@ public class WebSocketServer {
 		try {
 			if (rtype.equals("sub")) {
 				if (dtype.equals("ints")) {
-			      responseHandler = new IsdResponseHandler(appContext, session.getAsyncRemote());
+			      wsClient = DdsClientFactory.createIsdClient(appContext, session.getAsyncRemote());
 				} else if (dtype.equals("vehs")) {
-			      responseHandler = new VsdResponseHandler(appContext, session.getAsyncRemote());
+			      wsClient = DdsClientFactory.createVsdClient(appContext, session.getAsyncRemote());
 				}
 				
-				if (null != responseHandler) {
-					wsClient = DdsClient.create(appContext, responseHandler);
-			      
+				if (null != wsClient) {
+					wsClient.connect();
 					msg.setCode(OdeStatus.Code.SUCCESS);
 					msg.setMessage("Connection Established.");
 					session.getAsyncRemote().sendText(msg.toJson());
@@ -177,7 +172,7 @@ public class WebSocketServer {
 			if (reason != null)
 				logger.info("Reason: {}", reason.getCloseCode());
 			
-      } catch (IOException e) {
+      } catch (WebSocketException e) {
 			logger.error("Error closing session " + sessionId, e);
       }
 	}

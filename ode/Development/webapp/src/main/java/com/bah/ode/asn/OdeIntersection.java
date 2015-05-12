@@ -6,19 +6,18 @@ import java.util.List;
 
 import com.bah.ode.asn.oss.dsrc.Intersection_;
 import com.bah.ode.asn.oss.dsrc.MapData.Intersections_;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator;
 
 public class OdeIntersection {
-   public String name;
-   public byte[] id;
-   public OdePosition3D refPoint;
-   public byte[] refInterNum;
-   public Double orientationDeg;
-   public Integer laneWidthCm;
-   public OdeIntersectionStatusObject type;
-   public List<OdeApproachObject> approaches;
-   public List<OdeSignalControlZone> preemptZones;
-   public List<OdeSignalControlZone> priorityZones;
+   private String name;
+   private byte[] id;
+   private OdePosition3D refPoint;
+   private byte[] refInterNum;
+   private Double orientationDeg;
+   private Integer laneWidthCm;
+   private OdeIntersectionStatusObject type;
+   private List<OdeApproachObject> approaches;
+   private List<OdeSignalControlZone> preemptZones;
+   private List<OdeSignalControlZone> priorityZones;
    
 	public OdeIntersection() {
 	   super();

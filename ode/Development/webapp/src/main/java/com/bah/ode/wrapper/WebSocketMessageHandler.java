@@ -10,21 +10,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bah.ode.dds.client.ws;
+package com.bah.ode.wrapper;
 
-public class ConfigException extends Exception {
+import javax.websocket.MessageHandler;
 
-	private static final long serialVersionUID = -1011704637837676718L;
+public interface WebSocketMessageHandler<T> extends MessageHandler.Whole<T> {
 
-	public ConfigException(String message) {
-		super(message);
-    }
-	
-	public ConfigException(Throwable cause) {
-		super(cause);
-    }
-
-    public ConfigException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

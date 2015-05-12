@@ -30,7 +30,7 @@ import com.bah.ode.asn.oss.semi.VsmEventFlag;
 import com.bah.ode.util.CodecUtils;
 import com.oss.asn1.Coder;
 
-public class OdeVehicleData {
+public class OdeVehicleData extends OdeData {
 	private static Logger logger = LoggerFactory.getLogger(OdeVehicleData.class);
 
 	private String groupId;
@@ -63,6 +63,10 @@ public class OdeVehicleData {
 		this.brakes = CodecUtils.toHex(brakes != null ? brakes.byteArrayValue() : "".getBytes());
 		this.size = size;
 		this.vsmEventFlag = CodecUtils.toHex(vsmEventFlag != null ? vsmEventFlag.byteArrayValue() : "".getBytes());
+	}
+	
+	public OdeVehicleData(VehSitDataMessage vsd) {
+		this.setDdsData(new DdsData().setVsd(vsd));
 	}
 
 	public String getGroupId() {

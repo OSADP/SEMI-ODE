@@ -14,14 +14,14 @@ import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.semi.IntersectionSituationData;
 import com.oss.asn1.Coder;
 
-public class OdeIntersectionData {
+public class OdeIntersectionData extends OdeData {
 	private static Logger logger = LoggerFactory.getLogger(OdeIntersectionData.class);
 
 	private OdeGroupId groupId;
 	private OdeGeoRegion serviceRegion;
 	private OdeMapData mapData;
 	private OdeSpatData spatData;
-	
+
 	public OdeIntersectionData() {
 	}
 
@@ -35,6 +35,7 @@ public class OdeIntersectionData {
    }
 
 	public OdeIntersectionData(IntersectionSituationData isd) {
+		this.setDdsData(new DdsData().setIsd(isd));
 		this.setGroupId(new OdeGroupId(isd.getGroupID()));
 		this.setServiceRegion(new OdeGeoRegion(isd.getServiceRegion()));
 		this.setMapData(new OdeMapData(isd.getIntersectionRecord().getMapData()));
