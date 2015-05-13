@@ -13,11 +13,12 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.api.AbstractService;
 import com.bah.ode.context.AppContext;
-import com.bah.ode.dds.client.ws.DdsClient;
-import com.bah.ode.dds.client.ws.IsdResponseHandler;
-import com.bah.ode.dds.client.ws.ResponseHandler;
+import com.bah.ode.dds.client.ws.DdsClientFactory;
+import com.bah.ode.dds.client.ws.IsdDecoder;
+import com.bah.ode.model.DdsData;
 import com.bah.ode.model.DdsRequest;
 import com.bah.ode.util.JsonUtils;
+import com.bah.ode.wrapper.WebSocketClient;
 
 @Path("/ints")
 public class IntersectionDataService extends AbstractService {
@@ -26,7 +27,7 @@ public class IntersectionDataService extends AbstractService {
 	      .getLogger(IntersectionDataService.class);
 
 	private AppContext appContext;
-   private DdsClient wsClient = null;
+   private WebSocketClient<DdsData> wsClient = null;
 	
 	public IntersectionDataService() {
 	   super();
@@ -53,8 +54,7 @@ public class IntersectionDataService extends AbstractService {
 					.setSeLon(seLon);
 			
 			
-	      ResponseHandler responseHandler = new IsdResponseHandler(appContext, null);
-	      wsClient = wsClient.create(appContext, responseHandler);
+	      wsClient = DdsClientFactory.create(appContext, null, IsdDecoder.class);
 	      
 	      String subreq = request.subscriptionRequest();
 			logger.info("Sending subscription request: {}", subreq);

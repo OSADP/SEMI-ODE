@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
-import javax.websocket.ClientEndpoint;
 import javax.websocket.ClientEndpointConfig;
 import javax.websocket.ClientEndpointConfig.Configurator;
 import javax.websocket.CloseReason;
@@ -17,8 +16,6 @@ import javax.websocket.ContainerProvider;
 import javax.websocket.DeploymentException;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
@@ -30,17 +27,17 @@ import com.bah.ode.dds.client.ws.CASClient.CASException;
 import com.bah.ode.wrapper.SSLBuilder;
 import com.bah.ode.wrapper.SSLBuilder.SSLException;
 
-@ClientEndpoint
+@Deprecated
 public class DdsClient extends Endpoint {
 	private static final Logger logger = LoggerFactory.getLogger(DdsClient.class);
 
-	private Session userSession = null;
+	private Session wsSession = null;
 	private String  casSessionId = null;
-	private ResponseHandler handler;
+	private DdsMessageHandler handler;
    private Configurator configurator = new DdsClientConfigurator();
 
 	public static DdsClient create(AppContext appContext,
-	      ResponseHandler handler) 
+			DdsMessageHandler handler) 
 	      		throws CASException, NumberFormatException, 
 	      		URISyntaxException, SSLException, DeploymentException, IOException {
 
@@ -70,7 +67,7 @@ public class DdsClient extends Endpoint {
       WebSocketContainer container = ContainerProvider.getWebSocketContainer();
       ClientEndpointConfig wsConfig = ClientEndpointConfig.Builder.create().configurator(wsClient.configurator).build();
       wsConfig.getUserProperties().put("org.apache.tomcat.websocket.SSL_CONTEXT", sslContext);
-      wsClient.userSession = container.connectToServer(wsClient, wsConfig, ddsWsUri);
+      wsClient.wsSession = container.connectToServer(wsClient, wsConfig, ddsWsUri);
 
 		return wsClient;
 	}
@@ -78,29 +75,29 @@ public class DdsClient extends Endpoint {
    /**
     * Callback hook for Connection open events.
     *
-    * @param userSession the userSession which is opened.
+    * @param session the userSession which is opened.
     */
 	@Override
-   public void onOpen(Session userSession, EndpointConfig config) {
+   public void onOpen(Session session, EndpointConfig config) {
 		logger.info("Connection opened");
-		this.userSession = userSession;
-		this.userSession.addMessageHandler(this.handler);
+		this.wsSession = session;
+		this.wsSession.addMessageHandler(this.handler);
    }
 
    /**
     * Callback hook for Connection close events.
     *
-    * @param userSession the userSession which is getting closed.
+    * @param session the userSession which is getting closed.
     * @param reason the reason for connection close
     */
-   @OnClose
-   public void onClose(Session userSession, CloseReason reason) {
+   @Override
+   public void onClose(Session session, CloseReason reason) {
 		logger.info("Connection closed. Reason: {}", reason);
-		this.userSession = null;
+		this.wsSession = null;
    }
 
-   @OnError
-   public void OnError(Session userSession, Throwable t) {
+   @Override
+   public void onError(Session session, Throwable t) {
 		logger.error("WebSocket Error", t);
    }
    
@@ -111,11 +108,11 @@ public class DdsClient extends Endpoint {
     * @param message
     */
    public void send(String message) {
-       this.userSession.getAsyncRemote().sendText(message);
+       this.wsSession.getAsyncRemote().sendText(message);
    }
 
    public void close() throws IOException {
-   	userSession.close();
+   	wsSession.close();
    	handler.disable();
    }
    

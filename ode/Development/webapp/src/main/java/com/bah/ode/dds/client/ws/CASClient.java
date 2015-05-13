@@ -38,7 +38,12 @@ public class CASClient {
 
 	private AppContext appContext;
 	private HttpClientFactory httpClientFactory;
+	private String sessionID;
 	
+	public String getSessionID() {
+		return sessionID;
+	}
+
 	public static CASClient configure(AppContext appContext, SSLContext sslContext)
 			throws CASException {
 
@@ -73,7 +78,7 @@ public class CASClient {
 	      		casUrl, ticketGrantingTicket,	ddsHttpWebSocketUrl);
 	      logger.info("Got serviceTicket " + serviceTicket);
 	      
-	      String sessionID = getServiceCall(ddsHttpWebSocketUrl, serviceTicket);
+	      sessionID = getServiceCall(ddsHttpWebSocketUrl, serviceTicket);
 	      logger.info("Successful CAS login with sessionID " + sessionID);
 
 	      return sessionID;
