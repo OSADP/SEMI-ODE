@@ -1,13 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2015 Booz | Allen | Hamilton
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2015 US Federal Government
+ *
+ * The Government has unlimited rights to all documents/material produced under 
+ * this task order. All documents and materials, to include the source code of 
+ * any software produced under this contract, shall be Government owned and the 
+ * property of the Government with all rights and privileges of ownership/copyright 
+ * belonging exclusively to the Government. These documents and materials may 
+ * not be used or sold by the Contractor without written permission from the CO.
+ * All materials supplied to the Government shall be the sole property of the 
+ * Government and may not be used for any other purpose. This right does not 
+ * abrogate any other Government rights.
  *
  * Contributors:
  *     Booz | Allen | Hamilton - initial API and implementation
  *******************************************************************************/
+
 package com.bah.ode.wrapper;
 
 import java.io.InputStream;
