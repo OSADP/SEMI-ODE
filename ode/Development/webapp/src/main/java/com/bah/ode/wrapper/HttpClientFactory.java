@@ -52,7 +52,7 @@ import org.apache.http.util.EntityUtils;
  *  <li>Use {@link HttpClient} object to send HTTP GET, POST and other requests
  *  to the server using {@link HttpClient#get(String, Map, Map)}, 
  *  {@link HttpClient#post(String, Map, Map, String)} methods. </li>
- *  <li>Use the returned {@link #HttpResponse} object to retrieve the various
+ *  <li>Use the returned {@link HttpResponse} object to retrieve the various
  *  components of a response including: {@link HttpResponse#getBody()} and
  *  {@link HttpResponse#getStatusCode()}</li>
  * </ol>
@@ -74,11 +74,13 @@ public class HttpClientFactory {
       /**
        * Sends HTTP GET request to <code>server</code> with the given 
        * <code>headers</code> and specified <code>params</code>.
-       * @param server to which request will be sent
-       * @param headers request headers
-       * @param params request query parameters
-       * @return server response.
-       * @throws HttpException
+       * 
+       * @param server - to which request will be sent
+       * @param headers - request headers
+       * @param params - request query parameters
+       * @return the server's response.
+       * @throws HttpException - in case of a problem or the connection was 
+       * aborted or an http protocol error
        */
       public HttpResponse get(String server, Map<String, String> headers,
             Map<String, String> params) throws HttpException {
@@ -102,11 +104,14 @@ public class HttpClientFactory {
       /**
        * Sends HTTP POST request to <code>server</code> with the given 
        * <code>headers</code> and specified <code>params</code> and <code>body</code>.
-       * @param server to which request will be sent
-       * @param headers request headers
-       * @param params request query parameters
-       * @param body of the post request. The resource being posted in a REST call.
-       * @throws HttpException
+       * 
+       * @param server - to which request will be sent
+       * @param headers - request headers
+       * @param params - request query parameters
+       * @param body - the body of the post request
+       * @return the server's response.
+       * @throws HttpException - in case of a problem or the connection was 
+       * aborted or an http protocol error
        */
       public HttpResponse post(String server, Map<String, String> headers,
             Map<String, String> params, String body) throws HttpException {
@@ -130,6 +135,18 @@ public class HttpClientFactory {
          }
       }
 
+      /**
+       * Executes a HTTP Client request using the given parameters.
+       * 
+       * @param headers - request headers
+       * @param params - request query parameters
+       * @param builder - the {@link RequestBuilder} to be used for building the
+       * request.
+       * @return the {@link CloseableHttpResponse} returned by the server
+       * @throws IOException - in case of a problem or the connection was aborted 
+       * @throws ClientProtocolException - in case of an http protocol error       
+       * 
+       */
       private CloseableHttpResponse executeRequest(Map<String, String> headers,
             Map<String, String> params, RequestBuilder builder)
             throws IOException, ClientProtocolException {
@@ -154,7 +171,9 @@ public class HttpClientFactory {
       }
 
       /**
-       * @return returning the cookie parameters from the HTTP connection.
+       * Returns the cookies. 
+       * 
+       * @return - returning the cookie parameters from the HTTP connection.
        */
       public Map<String, String> getCookies() {
          ConcurrentHashMap<String, String> cookies = new ConcurrentHashMap<String, String>();
@@ -168,7 +187,7 @@ public class HttpClientFactory {
       /**
        * Closes the connection.
        * 
-       * @throws HttpException
+       * @throws HttpException - in case an I/O error occurs 
        */
       public void close() throws HttpException {
          try {
@@ -188,25 +207,48 @@ public class HttpClientFactory {
       private Response.Status statucCode;
       private String body;
 
+      /**
+       * General constructor.
+       * 
+       * @param statucCode - response status code
+       * @param body - response body
+       */
       private HttpResponse(Response.Status statucCode, String body) {
          super();
          this.statucCode = statucCode;
          this.body = body;
       }
 
+      /**
+       * @return - status code
+       */
       public Response.Status getStatusCode() {
          return statucCode;
       }
 
+      /**
+       * Sets the status code in the response object 
+       * @param statucCode - the status code
+       * @return the response object.
+       */
       public HttpResponse setStatucCode(Response.Status statucCode) {
          this.statucCode = statucCode;
          return this;
       }
 
+      /**
+       * @return the response body.
+       */
       public String getBody() {
          return body;
       }
 
+      /**
+       * Sets the response body/entity.
+       * 
+       * @param body - the response body/entity. 
+       * @return - the response object.
+       */
       public HttpResponse setBody(String body) {
          this.body = body;
          return this;
@@ -224,11 +266,11 @@ public class HttpClientFactory {
    }
 
    /**
-    * Method to build a HTTP client factory.
+    * Builds {@link HttpClientFactory} object which is used to create {@link HttpClient} object.
     * 
-    * @param sslContext
+    * @param sslContext with which the client factory to be built.
     * @return {@link HttpClientFactory} object
-    * @throws HttpException
+    * @throws HttpException if building the socket factory fails.
     */
    public static HttpClientFactory build(SSLContext sslContext)
          throws HttpException {
@@ -244,7 +286,9 @@ public class HttpClientFactory {
    }
 
    /**
-    * @param sslContext
+    * Builds a {@link SSLConnectionSocketFactory} object
+    * 
+    * @param sslContext with which the client factory to be built.
     * @return SSL connection factory object that is used to create SSL socket
     * connections. 
     */
@@ -257,11 +301,12 @@ public class HttpClientFactory {
    }
 
    /**
+    * Creates a {@link CloseableHttpClient} object.
     * @param cookieStore
     *           or null if no cookies required
     * @param sslSocketFactory
     *           or null if not using SSL
-    * @return
+    * @return a {@link CloseableHttpClient} object
     */
    private static CloseableHttpClient buildHttpClient(CookieStore cookieStore,
          SSLConnectionSocketFactory sslSocketFactory) {
@@ -269,6 +314,10 @@ public class HttpClientFactory {
             .setSSLSocketFactory(sslSocketFactory).build();
    }
 
+   /**
+    * Creates a {@link HttpClient} object.
+    * @return a new {@link HttpClient} object
+    */
    public HttpClient createHttpClient() {
       HttpClient httpClient = new HttpClient();
 

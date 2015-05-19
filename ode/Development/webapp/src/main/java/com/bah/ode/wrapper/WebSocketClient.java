@@ -206,10 +206,10 @@ public class WebSocketClient<T> extends Endpoint {
    }
    
    /**
-    * Send a message.
+    * Sends a message to the server end-point.
     *
-    * @param message
-    * @throws WebSocketException 
+    * @param message - the message to be sent
+    * @throws WebSocketException - if WebSocket session is not established.
     */
    public void send(String message) throws WebSocketException {
 		if (null != wsSession)

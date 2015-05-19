@@ -104,8 +104,7 @@ public class DdsClient extends Endpoint {
    /**
     * Send a message.
     *
-    * @param user
-    * @param message
+    * @param message to be send to remote server
     */
    public void send(String message) {
        this.wsSession.getAsyncRemote().sendText(message);

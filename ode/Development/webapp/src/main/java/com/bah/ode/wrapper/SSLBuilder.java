@@ -44,7 +44,10 @@ public class SSLBuilder {
     *           blank is passed as password.
     *           
     * @return SSLContext object
-    * @throws SSLException
+    * @throws SSLException 
+    *    - if no Provider supports a KeyStoreSpi implementation for the specified type.
+    *    - if an I/O error occurs
+    *    - or any other causes will be attached to the exception. 
     */
    public static SSLContext buildSSLContext(
          InputStream keystoreStream,

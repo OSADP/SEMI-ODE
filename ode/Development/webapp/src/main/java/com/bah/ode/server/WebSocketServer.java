@@ -24,11 +24,9 @@ import com.bah.ode.wrapper.WebSocketClient;
 import com.bah.ode.wrapper.WebSocketClient.WebSocketException;
 
 /**
- * @ServerEndpoint gives the relative name for the end point This will be
- *                 accessed via ws://host:8080/ode/ws Where
- *                 "host" is the address of the host, "ode" is the
- *                 context root and "ws" is the address to access this
- *                 class from the server
+ * gives the relative name for the end point. This will be accessed via
+ * ws://ip:port/ode/ws Where "ip" is the IP address of the host, "ode" is the
+ * context root and "ws" is the address to access this class from the server
  */
 @ServerEndpoint("/api/ws/{rtype}/{dtype}")
 public class WebSocketServer {
@@ -38,9 +36,28 @@ public class WebSocketServer {
 
 	
 	/**
-	 * @OnOpen allows us to intercept the creation of a new session. The session
-	 *         class allows us to send data to the user. In the method onOpen,
-	 *         we'll let the user know that the handshake was successful.
+	 * @OnOpen 
+	 */
+	/**
+	 * Allows us to intercept the creation of a new session. The session
+    * class allows us to send data to the user. In the method onOpen,
+    * we'll let the user know that the handshake was successful.
+    * 
+    * @param session - The WebSocket session that was just opened
+	 * @param endpointConfig - the end-point configuration object
+	 * @param rtype - the path parameter identifying the request type. 
+	 * Valid rtypes are: 
+	 * <ul>
+	 * <li>sub - subscription request</li>
+	 * <li>qry - QUery request</li>
+	 * </ul> 
+	 * @param dtype - the path parameter identifying the data type being requested.
+	 * Valid <code>dtype</code> values are:
+	 *  <ul>
+	 *  <li>ints - Intersection data</li>
+	 *  <li>vehs - Vehicle data</li>
+	 *  <li>aggs - Aggregate data</li>
+	 *  </ul>
 	 */
 	@OnOpen
 	public void onOpen(
@@ -96,8 +113,25 @@ public class WebSocketServer {
 
 	/**
 	 * When a user sends a message to the server, this method will intercept the
-	 * message and allow us to react to it. For now the message is read as a
-	 * String.
+    * message and allow us to react to it. For now the message is read as a
+    * String.	 
+    * 
+    * @param session - WebSocket session object
+	 * @param message - message received
+	 * @param last - true if this is the last message in a partial message transfer
+    * @param rtype - the path parameter identifying the request type. 
+    * Valid rtypes are: 
+    * <ul>
+    * <li>sub - subscription request</li>
+    * <li>qry - QUery request</li>
+    * </ul> 
+    * @param dtype - the path parameter identifying the data type being requested.
+    * Valid <code>dtype</code> values are:
+    *  <ul>
+    *  <li>ints - Intersection data</li>
+    *  <li>vehs - Vehicle data</li>
+    *  <li>aggs - Aggregate data</li>
+    *  </ul>
 	 */
 	@OnMessage
 	public void onMessage(
@@ -162,9 +196,11 @@ public class WebSocketServer {
 	}
 
 	/**
-	 * The user closes the connection.
-	 * 
-	 * Note: you can't send messages to the client from this method
+    * The user closes the connection.
+    * 
+    * Note: you can't send messages to the client from this method
+	 * @param session - the session that was closed
+	 * @param reason - the reson the session was closed
 	 */
 	@OnClose
 	public void onClose(

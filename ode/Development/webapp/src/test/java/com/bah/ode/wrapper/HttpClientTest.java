@@ -8,13 +8,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.core.Response;
 
 import mockit.Expectations;
 import mockit.Mocked;
-import mockit.StrictExpectations;
 import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
 
@@ -26,6 +26,7 @@ import org.apache.http.ProtocolVersion;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicStatusLine;
@@ -34,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.bah.ode.wrapper.HttpClientFactory.HttpClient;
+import com.bah.ode.wrapper.HttpClientFactory.HttpException;
 import com.bah.ode.wrapper.HttpClientFactory.HttpResponse;
 
 @RunWith(JMockit.class)
@@ -45,10 +47,10 @@ public class HttpClientTest {
    @Mocked
    CloseableHttpClient closeableHttpClient;
 
+   @SuppressWarnings("deprecation")
    @Test
    public void testGet() throws Exception {
-      try {
-         
+      { // BEGIN Happy Path
          URI uri = new URI("http://ip:port/path");
          String headerKey = "headerKey";
          String headerValue = "headerValue";
@@ -56,83 +58,241 @@ public class HttpClientTest {
          String paramValue = "paramValue";
          String entityContent = "entityContent";
          
-//         HttpUriRequest request = RequestBuilder
-//               .get(uri)
-//               .addHeader(headerKey, headerValue)
-//               .addParameter(paramKey, paramValue)
-//               .build();
+         MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
+         closeableresponse.setStatusLine(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 
+               HttpStatus.SC_OK, "SUCCESS"));
+         BasicHttpEntity entity = new BasicHttpEntity();
+         entity.setContent(new ByteArrayInputStream(entityContent.getBytes()));
+         closeableresponse.setEntity(entity);
+         HttpUriRequest request = RequestBuilder
+               .get(uri)
+               .addHeader(headerKey, headerValue)
+               .addParameter(paramKey, paramValue)
+               .build();
          
-         { // BEGIN Happy Path with StrictExpectations (No Verifications block allowed)
-            MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
-            closeableresponse.setStatusLine(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 
-                  HttpStatus.SC_OK, "SUCCESS"));
-            BasicHttpEntity entity = new BasicHttpEntity();
-            entity.setContent(new ByteArrayInputStream(entityContent.getBytes()));
-            closeableresponse.setEntity(entity);
-            HttpUriRequest request = null;
-            
-            new StrictExpectations() {{
-               // Note: withAny returns the request,, that's why object instance
-               ///      is passed rather than a type.
-               closeableHttpClient.execute(withAny(request)); result = closeableresponse;
-            }};
-   
-            HttpClient client = HttpClientFactory.build(sslContext).createHttpClient();
-   
-            HttpResponse response = client.get(uri.toString(), 
-                  Collections.singletonMap(headerKey, headerValue), 
-                  Collections.singletonMap(paramKey, paramValue));
-            
-            assertEquals(entityContent, response.getBody());
-            assertEquals(Response.Status.OK, response.getStatusCode());
-            
-            closeableresponse.close();
-         }// END Happy Path
+         new Expectations() {{
+            // Note: withAny returns the request,, that's why object instance
+            ///      is passed rather than a type.
+            closeableHttpClient.execute(withAny(request)); result = closeableresponse;
+         }};
 
-         { // BEGIN Null params with non-Strict Expectations but with Explicit Verifications
-            MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
-            closeableresponse.setStatusLine(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 
-                  HttpStatus.SC_BAD_REQUEST, "FAILURE"));
-            BasicHttpEntity entity = new BasicHttpEntity();
-            entity.setContent(new ByteArrayInputStream("".getBytes()));
-            closeableresponse.setEntity(entity);
-            HttpUriRequest request = null;
+         HttpClient client = HttpClientFactory.build(sslContext).createHttpClient();
+
+         HttpResponse response = client.get(uri.toString(), 
+               Collections.singletonMap(headerKey, headerValue), 
+               Collections.singletonMap(paramKey, paramValue));
+         
+         assertEquals(entityContent, response.getBody());
+         assertEquals(Response.Status.OK, response.getStatusCode());
+         
+         closeableresponse.close();
+
+         new Verifications() {{
+            HttpUriRequest captured;
+            closeableHttpClient.execute(captured = withCapture());
+            assertEquals(request.toString(), captured.toString());
             
-            new Expectations() {{
-               closeableHttpClient.execute(withAny(request)); result = closeableresponse;
-            }};
-   
-            HttpClient client = HttpClientFactory.build(sslContext).createHttpClient();
-   
-            HttpResponse response = client.get(null, null, null);
+            Header[] capturedHeaders = captured.getAllHeaders();
+            assertEquals(1, capturedHeaders.length);
+            assertEquals(headerKey, capturedHeaders[0].getName());
+            assertEquals(headerValue, capturedHeaders[0].getValue());
+         }};
+      }// END Happy Path
+
+      { // BEGIN simulating a bad request
+         MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
+         closeableresponse.setStatusLine(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 
+               HttpStatus.SC_BAD_REQUEST, "FAILURE"));
+         BasicHttpEntity entity = new BasicHttpEntity();
+         entity.setContent(new ByteArrayInputStream("".getBytes()));
+         closeableresponse.setEntity(entity);
+         HttpUriRequest request = RequestBuilder.get().build();
+         
+         new Expectations() {{
+            closeableHttpClient.execute(withAny(request)); result = closeableresponse;
+         }};
+
+         HttpClient client = HttpClientFactory.build(sslContext).createHttpClient();
+
+         HttpResponse response = client.get(null, null, null);
+         
+         assertEquals("", response.getBody());
+         assertEquals(Response.Status.BAD_REQUEST, response.getStatusCode());
+         
+         closeableresponse.close();
+         
+         new Verifications() {{
+            HttpUriRequest captured;
+            closeableHttpClient.execute(captured = withCapture());
             
-            assertEquals("", response.getBody());
-            assertEquals(Response.Status.BAD_REQUEST, response.getStatusCode());
+            assertEquals(request.toString(), captured.toString());
+
+            Header[] capturedHeaders = captured.getAllHeaders();
+            assertEquals(0, capturedHeaders.length);
+         }};
+      }// END simulating a bad request
+
+      { // BEGIN execute throws exception
+         HttpUriRequest request = RequestBuilder.get().build();
+         
+         new Expectations() {{
+            closeableHttpClient.execute(withAny(request)); result = new IOException();
+         }};
+
+         HttpClient client = HttpClientFactory.build(sslContext).createHttpClient();
+
+         try {
+            client.get(null, null, null);
+            fail("Exception was aexpected.");
+         } catch (HttpException e) {
             
-            closeableresponse.close();
+         } catch (Exception e) {
+            fail("Unexpected Exception." + e);
+         }
+         
+         new Verifications() {{
+            HttpUriRequest captured;
+            closeableHttpClient.execute(captured = withCapture());
             
-            new Verifications() {{
-               closeableHttpClient.execute(withAny(request));
-            }};
-         }// END null params
-      } catch (Exception e) {
-         throw e;
-      }
+            assertEquals(request.toString(), captured.toString());
+
+            Header[] capturedHeaders = captured.getAllHeaders();
+            assertEquals(0, capturedHeaders.length);
+         }};
+      }// END execute throws exception
    }
 
    @Test
-   public void testPost() {
-      fail("Not yet implemented"); // TODO
+   public void testPost() throws Exception {
+      { // BEGIN Happy Path
+         URI uri = new URI("http://ip:port/path");
+         String headerKey = "headerKey";
+         String headerValue = "headerValue";
+         String paramKey = "paramKey";
+         String paramValue = "paramValue";
+         String entityContent = "entityContent";
+         
+         MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
+         closeableresponse.setStatusLine(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 
+               HttpStatus.SC_OK, "SUCCESS"));
+         BasicHttpEntity entity = new BasicHttpEntity();
+         entity.setContent(new ByteArrayInputStream(entityContent.getBytes()));
+         closeableresponse.setEntity(entity);
+         
+         HttpUriRequest request = RequestBuilder.post(uri)
+               .addHeader(headerKey, headerValue)
+               .addParameter(paramKey, paramValue)
+               .setEntity(entity)
+               .build();
+         
+         new Expectations() {{
+            // Note: withAny returns the request,, that's why object instance
+            ///      is passed rather than a type.
+            closeableHttpClient.execute(withAny(request)); result = closeableresponse;
+         }};
+
+         HttpClient client = HttpClientFactory.build(sslContext).createHttpClient();
+
+         HttpResponse response = client.post(uri.toString(), 
+               Collections.singletonMap(headerKey, headerValue), 
+               Collections.singletonMap(paramKey, paramValue),
+               entityContent);
+         
+         assertEquals(entityContent, response.getBody());
+         assertEquals(Response.Status.OK, response.getStatusCode());
+         
+         closeableresponse.close();
+
+         new Verifications() {{
+            HttpUriRequest captured;
+            closeableHttpClient.execute(captured = withCapture());
+            assertEquals(request.toString(), captured.toString());
+            
+            Header[] capturedHeaders = captured.getAllHeaders();
+            assertEquals(1, capturedHeaders.length);
+            assertEquals(headerKey, capturedHeaders[0].getName());
+            assertEquals(headerValue, capturedHeaders[0].getValue());
+         }};
+      }// END Happy Path
+
+      { // BEGIN simulating a bad request
+         MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
+         closeableresponse.setStatusLine(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 
+               HttpStatus.SC_BAD_REQUEST, "FAILURE"));
+         BasicHttpEntity entity = new BasicHttpEntity();
+         entity.setContent(new ByteArrayInputStream("".getBytes()));
+         closeableresponse.setEntity(entity);
+         HttpUriRequest request = RequestBuilder.post().build();
+         
+         new Expectations() {{
+            closeableHttpClient.execute(withAny(request)); result = closeableresponse;
+         }};
+
+         HttpClient client = HttpClientFactory.build(sslContext).createHttpClient();
+
+         HttpResponse response = client.post(null, null, null, null);
+         
+         assertEquals("", response.getBody());
+         assertEquals(Response.Status.BAD_REQUEST, response.getStatusCode());
+         
+         closeableresponse.close();
+         
+         new Verifications() {{
+            HttpUriRequest captured;
+            closeableHttpClient.execute(captured = withCapture());
+            
+            assertEquals(request.toString(), captured.toString());
+
+            Header[] capturedHeaders = captured.getAllHeaders();
+            assertEquals(0, capturedHeaders.length);
+         }};
+      }// END simulating a bad request
+
+      { // BEGIN execute throws exception
+         HttpUriRequest request = RequestBuilder.post().build();
+         
+         new Expectations() {{
+            closeableHttpClient.execute(withAny(request)); result = new IOException();
+         }};
+
+         HttpClient client = HttpClientFactory.build(sslContext).createHttpClient();
+
+         try {
+            client.post(null, null, null, null);
+            fail("Exception was aexpected.");
+         } catch (HttpException e) {
+            
+         } catch (Exception e) {
+            fail("Unexpected Exception." + e);
+         }
+         
+         new Verifications() {{
+            HttpUriRequest captured;
+            closeableHttpClient.execute(captured = withCapture());
+            
+            assertEquals(request.toString(), captured.toString());
+
+            Header[] capturedHeaders = captured.getAllHeaders();
+            assertEquals(0, capturedHeaders.length);
+         }};
+      }// END execute throws exception
    }
 
    @Test
-   public void testGetCookies() {
-      fail("Not yet implemented"); // TODO
+   public void testGetCookies() throws HttpException {
+      HttpClient client = HttpClientFactory.build(sslContext).createHttpClient();
+      Map<String, String> cookies = client.getCookies();
+      
+      // Not much can be tested here.
+      assertEquals(0, cookies.size());
    }
 
    @Test
-   public void testClose() {
-      fail("Not yet implemented"); // TODO
+   public void testClose() throws Exception {
+      HttpClient client = HttpClientFactory.build(sslContext).createHttpClient();
+      
+      // Not much can be tested here. If no exception is thrown, test is PASSed
+      client.close();
    }
 
    class MockCloseableHttpResponse implements CloseableHttpResponse {
