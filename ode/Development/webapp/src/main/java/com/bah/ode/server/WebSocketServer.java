@@ -36,9 +36,6 @@ public class WebSocketServer {
 
 	
 	/**
-	 * @OnOpen 
-	 */
-	/**
 	 * Allows us to intercept the creation of a new session. The session
     * class allows us to send data to the user. In the method onOpen,
     * we'll let the user know that the handshake was successful.
