@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 US Federal Government
+ * Copyright (c) 2015 US DOT - Joint Program Office
  *
  * The Government has unlimited rights to all documents/material produced under 
  * this task order. All documents and materials, to include the source code of 
@@ -56,7 +56,7 @@ public class WebSocketClient<T> extends Endpoint {
          SSLContext sslContext, Map<String, Object> userProperties,
          Map<String, Map<String, String>> wsHeaders,
          WebSocketMessageHandler<T> handler,
-         List<Class<? extends WebSocketMessageDecoder>> decoders) {
+         List<Class<? extends WebSocketMessageDecoder<?>>> decoders) {
 	   super();
 	   this.uri = uri;
 	   this.sslContext = sslContext;

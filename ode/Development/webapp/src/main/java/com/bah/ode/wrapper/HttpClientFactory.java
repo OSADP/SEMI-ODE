@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 US Federal Government
+ * Copyright (c) 2015 US DOT - Joint Program Office
  *
  * The Government has unlimited rights to all documents/material produced under 
  * this task order. All documents and materials, to include the source code of 
