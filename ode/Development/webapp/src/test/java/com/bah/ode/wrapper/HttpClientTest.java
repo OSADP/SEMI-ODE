@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2015 US DOT - Joint Program Office
+ *
+ * The Government has unlimited rights to all documents/material produced under 
+ * this task order. All documents and materials, to include the source code of 
+ * any software produced under this contract, shall be Government owned and the 
+ * property of the Government with all rights and privileges of ownership/copyright 
+ * belonging exclusively to the Government. These documents and materials may 
+ * not be used or sold by the Contractor without written permission from the CO.
+ * All materials supplied to the Government shall be the sole property of the 
+ * Government and may not be used for any other purpose. This right does not 
+ * abrogate any other Government rights.
+ *
+ * Contributors:
+ *     Booz | Allen | Hamilton - initial API and implementation
+ *******************************************************************************/
 package com.bah.ode.wrapper;
 
 import static org.junit.Assert.assertEquals;
@@ -38,6 +54,7 @@ import com.bah.ode.wrapper.HttpClientFactory.HttpClient;
 import com.bah.ode.wrapper.HttpClientFactory.HttpException;
 import com.bah.ode.wrapper.HttpClientFactory.HttpResponse;
 
+@SuppressWarnings("deprecation")
 @RunWith(JMockit.class)
 public class HttpClientTest {
 
@@ -47,7 +64,6 @@ public class HttpClientTest {
    @Mocked
    CloseableHttpClient closeableHttpClient;
 
-   @SuppressWarnings("deprecation")
    @Test
    public void testGet() throws Exception {
       { // BEGIN Happy Path
@@ -322,146 +338,108 @@ public class HttpClientTest {
 
       @Override
       public void setStatusLine(ProtocolVersion ver, int code) {
-         // TODO Auto-generated method stub
-         
       }
 
       @Override
       public void setStatusLine(ProtocolVersion ver, int code, String reason) {
-         // TODO Auto-generated method stub
-         
       }
 
       @Override
       public void setStatusCode(int code) throws IllegalStateException {
-         // TODO Auto-generated method stub
-         
       }
 
       @Override
       public void setReasonPhrase(String reason) throws IllegalStateException {
-         // TODO Auto-generated method stub
-         
       }
 
       @Override
       public Locale getLocale() {
-         // TODO Auto-generated method stub
          return null;
       }
 
       @Override
       public void setLocale(Locale loc) {
-         // TODO Auto-generated method stub
-         
       }
 
       @Override
       public ProtocolVersion getProtocolVersion() {
-         // TODO Auto-generated method stub
          return null;
       }
 
       @Override
       public boolean containsHeader(String name) {
-         // TODO Auto-generated method stub
          return false;
       }
 
       @Override
       public Header[] getHeaders(String name) {
-         // TODO Auto-generated method stub
          return null;
       }
 
       @Override
       public Header getFirstHeader(String name) {
-         // TODO Auto-generated method stub
          return null;
       }
 
       @Override
       public Header getLastHeader(String name) {
-         // TODO Auto-generated method stub
          return null;
       }
 
       @Override
       public Header[] getAllHeaders() {
-         // TODO Auto-generated method stub
          return null;
       }
 
       @Override
       public void addHeader(Header header) {
-         // TODO Auto-generated method stub
-         
       }
 
       @Override
       public void addHeader(String name, String value) {
-         // TODO Auto-generated method stub
-         
       }
 
       @Override
       public void setHeader(Header header) {
-         // TODO Auto-generated method stub
-         
       }
 
       @Override
       public void setHeader(String name, String value) {
-         // TODO Auto-generated method stub
-         
       }
 
       @Override
       public void setHeaders(Header[] headers) {
-         // TODO Auto-generated method stub
-         
       }
 
       @Override
       public void removeHeader(Header header) {
-         // TODO Auto-generated method stub
-         
       }
 
       @Override
       public void removeHeaders(String name) {
-         // TODO Auto-generated method stub
-         
       }
 
       @Override
       public HeaderIterator headerIterator() {
-         // TODO Auto-generated method stub
          return null;
       }
 
       @Override
       public HeaderIterator headerIterator(String name) {
-         // TODO Auto-generated method stub
          return null;
       }
 
       @Override
       public HttpParams getParams() {
-         // TODO Auto-generated method stub
          return null;
       }
 
       @Override
       public void setParams(HttpParams params) {
-         // TODO Auto-generated method stub
-         
       }
 
       @Override
       public void close() throws IOException {
-         // TODO Auto-generated method stub
-         
       }
       
    }
