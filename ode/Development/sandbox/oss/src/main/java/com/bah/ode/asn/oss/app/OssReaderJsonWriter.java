@@ -17,6 +17,8 @@ import com.bah.ode.asn.oss.semi.FundamentalSituationalStatus;
 import com.bah.ode.asn.oss.semi.VehSitDataMessage;
 import com.bah.ode.asn.oss.semi.VehSitDataMessage.Bundle;
 import com.bah.ode.asn.oss.semi.VehSitRecord;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.oss.asn1.Coder;
 import com.oss.asn1printer.DataPrinter;
 
@@ -66,6 +68,10 @@ public class OssReaderJsonWriter {
 			PrintWriter printOut = new PrintWriter(new PrintStream(filename + ".print"));
 			DataPrinter printer = new DataPrinter();
 			int numPDUs = 0;
+
+			Gson gson = new Gson();
+			ObjectMapper mapper = new ObjectMapper();
+			
 			do {
 				try {
 					VehSitDataMessage value = (VehSitDataMessage) coder.decode(ins, new VehSitDataMessage());
@@ -110,8 +116,11 @@ public class OssReaderJsonWriter {
 										fund.getVsmEventFlag());
 						numPDUs++;
 						jsonOut.println(vsd.toJson());
+//						jsonOut.println(gson.toJson(vsr));
+//						jsonOut.println(mapper.writeValueAsString(vsr));
 						if (trace)
 							printer.print(value, printOut);
+						
 					}
 				} catch (Exception e) {
 					System.out.println("Decode complete.\n" + e.getMessage());
