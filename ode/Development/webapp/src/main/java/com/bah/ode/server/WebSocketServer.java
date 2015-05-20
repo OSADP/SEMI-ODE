@@ -75,12 +75,12 @@ public class WebSocketServer {
 				if (dtype.equals("ints")) {
 			      wsClient = DdsClientFactory.create(
 			      		appContext, 
-			      		session.getAsyncRemote(),
+			      		session,
 			      		IsdDecoder.class);
 				} else if (dtype.equals("vehs")) {
 			      wsClient = DdsClientFactory.create(
 			      		appContext, 
-			      		session.getAsyncRemote(),
+			      		session,
 			      		VsdDecoder.class);
 				}
 				
