@@ -18,6 +18,12 @@ package com.bah.ode.wrapper;
 
 import javax.websocket.MessageHandler;
 
+/**
+ * This interface abstracts the use of {@link MessageHandler.Whole} from the 
+ * rest of the application.
+ * 
+ * @param <T> - the type of message being handled by this message handler.
+ */
 public interface WebSocketMessageHandler<T> extends MessageHandler.Whole<T> {
 
 }

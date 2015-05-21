@@ -18,6 +18,12 @@ package com.bah.ode.wrapper;
 
 import javax.websocket.Decoder;
 
+/**
+ * This interface abstracts the use of {@link Decoder.Text} from the rest of
+ * the application.
+ * 
+ * @param <T> - the type of object being decoded by this decoder.
+ */
 public interface WebSocketMessageDecoder<T> extends Decoder.Text<T> {
 
 
