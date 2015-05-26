@@ -47,9 +47,9 @@ public class SSLBuilderTest {
    @Test
    public void testBuildSSLContext() {
       try {
-         InputStream keystoreFile = 
+         final InputStream keystoreFile = 
                new ByteArrayInputStream("keystoreFile".getBytes());
-         String keystorePass = "keystorePass";
+         final String keystorePass = "keystorePass";
          
          {// BEGIN test custom SSLConext
             new Expectations() {{

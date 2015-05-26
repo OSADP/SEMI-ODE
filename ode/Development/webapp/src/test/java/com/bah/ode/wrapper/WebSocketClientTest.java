@@ -8,7 +8,9 @@ import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.net.ssl.SSLContext;
 import javax.websocket.CloseReason;
@@ -103,11 +105,15 @@ public class WebSocketClientTest {
       String propName = "propName";
       String propValue = "propValue";
       
+      List<Class<? extends WebSocketMessageDecoder<?>>> decoders = 
+            new ArrayList<Class<? extends WebSocketMessageDecoder<?>>>();
+      decoders.add(String2IntegerDecoder.class);
+      
       WebSocketClient<Integer> wsClient = new WebSocketClient<Integer>(
             "http://host:port/path", sslContext, 
-            Collections.singletonMap(propName, propValue), 
+            Collections.singletonMap(propName, (Object)propValue), 
             Collections.singletonMap("headerKey", Collections.singletonMap("headerName", "headerValue")), 
-            handler, Collections.singletonList(String2IntegerDecoder.class));
+            handler, decoders);
       
       assertEquals(2, wsClient.getWsConfig().getUserProperties().size());
       Object actualContext = wsClient.getWsConfig().getUserProperties().get("org.apache.tomcat.websocket.SSL_CONTEXT");
@@ -139,7 +145,7 @@ public class WebSocketClientTest {
    @Test
    public void testConnect() throws URISyntaxException, WebSocketException, DeploymentException, IOException {
       
-      WebSocketClient<Integer> wsClient = new WebSocketClient<Integer>(
+      final WebSocketClient<Integer> wsClient = new WebSocketClient<Integer>(
             "http://host:port/path", null, null, null, handler, null);
       
       new StrictExpectations() {{
@@ -158,7 +164,7 @@ public class WebSocketClientTest {
 
    @Test
    public void testClose() throws URISyntaxException, DeploymentException, IOException, WebSocketException {
-      WebSocketClient<Integer> wsClient = new WebSocketClient<Integer>(
+      final WebSocketClient<Integer> wsClient = new WebSocketClient<Integer>(
             "http://host:port/path", null, null, null, handler, null);
       
       new StrictExpectations() {{
@@ -184,10 +190,10 @@ public class WebSocketClientTest {
 
    @Test
    public void testSend() throws URISyntaxException, DeploymentException, IOException, WebSocketException {
-      WebSocketClient<Integer> wsClient = new WebSocketClient<Integer>(
+      final WebSocketClient<Integer> wsClient = new WebSocketClient<Integer>(
             "http://host:port/path", null, null, null, handler, null);
 
-      String message = "Test Message";
+      final String message = "Test Message";
       
       new StrictExpectations() {{
          ContainerProvider.getWebSocketContainer(); result = container;

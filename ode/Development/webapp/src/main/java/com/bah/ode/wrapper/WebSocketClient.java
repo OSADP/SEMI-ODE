@@ -244,7 +244,7 @@ public class WebSocketClient<T> extends Endpoint {
     * @return - a javax.websocket.ClientEndpointConfig.Configurator object
     */
    private Configurator createConfigurator(
-         Map<String, Map<String, String>> wsHeaders) {
+         final Map<String, Map<String, String>> wsHeaders) {
       return new Configurator() {
          @Override
          public void beforeRequest(Map<String, List<String>> headers) {
@@ -254,7 +254,7 @@ public class WebSocketClient<T> extends Endpoint {
                ArrayList<String> headerValue = new ArrayList<String>();
                for (Entry<String, String> entry : hmap.entrySet()) {
                   StringBuilder nvp = new StringBuilder(entry.getKey());
-                  nvp.append("=").append(hmap.get(entry.getValue()));
+                  nvp.append("=").append(entry.getValue());
                   headerValue.add(nvp.toString());
                }
                headers.put(header, headerValue);
