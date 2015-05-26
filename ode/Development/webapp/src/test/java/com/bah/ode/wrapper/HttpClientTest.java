@@ -68,19 +68,19 @@ public class HttpClientTest {
    public void testGet() throws Exception {
       { // BEGIN Happy Path
          URI uri = new URI("http://ip:port/path");
-         String headerKey = "headerKey";
-         String headerValue = "headerValue";
+         final String headerKey = "headerKey";
+         final String headerValue = "headerValue";
          String paramKey = "paramKey";
          String paramValue = "paramValue";
          String entityContent = "entityContent";
          
-         MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
+         final MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
          closeableresponse.setStatusLine(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 
                HttpStatus.SC_OK, "SUCCESS"));
          BasicHttpEntity entity = new BasicHttpEntity();
          entity.setContent(new ByteArrayInputStream(entityContent.getBytes()));
          closeableresponse.setEntity(entity);
-         HttpUriRequest request = RequestBuilder
+         final HttpUriRequest request = RequestBuilder
                .get(uri)
                .addHeader(headerKey, headerValue)
                .addParameter(paramKey, paramValue)
@@ -116,13 +116,13 @@ public class HttpClientTest {
       }// END Happy Path
 
       { // BEGIN simulating a bad request
-         MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
+         final MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
          closeableresponse.setStatusLine(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 
                HttpStatus.SC_BAD_REQUEST, "FAILURE"));
          BasicHttpEntity entity = new BasicHttpEntity();
          entity.setContent(new ByteArrayInputStream("".getBytes()));
          closeableresponse.setEntity(entity);
-         HttpUriRequest request = RequestBuilder.get().build();
+         final HttpUriRequest request = RequestBuilder.get().build();
          
          new Expectations() {{
             closeableHttpClient.execute(withAny(request)); result = closeableresponse;
@@ -149,7 +149,7 @@ public class HttpClientTest {
       }// END simulating a bad request
 
       { // BEGIN execute throws exception
-         HttpUriRequest request = RequestBuilder.get().build();
+         final HttpUriRequest request = RequestBuilder.get().build();
          
          new Expectations() {{
             closeableHttpClient.execute(withAny(request)); result = new IOException();
@@ -182,20 +182,20 @@ public class HttpClientTest {
    public void testPost() throws Exception {
       { // BEGIN Happy Path
          URI uri = new URI("http://ip:port/path");
-         String headerKey = "headerKey";
-         String headerValue = "headerValue";
+         final String headerKey = "headerKey";
+         final String headerValue = "headerValue";
          String paramKey = "paramKey";
          String paramValue = "paramValue";
          String entityContent = "entityContent";
          
-         MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
+         final MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
          closeableresponse.setStatusLine(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 
                HttpStatus.SC_OK, "SUCCESS"));
          BasicHttpEntity entity = new BasicHttpEntity();
          entity.setContent(new ByteArrayInputStream(entityContent.getBytes()));
          closeableresponse.setEntity(entity);
          
-         HttpUriRequest request = RequestBuilder.post(uri)
+         final HttpUriRequest request = RequestBuilder.post(uri)
                .addHeader(headerKey, headerValue)
                .addParameter(paramKey, paramValue)
                .setEntity(entity)
@@ -232,13 +232,13 @@ public class HttpClientTest {
       }// END Happy Path
 
       { // BEGIN simulating a bad request
-         MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
+         final MockCloseableHttpResponse closeableresponse = new MockCloseableHttpResponse();
          closeableresponse.setStatusLine(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 
                HttpStatus.SC_BAD_REQUEST, "FAILURE"));
          BasicHttpEntity entity = new BasicHttpEntity();
          entity.setContent(new ByteArrayInputStream("".getBytes()));
          closeableresponse.setEntity(entity);
-         HttpUriRequest request = RequestBuilder.post().build();
+         final HttpUriRequest request = RequestBuilder.post().build();
          
          new Expectations() {{
             closeableHttpClient.execute(withAny(request)); result = closeableresponse;
@@ -265,7 +265,7 @@ public class HttpClientTest {
       }// END simulating a bad request
 
       { // BEGIN execute throws exception
-         HttpUriRequest request = RequestBuilder.post().build();
+         final HttpUriRequest request = RequestBuilder.post().build();
          
          new Expectations() {{
             closeableHttpClient.execute(withAny(request)); result = new IOException();

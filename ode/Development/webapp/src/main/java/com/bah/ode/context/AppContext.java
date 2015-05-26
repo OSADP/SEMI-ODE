@@ -21,6 +21,9 @@ import java.util.Enumeration;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.spark.SparkConf;
+import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,10 +57,17 @@ public class AppContext {
 	public static final String DEPOSIT_SYSTEM_NAME = "deposit.system.name";
 	public static final String DEPOSIT_ENCODE_TYPE = "deposit.encode.type";
 	public static final String DEPOSIT_DELAY = "deposit.delay";
+	
+	//Spark parameters
+   public static final String SPARK_MASTER = "spark.master";
+   public static final String SPARK_STREAMING_DEFAULT_DURATION = "spark.streaming.default.duration";
 
    private static AppContext instance = null;
 
    private ServletContext servletContext;
+   
+   private SparkConf sparkConf;
+   private JavaStreamingContext sparkDefaultContext;
 
    public static String getServletBaseUrl(HttpServletRequest request) {
       String proto = request.getScheme();
@@ -72,6 +82,18 @@ public class AppContext {
 
    public void init(ServletContext context) {
       this.servletContext = context;
+/*      
+      sparkConf = new SparkConf()
+         .setMaster(getParam(SPARK_MASTER))
+         .setAppName(context.getServletContextName());
+      
+      sparkDefaultContext = 
+            new JavaStreamingContext(
+                  sparkConf, 
+                  Durations.seconds(
+                        Integer.parseInt(
+                              getParam(SPARK_STREAMING_DEFAULT_DURATION))));
+*/      
       @SuppressWarnings("unchecked")
       Enumeration<String> parmNames = context.getInitParameterNames();
 
@@ -96,6 +118,18 @@ public class AppContext {
       }
 
       return result;
+   }
+
+   public ServletContext getServletContext() {
+      return servletContext;
+   }
+
+   public SparkConf getSparkConf() {
+      return sparkConf;
+   }
+
+   public JavaStreamingContext getSparkDefaultContext() {
+      return sparkDefaultContext;
    }
 
 }
