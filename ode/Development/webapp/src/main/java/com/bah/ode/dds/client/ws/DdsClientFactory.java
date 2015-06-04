@@ -19,7 +19,9 @@ package com.bah.ode.dds.client.ws;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
@@ -60,9 +62,13 @@ public class DdsClientFactory {
                .singletonMap("Cookie", Collections.singletonMap(
                      AppContext.JSESSIONID_KEY, casClient.getSessionID()));
 
+         List<Class<? extends WebSocketMessageDecoder<?>>> decoders = 
+               new ArrayList<Class<? extends WebSocketMessageDecoder<?>>>();
+         decoders.add(decoderClass);
+         
          ddsClient = new WebSocketClient<DdsData>(uri, sslContext, null,
                cookieHeader, new DdsMessageHandler(clientApp),
-               Collections.singletonList(decoderClass));
+               decoders);
 
       } catch (Exception e) {
          throw new DdsClientException(e);
