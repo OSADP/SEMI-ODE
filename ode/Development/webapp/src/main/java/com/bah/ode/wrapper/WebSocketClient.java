@@ -244,7 +244,7 @@ public class WebSocketClient<T> extends Endpoint {
     * @return - a javax.websocket.ClientEndpointConfig.Configurator object
     */
    private Configurator createConfigurator(
-         Map<String, Map<String, String>> wsHeaders) {
+         final Map<String, Map<String, String>> wsHeaders) {
       return new Configurator() {
          @Override
          public void beforeRequest(Map<String, List<String>> headers) {
