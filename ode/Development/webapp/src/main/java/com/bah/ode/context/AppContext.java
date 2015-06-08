@@ -30,7 +30,9 @@ public class AppContext {
    public static final String WEB_SERVER_ROOT = "web.server.root";
    public static final String LIFERAY_DB_NAME = "liferay.db.name";
    public static final String LIFERAY_DB_HOST = "liferay.db.host";
-
+   public static final String LIFERAY_WS_SERVER_HOST = "liferay.ws.serverhost";
+   public static final String LIFERAY_WS_COMPANY_ID = "liferay.ws.companyId";
+		  
    public static final String MAIL_SMTP_HOST = "mail.smtp.host";
    public static final String MAIL_SMTP_PORT = "mail.smtp.port";
    public static final String MAIL_SMTP_SOCKET_FACTORY_PORT = "mail.smtp.socketFactory.port";
