@@ -59,16 +59,28 @@ public final class OdeSparkApp {
 
    public static void main(String[] args) {
       try {
-         if (args.length < 2) {
-            System.err.println("Usage: JavaNetworkWordCount <hostname> <port>");
+         System.out.println("num args: " + args.length);
+         if (args.length > 0) {
+            System.out.println("args:");
+            for (int i = 0; i < args.length; i++)
+               System.out.println(args[i]);
+            
+         }
+         
+         if (args.length < 3) {
+            System.err.println("Usage: "
+                  + OdeSparkApp.class.getName() 
+                  + " <spark app name> <spark app microbatch duration> <"
+                  + DdsRequest.class.getName() 
+                  + " in JSON format>");
             System.exit(1);
          }
 
          AppContext appContext = AppContext.getInstance();
-         appContext.init(args[0],Long.parseLong(args[1]));
+         appContext.init(args[0], Long.parseLong(args[1]));
 
          OdeSparkApp app = new OdeSparkApp(appContext);
-         app.init(args[3]);
+         app.init(args[2]);
       } catch (Exception e) {
          e.printStackTrace();
       }
