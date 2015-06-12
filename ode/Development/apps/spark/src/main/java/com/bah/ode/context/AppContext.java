@@ -22,7 +22,6 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import org.apache.spark.SparkConf;
-import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,8 @@ import org.slf4j.LoggerFactory;
 public class AppContext {
    private static Logger logger = LoggerFactory.getLogger(AppContext.class);
 
+   public static final String NET_DEBUG = "javax.net.debug";
+   
    public static final String JSESSIONID_KEY = "JSESSIONID";
    public static final String DDS_DOMAIN = "dds.domain";
    public static final String DDS_PORT = "dds.port";
@@ -40,11 +41,12 @@ public class AppContext {
    public static final String DDS_CAS_USERNAME = "dds.cas.username";
    public static final String DDS_CAS_PASSWORD = "dds.cas.password";
 
-   private static Properties prop = new Properties();
+   private static Properties props = new Properties();
    private static AppContext instance = null;
 
    private SparkConf sparkConf;
    private JavaStreamingContext sparkStreamingContext;
+
 
    private AppContext() {
    }
@@ -63,21 +65,28 @@ public class AppContext {
          }
 
          // load a properties file from class path
-         prop.load(input);
+         props.load(input);
 
-         Enumeration<Object> parmNames = prop.elements();
+         Enumeration<Object> keys = props.keys();
    
-         while (parmNames.hasMoreElements()) {
-            String param = (String) parmNames.nextElement();
-            logger.debug("Configuration Parameter {}:{}", param,
-                  prop.getProperty(param));
+         while (keys.hasMoreElements()) {
+            String key = (String) keys.nextElement();
+            logger.debug("Configuration Parameter {}:{}", key,
+                  props.getProperty(key));
          }
 
-         sparkConf = new SparkConf()
-            .setAppName(appName);
-
-         sparkStreamingContext = new JavaStreamingContext(sparkConf,
-               Durations.seconds(duration));
+         String workingDir = System.getProperty("user.dir");
+         System.out.println("Working Directory: " + workingDir);
+         
+         String debug = getParam(NET_DEBUG);
+         if (debug != null) {
+            System.setProperty("javax.net.debug", debug);
+         }
+         
+//         sparkConf = new SparkConf().setAppName(appName);
+//
+//         sparkStreamingContext = new JavaStreamingContext(sparkConf,
+//               Durations.seconds(duration));
       
       } finally {
          if (input != null) {
@@ -98,7 +107,7 @@ public class AppContext {
    public String getParam(String key) {
       String result = null;
       if (key != null) {
-         result = prop.getProperty(key);
+         result = props.getProperty(key);
       }
 
       return result;

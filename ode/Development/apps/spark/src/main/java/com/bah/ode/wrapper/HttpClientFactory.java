@@ -17,6 +17,7 @@
 package com.bah.ode.wrapper;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -294,6 +295,12 @@ public class HttpClientFactory {
     */
    private static SSLConnectionSocketFactory buildSSLConnectionSocketFactory(
          SSLContext sslContext) {
+      ClassLoader classLoader = HttpClientFactory.class.getClassLoader();
+      URL resource = 
+            classLoader.getResource("org/apache/http/conn/ssl/SSLConnectionSocketFactory.class");
+      
+      System.out.println(resource);
+      
       SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
             sslContext, new String[] { "TLSv1" }, null,
             SSLConnectionSocketFactory.getDefaultHostnameVerifier());

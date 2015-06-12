@@ -29,13 +29,14 @@ import javax.websocket.ClientEndpointConfig;
 import javax.websocket.ClientEndpointConfig.Builder;
 import javax.websocket.ClientEndpointConfig.Configurator;
 import javax.websocket.CloseReason;
-import javax.websocket.ContainerProvider;
 import javax.websocket.Decoder;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
-import javax.websocket.WebSocketContainer;
 
+import org.glassfish.tyrus.client.ClientManager;
+import org.glassfish.tyrus.client.ClientProperties;
+import org.glassfish.tyrus.client.SslEngineConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +53,8 @@ public class WebSocketClient<T> extends Endpoint {
    private List<Class<? extends Decoder>> decoders = new ArrayList<Class<? extends Decoder>>();;
    private Configurator configurator;
    private ClientEndpointConfig wsConfig;
+   private final ClientManager clientManager = 
+         ClientManager.createClient("org.glassfish.tyrus.container.jdk.client.JdkClientContainer");
 
    /**
     * General Constructor
@@ -122,10 +125,13 @@ public class WebSocketClient<T> extends Endpoint {
 
       this.wsConfig = builder.build();
 
-      if (sslContext != null)
-         wsConfig.getUserProperties().put(
-               "org.apache.tomcat.websocket.SSL_CONTEXT", sslContext);
-
+      if (this.sslContext != null) {
+         SslEngineConfigurator sslEngineConfigurator =
+             new SslEngineConfigurator(this.sslContext);
+         clientManager.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR,
+             sslEngineConfigurator);
+      }
+      
       if (this.userProperties != null) {
          for (String key : userProperties.keySet()) {
             Object prop = userProperties.get(key);
@@ -221,11 +227,11 @@ public class WebSocketClient<T> extends Endpoint {
     */
    public Session connect() throws WebSocketException {
       try {
-         WebSocketContainer container = ContainerProvider
-               .getWebSocketContainer();
+//         WebSocketContainer container = ContainerProvider
+//               .getWebSocketContainer();
 
          logger.info("Opening connection to {}", uri.toString());
-         wsSession = container.connectToServer(this, wsConfig, uri);
+         wsSession = clientManager.connectToServer(this, wsConfig, uri);
          wsSession.addMessageHandler(this.handler);
       } catch (Exception e) {
          throw new WebSocketException(e);
