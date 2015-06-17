@@ -3,6 +3,7 @@ package com.bah.ode.api.sec.filters;
 import java.io.IOException;
 
 import javax.annotation.Priority;
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -23,17 +24,22 @@ import com.bah.ode.api.sec.filters.LiferayWSClient;
 @Priority(Priorities.AUTHENTICATION)
 public class LiferayAuthenticationFilter implements ContainerRequestFilter {
 	
+	public static String AUTH_HEADER = "Authorization";
+	
 	private static final Logger logger = LoggerFactory
 		      .getLogger(LiferayAuthenticationFilter.class);
 	
 	@Context
 	private ServletContext context;
 	
+	@Inject
+	private LiferayWSClient client;
+	
 	@Override
 	public void filter(ContainerRequestContext requestContext)
 			throws IOException {
 	  
-		String auth = requestContext.getHeaderString("authorization");
+		String auth = requestContext.getHeaderString(AUTH_HEADER);
         String [] lap = decode(auth); 
 		
         
@@ -44,10 +50,7 @@ public class LiferayAuthenticationFilter implements ContainerRequestFilter {
                 .entity("Missing Username or Password").build());	
 		}
         long userId; 
-    		
-        LiferayWSClient client = new LiferayWSClient(context.getInitParameter(AppContext.LIFERAY_WS_SERVER_HOST), 
-        											 context.getInitParameter(AppContext.LIFERAY_WS_COMPANY_ID));
-        
+    
         try
 		{
        	  // Get user Id with supplied email and password
@@ -61,9 +64,9 @@ public class LiferayAuthenticationFilter implements ContainerRequestFilter {
     			 Response.status(Response.Status.UNAUTHORIZED)
                 .entity("Unable to Authenticate. Error" +e.toString()).build());	
          }  
-         
+
     }
-	 
+		 
     /**
      * Decode the basic auth and convert it to array login/password
      * @param auth The string encoded authentication
@@ -83,6 +86,8 @@ public class LiferayAuthenticationFilter implements ContainerRequestFilter {
             
             //Decode the Base64 into byte[]
             byte[] decodedBytes = DatatypeConverter.parseBase64Binary(auth);
+            
+            // check for  plain text in the password. (ugh) 
             
             //If the decode fails in any case
             if(decodedBytes == null || decodedBytes.length == 0){
