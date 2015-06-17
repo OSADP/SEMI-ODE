@@ -1,5 +1,6 @@
 package com.bah.ode.api.sec.filters;
 
+import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
@@ -9,6 +10,7 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class LiferayWSClient {
 	
 	private static final Logger logger = LoggerFactory
@@ -16,6 +18,12 @@ public class LiferayWSClient {
 	
 	final  String liferayHostname;
 	final  String companyId; 
+	
+	public LiferayWSClient() {
+	 
+			this(null,null);		
+	}
+	
 	
 	public LiferayWSClient(String hostname, String liferayCompanyId) {
 		this.liferayHostname = hostname;
