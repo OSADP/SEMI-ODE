@@ -16,11 +16,16 @@
  *******************************************************************************/
 package com.bah.ode.dds.client.ws;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.bah.ode.model.DdsData;
 import com.bah.ode.wrapper.DataProcessor;
 import com.bah.ode.wrapper.WebSocketMessageHandler;
 
 public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
+   private static final Logger logger = LoggerFactory
+         .getLogger(DdsMessageHandler.class);
 
    protected DataProcessor<DdsData> processor;
 
@@ -30,8 +35,12 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
 
    @Override
    public void onMessage(DdsData ddsData) {
-      if (processor != null && ddsData.haveData()) {
-         processor.process(ddsData);
+      try {
+         if (processor != null && ddsData.haveData()) {
+            processor.process(ddsData);
+         }
+      } catch (Exception e) {
+         logger.error("Error processing DDS Data", e);
       }
    }
 

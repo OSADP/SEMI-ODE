@@ -30,17 +30,17 @@ import javax.websocket.ClientEndpointConfig.Builder;
 import javax.websocket.ClientEndpointConfig.Configurator;
 import javax.websocket.CloseReason;
 import javax.websocket.Decoder;
+import javax.websocket.DeploymentException;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
 
-import org.glassfish.tyrus.client.ClientManager;
-import org.glassfish.tyrus.client.ClientProperties;
-import org.glassfish.tyrus.client.SslEngineConfigurator;
+
+//import org.glassfish.tyrus.client.ClientManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WebSocketClient<T> extends Endpoint {
+public abstract class WebSocketClient<T> extends Endpoint {
    private static final Logger logger = LoggerFactory
          .getLogger(WebSocketClient.class);
 
@@ -53,8 +53,8 @@ public class WebSocketClient<T> extends Endpoint {
    private List<Class<? extends Decoder>> decoders = new ArrayList<Class<? extends Decoder>>();;
    private Configurator configurator;
    private ClientEndpointConfig wsConfig;
-   private final ClientManager clientManager = 
-         ClientManager.createClient("org.glassfish.tyrus.container.jdk.client.JdkClientContainer");
+//   private final ClientManager clientManager = 
+//         ClientManager.createClient("org.glassfish.tyrus.container.jdk.client.JdkClientContainer");
 
    /**
     * General Constructor
@@ -126,10 +126,7 @@ public class WebSocketClient<T> extends Endpoint {
       this.wsConfig = builder.build();
 
       if (this.sslContext != null) {
-         SslEngineConfigurator sslEngineConfigurator =
-             new SslEngineConfigurator(this.sslContext);
-         clientManager.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR,
-             sslEngineConfigurator);
+         secureClient();
       }
       
       if (this.userProperties != null) {
@@ -140,6 +137,15 @@ public class WebSocketClient<T> extends Endpoint {
          }
       }
    }
+
+   public abstract void secureClient();
+
+//   public void secureClient() {
+//      SslEngineConfigurator sslEngineConfigurator =
+//          new SslEngineConfigurator(this.sslContext);
+//      clientManager.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR,
+//          sslEngineConfigurator);
+//   }
 
    public URI getUri() {
       return uri;
@@ -228,13 +234,19 @@ public class WebSocketClient<T> extends Endpoint {
    public Session connect() throws WebSocketException {
       try {
          logger.info("Opening connection to {}", uri.toString());
-         wsSession = clientManager.connectToServer(this, wsConfig, uri);
+         wsSession = connectToServer();
          wsSession.addMessageHandler(this.handler);
       } catch (Exception e) {
          throw new WebSocketException(e);
       }
       return wsSession;
    }
+
+   public abstract Session connectToServer() throws WebSocketException;
+   
+//   public Session connectToServer() throws DeploymentException, IOException {
+//      return clientManager.connectToServer(this, wsConfig, uri);
+//   }
 
    /**
     * Creates a javax.websocket.ClientEndpointConfig.Configurator configured

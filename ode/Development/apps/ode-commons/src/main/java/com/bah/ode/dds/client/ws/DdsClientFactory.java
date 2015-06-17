@@ -18,21 +18,14 @@ package com.bah.ode.dds.client.ws;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.model.DdsData;
-import com.bah.ode.wrapper.DataProcessor;
+import com.bah.ode.dds.client.ws.CASClient.CASException;
 import com.bah.ode.wrapper.SSLBuilder;
-import com.bah.ode.wrapper.WebSocketClient;
-import com.bah.ode.wrapper.WebSocketMessageDecoder;
 
 public class DdsClientFactory {
 
@@ -43,12 +36,14 @@ public class DdsClientFactory {
    private static InputStream keystoreStream = null;
    private static SSLContext sslContext = null;
    private static CASClient casClient = null;
+   private static String username = null;
+   private static String password = null;
 
-   public static WebSocketClient<DdsData> create(DataProcessor<DdsData> processor,
-         Class<? extends WebSocketMessageDecoder<?>> decoderClass, String ddsUrl, String keystoreFilePath, String keystorePassword, String casUrl, String username, String password)
+   public static void init(String ddsUrl, String keystoreFilePath, 
+         String keystorePassword, String casUrl, String username, 
+         String password)
          throws DdsClientException {
 
-      WebSocketClient<DdsData> ddsClient = null;
       try {
 
          if (uri == null) {
@@ -69,27 +64,94 @@ public class DdsClientFactory {
 
          if (casClient == null) {
             casClient = CASClient.configure(sslContext, casUrl, ddsUrl);
-            casClient.login(username, password);
-            logger.info("Session ID: {}", casClient.getSessionID());
          }
-
-         Map<String, Map<String, String>> cookieHeader = Collections
-               .singletonMap("Cookie", Collections.singletonMap(
-                     CASClient.JSESSIONID, casClient.getSessionID()));
-
-         List<Class<? extends WebSocketMessageDecoder<?>>> decoders = 
-               new ArrayList<Class<? extends WebSocketMessageDecoder<?>>>();
-         decoders.add(decoderClass);
          
-         ddsClient = new WebSocketClient<DdsData>(uri, sslContext, null,
-               cookieHeader, new DdsMessageHandler(processor),
-               decoders);
+         if (DdsClientFactory.username == null)
+            DdsClientFactory.username = username;
+
+         if (DdsClientFactory.password == null)
+            DdsClientFactory.password = password;
+
+         login();
 
       } catch (Exception e) {
          throw new DdsClientException(e);
       }
-      return ddsClient;
    }
+
+   public static String login()
+         throws CASException {
+      String sessionId = casClient.login(username, password);
+      logger.info("Session ID: {}", sessionId);
+      return sessionId;
+   }
+
+   public static URI getUri() {
+      return uri;
+   }
+
+   public static SSLContext getSslContext() {
+      return sslContext;
+   }
+
+   public static CASClient getCasClient() {
+      return casClient;
+   }
+
+//   public static WebSocketClient<DdsData> create(DataProcessor<DdsData> processor,
+//         Class<? extends WebSocketMessageDecoder<?>> decoderClass,
+//         String ddsUrl, String keystoreFilePath, String keystorePassword, 
+//         String casUrl, String username, String password, 
+//         Class<? extends WebSocketClient<DdsData>> wsClientClass)
+//         throws DdsClientException {
+//
+//      WebSocketClient<DdsData> ddsClient = null;
+//      try {
+//
+//         if (uri == null) {
+//            if (ddsUrl.startsWith("http"))
+//               uri = new URI(ddsUrl.replaceFirst("http", "ws"));
+//            else // assume it's ws
+//               uri = new URI(ddsUrl);
+//         }
+//
+//         if (keystoreStream == null) {
+//            keystoreStream = 
+//                  CASClient.class.getClassLoader().getResourceAsStream(keystoreFilePath);
+//         }
+//
+//         if (sslContext == null) {
+//            sslContext = SSLBuilder.buildSSLContext(keystoreStream, keystorePassword);
+//         }
+//
+//         if (casClient == null) {
+//            casClient = CASClient.configure(sslContext, casUrl, ddsUrl);
+//            casClient.login(username, password);
+//            logger.info("Session ID: {}", casClient.getSessionID());
+//         }
+//
+//         Map<String, Map<String, String>> cookieHeader = Collections
+//               .singletonMap("Cookie", Collections.singletonMap(
+//                     CASClient.JSESSIONID, casClient.getSessionID()));
+//
+//         List<Class<? extends WebSocketMessageDecoder<?>>> decoders = 
+//               new ArrayList<Class<? extends WebSocketMessageDecoder<?>>>();
+//         decoders.add(decoderClass);
+//         
+//         Constructor<? extends WebSocketClient<DdsData>> ctor =
+//               wsClientClass.getConstructor(String.class, SSLContext.class,
+//               Map.class, Map.class, WebSocketMessageHandler.class,
+//               List.class);
+//         
+//         ddsClient = ctor.newInstance(uri, sslContext, null,
+//               cookieHeader, new DdsMessageHandler(processor),
+//               decoders);
+//
+//      } catch (Exception e) {
+//         throw new DdsClientException(e);
+//      }
+//      return ddsClient;
+//   }
 
    public static class DdsClientException extends Exception {
 
