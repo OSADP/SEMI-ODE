@@ -22,12 +22,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
  
-public class KafaConsumer {
+public class KafkaConsumer {
     private final ConsumerConnector consumer;
     private final String topic;
     private  ExecutorService executor;
  
-    public KafaConsumer(String a_zookeeper, String a_groupId, String a_topic) {
+    public KafkaConsumer(String a_zookeeper, String a_groupId, String a_topic) {
         consumer = kafka.consumer.Consumer.createJavaConsumerConnector(
                 createConsumerConfig(a_zookeeper, a_groupId));
         this.topic = a_topic;
@@ -89,7 +89,7 @@ public class KafaConsumer {
         String topic = args[2];
         int threads = Integer.parseInt(args[3]);
  
-        KafaConsumer example = new KafaConsumer(zooKeeper, groupId, topic);
+        KafkaConsumer example = new KafkaConsumer(zooKeeper, groupId, topic);
         example.run(threads);
  
         try {

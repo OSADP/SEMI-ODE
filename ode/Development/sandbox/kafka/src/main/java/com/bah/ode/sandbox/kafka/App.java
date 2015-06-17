@@ -44,12 +44,14 @@ public class App
     	// Build random message payload
     	Random rnd = new Random();
     	 
-    	StringBuilder ip = new StringBuilder();
-    	ip.append("192.168.2.");
+
     	
     	for (long nEvents = 0; nEvents < events; nEvents++) { 
 	    	long runtime = new Date().getTime();
-	    	 
+
+	    	StringBuilder ip = new StringBuilder();
+	    	ip.append("192.168.2."); 
+	    	
 	    	StringBuilder msg = new StringBuilder();
 	    	msg.append(runtime);
 	    	msg.append(", www.example.com, ");
@@ -59,7 +61,8 @@ public class App
 	    	String topic_name = "page_visits";
 	    	
 	    	KeyedMessage<String, String> data = new KeyedMessage<String, String>(topic_name, ip.toString(),msg.append(ip).toString());
-	    	 
+	    	// Print out message in the form of Topic, key, parition key, message
+	    	// System.out.println(data.toString());		
 	    	producer.send(data);
     	}
     	
