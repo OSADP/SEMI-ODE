@@ -1,10 +1,14 @@
 package com.bah.ode.api.sec;
 
-import javax.servlet.ServletContext;
+import java.io.IOException;
+
 import javax.ws.rs.container.ContainerRequestContext;
 
+import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mocked;
-import mockit.Verifications;
+import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 
 import org.junit.Test;
@@ -16,42 +20,54 @@ import com.bah.ode.api.sec.filters.LiferayWSClient;
 @RunWith(JMockit.class)
 public class AuthenticationFilterTest {
 	
-	// Mock 
-	@Mocked 
-	LiferayWSClient client; 
+	@Tested LiferayAuthenticationFilter filter;
 	
-	@Mocked 
-	ContainerRequestContext reqeustContext;
+	@Injectable  LiferayWSClient client;
+	@Mocked ContainerRequestContext requestContext;
 	
+	String validAuthHeaderValue = "Basic dXNlckBsaWZlcmF5LmNvbTp0ZXN0"; // user@liferay.com:test
+	String invalidAuthHeaderValue = "Basic dXNlckBsaWZlcmF5LmNvbXRlc3Q="; // Invalid  user@liferay.comtest no ":" in string 
 	
-	// Test Response with no credentials provided 
 	@Test
-	public void missingAuthenticationCredentials()
+	public void missingOrInvalidAuthenticationeHeader() throws IOException
 	{
-//		LiferayAuthenticationFilter filter = new LiferayAuthenticationFilter();
-//		
-//		
-//		filter.filter(requestContext);
-//		
+		new Expectations() {
+			{
+				requestContext.getHeaderString(LiferayAuthenticationFilter.AUTH_HEADER); result = "Basic ";			
+			};
+		};
+ 
+		Deencapsulation.setField(filter,client);
+ 	
+		filter.filter(requestContext);
+		
 	}
 	
 	// Test with invalid credentials 
 	@Test
-	public void invliadAuthenticationCredentials()
+	public void invalidAuthenticationCredentials() throws IOException
 	{
-		
+		new Expectations() {
+			{
+				requestContext.getHeaderString(LiferayAuthenticationFilter.AUTH_HEADER); result = validAuthHeaderValue;
+				client.getUserIdByEmail(anyString, anyString); result = new NumberFormatException(); // Indicates Authentication with Liferay Failed
+			};
+		};
+		Deencapsulation.setField(filter,client);
+		filter.filter(requestContext);
 	}
 	
-	// 
 	@Test
-	public void validAuthenticationCredentials()
-	{
-		
+	public void validAuthenticationCredentials() throws Throwable
+	{ 	
+		new Expectations() {
+			{
+				requestContext.getHeaderString(LiferayAuthenticationFilter.AUTH_HEADER); result = validAuthHeaderValue;
+				client.getUserIdByEmail("user@liferay.com","test"); result = new NumberFormatException();
+			};
+		};
+		Deencapsulation.setField(filter,client);
+
+		filter.filter(requestContext);
 	}
-	
-	
-	
-	
-	
-	
 }
