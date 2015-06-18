@@ -16,6 +16,8 @@
  *******************************************************************************/
 package com.bah.ode.dds.client.ws;
 
+import javax.websocket.Session;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,15 +44,28 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
 
          while (retryCount-- > 0) {
             try {
-               if (ddsData.getIsd() != null)
-                  receiver.store(JsonUtils.toJson(ddsData.getIsd()));
-               else if (ddsData.getVsd() != null)
-                  receiver.store(JsonUtils.toJson(ddsData.getVsd()));
-               else if (ddsData.getAsd() != null)
-                  receiver.store(JsonUtils.toJson(ddsData.getAsd()));
-//               else
-//                  receiver.store(JsonUtils.toJson(ddsData.getFullMessage()));
-
+               if (null == wsClientSession) {
+                  if (ddsData.getIsd() != null)
+                     receiver.store(JsonUtils.toJson(ddsData.getIsd()));
+                  else if (ddsData.getVsd() != null)
+                     receiver.store(JsonUtils.toJson(ddsData.getVsd()));
+                  else if (ddsData.getAsd() != null)
+                     receiver.store(JsonUtils.toJson(ddsData.getAsd()));
+//                  else
+//                     receiver.store(JsonUtils.toJson(ddsData.getFullMessage()));
+               } else {
+                  // DEBUG ONLY
+                  // For debugging only and running the app on local machine
+                  // without Spark
+                  if (ddsData.getIsd() != null)
+                     wsClientSession.getBasicRemote().sendText(JsonUtils.toJson(ddsData.getIsd()));
+                  else if (ddsData.getVsd() != null)
+                     wsClientSession.getBasicRemote().sendText(JsonUtils.toJson(ddsData.getVsd()));
+                  else if (ddsData.getAsd() != null)
+                     wsClientSession.getBasicRemote().sendText(JsonUtils.toJson(ddsData.getAsd()));
+//                  else
+//                     receiver.store(JsonUtils.toJson(ddsData.getFullMessage()));
+               }
                break;
             } catch (Exception e) {
                if (retryCount > 0) {
@@ -73,4 +88,17 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
       return receiver;
    }
 
+   //////////////FOR DEBUG ONLY///////////////////
+   // For debugging only and running the app on local machine
+   // without Spark
+   private Session wsClientSession;
+
+   public Session getWsClientSession() {
+      return wsClientSession;
+   }
+
+   public void setWsClientSession(Session wsClient) {
+      this.wsClientSession = wsClient;
+   }
+   /////////////////////////////////////////////
 }

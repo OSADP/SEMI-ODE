@@ -19,5 +19,21 @@ package com.bah.ode.model;
 
 @SuppressWarnings("serial")
 public class OdeRequest extends BaseRequest {
+   private OdeDataType dataType;
+
+   public OdeRequest(Double nwLat, Double nwLon, Double seLat, Double seLon,
+         OdeDataType dataType) {
+      super(nwLat, nwLon, seLat, seLon);
+      this.dataType = dataType;
+   }
+
+   public OdeDataType getDataType() {
+      return dataType;
+   }
+
+   public OdeRequest setDataType(OdeDataType dataType) {
+      this.dataType = dataType;
+      return this;
+   }
 
 }

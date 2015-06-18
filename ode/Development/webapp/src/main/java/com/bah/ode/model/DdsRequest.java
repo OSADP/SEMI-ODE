@@ -81,37 +81,9 @@ public class DdsRequest extends BaseRequest{
 		}
 	}
 
-	private final int vsmType = 31;
-   private String 	systemSubName;
    private int 		dialogID;
    private String 	resultEncoding;
    
-   public static DdsRequest create() {
-   	return new DdsRequest();
-   }
-   
-   public DdsRequest initBase(BaseRequest base) {
-   	super.setNwLat(base.getNwLat())
-   	     .setNwLon(base.getNwLon())
-   	     .setSeLat(base.getSeLat())
-   	     .setSeLon(base.getSeLon());
-   	return this;
-   }
-   
-	public int getVsmType() {
-		return vsmType;
-	}
-
-	
-	public String getSystemSubName() {
-		return systemSubName;
-	}
-
-	public DdsRequest setSystemSubName(String systemSubName) {
-		this.systemSubName = systemSubName;
-		return this;
-	}
-
 	public int getDialogID() {
 		return dialogID;
 	}
@@ -130,15 +102,6 @@ public class DdsRequest extends BaseRequest{
 		return this;
 	}
 
-	public String subscriptionRequest() {
-		String json = "SUBSCRIBE:" + JsonUtils.toJson(this);
-		return json;
-	}
-   
-	public String queryRequest() {
-		return "QUERY:" + JsonUtils.toJson(this);
-	}
-   
 }
 
 
