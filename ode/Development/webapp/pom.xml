@@ -16,7 +16,7 @@
   <properties>
 
     <!-- Generic properties -->
-    <java.version>1.6</java.version>
+    <java.version>1.7</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -43,7 +43,22 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
   </properties>
-
+<!--
+   <repositories>
+      <repository>
+         <id>local-repo</id>
+         <name>local-repo</name>
+         <releases>
+            <enabled>true</enabled>
+            <checksumPolicy>ignore</checksumPolicy>
+         </releases>
+         <snapshots>
+            <enabled>false</enabled>
+         </snapshots>
+         <url>file://${project.basedir}/repo</url>
+      </repository>
+   </repositories>
+-->
   <dependencies>
 
     <!-- Spring MVC -->
@@ -118,12 +133,12 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>4.4</version>
+      <version>4.4.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.4</version>
+      <version>4.4.1</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -198,9 +213,20 @@
       <artifactId>spark-streaming_2.10</artifactId>
       <version>1.2.0</version>
     </dependency>
+    
+    <dependency>
+       <groupId>asn.1</groupId>
+       <artifactId>oss.runtime</artifactId>
+       <version>6.1</version>
+    </dependency>
+
+    <dependency>
+       <groupId>asn.1</groupId>
+       <artifactId>semi</artifactId>
+       <version>2.2</version>
+    </dependency>
   </dependencies>
 
-   <!-- Added on 4/22/2015 -->
    <build>
       <directory>${project.basedir}/target</directory>
       <finalName>${project.artifactId}</finalName>
@@ -210,63 +236,9 @@
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.0</version>
             <configuration>
-               <source>1.8</source>
-               <target>1.8</target>
+               <source>${java.version}</source>
+               <target>${java.version}</target>
             </configuration>
-         </plugin>
-         
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>2.3.2</version>
-            <executions>
-               <execution>
-                  <id>default-jar</id>
-                  <phase>package</phase>
-                  <goals>
-                     <goal>jar</goal>
-                  </goals>
-                  <configuration>
-                     <!-- <excludes>
-                        <exclude>**/launcher/*</exclude>
-                     </excludes> -->
-                     <outputDirectory>${finalLocation}</outputDirectory>
-                     <finalName>${project.build.finalName}</finalName>
-                     <archive>
-                        <manifestEntries>
-                           <Version>${project.version}</Version>
-                           <Date>${timestamp}</Date>
-                           <Permissions>all-permissions</Permissions>
-                           <Application-Name>ODE</Application-Name>
-                        </manifestEntries>
-                        <!--<manifest>
-                           <addClasspath>true</addClasspath>
-                           <classpathPrefix>lib/</classpathPrefix>
-                           <mainClass>com.bah.ode.Main</mainClass>
-                        </manifest>-->
-                        <addMavenDescriptor>false</addMavenDescriptor>
-                     </archive>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
-         
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <version>2.8</version>
-            <executions>
-               <execution>
-                  <id>copy-dependencies</id>
-                  <phase>package</phase>
-                  <goals>
-                     <goal>copy-dependencies</goal>
-                  </goals>
-                  <configuration>
-                     <outputDirectory>${finalLocation}/lib</outputDirectory>
-                  </configuration>
-               </execution>
-            </executions>
          </plugin>
          
          <plugin>
@@ -293,6 +265,53 @@
             </executions>
          </plugin>
          
+<!-- 
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>2.3.2</version>
+            <executions>
+               <execution>
+                  <id>default-jar</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>jar</goal>
+                  </goals>
+                  <configuration>
+                     <outputDirectory>${finalLocation}</outputDirectory>
+                     <finalName>${project.build.finalName}</finalName>
+                     <archive>
+                        <manifestEntries>
+                           <Version>${project.version}</Version>
+                           <Date>${timestamp}</Date>
+                           <Permissions>all-permissions</Permissions>
+                           <Application-Name>ODE</Application-Name>
+                        </manifestEntries>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                     </archive>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.8</version>
+            <executions>
+               <execution>
+                  <id>copy-dependencies</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>copy-dependencies</goal>
+                  </goals>
+                  <configuration>
+                     <outputDirectory>${finalLocation}/lib</outputDirectory>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
          <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
             <configuration>
@@ -312,7 +331,7 @@
                </execution>
             </executions>
          </plugin>
-         
+ -->
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-eclipse-plugin</artifactId>
@@ -326,6 +345,14 @@
             </configuration>
          </plugin>
          
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12.4</version>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
       </plugins>
       
       <pluginManagement>
@@ -352,7 +379,8 @@
                   </pluginExecutions>
                </lifecycleMappingMetadata>
             </configuration>
-         </plugin></plugins>
+         </plugin>
+       </plugins>
       </pluginManagement>
       
       <resources>

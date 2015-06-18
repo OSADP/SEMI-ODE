@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
-import javax.websocket.Session;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.api.spark.WebSocketReceiver;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.CASClient.CASException;
 import com.bah.ode.model.DdsData;
@@ -49,7 +49,7 @@ public class DdsClientFactory {
    private static CASClient casClient = null;
 
    public static WebSocketClient<DdsData> create(AppContext appContext,
-         Session clientApp,
+         WebSocketReceiver receiver,
          Class<? extends WebSocketMessageDecoder<?>> decoderClass)
          throws DdsClientException {
 
@@ -67,7 +67,7 @@ public class DdsClientFactory {
          decoders.add(decoderClass);
          
          ddsClient = new WebSocketClient<DdsData>(uri, sslContext, null,
-               cookieHeader, new DdsMessageHandler(clientApp),
+               cookieHeader, new DdsMessageHandler(receiver),
                decoders);
 
       } catch (Exception e) {

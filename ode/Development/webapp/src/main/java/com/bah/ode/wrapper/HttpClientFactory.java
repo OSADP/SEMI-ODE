@@ -294,9 +294,9 @@ public class HttpClientFactory {
     */
    private static SSLConnectionSocketFactory buildSSLConnectionSocketFactory(
          SSLContext sslContext) {
-      SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-            sslContext, new String[] { "TLSv1" }, null,
-            SSLConnectionSocketFactory.getDefaultHostnameVerifier());
+      SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext);
+//      , new String[] { "TLSv1" }, null,
+//            SSLConnectionSocketFactory.getDefaultHostnameVerifier());
       return sslsf;
    }
 
