@@ -22,10 +22,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.spark.SparkConf;
-import org.apache.spark.streaming.Durations;
-import org.apache.spark.streaming.api.java.JavaStreamingContext;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import scala.tools.nsc.util.ClassPath.JavaContext;
 
 public class AppContext {
    private static Logger logger = LoggerFactory.getLogger(AppContext.class);
@@ -67,7 +68,7 @@ public class AppContext {
    private ServletContext servletContext;
    
    private SparkConf sparkConf;
-   private JavaStreamingContext sparkDefaultContext;
+   private JavaSparkContext sparkContext;
 
    public static String getServletBaseUrl(HttpServletRequest request) {
       String proto = request.getScheme();
@@ -82,18 +83,13 @@ public class AppContext {
 
    public void init(ServletContext context) {
       this.servletContext = context;
-/*      
+
       sparkConf = new SparkConf()
          .setMaster(getParam(SPARK_MASTER))
          .setAppName(context.getServletContextName());
       
-      sparkDefaultContext = 
-            new JavaStreamingContext(
-                  sparkConf, 
-                  Durations.seconds(
-                        Integer.parseInt(
-                              getParam(SPARK_STREAMING_DEFAULT_DURATION))));
-*/      
+      sparkContext = new JavaSparkContext(sparkConf);
+
       @SuppressWarnings("unchecked")
       Enumeration<String> parmNames = context.getInitParameterNames();
 
@@ -128,8 +124,8 @@ public class AppContext {
       return sparkConf;
    }
 
-   public JavaStreamingContext getSparkDefaultContext() {
-      return sparkDefaultContext;
+   public JavaSparkContext getSparkContext() {
+      return sparkContext;
    }
 
 }

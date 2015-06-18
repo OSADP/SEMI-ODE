@@ -16,6 +16,8 @@
  *******************************************************************************/
 package com.bah.ode.server;
 
+import java.util.Iterator;
+
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
@@ -25,9 +27,17 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.VoidFunction;
+import org.apache.spark.storage.StorageLevel;
+import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.api.spark.WebSocketReceiver;
 import com.bah.ode.api.ws.OdeStatus;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.DdsClientFactory;
@@ -48,8 +58,8 @@ import com.bah.ode.wrapper.WebSocketClient.WebSocketException;
 public class WebSocketServer {
 	private static Logger logger = LoggerFactory.getLogger(WebSocketServer.class);
 	private AppContext appContext = AppContext.getInstance();
-	WebSocketClient<?> wsClient = null; 
-
+	WebSocketClient<?> ddsClient = null; 
+	WebSocketReceiver receiver = null;
 	
 	/**
 	 * Allows us to intercept the creation of a new session. The session
@@ -88,20 +98,20 @@ public class WebSocketServer {
 		OdeStatus msg = new OdeStatus();
 		try {
 			if (rtype.equals("sub")) {
+			   Class decoder = null;
 				if (dtype.equals("ints")) {
-			      wsClient = DdsClientFactory.create(
-			      		appContext, 
-			      		session,
-			      		IsdDecoder.class);
+				   decoder = IsdDecoder.class;
 				} else if (dtype.equals("vehs")) {
-			      wsClient = DdsClientFactory.create(
-			      		appContext, 
-			      		session,
-			      		VsdDecoder.class);
+               decoder = VsdDecoder.class;
 				}
 				
-				if (null != wsClient) {
-					wsClient.connect();
+            receiver = new WebSocketReceiver(StorageLevel.MEMORY_ONLY_SER_2());
+            
+            ddsClient = DdsClientFactory.create(appContext, receiver, decoder);
+            
+				if (null != ddsClient) {
+				   receiver.setWsClient(ddsClient);
+					ddsClient.connect();
 					msg.setCode(OdeStatus.Code.SUCCESS);
 					msg.setMessage("Connection Established.");
 					session.getAsyncRemote().sendText(msg.toJson());
@@ -160,40 +170,66 @@ public class WebSocketServer {
 		
 		OdeStatus msg = new OdeStatus();
 		try {
-			if (rtype.equals("sub") && wsClient != null) {
+			if (rtype.equals("sub") && ddsClient != null) {
 				odeRequest = (OdeRequest) JsonUtils.fromJson(message, OdeRequest.class);
 	
-				DdsRequest ddsRequest = null;
-				if (dtype.equals("ints")) {
-					ddsRequest = (DdsRequest) DdsRequest.create()
-							.setDialogID(DdsRequest.Dialog.ISD.getId())
-							.setResultEncoding(DdsRequest.ResultEncoding.BASE_64.getEnc())
-							.setSystemSubName(DdsRequest.SystemSubName.SDC.getName())
-							.setNwLat(odeRequest.getNwLat())
-							.setNwLon(odeRequest.getNwLon())
-							.setSeLat(odeRequest.getSeLat())
-							.setSeLon(odeRequest.getSeLon());
-					
-				} else if (dtype.equals("vehs")) {
-					ddsRequest = (DdsRequest) DdsRequest.create()
-							.setDialogID(DdsRequest.Dialog.VSD.getId())
-							.setResultEncoding(DdsRequest.ResultEncoding.BASE_64.getEnc())
-							.setSystemSubName(DdsRequest.SystemSubName.SDC.getName())
-							.setNwLat(odeRequest.getNwLat())
-							.setNwLon(odeRequest.getNwLon())
-							.setSeLat(odeRequest.getSeLat())
-							.setSeLon(odeRequest.getSeLon());
-				}
-				
+				DdsRequest ddsRequest = DdsRequest.create();
 				if (null != ddsRequest) {
-			      String subreq = ddsRequest.subscriptionRequest();
-					logger.info("Sending subscription request: {}", subreq);
-			      
-			      wsClient.send(subreq);
-				} else {
-					msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
-				   	.setMessage(String.format("Invalid data type %s requested. Valid data types are 'ints', 'vehs', 'aggs'", dtype));
-					logger.error(msg.toString());
+				   ddsRequest.setResultEncoding(DdsRequest.ResultEncoding.BASE_64.getEnc())
+				      .setSystemSubName(DdsRequest.SystemSubName.SDC.getName())
+				      .setNwLat(odeRequest.getNwLat())
+				      .setNwLon(odeRequest.getNwLon())
+				      .setSeLat(odeRequest.getSeLat())
+				      .setSeLon(odeRequest.getSeLon());
+     
+				   if (dtype.equals("ints")) {
+				      ddsRequest.setDialogID(DdsRequest.Dialog.ISD.getId());
+				   } else if (dtype.equals("vehs")) {
+				      ddsRequest.setDialogID(DdsRequest.Dialog.VSD.getId());
+				   } else {
+				      msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
+				      .setMessage(String.format("Invalid data type %s requested. Valid data types are 'ints', 'vehs', 'aggs'", dtype));
+				      logger.error(msg.toString());
+				      return;
+				   }
+				   String subreq = ddsRequest.subscriptionRequest();
+				   logger.info("Sending subscription request: {}", subreq);
+            
+				   ddsClient.send(subreq);
+				   JavaStreamingContext ssc = new JavaStreamingContext(
+				         appContext.getSparkContext(), Durations.seconds(
+	                        Integer.parseInt(
+	                              appContext.getParam(
+	                                    AppContext.SPARK_STREAMING_DEFAULT_DURATION))));
+				   
+				   // Create a input stream with the custom receiver on target ip:port and count the
+				   // words in input stream of \n delimited text (eg. generated by 'nc')
+				   JavaReceiverInputDStream<String> lines = ssc.receiverStream(receiver);
+				   final Session clientSession = session;
+				   
+				   Function<JavaRDD<String>, Void> f1 = new Function<JavaRDD<String>, Void>() {
+                  
+                  @Override
+                  public Void call(JavaRDD<String> rdd) throws Exception {
+                     VoidFunction<Iterator<String>> f2 = new VoidFunction<Iterator<String>>() {
+                        
+                        @Override
+                        public void call(Iterator<String> partitionOfRecords ) throws Exception {
+                           while (partitionOfRecords.hasNext()) {
+                              String record = partitionOfRecords.next();
+                              clientSession.getBasicRemote().sendText(record);
+                           }
+                        }
+                     };
+                     
+                     rdd.foreachPartition(f2);
+                     return null;
+                  }
+               };
+               
+				   lines.foreachRDD(f1);
+				   lines.print();
+				   ssc.start();
 				}
 			} else {
 				msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
@@ -222,8 +258,8 @@ public class WebSocketServer {
 	{
    	String sessionId = session.getId();
       try {
-	      if (wsClient != null)
-		         wsClient.close();
+	      if (ddsClient != null)
+		         ddsClient.close();
 		
 			logger.info("Session {} disconnected.", sessionId);
 			if (reason != null)
