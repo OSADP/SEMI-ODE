@@ -100,7 +100,7 @@
   </context-param>
   <context-param>
     <param-name>spark.master</param-name>
-    <param-value>local[2]</param-value>
+    <param-value></param-value>
   </context-param>
   <context-param>
     <param-name>spark.streaming.default.duration</param-name>

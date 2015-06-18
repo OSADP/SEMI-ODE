@@ -60,22 +60,22 @@ public class IntersectionDataService extends AbstractService {
 		logger.info("Received {}", getUriInfo());
 		DdsRequest request = null;
 		try {
-			request = (DdsRequest) DdsRequest.create()
-					.setDialogID(DdsRequest.Dialog.ISD.getId())
-					.setResultEncoding(DdsRequest.ResultEncoding.BASE_64.getEnc())
-					.setSystemSubName(DdsRequest.SystemSubName.SDC.getName())
-					.setNwLat(nwLat)
-					.setNwLon(nwLon)
-					.setSeLat(seLat)
-					.setSeLon(seLon);
-			
-			
-	      wsClient = DdsClientFactory.create(appContext, null, IsdDecoder.class);
-	      
-	      String subreq = request.subscriptionRequest();
-			logger.info("Sending subscription request: {}", subreq);
-	      
-	      wsClient.send(request.subscriptionRequest());
+//			request = (DdsRequest) DdsRequest.create()
+//					.setDialogID(DdsRequest.Dialog.ISD.getId())
+//					.setResultEncoding(DdsRequest.ResultEncoding.BASE_64.getEnc())
+//					.setSystemSubName(DdsRequest.SystemSubName.SDC.getName())
+//					.setNwLat(nwLat)
+//					.setNwLon(nwLon)
+//					.setSeLat(seLat)
+//					.setSeLon(seLon);
+//			
+//			
+//	      wsClient = DdsClientFactory.create(appContext, null, IsdDecoder.class);
+//	      
+//	      String subreq = request.subscriptionRequest();
+//			logger.info("Sending subscription request: {}", subreq);
+//	      
+//	      wsClient.send(request.subscriptionRequest());
 			
 		} catch (Exception e) {
 			throw new WebApplicationException(e);

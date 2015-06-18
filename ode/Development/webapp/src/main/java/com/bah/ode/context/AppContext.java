@@ -26,8 +26,6 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import scala.tools.nsc.util.ClassPath.JavaContext;
-
 public class AppContext {
    private static Logger logger = LoggerFactory.getLogger(AppContext.class);
 
@@ -84,12 +82,17 @@ public class AppContext {
    public void init(ServletContext context) {
       this.servletContext = context;
 
-      sparkConf = new SparkConf()
-         .setMaster(getParam(SPARK_MASTER))
-         .setAppName(context.getServletContextName());
+      // DEBUG ONLY
+      // For debugging only and running the app on local machine
+      // without Spark
+      if (!getParam(SPARK_MASTER).isEmpty()) {
+         sparkConf = new SparkConf()
+            .setMaster(getParam(SPARK_MASTER))
+            .setAppName(context.getServletContextName());
+         
+         sparkContext = new JavaSparkContext(sparkConf);
+      }
       
-      sparkContext = new JavaSparkContext(sparkConf);
-
       @SuppressWarnings("unchecked")
       Enumeration<String> parmNames = context.getInitParameterNames();
 
