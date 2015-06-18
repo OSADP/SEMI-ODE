@@ -91,15 +91,17 @@ public class AppContext {
             .setAppName(context.getServletContextName());
          
          sparkContext = new JavaSparkContext(sparkConf);
+      } else {
+         logger.info("*** SPARK DISABLED FOR DEBUG ***");
       }
       
       @SuppressWarnings("unchecked")
       Enumeration<String> parmNames = context.getInitParameterNames();
 
       while (parmNames.hasMoreElements()) {
-         String param = parmNames.nextElement();
-         logger.debug("Configuration Parameter {}:{}", param,
-               context.getInitParameter(param));
+         String key = parmNames.nextElement();
+         logger.info("Configuration Parameter {}:{}", key,
+               key.contains("password")?"********":context.getInitParameter(key));
       }
    }
 

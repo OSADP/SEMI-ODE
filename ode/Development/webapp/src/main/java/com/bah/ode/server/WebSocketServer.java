@@ -236,7 +236,14 @@ public class WebSocketServer {
          // DEBUG ONLY
          // For debugging only and running the app on local machine
          // without Spark
+         DdsMessageHandler handler = (DdsMessageHandler) ddsClient
+               .getHandler();
          if (!appContext.getParam(AppContext.SPARK_MASTER).isEmpty()) {
+            
+            if (appContext.getSparkContext() == null)
+               appContext.init(appContext.getServletContext());
+            
+            handler.setWsClientSession(null);
             JavaStreamingContext ssc = new JavaStreamingContext(
                   appContext.getSparkContext(),
                   Durations.seconds(Integer.parseInt(appContext
@@ -275,8 +282,6 @@ public class WebSocketServer {
             lines.print();
             ssc.start();
          } else {
-            DdsMessageHandler handler = (DdsMessageHandler) ddsClient
-                  .getHandler();
             handler.setWsClientSession(session);
          }
       } catch (Exception ex) {
