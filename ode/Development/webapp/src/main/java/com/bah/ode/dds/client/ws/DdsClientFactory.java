@@ -46,18 +46,22 @@ public class DdsClientFactory {
    private static URI uri = null;
    private static InputStream keystoreStream = null;
    private static SSLContext sslContext = null;
-   private static CASClient casClient = null;
+   
 
    public static WebSocketClient<DdsData> create(AppContext appContext,
          WebSocketReceiver receiver,
          Class<? extends WebSocketMessageDecoder<?>> decoderClass)
          throws DdsClientException {
 
+      CASClient casClient = null;
       WebSocketClient<DdsData> ddsClient = null;
       try {
 
          init(appContext);
 
+         casClient = CASClient.configure(appContext, sslContext);
+         casClient.login();
+         
          Map<String, Map<String, String>> cookieHeader = Collections
                .singletonMap("Cookie", Collections.singletonMap(
                      AppContext.JSESSIONID_KEY, casClient.getSessionID()));
@@ -95,11 +99,6 @@ public class DdsClientFactory {
                appContext.getParam(AppContext.DDS_KEYSTORE_PASSWORD));
       }
 
-      if (casClient == null) {
-         casClient = CASClient.configure(appContext, sslContext);
-         casClient.login();
-         logger.info("Session ID: {}", casClient.getSessionID());
-      }
    }
 
    public static class DdsClientException extends Exception {
