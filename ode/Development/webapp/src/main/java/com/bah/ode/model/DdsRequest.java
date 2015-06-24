@@ -16,7 +16,6 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
-import com.bah.ode.util.JsonUtils;
 
 @SuppressWarnings("serial")
 public class DdsRequest extends BaseRequest{
@@ -101,6 +100,35 @@ public class DdsRequest extends BaseRequest{
 		this.resultEncoding = resultEncoding;
 		return this;
 	}
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = prime * result + dialogID;
+      result = prime * result
+            + ((resultEncoding == null) ? 0 : resultEncoding.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (!super.equals(obj))
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      DdsRequest other = (DdsRequest) obj;
+      if (dialogID != other.dialogID)
+         return false;
+      if (resultEncoding == null) {
+         if (other.resultEncoding != null)
+            return false;
+      } else if (!resultEncoding.equals(other.resultEncoding))
+         return false;
+      return true;
+   }
 
 }
 

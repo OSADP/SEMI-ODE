@@ -76,5 +76,48 @@ public class BaseRequest extends OdeObject {
 		this.seLon = seLon;
 		return this;
 	}
-   
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((nwLat == null) ? 0 : nwLat.hashCode());
+      result = prime * result + ((nwLon == null) ? 0 : nwLon.hashCode());
+      result = prime * result + ((seLat == null) ? 0 : seLat.hashCode());
+      result = prime * result + ((seLon == null) ? 0 : seLon.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      BaseRequest other = (BaseRequest) obj;
+      if (nwLat == null) {
+         if (other.nwLat != null)
+            return false;
+      } else if (!nwLat.equals(other.nwLat))
+         return false;
+      if (nwLon == null) {
+         if (other.nwLon != null)
+            return false;
+      } else if (!nwLon.equals(other.nwLon))
+         return false;
+      if (seLat == null) {
+         if (other.seLat != null)
+            return false;
+      } else if (!seLat.equals(other.seLat))
+         return false;
+      if (seLon == null) {
+         if (other.seLon != null)
+            return false;
+      } else if (!seLon.equals(other.seLon))
+         return false;
+      return true;
+   }
+
 }

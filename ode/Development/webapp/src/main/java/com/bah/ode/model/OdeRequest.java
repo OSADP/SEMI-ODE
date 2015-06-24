@@ -18,7 +18,7 @@ package com.bah.ode.model;
 
 
 @SuppressWarnings("serial")
-public class OdeRequest extends BaseRequest {
+public abstract class OdeRequest extends BaseRequest {
    private OdeDataType dataType;
 
    public OdeRequest(Double nwLat, Double nwLon, Double seLat, Double seLon,
@@ -34,6 +34,28 @@ public class OdeRequest extends BaseRequest {
    public OdeRequest setDataType(OdeDataType dataType) {
       this.dataType = dataType;
       return this;
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (!super.equals(obj))
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      OdeRequest other = (OdeRequest) obj;
+      if (dataType != other.dataType)
+         return false;
+      return true;
    }
 
 }

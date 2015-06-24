@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,12 +63,17 @@ public class AppContext {
    public static final String SPARK_MASTER = "spark.master";
    public static final String SPARK_STREAMING_DEFAULT_DURATION = "spark.streaming.default.duration";
 
+   public static final String METADATA_BROKER_LIST = "metadata.broker.list";
+   public static final String DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
+   public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
+
    private static AppContext instance = null;
 
    private ServletContext servletContext;
    
    private SparkConf sparkConf;
    private JavaSparkContext sparkContext;
+   private JavaStreamingContext ssc;
 
    public static String getServletBaseUrl(HttpServletRequest request) {
       String proto = request.getScheme();
@@ -91,6 +98,11 @@ public class AppContext {
             .setAppName(context.getServletContextName());
          
          sparkContext = new JavaSparkContext(sparkConf);
+         ssc = new JavaStreamingContext(
+               sparkContext,
+               Durations.seconds(Integer.parseInt(
+                     getParam(SPARK_STREAMING_DEFAULT_DURATION))));
+
       } else {
          logger.info("*** SPARK DISABLED FOR DEBUG ***");
       }
@@ -131,6 +143,15 @@ public class AppContext {
 
    public JavaSparkContext getSparkContext() {
       return sparkContext;
+   }
+
+   public JavaStreamingContext getSparkStreamingConext() {
+      return ssc;
+   }
+
+   public void shutDown() {
+      if (null != ssc)
+         ssc.close();
    }
 
 }
