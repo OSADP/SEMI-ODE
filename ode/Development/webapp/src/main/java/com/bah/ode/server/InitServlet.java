@@ -80,4 +80,12 @@ public class InitServlet extends HttpServlet {
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 	}
+
+   @Override
+   public void destroy() {
+      super.destroy();
+      AppContext.getInstance().shutDown();
+   }
+	
+	
 }

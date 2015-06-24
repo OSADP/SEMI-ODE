@@ -16,14 +16,14 @@
  *******************************************************************************/
 package com.bah.ode.dds.client.ws;
 
-import javax.websocket.Session;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.api.spark.WebSocketReceiver;
+import com.bah.ode.context.AppContext;
 import com.bah.ode.model.DdsData;
 import com.bah.ode.util.JsonUtils;
+import com.bah.ode.wrapper.MQProducer;
+import com.bah.ode.wrapper.MQTopic;
 import com.bah.ode.wrapper.WebSocketMessageHandler;
 
 public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
@@ -31,74 +31,50 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    private static final Logger logger = LoggerFactory
          .getLogger(DdsMessageHandler.class);
 
-   protected WebSocketReceiver receiver;
+   private MQProducer<String, String> producer;
+   private MQTopic topic;
 
-   public DdsMessageHandler(WebSocketReceiver receiver) {
-      this.receiver = receiver;
+   public DdsMessageHandler(MQTopic outboundTopic) {
+      this.producer = 
+            new MQProducer<String, String>(
+                  AppContext.getInstance().getParam(
+                        AppContext.METADATA_BROKER_LIST));
+      this.topic = outboundTopic;
    }
 
    @Override
    public void onMessage(DdsData ddsData) {
-      if (receiver != null && ddsData.haveData()) {
-         int retryCount = 3;
-
-         while (retryCount-- > 0) {
-            try {
-               if (null == wsClientSession) {
-                  if (ddsData.getIsd() != null)
-                     receiver.store(JsonUtils.toJson(ddsData.getIsd()));
-                  else if (ddsData.getVsd() != null)
-                     receiver.store(JsonUtils.toJson(ddsData.getVsd()));
-                  else if (ddsData.getAsd() != null)
-                     receiver.store(JsonUtils.toJson(ddsData.getAsd()));
-//                  else
-//                     receiver.store(JsonUtils.toJson(ddsData.getFullMessage()));
-               } else {
-                  // DEBUG ONLY
-                  // For debugging only and running the app on local machine
-                  // without Spark
-                  if (ddsData.getIsd() != null)
-                     wsClientSession.getBasicRemote().sendText(JsonUtils.toJson(ddsData.getIsd()));
-                  else if (ddsData.getVsd() != null)
-                     wsClientSession.getBasicRemote().sendText(JsonUtils.toJson(ddsData.getVsd()));
-                  else if (ddsData.getAsd() != null)
-                     wsClientSession.getBasicRemote().sendText(JsonUtils.toJson(ddsData.getAsd()));
-//                  else
-//                     receiver.store(JsonUtils.toJson(ddsData.getFullMessage()));
-               }
-               break;
-            } catch (Exception e) {
-               if (retryCount > 0) {
-                  logger.warn("Error sending message to remote end-point. Retrying... count "
-                        + retryCount);
-               } else {
-                  logger.error("Error sending message to remote end-point. ", e);
-               }
-            } finally {
-            }
+      try {
+         if (producer != null && ddsData.haveData()) {
+            if (ddsData.getIsd() != null)
+               producer.send(topic.getName(), null, JsonUtils.toJson(ddsData.getIsd()));
+            else if (ddsData.getVsd() != null)
+               producer.send(topic.getName(), null, JsonUtils.toJson(ddsData.getVsd()));
+            else if (ddsData.getAsd() != null)
+               producer.send(topic.getName(), null, JsonUtils.toJson(ddsData.getAsd()));
+            else
+               producer.send(topic.getName(), null, ddsData.getFullMessage());
          }
+      } catch (Exception e) {
+         logger.error("Error handling DDS message. ", e);
+      } finally {
       }
    }
 
+
    public void disable() {
-      receiver = null;
+      if (null != producer) {
+         producer.close();
+         producer = null;
+      }
    }
 
-   public WebSocketReceiver getReceiver() {
-      return receiver;
+   public MQTopic getTopic() {
+      return topic;
    }
 
-   //////////////FOR DEBUG ONLY///////////////////
-   // For debugging only and running the app on local machine
-   // without Spark
-   private Session wsClientSession;
-
-   public Session getWsClientSession() {
-      return wsClientSession;
+   public void setTopic(MQTopic inboundTopic) {
+      this.topic = inboundTopic;
    }
 
-   public void setWsClientSession(Session wsClient) {
-      this.wsClientSession = wsClient;
-   }
-   /////////////////////////////////////////////
 }

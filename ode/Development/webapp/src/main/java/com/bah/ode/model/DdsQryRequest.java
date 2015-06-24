@@ -83,5 +83,72 @@ public class DdsQryRequest extends DdsRequest {
    public String toString() {
       return "QUERY:" + JsonUtils.toJson(this);
    }
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
+      result = prime * result
+            + ((endDateOperator == null) ? 0 : endDateOperator.hashCode());
+      result = prime * result + limit;
+      result = prime * result
+            + ((orderByField == null) ? 0 : orderByField.hashCode());
+      result = prime * result + orderByOrder;
+      result = prime * result + skip;
+      result = prime * result
+            + ((startDate == null) ? 0 : startDate.hashCode());
+      result = prime * result
+            + ((startDateOperator == null) ? 0 : startDateOperator.hashCode());
+      result = prime * result
+            + ((systemQueryName == null) ? 0 : systemQueryName.hashCode());
+      return result;
+   }
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (!super.equals(obj))
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      DdsQryRequest other = (DdsQryRequest) obj;
+      if (endDate == null) {
+         if (other.endDate != null)
+            return false;
+      } else if (!endDate.equals(other.endDate))
+         return false;
+      if (endDateOperator == null) {
+         if (other.endDateOperator != null)
+            return false;
+      } else if (!endDateOperator.equals(other.endDateOperator))
+         return false;
+      if (limit != other.limit)
+         return false;
+      if (orderByField == null) {
+         if (other.orderByField != null)
+            return false;
+      } else if (!orderByField.equals(other.orderByField))
+         return false;
+      if (orderByOrder != other.orderByOrder)
+         return false;
+      if (skip != other.skip)
+         return false;
+      if (startDate == null) {
+         if (other.startDate != null)
+            return false;
+      } else if (!startDate.equals(other.startDate))
+         return false;
+      if (startDateOperator == null) {
+         if (other.startDateOperator != null)
+            return false;
+      } else if (!startDateOperator.equals(other.startDateOperator))
+         return false;
+      if (systemQueryName == null) {
+         if (other.systemQueryName != null)
+            return false;
+      } else if (!systemQueryName.equals(other.systemQueryName))
+         return false;
+      return true;
+   }
    
 }
