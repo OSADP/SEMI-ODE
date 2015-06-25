@@ -35,8 +35,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    private MQTopic topic;
 
    public DdsMessageHandler(MQTopic outboundTopic) {
-      this.producer = 
-            new MQProducer<String, String>(
+      this.producer = new MQProducer<String, String>(
                   AppContext.getInstance().getParam(
                         AppContext.METADATA_BROKER_LIST));
       this.topic = outboundTopic;

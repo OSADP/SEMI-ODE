@@ -1,8 +1,10 @@
 package com.bah.ode.wrapper;
 
+import kafka.consumer.Consumer;
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
+import kafka.serializer.Decoder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,24 +17,32 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MQConsumerGroup {
+public class MQConsumerGroup<K, V, R> {
    private static Logger logger = LoggerFactory
          .getLogger(MQConsumerGroup.class);
 
-   private final ConsumerConnector consumer;
+   private final ConsumerConnector consumerConnector;
    private final MQTopic topic;
    private ExecutorService executor;
+   private DataProcessor<V, R> processor;
+   private Decoder<K> keyDecoder;
+   private Decoder<V> valueDecoder;
 
-   public MQConsumerGroup(String zookeepers, String a_groupId, MQTopic outboundTopic) {
-      consumer = kafka.consumer.Consumer
-            .createJavaConsumerConnector(createConsumerConfig(zookeepers,
-                  a_groupId));
-      this.topic = outboundTopic;
+   public MQConsumerGroup(String zookeepers, String a_groupId, 
+         MQTopic a_topic, Decoder<K> keyDecoder,
+         Decoder<V> valueDecoder) {
+      
+      consumerConnector = Consumer.createJavaConsumerConnector(
+            createConsumerConfig(zookeepers, a_groupId));
+      
+      this.topic = a_topic;
+      this.keyDecoder = keyDecoder;
+      this.valueDecoder = valueDecoder;
    }
 
    public void shutdown() {
-      if (consumer != null)
-         consumer.shutdown();
+      if (consumerConnector != null)
+         consumerConnector.shutdown();
       if (executor != null)
          executor.shutdown();
       try {
@@ -44,12 +54,14 @@ public class MQConsumerGroup {
       }
    }
 
-   public void run() {
+   public void consume() {
       Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
       topicCountMap.put(topic.getName(), topic.getPartitions());
-      Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer
-            .createMessageStreams(topicCountMap);
-      List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(topic);
+      Map<String, List<KafkaStream<K, V>>> consumerMap = 
+            consumerConnector.createMessageStreams(topicCountMap, 
+                  keyDecoder, valueDecoder);
+      List<KafkaStream<K, V>> streams = 
+            consumerMap.get(topic.getName());
 
       // now launch all the threads
       //
@@ -58,8 +70,8 @@ public class MQConsumerGroup {
       // now create an object to consume the messages
       //
       int threadNumber = 0;
-      for (final KafkaStream stream : streams) {
-         executor.submit(new MQConsumer(stream, threadNumber, null));
+      for (final KafkaStream<K, V> stream : streams) {
+         executor.submit(new MQConsumer<K, V, R>(stream, threadNumber, processor));
          threadNumber++;
       }
    }

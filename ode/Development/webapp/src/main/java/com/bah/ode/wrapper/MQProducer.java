@@ -27,9 +27,10 @@ public class MQProducer<K, V> {
         * based on the data type. 
         */
        // props.put("partitioner.class", "com.bah.ode.wrapper.MQPartitioner");
-      this (brokers, null, null);
+      this (brokers, "kafka.serializer.StringEncoder", null);
    }
-    public MQProducer (String brokers, String encoderClass, 
+   
+   public MQProducer (String brokers, String encoderClass, 
           String partitionerClass) {
        
         Properties props = new Properties();

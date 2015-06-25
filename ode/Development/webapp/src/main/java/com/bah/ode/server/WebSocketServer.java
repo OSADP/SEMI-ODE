@@ -16,6 +16,10 @@
  *******************************************************************************/
 package com.bah.ode.server;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
@@ -45,7 +49,6 @@ import com.bah.ode.spark.SparkWorkflow;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQTopic;
 import com.bah.ode.wrapper.WebSocketClient;
-import com.bah.ode.wrapper.WebSocketClient.WebSocketException;
 
 /**
  * gives the relative name for the end point. This will be accessed via
@@ -56,8 +59,22 @@ import com.bah.ode.wrapper.WebSocketClient.WebSocketException;
 public class WebSocketServer {
    private static Logger logger = LoggerFactory
          .getLogger(WebSocketServer.class);
+   
+   private static Set<String> R_TYPES = initializeSet("sub", "qry");
+   private static Set<String> D_TYPES = initializeSet("ints", "vehs", "aggs");
+   
    private AppContext appContext = AppContext.getInstance();
-   WebSocketClient<?> ddsClient = null;
+   private WebSocketClient<?> ddsClient;
+   private MQTopic inboundTopic;
+   private MQTopic outboundTopic;
+
+   private static Set<String> initializeSet(String... args) {
+      Set<String> result = new HashSet<String>();
+      for (String arg : args) {
+         result.add(arg);
+      }
+      return result;
+   }
 
    /**
     * Allows us to intercept the creation of a new session. The session class
@@ -94,13 +111,19 @@ public class WebSocketServer {
 
       OdeStatus msg = new OdeStatus();
       try {
-         if (rtype.equals("sub") || rtype.equals("qry")) {
-         } else {
+         if (!R_TYPES.contains(rtype)) {
             msg.setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR)
                   .setMessage(
                         String.format(
-                              "Invalid request type %s. Valid request types are 'sub', 'qry'",
-                              rtype));
+                              "Invalid request type %s. Valid request types are %s",
+                              rtype, R_TYPES.toString()));
+            logger.error(msg.toString());
+         } else if (!D_TYPES.contains(dtype)){
+            msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
+                  .setMessage(
+                        String.format(
+                              "Invalid data type %s requested. Valid data types are %s",
+                              dtype, D_TYPES.toString()));
             logger.error(msg.toString());
          }
 
@@ -150,7 +173,7 @@ public class WebSocketServer {
          // Is a topic already existing for this request?
          OdeRequest odeRequest = buildOdeRequest(rtype, message);
          OdeRequestManagerSingleton rqstMgr = OdeRequestManagerSingleton.getInstance();
-         MQTopic outboundTopic = rqstMgr.getTopic(odeRequest);
+         outboundTopic = rqstMgr.getTopic(odeRequest);
          if (outboundTopic == null) {
             // No outbound topic exists, create a new one
             outboundTopic = rqstMgr.createTopic(odeRequest);
@@ -160,7 +183,7 @@ public class WebSocketServer {
             
             // get a data manager to start the data flow
             DdsRequest ddsRequest = buildDdsRequest(message, rtype, dtype);
-            MQTopic inboundTopic = ddsMgr.getTopic(ddsRequest);
+            inboundTopic = ddsMgr.getTopic(ddsRequest);
             if (inboundTopic == null) {
                // No inbound topic exists; create a new inbound topic
                inboundTopic = ddsMgr.createTopic(ddsRequest);
@@ -186,7 +209,7 @@ public class WebSocketServer {
                msg.setCode(OdeStatus.Code.SUCCESS);
                msg.setMessage("Connection Established.");
                session.getAsyncRemote().sendText(msg.toJson());
-               ddsClient.send(ddsRequest.toString());
+               ddsClient.send(sDdsRequest);
                
                DdsMessageHandler handler = (DdsMessageHandler) ddsClient
                      .getHandler();
@@ -199,7 +222,7 @@ public class WebSocketServer {
                   
                   SparkWorkflow workflow = new SparkWorkflow(appContext);
                   
-                  workflow.start(outboundTopic);
+                  workflow.start(inboundTopic, outboundTopic);
                } else {
                   /*
                    * FOR DEBUG ONLY: Bypass Spark and send directly to outbound topic
@@ -216,24 +239,17 @@ public class WebSocketServer {
          ResponseProcessor rp = new ResponseProcessor(session, outboundTopic);
          rp.start();
          
-
-         if (null != ddsClient) {
-
-         } else {
-            msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
-                  .setMessage(
-                        String.format(
-                              "Invalid data type %s requested. Valid data types are 'ints', 'vehs', 'aggs'",
-                              dtype));
-            logger.error(msg.toString());
-         }
-
       } catch (Exception ex) {
          OdeStatus status = new OdeStatus()
             .setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
             .setMessage(String.format("Error procesing request %s.",
                   session.getRequestURI()));
          logger.error(status.toString(), ex);
+         try {
+            session.getBasicRemote().sendText(status.toString());
+         } catch (IOException e) {
+            logger.error("Error sending error message back to client", e);
+         }
       }
    }
 
@@ -311,20 +327,25 @@ public class WebSocketServer {
     * @param session
     *           - the session that was closed
     * @param reason
-    *           - the reson the session was closed
+    *           - the reason the session was closed
     */
    @OnClose
    public void onClose(Session session, CloseReason reason) {
       String sessionId = session.getId();
       try {
-         if (ddsClient != null)
-            ddsClient.close();
-
          logger.info("Session {} disconnected.", sessionId);
          if (reason != null)
             logger.info("Reason: {}", reason.getCloseCode());
 
-      } catch (WebSocketException e) {
+         int requesters = DdsRequestManagerSingleton.getInstance()
+            .requesterDisconnected(inboundTopic.getName());
+         
+         if (ddsClient != null && requesters == 0)
+            ddsClient.close();
+         
+         requesters = OdeRequestManagerSingleton.getInstance()
+            .requesterDisconnected(outboundTopic.getName());
+      } catch (Exception e) {
          logger.error("Error closing session " + sessionId, e);
       }
    }
