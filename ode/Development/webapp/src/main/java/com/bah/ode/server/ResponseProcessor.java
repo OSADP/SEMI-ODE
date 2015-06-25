@@ -2,6 +2,8 @@ package com.bah.ode.server;
 
 import javax.websocket.Session;
 
+import kafka.serializer.StringDecoder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,26 +19,29 @@ public class ResponseProcessor {
    private Session clientSession;
    private MQTopic outboundTopic;
    private String groupId;
-   private MQConsumerGroup consumerGroup;
+   private MQConsumerGroup<String, String, String> consumerGroup;
    
    
    
-   public ResponseProcessor(Session clientSession, MQTopic outboundTopic2) {
+   public ResponseProcessor(Session clientSession, MQTopic outboundTopic) {
       super();
       this.clientSession = clientSession;
-      this.outboundTopic = outboundTopic2;
+      this.outboundTopic = outboundTopic;
       this.groupId = clientSession.getId(); 
-      this.consumerGroup = new MQConsumerGroup(
+      
+      this.consumerGroup = new MQConsumerGroup<String, String, String> (
             appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
             this.groupId,
-            this.outboundTopic);
+            this.outboundTopic,
+            new StringDecoder(null),
+            new StringDecoder(null));
    }
 
    public void start() {
       logger.info("Starting {} consumer threads in group {} for topic {} ...", 
             outboundTopic.getPartitions(), groupId, outboundTopic.getName());
       
-      consumerGroup.run();
+      consumerGroup.consume();
    }
 
    public Session getClientSession() {

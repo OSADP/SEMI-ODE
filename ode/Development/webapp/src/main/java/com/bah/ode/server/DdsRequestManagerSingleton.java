@@ -36,5 +36,4 @@ public class DdsRequestManagerSingleton extends GenericTopicManager<DdsRequest>{
       
       return topic;
    }
-   
 }
