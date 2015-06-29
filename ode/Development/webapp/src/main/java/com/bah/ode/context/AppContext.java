@@ -152,15 +152,9 @@ public class AppContext {
 
    public void shutDown() {
       if (null != ssc) {
-         ssc.stop();
+         ssc.stop(true);
          ssc.close();
          ssc = null;
-      }
-      
-      if (null != sparkContext) {
-         sparkContext.stop();
-         sparkContext.close();
-         sparkContext = null;
       }
       
    }

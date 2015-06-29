@@ -15,14 +15,14 @@ public class MQOutputer implements VoidFunction<Iterator<Tuple2<String, String>>
    private static final long serialVersionUID = -2352763652266510903L;
 
    private String mqBrokers;
-   private MQTopic topic;
+   private MQTopic[] outTopics;
    
    private static MQProducerPool producerPool;
    
-   public MQOutputer(String mqBrokers, MQTopic outboundTopic) {
+   public MQOutputer(String mqBrokers, MQTopic[] outTopics) {
       super();
       this.mqBrokers = mqBrokers;
-      this.topic = outboundTopic;
+      this.outTopics = outTopics;
       if (null != producerPool) {
          producerPool = new MQProducerPool(new MQProducerFactory(this.mqBrokers));
       }
@@ -33,8 +33,10 @@ public class MQOutputer implements VoidFunction<Iterator<Tuple2<String, String>>
          throws Exception {
       MQProducer<String, String> producer = producerPool.borrowObject();
       while (partitionOfRecords.hasNext()) {
-         Tuple2<String, String> record = partitionOfRecords.next();
-         producer.send(topic.getName(), record._1(), record._2());
+         for (MQTopic topic: outTopics) {
+            Tuple2<String, String> record = partitionOfRecords.next();
+            producer.send(topic.getName(), record._1(), record._2());
+         }
       }
       producerPool.returnObject(producer);
    }
