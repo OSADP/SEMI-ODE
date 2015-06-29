@@ -111,7 +111,7 @@
    </context-param>
    <context-param>
       <param-name>spark.master</param-name>
-      <param-value></param-value>
+      <param-value>local[3]</param-value>
    </context-param>
    <context-param>
       <param-name>spark.streaming.default.duration</param-name>
@@ -127,7 +127,7 @@
    </context-param>
    <context-param>
       <param-name>zk.connection.strings</param-name>
-      <param-value></param-value>
+      <param-value>ip-10-0-16-12.ec2.internal:2181,ip-10-0-16-89.ec2.internal:2181,ip-10-0-16-97.ec2.internal:2181</param-value>
    </context-param>
    <listener>
       <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>

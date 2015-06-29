@@ -48,6 +48,7 @@ import com.bah.ode.model.OdeSubRequest;
 import com.bah.ode.spark.SparkWorkflow;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQTopic;
+import com.bah.ode.wrapper.MQTopicInOut;
 import com.bah.ode.wrapper.WebSocketClient;
 
 /**
@@ -67,6 +68,7 @@ public class WebSocketServer {
    private WebSocketClient<?> ddsClient;
    private MQTopic inboundTopic;
    private MQTopic outboundTopic;
+   private ResponseProcessor rp;
 
    private static Set<String> initializeSet(String... args) {
       Set<String> result = new HashSet<String>();
@@ -126,6 +128,9 @@ public class WebSocketServer {
                               dtype, D_TYPES.toString()));
             logger.error(msg.toString());
          }
+         msg.setCode(OdeStatus.Code.SUCCESS)
+            .setMessage("ODE Connection Established.");
+         session.getAsyncRemote().sendText(msg.toJson());
 
       } catch (Exception ex) {
          msg.setCode(OdeStatus.Code.SOURCE_CONNECTION_ERROR).setMessage(
@@ -207,9 +212,10 @@ public class WebSocketServer {
 
                ddsClient.connect();
                msg.setCode(OdeStatus.Code.SUCCESS);
-               msg.setMessage("Connection Established.");
+               msg.setMessage("DDS Connection Established.");
                session.getAsyncRemote().sendText(msg.toJson());
                ddsClient.send(sDdsRequest);
+               ddsMgr.requesterConnected(inboundTopic.getName());
                
                DdsMessageHandler handler = (DdsMessageHandler) ddsClient
                      .getHandler();
@@ -222,7 +228,7 @@ public class WebSocketServer {
                   
                   SparkWorkflow workflow = new SparkWorkflow(appContext);
                   
-                  workflow.start(inboundTopic, outboundTopic);
+                  workflow.start(new MQTopicInOut(inboundTopic, outboundTopic));
                } else {
                   /*
                    * FOR DEBUG ONLY: Bypass Spark and send directly to outbound topic
@@ -236,13 +242,15 @@ public class WebSocketServer {
          }
          // Start the processor to receive data from the outbound topic and 
          // send it to client session
-         ResponseProcessor rp = new ResponseProcessor(session, outboundTopic);
-         rp.start();
+         rp = new ResponseProcessor(session, outboundTopic);
+         Thread respThread = new Thread(rp);
+         respThread.start();
+         rqstMgr.requesterConnected(outboundTopic.getName());
          
       } catch (Exception ex) {
          OdeStatus status = new OdeStatus()
             .setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
-            .setMessage(String.format("Error procesing request %s.",
+            .setMessage(String.format("Error processing request %s.",
                   session.getRequestURI()));
          logger.error(status.toString(), ex);
          try {
@@ -337,14 +345,24 @@ public class WebSocketServer {
          if (reason != null)
             logger.info("Reason: {}", reason.getCloseCode());
 
-         int requesters = DdsRequestManagerSingleton.getInstance()
-            .requesterDisconnected(inboundTopic.getName());
+         if (inboundTopic != null) {
+            int requesters = DdsRequestManagerSingleton.getInstance()
+               .requesterDisconnected(inboundTopic.getName());
+            
+            if (ddsClient != null && requesters <= 0) {
+               ddsClient.close();
+               ddsClient = null;
+            }
+         }
          
-         if (ddsClient != null && requesters == 0)
-            ddsClient.close();
+         if (outboundTopic != null) {
+            OdeRequestManagerSingleton.getInstance()
+                  .requesterDisconnected(outboundTopic.getName());
+         }
          
-         requesters = OdeRequestManagerSingleton.getInstance()
-            .requesterDisconnected(outboundTopic.getName());
+         if (rp != null) {
+            rp.shutDown();
+         }
       } catch (Exception e) {
          logger.error("Error closing session " + sessionId, e);
       }

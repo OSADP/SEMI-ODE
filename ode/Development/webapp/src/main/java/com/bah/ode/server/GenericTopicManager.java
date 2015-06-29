@@ -60,9 +60,15 @@ public class GenericTopicManager<T> {
    }
    
    public int requesterDisconnected(String topicName) {
-      int subscribers = topicSubscribers.get(topicName).decrementAndGet();
-      if (subscribers == 0)
-         removeTopic(topicName);
+      AtomicInteger atomicSubscribers = topicSubscribers.get(topicName);
+      int subscribers = 0;
+      if (atomicSubscribers != null && atomicSubscribers.get() > 0) {
+         subscribers = atomicSubscribers.decrementAndGet();
+         if (subscribers <= 0) {
+            removeTopic(topicName);
+            subscribers = 0;
+         }
+      }
       return subscribers; 
    }
 }

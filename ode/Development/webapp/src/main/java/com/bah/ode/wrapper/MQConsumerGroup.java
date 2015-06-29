@@ -10,8 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -27,10 +29,12 @@ public class MQConsumerGroup<K, V, R> {
    private DataProcessor<V, R> processor;
    private Decoder<K> keyDecoder;
    private Decoder<V> valueDecoder;
+   private boolean running = false;
 
    public MQConsumerGroup(String zookeepers, String a_groupId, 
          MQTopic a_topic, Decoder<K> keyDecoder,
-         Decoder<V> valueDecoder) {
+         Decoder<V> valueDecoder,
+         DataProcessor<V, R> a_processor) {
       
       consumerConnector = Consumer.createJavaConsumerConnector(
             createConsumerConfig(zookeepers, a_groupId));
@@ -38,9 +42,12 @@ public class MQConsumerGroup<K, V, R> {
       this.topic = a_topic;
       this.keyDecoder = keyDecoder;
       this.valueDecoder = valueDecoder;
+      this.processor = a_processor;
+      running = false;
    }
 
-   public void shutdown() {
+   public void shutDown() {
+      running = false;
       if (consumerConnector != null)
          consumerConnector.shutdown();
       if (executor != null)
@@ -54,7 +61,7 @@ public class MQConsumerGroup<K, V, R> {
       }
    }
 
-   public void consume() {
+   public void consume() throws InterruptedException, ExecutionException {
       Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
       topicCountMap.put(topic.getName(), topic.getPartitions());
       Map<String, List<KafkaStream<K, V>>> consumerMap = 
@@ -70,9 +77,16 @@ public class MQConsumerGroup<K, V, R> {
       // now create an object to consume the messages
       //
       int threadNumber = 0;
+      running = true;
       for (final KafkaStream<K, V> stream : streams) {
-         executor.submit(new MQConsumer<K, V, R>(stream, threadNumber, processor));
-         threadNumber++;
+         if (running) {
+            Future<Object> future = 
+                  executor.submit(
+                        new MQConsumer<K, V, R>(stream, threadNumber, processor));
+   //         String result = future.get().toString();
+   //         logger.info(result);
+            threadNumber++;
+         }
       }
    }
 
@@ -81,8 +95,8 @@ public class MQConsumerGroup<K, V, R> {
       Properties props = new Properties();
       props.put("zookeeper.connect", zookeepers);
       props.put("group.id", a_groupId);
-      props.put("zookeeper.session.timeout.ms", "400");
-      props.put("zookeeper.sync.time.ms", "200");
+      props.put("zookeeper.session.timeout.ms", "4000");
+      props.put("zookeeper.sync.time.ms", "2000");
       props.put("auto.commit.interval.ms", "1000");
 
       return new ConsumerConfig(props);

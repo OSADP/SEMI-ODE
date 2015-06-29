@@ -13,6 +13,10 @@ public interface DataProcessor<D, R> {
          super(e);
       }
 
+      public DataProcessorException(String message, Exception cause) {
+         super(message, cause);
+      }
+
       private static final long serialVersionUID = 1L;
       
    }

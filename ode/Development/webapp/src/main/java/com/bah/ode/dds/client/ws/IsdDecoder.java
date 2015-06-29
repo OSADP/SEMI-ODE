@@ -33,35 +33,37 @@ import com.oss.asn1.Coder;
 
 public class IsdDecoder extends DdsDecoder {
 
-	private static final Logger logger = LoggerFactory.getLogger(IsdDecoder.class);
+   private static final Logger logger = LoggerFactory
+         .getLogger(IsdDecoder.class);
 
-	@Override
+   @Override
    public DdsData decode(String message) throws DecodeException {
-		DdsData ddsData = super.decode(message);
-		// if it's not a control message decode it as a ASN.1 message
-		if (ddsData.getControlMessage() == null) {
-			InputStream ins = new ByteArrayInputStream(CodecUtils.fromBase64(message));
-			
-			Coder coder = Oss.getBERCoder();
-			try {
-				ddsData.setIsd(new IntersectionSituationData());
-				coder.decode(ins, ddsData.getIsd());
-			} catch (Exception e) {
-				logger.error("Error decoding ", e);
-			} finally {
-				try {
-	            ins.close();
-	         } catch (IOException e) {
-					logger.warn("Error closing input stream: ", e);
-	         }
-			}
-		}
-		return ddsData;
+      DdsData ddsData = super.decode(message);
+      // if it's not a control message decode it as a ASN.1 message
+      if (ddsData.getControlMessage() == null) {
+         InputStream ins = new ByteArrayInputStream(
+               CodecUtils.fromBase64(message));
+
+         Coder coder = Oss.getBERCoder();
+         try {
+            ddsData.setIsd(new IntersectionSituationData());
+            coder.decode(ins, ddsData.getIsd());
+         } catch (Exception e) {
+            logger.error("Error decoding ", e);
+         } finally {
+            try {
+               ins.close();
+            } catch (IOException e) {
+               logger.warn("Error closing input stream: ", e);
+            }
+         }
+      }
+      return ddsData;
    }
 
-	@Override
+   @Override
    public boolean willDecode(String message) {
-		return true;
+      return true;
    }
 
 }
