@@ -54,7 +54,7 @@ Vagrant.configure(2) do |config|
 		end
 		hdp2.vm.network "private_network", ip: "192.168.33.12"
 		hdp2.vm.hostname = "hdp2-server.local"
-		hdp1.vm.synced_folder "../ode-common", "/ode-common"
+		hdp2.vm.synced_folder "../ode-common", "/ode-common"
 		hdp2.vm.provision "shell", path: "./server_setup.sh"
 		hdp2.vm.provision "shell", path: "./hadoop_node_setup.sh"
 		hdp2.vm.provision "shell", path: "../ode-common/install_spark.sh"
