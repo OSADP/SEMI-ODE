@@ -1,2 +1,2 @@
-troposphere
-boto
+troposphere==1.1.0
+boto==2.38.0
