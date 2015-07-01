@@ -7,11 +7,12 @@ Info on the python library used to generate the script
 https://github.com/cloudtools/troposphere
 
 """
+
+from troposphere import constants
+
 logicalName = 'logicalName'
 mapping = 'mapping'
-us_east_1 = 'us-east-1'
-us_west_1 = 'us-west-1'
-us_west_2 = 'us-west-2'
+
 PV64 = 'PV64'
 HVM64 = 'HVM64'
 HVMG2 = 'HVMG2' # GPU Isntance
@@ -66,9 +67,9 @@ https://aws.amazon.com/marketplace/pp/B00NPHLT1E
 AWSRegionArch2AMI = {
     logicalName: 'AWSRegionArch2AMI',
     mapping : {
-        'us-east-1': {'HVM64': 'ami-a0e8eec8'},    # Private AMI Image   #'ami-4e90d426', # Market Place Liferay Public bitnami ubuntu
-        'us-west-2': {'HVM64': 'ami-6df5ac5d'},    # market place image
-        'us-west-1': {'HVM64': 'ami-088b924d'}     # market place image
+        constants.US_EAST_1: {'HVM64': 'ami-a0e8eec8'},    # Private AMI Image   #'ami-4e90d426', # Market Place Liferay Public bitnami ubuntu
+        constants.US_WEST_2: {'HVM64': 'ami-6df5ac5d'},    # market place image
+        constants.US_WEST_1: {'HVM64': 'ami-088b924d'}     # market place image
     }}
 
 """
@@ -82,9 +83,9 @@ AWSRegionArch2AMI = {
 centos_65_AWSRegionArch2AMI = {
     logicalName: 'centos65AWSRegionArch2AMI',
     mapping : {
-        us_east_1: {HVM64: 'ami-c2a818aa'},    # market place image
-        us_west_1: {HVM64: 'ami-57cfc412'},    # market place image
-        us_west_2: {HVM64: 'ami-81d092b1'}     # market place image
+        constants.US_EAST_1: {HVM64: 'ami-c2a818aa'},    # market place image
+        constants.US_WEST_1: {HVM64: 'ami-57cfc412'},    # market place image
+        constants.US_WEST_2: {HVM64: 'ami-81d092b1'}     # market place image
     }}
 
 """
@@ -97,9 +98,9 @@ centos_65_AWSRegionArch2AMI = {
 ubuntu_14_AWSRegionArch2AMI = {
     logicalName: 'ubuntu14AWSRegionArch2AMI',
     mapping : {
-        us_east_1: {HVM64: 'ami-d05e75b8'},
-        us_west_1:{ HVM64: 'ami-df6a8b9b'},
-        us_west_2: {HVM64: 'ami-5189a661'}
+        constants.US_EAST_1: {HVM64: 'ami-d05e75b8'},
+        constants.US_WEST_1: { HVM64: 'ami-df6a8b9b'},
+        constants.US_WEST_2: {HVM64: 'ami-5189a661'}
     }}
 
 """
@@ -111,9 +112,9 @@ http://cloud-images.ubuntu.com/locator/
 ubuntu_12_AWSRegionArch2AMI = {
     logicalName: 'ubuntu12AWSRegionArch2AMI',
     mapping : {
-        us_east_1: {HVM64: 'ami-427a392a'},
-        us_west_1:{ HVM64: 'ami-82bba3c7'},
-        us_west_2: {HVM64: 'ami-2b471c1b'}
+        constants.US_EAST_1: {HVM64: 'ami-427a392a'},
+        constants.US_WEST_1: { HVM64: 'ami-82bba3c7'},
+        constants.US_WEST_2: {HVM64: 'ami-2b471c1b'}
     }}
 
 """
@@ -127,9 +128,9 @@ amzn-ami-vpc-nat-hvm-2015.03.0.x86_64-ebs
 ami_nat_instanceAWSRegionArch2AMI = {
     logicalName: 'amazonNATInstance',
     mapping :{
-            us_east_1 : {HVM64: 'ami-b0210ed8'},
-            us_west_1 : {HVM64: 'ami-ada746e9'},
-            us_west_2 : {HVM64: 'ami-75ae8245'}
+            constants.US_EAST_1: {HVM64: 'ami-b0210ed8'},
+            constants.US_WEST_1: {HVM64: 'ami-ada746e9'},
+            constants.US_WEST_2: {HVM64: 'ami-75ae8245'}
     }}
 
 """
