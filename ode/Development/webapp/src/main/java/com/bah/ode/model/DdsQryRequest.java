@@ -14,75 +14,93 @@ public class DdsQryRequest extends DdsRequest {
    private int orderByOrder = 1;
    private int skip = 0;
    private int limit = 0;
-   
+
    public String getSystemQueryName() {
       return systemQueryName;
    }
+
    public DdsQryRequest setSystemQueryName(String systemQueryName) {
       this.systemQueryName = systemQueryName;
       return this;
    }
+
    public String getStartDate() {
       return startDate;
    }
+
    public DdsQryRequest setStartDate(String startDate) {
       this.startDate = startDate;
       return this;
    }
+
    public String getStartDateOperator() {
       return startDateOperator;
    }
+
    public DdsQryRequest setStartDateOperator(String startDateOperator) {
       this.startDateOperator = startDateOperator;
       return this;
    }
+
    public String getEndDate() {
       return endDate;
    }
+
    public DdsQryRequest setEndDate(String endDate) {
       this.endDate = endDate;
       return this;
    }
+
    public String getEndDateOperator() {
       return endDateOperator;
    }
+
    public DdsQryRequest setEndDateOperator(String endDateOperator) {
       this.endDateOperator = endDateOperator;
       return this;
    }
+
    public String getOrderByField() {
       return orderByField;
    }
+
    public DdsQryRequest setOrderByField(String orderByField) {
       this.orderByField = orderByField;
       return this;
    }
+
    public int getOrderByOrder() {
       return orderByOrder;
    }
+
    public DdsQryRequest setOrderByOrder(int orderByOrder) {
       this.orderByOrder = orderByOrder;
       return this;
    }
+
    public int getSkip() {
       return skip;
    }
+
    public DdsQryRequest setSkip(int skip) {
       this.skip = skip;
       return this;
    }
+
    public int getLimit() {
       return limit;
    }
+
    public DdsQryRequest setLimit(int limit) {
       this.limit = limit;
       return this;
    }
-   
+
    @Override
    public String toString() {
       return "QUERY:" + JsonUtils.toJson(this);
    }
+
    @Override
    public int hashCode() {
       final int prime = 31;
@@ -103,6 +121,7 @@ public class DdsQryRequest extends DdsRequest {
             + ((systemQueryName == null) ? 0 : systemQueryName.hashCode());
       return result;
    }
+
    @Override
    public boolean equals(Object obj) {
       if (this == obj)
@@ -150,5 +169,5 @@ public class DdsQryRequest extends DdsRequest {
          return false;
       return true;
    }
-   
+
 }

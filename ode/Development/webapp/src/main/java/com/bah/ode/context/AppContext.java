@@ -28,6 +28,10 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.spark.VsdWorkflow;
+import com.bah.ode.wrapper.MQTopic;
+import com.bah.ode.wrapper.MQTopicInOut;
+
 public class AppContext {
    private static Logger logger = LoggerFactory.getLogger(AppContext.class);
 
@@ -68,7 +72,9 @@ public class AppContext {
    public static final String METADATA_BROKER_LIST = "metadata.broker.list";
    public static final String DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
    public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
-
+   
+   public static final String VSD_INBOUND_TOPIC = "VSD_IN";
+   
    private static AppContext instance = null;
 
    private ServletContext servletContext;
@@ -104,6 +110,17 @@ public class AppContext {
                sparkContext,
                Durations.seconds(Integer.parseInt(
                      getParam(SPARK_STREAMING_DEFAULT_DURATION))));
+         
+         
+         int numParitions = 
+               Integer.parseInt(getParam(DEFAULT_CONSUMER_THREADS));
+         
+         VsdWorkflow vsdwf = new VsdWorkflow(this);
+         vsdwf.setup(new MQTopicInOut(MQTopic.create(VSD_INBOUND_TOPIC, numParitions),
+               MQTopic.create("VSD_OUT", numParitions)));
+         
+         ssc.start();
+         logger.info("*** Spark Streaming Context Started ***");
       } else {
          logger.info("*** SPARK DISABLED FOR DEBUG ***");
       }

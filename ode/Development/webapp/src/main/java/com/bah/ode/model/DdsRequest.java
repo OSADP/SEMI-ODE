@@ -16,90 +16,89 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
-
 @SuppressWarnings("serial")
-public class DdsRequest extends BaseRequest{
-	
-	public enum Dialog {
+public class DdsRequest extends BaseRequest {
+
+   public enum Dialog {
 		VSD (154),
 		ISD (162),
 		ASD (156),
 		ALL (-1);
-		
-		private final int id;
 
-		Dialog(int id) {
-			this.id = id;
-		}
-		
-		public int getId() {
-			return id;
-		}
-		
-		public static Dialog getById(int id) {
-			Dialog result = null;
-			for (Dialog d : Dialog.values()) {
-				if (d.getId() == id) {
-					result = d;
-					break;
-				}
-			}
-			return result;
-		}
-	}
+      private final int id;
 
-	public enum SystemSubName {
+      Dialog(int id) {
+         this.id = id;
+      }
+
+      public int getId() {
+         return id;
+      }
+
+      public static Dialog getById(int id) {
+         Dialog result = null;
+         for (Dialog d : Dialog.values()) {
+            if (d.getId() == id) {
+               result = d;
+               break;
+            }
+         }
+         return result;
+      }
+   }
+
+	public enum SystemName {
 		SDC ("SDC 2.2"),
 		SDW ("SDW 2.2"),
 		SDPC ("SDPC 2.2");
-		
-		private final String name;
-		
-		SystemSubName (String name) {
-			this.name = name;
-		}
 
-		public String getName() {
-			return name;
-		}
-	}
+      private final String name;
 
-	public enum ResultEncoding {
+      SystemName(String name) {
+         this.name = name;
+      }
+
+      public String getName() {
+         return name;
+      }
+   }
+
+   public enum ResultEncoding {
 		BASE_64 ("base64"),
 		HEX ("hex"),
 		FULL ("full");
-		
-		private final String enc;
-		
-		ResultEncoding (String enc) {
-			this.enc = enc;
-		}
 
-		public String getEnc() {
-			return enc;
-		}
-	}
+      private final String enc;
 
-   private int 		dialogID;
-   private String 	resultEncoding;
-   
-	public int getDialogID() {
-		return dialogID;
-	}
+      ResultEncoding(String enc) {
+         this.enc = enc;
+      }
 
-	public DdsRequest setDialogID(int dialogID) {
-		this.dialogID = dialogID;
-		return this;
-	}
+      public String getEnc() {
+         return enc;
+      }
+   }
 
-	public String getResultEncoding() {
-		return resultEncoding;
-	}
+   private int dialogID;
+   private String resultEncoding;
 
-	public DdsRequest setResultEncoding(String resultEncoding) {
-		this.resultEncoding = resultEncoding;
-		return this;
-	}
+   public int getDialogID() {
+      return dialogID;
+   }
+
+   public DdsRequest setDialogID(int dialogID) {
+      this.dialogID = dialogID;
+      return this;
+   }
+
+   public String getResultEncoding() {
+      return resultEncoding;
+   }
+
+   public DdsRequest setResultEncoding(String resultEncoding) {
+      this.resultEncoding = resultEncoding;
+      return this;
+   }
 
    @Override
    public int hashCode() {
@@ -131,5 +130,3 @@ public class DdsRequest extends BaseRequest{
    }
 
 }
-
-

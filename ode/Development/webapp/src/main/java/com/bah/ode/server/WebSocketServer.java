@@ -17,8 +17,6 @@
 package com.bah.ode.server;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
@@ -33,23 +31,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.api.ws.OdeStatus;
-import com.bah.ode.context.AppContext;
-import com.bah.ode.dds.client.ws.DdsClientFactory;
-import com.bah.ode.dds.client.ws.DdsMessageHandler;
-import com.bah.ode.dds.client.ws.IsdDecoder;
-import com.bah.ode.dds.client.ws.VsdDecoder;
 import com.bah.ode.exception.OdeException;
-import com.bah.ode.model.DdsQryRequest;
-import com.bah.ode.model.DdsRequest;
-import com.bah.ode.model.DdsSubRequest;
-import com.bah.ode.model.OdeQryRequest;
+import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeRequest;
-import com.bah.ode.model.OdeSubRequest;
-import com.bah.ode.spark.SparkWorkflow;
-import com.bah.ode.util.JsonUtils;
+import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.wrapper.MQTopic;
-import com.bah.ode.wrapper.MQTopicInOut;
-import com.bah.ode.wrapper.WebSocketClient;
 
 /**
  * gives the relative name for the end point. This will be accessed via
@@ -61,22 +47,9 @@ public class WebSocketServer {
    private static Logger logger = LoggerFactory
          .getLogger(WebSocketServer.class);
    
-   private static Set<String> R_TYPES = initializeSet("sub", "qry");
-   private static Set<String> D_TYPES = initializeSet("ints", "vehs", "aggs");
-   
-   private AppContext appContext = AppContext.getInstance();
-   private WebSocketClient<?> ddsClient;
-   private MQTopic inboundTopic;
-   private MQTopic outboundTopic;
+   private DataSourceConnector connector;
    private ResponseProcessor rp;
-
-   private static Set<String> initializeSet(String... args) {
-      Set<String> result = new HashSet<String>();
-      for (String arg : args) {
-         result.add(arg);
-      }
-      return result;
-   }
+   private OdeRequestManager rqstMgr;
 
    /**
     * Allows us to intercept the creation of a new session. The session class
@@ -113,23 +86,24 @@ public class WebSocketServer {
 
       OdeStatus msg = new OdeStatus();
       try {
-         if (!R_TYPES.contains(rtype)) {
+         if (OdeRequestType.getByShortName(rtype) == null) {
             msg.setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR)
                   .setMessage(
                         String.format(
                               "Invalid request type %s. Valid request types are %s",
-                              rtype, R_TYPES.toString()));
+                              rtype, OdeRequestType.shortNames()));
             logger.error(msg.toString());
-         } else if (!D_TYPES.contains(dtype)){
+         } else if (OdeDataType.getByShortName(dtype) == null){
             msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
                   .setMessage(
                         String.format(
                               "Invalid data type %s requested. Valid data types are %s",
-                              dtype, D_TYPES.toString()));
+                              dtype, OdeDataType.shortNames()));
             logger.error(msg.toString());
+         } else {
+            msg.setCode(OdeStatus.Code.SUCCESS)
+               .setMessage("ODE Connection Established.");
          }
-         msg.setCode(OdeStatus.Code.SUCCESS)
-            .setMessage("ODE Connection Established.");
          session.getAsyncRemote().sendText(msg.toJson());
 
       } catch (Exception ex) {
@@ -175,77 +149,31 @@ public class WebSocketServer {
 
       OdeStatus msg = new OdeStatus();
       try {
-         // Is a topic already existing for this request?
-         OdeRequest odeRequest = buildOdeRequest(rtype, message);
-         OdeRequestManagerSingleton rqstMgr = OdeRequestManagerSingleton.getInstance();
-         outboundTopic = rqstMgr.getTopic(odeRequest);
+         OdeRequest odeRequest = OdeRequestManager.buildOdeRequest(
+               rtype, dtype, message);
+         rqstMgr = new OdeRequestManager(odeRequest);
+         
+         // Does a topic already existing for this request?
+         MQTopic outboundTopic = rqstMgr.getTopic();
+         
          if (outboundTopic == null) {
             // No outbound topic exists, create a new one
-            outboundTopic = rqstMgr.createTopic(odeRequest);
+            outboundTopic = rqstMgr.getOrCreateTopic();
             
-            DdsRequestManagerSingleton ddsMgr = 
-                  DdsRequestManagerSingleton.getInstance();
+            connector = new DataSourceConnector();
+            connector.sendDataRequest(odeRequest, outboundTopic);
             
-            // get a data manager to start the data flow
-            DdsRequest ddsRequest = buildDdsRequest(message, rtype, dtype);
-            inboundTopic = ddsMgr.getTopic(ddsRequest);
-            if (inboundTopic == null) {
-               // No inbound topic exists; create a new inbound topic
-               inboundTopic = ddsMgr.createTopic(ddsRequest);
-               
-               // Send the new request
-               String sDdsRequest = ddsRequest.toString();
-               logger.info("Sending subscription request: {}", sDdsRequest);
-
-               Class decoder = null;
-               if (dtype.equals("ints")) {
-                  decoder = IsdDecoder.class;
-               } else if (dtype.equals("vehs")) {
-                  decoder = VsdDecoder.class;
-               }
-
-               ddsClient = DdsClientFactory.create(
-                     appContext, outboundTopic, decoder);
-               
-               if (ddsClient == null)
-                  throw new OdeException("Error creating DDS Client");
-
-               ddsClient.connect();
-               msg.setCode(OdeStatus.Code.SUCCESS);
-               msg.setMessage("DDS Connection Established.");
-               session.getAsyncRemote().sendText(msg.toJson());
-               ddsClient.send(sDdsRequest);
-               ddsMgr.requesterConnected(inboundTopic.getName());
-               
-               DdsMessageHandler handler = (DdsMessageHandler) ddsClient
-                     .getHandler();
-               if (!appContext.getParam(AppContext.SPARK_MASTER).isEmpty()) {
-                  
-                  if (appContext.getSparkStreamingConext() == null)
-                     appContext.init(appContext.getServletContext());
-                  
-                  handler.setTopic(inboundTopic);
-                  
-                  SparkWorkflow workflow = new SparkWorkflow(appContext);
-                  
-                  workflow.start(new MQTopicInOut(inboundTopic, outboundTopic));
-               } else {
-                  /*
-                   * FOR DEBUG ONLY: Bypass Spark and send directly to outbound topic
-                   */
-                  handler.setTopic(outboundTopic);
-               }
-               
-            } else {
-               // Identical DDS request already exists, tap into the same flow
-            }
+            msg.setCode(OdeStatus.Code.SUCCESS);
+            msg.setMessage("DDS Connection Established.");
+            session.getAsyncRemote().sendText(msg.toJson());
+            
          }
          // Start the processor to receive data from the outbound topic and 
          // send it to client session
          rp = new ResponseProcessor(session, outboundTopic);
          Thread respThread = new Thread(rp);
          respThread.start();
-         rqstMgr.requesterConnected(outboundTopic.getName());
+         rqstMgr.requesterConnected();
          
       } catch (Exception ex) {
          OdeStatus status = new OdeStatus()
@@ -261,72 +189,6 @@ public class WebSocketServer {
       }
    }
 
-   private DdsRequest buildDdsRequest(
-         String message, String rtype, String dtype)
-               throws WebSocketServerException, OdeException {
-      OdeStatus status = new OdeStatus();
-      DdsRequest ddsRequest;
-      OdeRequest odeRequest = buildOdeRequest(rtype, message);
-      if (rtype.equals("sub")) {
-         ddsRequest = new DdsSubRequest()
-               .setSystemSubName(DdsRequest.SystemSubName.SDC.getName());
-      } else if (rtype.equals("qry")) {
-         ddsRequest = new DdsQryRequest()
-               .setSystemQueryName(DdsRequest.SystemSubName.SDPC.getName());
-      } else {
-         status.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
-               .setMessage(
-                     String.format(
-                           "Invalid request type %s. Valid request types are 'sub', 'qry'",
-                           rtype));
-         logger.error(status.toString());
-         throw new WebSocketServerException(status.toString());
-      }
-
-      ddsRequest
-            .setResultEncoding(DdsRequest.ResultEncoding.BASE_64.getEnc())
-            .setNwLat(odeRequest.getNwLat()).setNwLon(odeRequest.getNwLon())
-            .setSeLat(odeRequest.getSeLat()).setSeLon(odeRequest.getSeLon());
-
-      if (dtype.equals("ints")) {
-         ddsRequest.setDialogID(DdsRequest.Dialog.ISD.getId());
-      } else if (dtype.equals("vehs")) {
-         ddsRequest.setDialogID(DdsRequest.Dialog.VSD.getId());
-      } else {
-         status.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
-               .setMessage(
-                     String.format(
-                           "Invalid data type %s requested. Valid data types are 'ints', 'vehs', 'aggs'",
-                           dtype));
-         logger.error(status.toString());
-         return null;
-      }
-
-      return ddsRequest;
-   }
-   
-   private OdeRequest buildOdeRequest(String rtype, String message)
-         throws WebSocketServerException {
-      OdeRequest odeRequest = null;
-      if (rtype.equals("sub")) {
-         odeRequest = (OdeRequest) JsonUtils.fromJson(message,
-               OdeSubRequest.class);
-      } else if (rtype.equals("qry")) {
-         odeRequest = (OdeRequest) JsonUtils.fromJson(message,
-               OdeQryRequest.class);
-      } else {
-         OdeStatus status = new OdeStatus()
-            .setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
-            .setMessage(
-                  String.format(
-                        "Invalid request type %s. Valid request types are 'sub', 'qry'",
-                        rtype));
-         logger.error(status.toString());
-         throw new WebSocketServerException(status.toString());
-      }
-      return odeRequest;
-   }
-   
    /**
     * The user closes the connection.
     * 
@@ -345,19 +207,10 @@ public class WebSocketServer {
          if (reason != null)
             logger.info("Reason: {}", reason.getCloseCode());
 
-         if (inboundTopic != null) {
-            int requesters = DdsRequestManagerSingleton.getInstance()
-               .requesterDisconnected(inboundTopic.getName());
-            
-            if (ddsClient != null && requesters <= 0) {
-               ddsClient.close();
-               ddsClient = null;
-            }
-         }
+         connector.cancelDataRequest();
          
-         if (outboundTopic != null) {
-            OdeRequestManagerSingleton.getInstance()
-                  .requesterDisconnected(outboundTopic.getName());
+         if (rqstMgr != null) {
+            rqstMgr.requesterDisconnected();
          }
          
          if (rp != null) {
