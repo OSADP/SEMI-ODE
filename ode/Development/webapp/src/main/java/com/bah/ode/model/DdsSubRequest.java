@@ -4,9 +4,9 @@ import com.bah.ode.util.JsonUtils;
 
 public class DdsSubRequest extends DdsRequest {
    private static final long serialVersionUID = -3817847278248921651L;
-   
+
    private final int vsmType = 31;
-   private String    systemSubName;
+   private String systemSubName;
 
    public int getVsmType() {
       return vsmType;
@@ -54,5 +54,5 @@ public class DdsSubRequest extends DdsRequest {
          return false;
       return true;
    }
-   
+
 }

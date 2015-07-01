@@ -6,9 +6,10 @@ public class OdeQryRequest extends OdeRequest {
    private String startDate;
    private String endDate;
    
-   public OdeQryRequest(Double nwLat, Double nwLon, Double seLat, Double seLon,
-         OdeDataType dataType, String startDate, String endDate) {
-      super(nwLat, nwLon, seLat, seLon, dataType);
+   public OdeQryRequest(Double nwLat, Double nwLon, Double seLat, Double seLon, 
+         OdeRequestType requestType, OdeDataType dataType, 
+         String startDate, String endDate) {
+      super(nwLat, nwLon, seLat, seLon, requestType, dataType);
       this.startDate = startDate;
       this.endDate = endDate;
    }
