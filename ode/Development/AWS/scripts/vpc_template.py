@@ -83,6 +83,7 @@ amazon_NAT_instance_type_param = t.add_parameter(Parameter(
     ConstraintDescription='Must be a valid EC2 instance type.',
 ))
 
+# Instance Type to architecture type -> HVM64, PV64, etc
 t.add_mapping(mappings.AWSInstanceType2Arch[mappings.logicalName],
               mappings.AWSInstanceType2Arch[mappings.mapping])
 # Liferay Mappings
@@ -92,6 +93,10 @@ t.add_mapping(mappings.AWSRegionArch2AMI[mappings.logicalName],
 # Amazon NAT Instance
 t.add_mapping(mappings.ami_nat_instanceAWSRegionArch2AMI[mappings.logicalName],
               mappings.ami_nat_instanceAWSRegionArch2AMI[mappings.mapping])
+
+# Hadoop Cluster Servers Cents 6.5
+t.add_mapping(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName],
+              mappings.centos_65_AWSRegionArch2AMI[mappings.mapping])
 
 VPC = t.add_resource(
     VPC(

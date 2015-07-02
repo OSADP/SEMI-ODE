@@ -15,47 +15,59 @@ mapping = 'mapping'
 
 PV64 = 'PV64'
 HVM64 = 'HVM64'
-HVMG2 = 'HVMG2' # GPU Isntance
+HVMG2 = 'HVMG2' # GPU Instance
+
+PV64_MAP =  {'Arch': PV64}
+HVM64_MAP = {'Arch': HVM64}
+HVMG2_MAP = {'Arch': HVMG2} # GPU Instance
 
 AWSInstanceType2Arch = {
     logicalName :'AWSInstanceType2Arch',
     mapping : {
-        't1.micro': {'Arch': 'PV64'},
-        't2.micro': {'Arch': 'HVM64'},
-        't2.small': {'Arch': 'HVM64'},
-        't2.medium': {'Arch': 'HVM64'},
-        'm1.small': {'Arch': 'PV64'},
-        'm1.medium': {'Arch': 'PV64'},
-        'm1.large': {'Arch': 'PV64'},
-        'm1.xlarge': {'Arch': 'PV64'},
-        'm2.xlarge': {'Arch': 'PV64'},
-        'm2.2xlarge': {'Arch': 'PV64'},
-        'm2.4xlarge': {'Arch': 'PV64'},
-        'm3.medium': {'Arch': 'HVM64'},
-        'm3.large': {'Arch': 'HVM64'},
-        'm3.xlarge': {'Arch': 'HVM64'},
-        'm3.2xlarge': {'Arch': 'HVM64'},
-        'c1.medium': {'Arch': 'PV64'},
-        'c1.xlarge': {'Arch': 'PV64'},
-        'c3.large': {'Arch': 'HVM64'},
-        'c3.xlarge': {'Arch': 'HVM64'},
-        'c3.2xlarge': {'Arch': 'HVM64'},
-        'c3.4xlarge': {'Arch': 'HVM64'},
-        'c3.8xlarge': {'Arch': 'HVM64'},
-        'g2.2xlarge': {'Arch': 'HVMG2'},
-        'r3.large': {'Arch': 'HVM64'},
-        'r3.xlarge': {'Arch': 'HVM64'},
-        'r3.2xlarge': {'Arch': 'HVM64'},
-        'r3.4xlarge': {'Arch': 'HVM64'},
-        'r3.8xlarge': {'Arch': 'HVM64'},
-        'i2.xlarge': {'Arch': 'HVM64'},
-        'i2.2xlarge': {'Arch': 'HVM64'},
-        'i2.4xlarge': {'Arch': 'HVM64'},
-        'i2.8xlarge': {'Arch': 'HVM64'},
-        'hi1.4xlarge': {'Arch': 'HVM64'},
-        'hs1.8xlarge': {'Arch': 'HVM64'},
-        'cr1.8xlarge': {'Arch': 'HVM64'},
-        'cc2.8xlarge': {'Arch': 'HVM64'},
+        't1.micro':  PV64_MAP,
+
+        't2.micro':  HVM64_MAP,
+        't2.small':  HVM64_MAP,
+        't2.medium': HVM64_MAP,
+
+        'm1.small':  PV64_MAP,
+        'm1.medium': PV64_MAP,
+        'm1.large':  PV64_MAP,
+        'm1.xlarge': PV64_MAP,
+        'm2.xlarge': PV64_MAP,
+        'm2.2xlarge': PV64_MAP,
+        'm2.4xlarge': PV64_MAP,
+
+        'm3.medium':  HVM64_MAP,
+        'm3.large':   HVM64_MAP,
+        'm3.xlarge':  HVM64_MAP,
+        'm3.2xlarge': HVM64_MAP,
+
+        'c1.medium':  PV64_MAP,
+        'c1.xlarge':  PV64_MAP,
+
+        'c3.large':   HVM64_MAP,
+        'c3.xlarge':  HVM64_MAP,
+        'c3.2xlarge': HVM64_MAP,
+        'c3.4xlarge': HVM64_MAP,
+        'c3.8xlarge': HVM64_MAP,
+        'g2.2xlarge': HVMG2_MAP,
+
+        'r3.large':   HVM64_MAP,
+        'r3.xlarge':  HVM64_MAP,
+        'r3.2xlarge': HVM64_MAP,
+        'r3.4xlarge': HVM64_MAP,
+        'r3.8xlarge': HVM64_MAP,
+
+        'i2.xlarge':  HVM64_MAP,
+        'i2.2xlarge': HVM64_MAP,
+        'i2.4xlarge': HVM64_MAP,
+        'i2.8xlarge': HVM64_MAP,
+
+        'hi1.4xlarge': HVM64_MAP,
+        'hs1.8xlarge': HVM64_MAP,
+        'cr1.8xlarge': HVM64_MAP,
+        'cc2.8xlarge': HVM64_MAP,
     }}
 
 """
@@ -67,9 +79,9 @@ https://aws.amazon.com/marketplace/pp/B00NPHLT1E
 AWSRegionArch2AMI = {
     logicalName: 'AWSRegionArch2AMI',
     mapping : {
-        constants.US_EAST_1: {'HVM64': 'ami-a0e8eec8'},    # Private AMI Image   #'ami-4e90d426', # Market Place Liferay Public bitnami ubuntu
-        constants.US_WEST_2: {'HVM64': 'ami-6df5ac5d'},    # market place image
-        constants.US_WEST_1: {'HVM64': 'ami-088b924d'}     # market place image
+        constants.US_EAST_1: {HVM64: 'ami-a0e8eec8'},    # Private AMI Image   #'ami-4e90d426', # Market Place Liferay Public bitnami ubuntu
+        constants.US_WEST_2: {HVM64: 'ami-6df5ac5d'},    # market place image
+        constants.US_WEST_1: {HVM64: 'ami-088b924d'}     # market place image
     }}
 
 """
@@ -99,7 +111,7 @@ ubuntu_14_AWSRegionArch2AMI = {
     logicalName: 'ubuntu14AWSRegionArch2AMI',
     mapping : {
         constants.US_EAST_1: {HVM64: 'ami-d05e75b8'},
-        constants.US_WEST_1: { HVM64: 'ami-df6a8b9b'},
+        constants.US_WEST_1: {HVM64: 'ami-df6a8b9b'},
         constants.US_WEST_2: {HVM64: 'ami-5189a661'}
     }}
 
@@ -113,7 +125,7 @@ ubuntu_12_AWSRegionArch2AMI = {
     logicalName: 'ubuntu12AWSRegionArch2AMI',
     mapping : {
         constants.US_EAST_1: {HVM64: 'ami-427a392a'},
-        constants.US_WEST_1: { HVM64: 'ami-82bba3c7'},
+        constants.US_WEST_1: {HVM64: 'ami-82bba3c7'},
         constants.US_WEST_2: {HVM64: 'ami-2b471c1b'}
     }}
 
