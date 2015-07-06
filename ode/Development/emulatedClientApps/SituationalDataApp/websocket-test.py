@@ -93,22 +93,22 @@ def on_open2(ws):
 def get_parser():
     parser = OptionParser(
         description ="Situation Data App Example ",
-        conflict_handler ="resolve" )
+        conflict_handler ="resolve")
 
     parser.add_option('-?', action='callback', callback=print_help,help=SUPPRESS_HELP)
 
     req_group = OptionGroup(parser,"Required Parameters")
-    req_group.add_option('-t' ,'--type', help = 'Subscription Type Query - qry, Subscription = sub ) ',
+    req_group.add_option('-t' ,'--type', help = 'Subscription Type Query - qry, Subscription = sub )',
                          metavar='type',
                          dest = 'SUB_TYPE',
                          default = 'sub')
 
-    req_group.add_option('-d', '--data', help = 'Data Type (Vehicle, Intersection, Aggregate, Advisory)  ',
+    req_group.add_option('-d', '--data', help = 'Data Type (Vehicle, Intersection, Aggregate, Advisory)',
                          metavar='data',
                          dest = 'DATA',
                          default = 'veh')
 
-    req_group.add_option('-h','--host', helpl='Hostnmae',
+    req_group.add_option('-h','--host', help='Hostname',
                          dest= 'HOST',
                          default='localhost:8080/ode')
 
@@ -116,7 +116,7 @@ def get_parser():
 
     # group = OptionGroup(parser, "Optional Parameters")
     #
-    # group.add_option('-a','--archive_root', help='',
+    # group.add_option('-','--archive_root', help='',
     #                      metavar='',
     #                      dest='',
     #                      default = "", )
@@ -155,20 +155,22 @@ def _main():
         msg = area
         uri = config['DATA']
     else:
-        msg = qry_subs[subscription_type]
+        msg = qry_subs[config['DATA']]
         uri = 'qry/{0}'.format(config['DATA'])
 
-    socket_url = "ws://{0}/api/ws/{1}".format(host,uri)
+    socket_url = "ws://{0}/api/ws/{1}".format(config['HOST'],uri)
 
-    websocket.enableTrace(True)
-    ws = websocket.WebSocketApp(socket_url,#"ws://echo.websocket.example/",
-                                on_message = on_message,
-                                on_error = on_error,
-                                on_close = on_close,
-                               )
-    ws.on_open = on_open2
-
-    ws.run_forever()
+    print socket_url
+    print msg
+    # websocket.enableTrace(True)
+    # ws = websocket.WebSocketApp(socket_url,#"ws://echo.websocket.example/",
+    #                             on_message = on_message,
+    #                             on_error = on_error,
+    #                             on_close = on_close,
+    #                            )
+    # ws.on_open = on_open2
+    #
+    # ws.run_forever()
 
 if __name__ == "__main__":
     _main()
