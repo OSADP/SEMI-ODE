@@ -27,7 +27,7 @@ qry_subs = {
            "nwLon": "-85.94707489013672",
            "seLat": "36.4765153148293",
            "seLon": "-74.53468322753906",
-           "startDate": "2015-07-01T15:16:15.924Z",
+           "startDate": "2015-01-01T15:16:15.924Z",
            "endDate": "2015-07-02T15:16:15.924Z"
            },
     "adv": {
@@ -35,7 +35,7 @@ qry_subs = {
             "nwLon": "-85.94707489013672",
             "seLat": "36.4765153148293",
             "seLon": "-74.53468322753906",
-            "startDate": "2015-07-01T15:17:33.227Z",
+            "startDate": "2015-01-01T15:17:33.227Z",
             "endDate": "2015-07-02T15:17:33.227Z",
             },
     "int": {
@@ -43,7 +43,7 @@ qry_subs = {
         "nwLon": "-85.94707489013672",
         "seLat": "36.4765153148293",
         "seLon": "-74.53468322753906",
-        "startDate": "2015-07-01T15:17:33.227Z",
+        "startDate": "2015-01-01T15:17:33.227Z",
         "endDate": "2015-07-02T15:17:33.227Z",
      },
 
@@ -52,6 +52,8 @@ qry_subs = {
 msg = {} # Empty Message body
 
 def on_message(ws, message):
+
+
     #msg = json.loads(message)
     #print (json.dumps(msg,indent=1, separators=(',', ': ')))
     print (message + "\n")
@@ -162,15 +164,15 @@ def _main():
 
     print socket_url
     print msg
-    # websocket.enableTrace(True)
-    # ws = websocket.WebSocketApp(socket_url,#"ws://echo.websocket.example/",
-    #                             on_message = on_message,
-    #                             on_error = on_error,
-    #                             on_close = on_close,
-    #                            )
-    # ws.on_open = on_open2
-    #
-    # ws.run_forever()
+    websocket.enableTrace(True)
+    ws = websocket.WebSocketApp(socket_url,#"ws://echo.websocket.example/",
+                                on_message = on_message,
+                                on_error = on_error,
+                                on_close = on_close,
+                               )
+    ws.on_open = on_open2
+
+    ws.run_forever()
 
 if __name__ == "__main__":
     _main()
