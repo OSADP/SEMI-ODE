@@ -9,12 +9,15 @@ https://github.com/cloudtools/troposphere
 """
 
 import os
+import datetime
+
 from troposphere import Ref, Tags, Template,Parameter,  Base64, FindInMap, GetAtt, Join, Output
 from troposphere.ec2 import Instance, NetworkAcl, Route, \
     VPCGatewayAttachment, SubnetRouteTableAssociation, Subnet, RouteTable, \
     VPC, NetworkAclEntry, InternetGateway, SecurityGroupRule, SecurityGroup, SecurityGroupIngress, EIP,\
     EIPAssociation, NetworkInterfaceProperty
 
+from troposphere import constants
 # ODE Specific Resources
 import mappings
 
@@ -29,23 +32,23 @@ t = Template()
 t.add_description("""\
 ODE Cloud Formation Template to create VPC with multiple public and \
 private, security groups and route tables. \
-Subnet are sized for 250 host each.""")
+Subnet are sized for 250 host each. Template Created: """ + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 
 liferay_instance_type_param = t.add_parameter(Parameter(
     'liferayPortalInstance',
     Type='String',
-    Description='Liferay Portal EC2 Instance type',
+    Description='Liferay Portal EC2 HVM Instance type',
     Default='c3.large',
     AllowedValues=[
         #'t1.micro',
-        't2.micro', 't2.small', 't2.medium',
        # 'm1.small', 'm1.medium', 'm1.large', 'm1.xlarge',      # PV64 Architecutre
         #'m2.xlarge', 'm2.2xlarge', 'm2.4xlarge',
-        'm3.medium', 'm3.large', 'm3.xlarge', 'm3.2xlarge',
        # 'c1.medium', 'c1.xlarge',                              # PV64 Architecutre
-        'c3.large', 'c3.xlarge', 'c3.2xlarge', 'c3.4xlarge', 'c3.8xlarge',
        # 'g2.2xlarge',                                          # PV64 Architecutre
+        't2.micro', 't2.small', 't2.medium',
+        'm3.medium', 'm3.large', 'm3.xlarge', 'm3.2xlarge',
+        'c3.large', 'c3.xlarge', 'c3.2xlarge', 'c3.4xlarge', 'c3.8xlarge',
         'r3.large', 'r3.xlarge', 'r3.2xlarge', 'r3.4xlarge', 'r3.8xlarge',
         'i2.xlarge', 'i2.2xlarge', 'i2.4xlarge', 'i2.8xlarge',
         'hi1.4xlarge',
@@ -64,24 +67,19 @@ amazon_NAT_instance_type_param = t.add_parameter(Parameter(
     Description='Amazon NAT Server EC2 Instance type',
     Default='t2.small',
     AllowedValues=[
-        #'t1.micro',
         't2.micro', 't2.small', 't2.medium',
-       # 'm1.small', 'm1.medium', 'm1.large', 'm1.xlarge',      # PV64 Architecutre
-        #'m2.xlarge', 'm2.2xlarge', 'm2.4xlarge',
         'm3.medium', 'm3.large', 'm3.xlarge', 'm3.2xlarge',
-       # 'c1.medium', 'c1.xlarge',                              # PV64 Architecutre
         'c3.large', 'c3.xlarge', 'c3.2xlarge', 'c3.4xlarge', 'c3.8xlarge',
-       # 'g2.2xlarge',                                          # PV64 Architecutre
-       #  'r3.large', 'r3.xlarge', 'r3.2xlarge', 'r3.4xlarge', 'r3.8xlarge',
-        # 'i2.xlarge', 'i2.2xlarge', 'i2.4xlarge', 'i2.8xlarge',
-        # 'hi1.4xlarge',
-        # 'hs1.8xlarge',
-        # 'cr1.8xlarge',
-        # 'cc2.8xlarge',
-        # 'cg1.4xlarge',
     ],
     ConstraintDescription='Must be a valid EC2 instance type.',
 ))
+ssh_key_param = t.add_parameter(Parameter(
+    'sshKeyParam',
+    Type = 'String',
+    Description= 'SSH KeyPair Name used to SSH into Instances',
+    ConstraintDescription='Must Not be Empty',
+))
+
 
 # Instance Type to architecture type -> HVM64, PV64, etc
 t.add_mapping(mappings.AWSInstanceType2Arch[mappings.logicalName],
@@ -235,18 +233,18 @@ pulic_api_sg = t.add_resource(
                 FromPort='22',
                 ToPort='22',
                 CidrIp=quad_zero_ip), # TODO IP address of BAH Office, Home office, Bastion Host etc
-            SecurityGroupRule(
+            SecurityGroupRule(              # Web Interface
                 IpProtocol='tcp',
                 FromPort='80',
                 ToPort='80',
                 CidrIp=quad_zero_ip),
-            SecurityGroupRule(
+            SecurityGroupRule(              # HTTPS Web Interface
                 IpProtocol='tcp',
                 FromPort='443',
                 ToPort='443',
-                CidrIp=quad_zero_ip)]
+                CidrIp=quad_zero_ip)
+        ]
     ))
-
 
 hadoop_cluser_sg = t.add_resource(
     SecurityGroup(
@@ -260,10 +258,15 @@ hadoop_cluser_sg = t.add_resource(
                 FromPort='22',
                 ToPort='22',
                 CidrIp=quad_zero_ip),
-           SecurityGroupRule(
+            SecurityGroupRule(              # Hue web Interface
                 IpProtocol='tcp',
-                FromPort='80',
-                ToPort='80',
+                FromPort='8888',
+                ToPort='8888',
+                CidrIp=quad_zero_ip),
+            SecurityGroupRule(              # Spark History Server
+                IpProtocol='tcp',
+                FromPort='18080',
+                ToPort='18080',
                 CidrIp=quad_zero_ip),
            SecurityGroupRule(
                 IpProtocol='tcp',
@@ -275,13 +278,16 @@ hadoop_cluser_sg = t.add_resource(
                 FromPort='8080',
                 ToPort='8080',
                 CidrIp=quad_zero_ip),
-           SecurityGroupRule(               # Spark Web Interface
-                IpProtocol='tcp',
-                FromPort='8081',
-                ToPort='8081',
-                CidrIp=quad_zero_ip),
+           # SecurityGroupRule(               # Spark Web Interface
+           #      IpProtocol='tcp',
+           #      FromPort='8081',
+           #      ToPort='8081',
+           #      CidrIp=quad_zero_ip),
         ],
     ))
+
+
+
 
 '''
  Necessary to create separate Security Group Ingress Rule objects to avoid
@@ -316,20 +322,35 @@ SecurityGroupIngress(
     GroupId=Ref(hadoop_cluser_sg),
     SourceSecurityGroupId=Ref(hadoop_cluser_sg))
 
+'''
+Allow the Application (Liferay)  Server to communicate with Hadoop Cluster Servers
+over All TCP Ports
+'''
+SecurityGroupIngress(
+    'publicClusterTCP1',
+    template=t,
+    IpProtocol='tcp',
+    ToPort='65535',
+    FromPort='0',
+    GroupId=Ref(pulic_api_sg),
+    SourceSecurityGroupId=Ref(hadoop_cluser_sg))
+"""
 # TODO NAT Instance Configuration
 amazon_nat_instance = t.add_resource(Instance(
     'amazonNATInstance1',
     ImageId=FindInMap(mappings.ami_nat_instanceAWSRegionArch2AMI[mappings.logicalName],
                         ref_region,FindInMap('AWSInstanceType2Arch',Ref(amazon_NAT_instance_type_param),'Arch')),
+    InstanceType=Ref(amazon_NAT_instance_type_param),
     SourceDestCheck=False,
     Tags=Tags(Name="NAT Server",),
     SecurityGroupIds=[Ref(hadoop_cluser_sg), Ref(pulic_api_sg)],
     SubnetId=Ref(public_api_subnet),
     ))
+"""
 
 # Private Route Table needed only if using
 # NAT Instance to provide 'Internet' access
-
+"""
 private_route_table = t.add_resource(
     Route(
         'privateInternetRoute1',
@@ -339,6 +360,146 @@ private_route_table = t.add_resource(
         RouteTableId=Ref(private_route_Table),
     ))
 
+
+# TODO Hadoop Cluster Configuration
+hadoop_cluster_ambari = t.add_resource(Instance(
+     "hadoopAmbariServer1",
+    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+                       FindInMap('AWSInstanceType2Arch',constants.M3_MEDIUM,'Arch')),
+    InstanceType=constants.M3_MEDIUM,
+    KeyName=Ref(ssh_key_param),
+    NetworkInterfaces=[
+        NetworkInterfaceProperty(
+            GroupSet=[Ref(hadoop_cluser_sg)],
+            AssociatePublicIpAddress='true',
+            DeviceIndex='0',
+            DeleteOnTermination='true',
+            SubnetId=Ref(public_tools_subnet) )
+    ],
+    Tags=Tags(Name="Ambari Server",Role="Hadoop Cluster")
+    ))
+
+
+hadoop_master1= t.add_resource(Instance(
+     "hadoopMasterServer1",
+    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+                       FindInMap('AWSInstanceType2Arch',constants.M3_LARGE,'Arch')),
+    InstanceType=constants.M3_LARGE,
+    KeyName=Ref(ssh_key_param),
+    NetworkInterfaces=[
+        NetworkInterfaceProperty(
+            GroupSet=[Ref(hadoop_cluser_sg)],
+          #  AssociatePublicIpAddress='true',
+            DeviceIndex='0',
+            DeleteOnTermination='true',
+            SubnetId=Ref(private_hadoop_subnet) )
+    ],
+    Tags=Tags(Name="Hadoop Master Server",Role="Hadoop Cluster")
+    ))
+
+hadoop_master2= t.add_resource(Instance(
+    "hadoopMasterServer2",
+    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+                       FindInMap('AWSInstanceType2Arch',constants.M3_LARGE,'Arch')),
+    InstanceType=constants.M3_LARGE,
+    KeyName=Ref(ssh_key_param),
+    NetworkInterfaces=[
+        NetworkInterfaceProperty(
+            GroupSet=[Ref(hadoop_cluser_sg)],
+          #  AssociatePublicIpAddress='true',
+            DeviceIndex='0',
+            DeleteOnTermination='true',
+            SubnetId=Ref(private_hadoop_subnet) )
+    ],
+    Tags=Tags(Name="Hadoop Master Server",Role="Hadoop Cluster")
+    ))
+
+hadoop_node_1 = t.add_resource(Instance(
+     "hadoopNode1",
+    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+                       FindInMap('AWSInstanceType2Arch',constants.M3_MEDIUM,'Arch')),
+    InstanceType=constants.M3_MEDIUM,
+    KeyName=Ref(ssh_key_param),
+    NetworkInterfaces=[
+        NetworkInterfaceProperty(
+            GroupSet=[Ref(hadoop_cluser_sg)],
+          #  AssociatePublicIpAddress='true',
+            DeviceIndex='0',
+            DeleteOnTermination='true',
+            SubnetId=Ref(private_hadoop_subnet) )
+    ],
+    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster")
+    ))
+
+hadoop_node_2 = t.add_resource(Instance(
+     "hadoopNode2",
+    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+                       FindInMap('AWSInstanceType2Arch',constants.M3_MEDIUM,'Arch')),
+    InstanceType=constants.M3_MEDIUM,
+    KeyName=Ref(ssh_key_param),
+    NetworkInterfaces=[
+        NetworkInterfaceProperty(
+            GroupSet=[Ref(hadoop_cluser_sg)],
+          #  AssociatePublicIpAddress='true',
+            DeviceIndex='0',
+            DeleteOnTermination='true',
+            SubnetId=Ref(private_hadoop_subnet) )
+    ],
+    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster")
+    ))
+
+hadoop_node_3 = t.add_resource(Instance(
+     "hadoopNode3",
+    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+                       FindInMap('AWSInstanceType2Arch',constants.M3_MEDIUM,'Arch')),
+    InstanceType=constants.M3_MEDIUM,
+    KeyName=Ref(ssh_key_param),
+    NetworkInterfaces=[
+        NetworkInterfaceProperty(
+            GroupSet=[Ref(hadoop_cluser_sg)],
+          #  AssociatePublicIpAddress='true',
+            DeviceIndex='0',
+            DeleteOnTermination='true',
+            SubnetId=Ref(private_hadoop_subnet) )
+    ],
+    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster")
+    ))
+
+hadoop_node_4 = t.add_resource(Instance(
+     "hadoopNode4",
+    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+                       FindInMap('AWSInstanceType2Arch',constants.M3_MEDIUM,'Arch')),
+    InstanceType=constants.M3_MEDIUM,
+    KeyName=Ref(ssh_key_param),
+    NetworkInterfaces=[
+        NetworkInterfaceProperty(
+            GroupSet=[Ref(hadoop_cluser_sg)],
+          #  AssociatePublicIpAddress='true',
+            DeviceIndex='0',
+            DeleteOnTermination='true',
+            SubnetId=Ref(private_hadoop_subnet) )
+    ],
+    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster")
+    ))
+
+hadoop_node_5 = t.add_resource(Instance(
+     "hadoopNode5",
+    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+                       FindInMap('AWSInstanceType2Arch',constants.M3_MEDIUM,'Arch')),
+    InstanceType=constants.M3_MEDIUM,
+    KeyName=Ref(ssh_key_param),
+    NetworkInterfaces=[
+        NetworkInterfaceProperty(
+            GroupSet=[Ref(hadoop_cluser_sg)],
+          #  AssociatePublicIpAddress='true',
+            DeviceIndex='0',
+            DeleteOnTermination='true',
+            SubnetId=Ref(private_hadoop_subnet) )
+    ],
+    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster")
+    ))
+
+
 # TODO Liferay  Configure Instance
 
 liferay_ec2_instance = t.add_resource(Instance(
@@ -346,6 +507,7 @@ liferay_ec2_instance = t.add_resource(Instance(
     ImageId=FindInMap('AWSRegionArch2AMI',
              Ref('AWS::Region'), FindInMap( 'AWSInstanceType2Arch', Ref(liferay_instance_type_param), 'Arch')),
     InstanceType = Ref(liferay_instance_type_param),
+    KeyName=Ref(ssh_key_param),
     NetworkInterfaces=[
         NetworkInterfaceProperty(
             GroupSet=[Ref(pulic_api_sg)],
@@ -372,6 +534,7 @@ t.add_output(
                                                                                 # when using Ref(liferay_ec2_instance)
             )]
     )
+"""
 
 json_path = os.path.join('..','ODE_cfn_vpc_template.json')
 with open(json_path, 'w') as f:
