@@ -5,7 +5,15 @@ public class OdeQryRequest extends OdeRequest {
 
    private String startDate;
    private String endDate;
+   private Integer skip;
+   private Integer limit;
    
+   
+   public OdeQryRequest(Double nwLat, Double nwLon, Double seLat, Double seLon,
+         OdeRequestType requestType, OdeDataType dataType) {
+      super(nwLat, nwLon, seLat, seLon, requestType, dataType);
+   }
+
    public OdeQryRequest(Double nwLat, Double nwLon, Double seLat, Double seLon, 
          OdeRequestType requestType, OdeDataType dataType, 
          String startDate, String endDate) {
@@ -14,6 +22,13 @@ public class OdeQryRequest extends OdeRequest {
       this.endDate = endDate;
    }
 
+   public OdeQryRequest(Double nwLat, Double nwLon, Double seLat, Double seLon, 
+         OdeRequestType requestType, OdeDataType dataType, 
+         String startDate, String endDate, int skip, int limit) {
+      this(nwLat, nwLon, seLat, seLon, requestType, dataType, startDate, endDate);
+      this.skip = skip;
+      this.limit = limit;
+   }
    public String getStartDate() {
       return startDate;
    }
@@ -32,11 +47,31 @@ public class OdeQryRequest extends OdeRequest {
       return this;
    }
 
+   public Integer getSkip() {
+      return skip;
+   }
+
+   public OdeQryRequest setSkip(Integer skip) {
+      this.skip = skip;
+      return this;
+   }
+
+   public Integer getLimit() {
+      return limit;
+   }
+
+   public OdeQryRequest setLimit(Integer limit) {
+      this.limit = limit;
+      return this;
+   }
+
    @Override
    public int hashCode() {
       final int prime = 31;
       int result = super.hashCode();
       result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
+      result = prime * result + ((limit == null) ? 0 : limit.hashCode());
+      result = prime * result + ((skip == null) ? 0 : skip.hashCode());
       result = prime * result
             + ((startDate == null) ? 0 : startDate.hashCode());
       return result;
@@ -56,6 +91,16 @@ public class OdeQryRequest extends OdeRequest {
             return false;
       } else if (!endDate.equals(other.endDate))
          return false;
+      if (limit == null) {
+         if (other.limit != null)
+            return false;
+      } else if (!limit.equals(other.limit))
+         return false;
+      if (skip == null) {
+         if (other.skip != null)
+            return false;
+      } else if (!skip.equals(other.skip))
+         return false;
       if (startDate == null) {
          if (other.startDate != null)
             return false;
@@ -63,5 +108,6 @@ public class OdeQryRequest extends OdeRequest {
          return false;
       return true;
    }
+
 
 }

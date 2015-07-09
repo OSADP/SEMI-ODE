@@ -48,8 +48,8 @@ public class WebSocketServer {
          .getLogger(WebSocketServer.class);
    
    private DataSourceConnector connector;
-   private ResponseProcessor rp;
-   private OdeRequestManager rqstMgr;
+   private ResponseProcessor responseProcessor;
+   private OdeRequest odeRequest;
 
    /**
     * Allows us to intercept the creation of a new session. The session class
@@ -81,8 +81,8 @@ public class WebSocketServer {
          @PathParam("rtype") String rtype, @PathParam("dtype") String dtype) {
       String sessionId = session.getId();
 
-      logger.info("Connection opened. Session ID: {}, " + "Request Type: {}, "
-            + "Data Type Requested: {}", sessionId, rtype, dtype);
+      logger.info("Connected to ODE on Session ID: {}, " + "Request Type: {}, "
+            + "Data Type: {}", sessionId, rtype, dtype);
 
       OdeStatus msg = new OdeStatus();
       try {
@@ -145,36 +145,57 @@ public class WebSocketServer {
    public void onMessage(Session session, String message, boolean last,
          @PathParam("rtype") String rtype, @PathParam("dtype") String dtype) {
       String sessionId = session.getId();
-      logger.info("Request from {}: {}", sessionId, message);
+      logger.info("Request Received on Session ID {}: {}", sessionId, message);
 
       OdeStatus msg = new OdeStatus();
       try {
-         OdeRequest odeRequest = OdeRequestManager.buildOdeRequest(
+         odeRequest = OdeRequestManager.buildOdeRequest(
                rtype, dtype, message);
-         rqstMgr = new OdeRequestManager(odeRequest);
+         
+         String topicName = OdeRequestManager.buildTopicName(odeRequest);
          
          // Does a topic already existing for this request?
-         MQTopic outboundTopic = rqstMgr.getTopic();
-         
+         MQTopic outboundTopic = OdeRequestManager.getTopic(topicName);
          if (outboundTopic == null) {
+            logger.info("Creating new topic: {}", topicName);
             // No outbound topic exists, create a new one
-            outboundTopic = rqstMgr.getOrCreateTopic();
+            outboundTopic = OdeRequestManager.getOrCreateTopic(topicName);
             
-            connector = new DataSourceConnector();
+            if (connector == null)
+               connector = new DataSourceConnector();
+            
             connector.sendDataRequest(odeRequest, outboundTopic);
             
             msg.setCode(OdeStatus.Code.SUCCESS);
             msg.setMessage("DDS Connection Established.");
             session.getAsyncRemote().sendText(msg.toJson());
             
-         }
-         // Start the processor to receive data from the outbound topic and 
-         // send it to client session
-         rp = new ResponseProcessor(session, outboundTopic);
-         Thread respThread = new Thread(rp);
-         respThread.start();
-         rqstMgr.requesterConnected();
-         
+            createAndStartRequestProcessor(session, outboundTopic);
+            OdeRequestManager.addSubscriber(topicName, odeRequest.getDataType());
+         } else {
+            // Topic already exists by this or another subscriber
+            if (responseProcessor != null) {
+               logger.info("Tapping into existing topic {} using existing Outbound Topic Processor", topicName);
+               if (!responseProcessor.getOutboundTopic().getName().equals(outboundTopic.getName())) {
+                  /* 
+                   * This subscriber is subscribing to a new topic. Remove the old
+                   * topic and add the new one. 
+                   */
+                  
+                  OdeRequestManager.removeSubscriber(
+                        responseProcessor.getOutboundTopic().getName(), 
+                        odeRequest.getDataType());
+                  
+                  OdeRequestManager.addSubscriber(topicName, 
+                        odeRequest.getDataType());
+                  responseProcessor.setOutboundTopic(outboundTopic);
+               }
+            } else {
+               logger.info("Tapping into existing topic {} with new Outbound Topic Processor", topicName);
+               createAndStartRequestProcessor(session, outboundTopic);
+               OdeRequestManager.addSubscriber(topicName, odeRequest.getDataType());
+            }
+         }         
       } catch (Exception ex) {
          OdeStatus status = new OdeStatus()
             .setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
@@ -187,6 +208,15 @@ public class WebSocketServer {
             logger.error("Error sending error message back to client", e);
          }
       }
+   }
+
+   private void createAndStartRequestProcessor(
+         Session session, MQTopic outboundTopic) {
+      // Start the processor to receive data from the outbound topic and 
+      // send it to client session
+      responseProcessor = new ResponseProcessor(session, outboundTopic);
+      Thread respThread = new Thread(responseProcessor);
+      respThread.start();
    }
 
    /**
@@ -207,14 +237,17 @@ public class WebSocketServer {
          if (reason != null)
             logger.info("Reason: {}", reason.getCloseCode());
 
-         connector.cancelDataRequest();
+         // Do this after rqstMgr.requesterDisconnected()
+         if (connector != null)
+            connector.cancelDataRequest();
          
-         if (rqstMgr != null) {
-            rqstMgr.requesterDisconnected();
-         }
-         
-         if (rp != null) {
-            rp.shutDown();
+         if (responseProcessor != null) {
+            responseProcessor.shutDown();
+            if (odeRequest != null) {
+               OdeRequestManager.removeSubscriber(
+                     responseProcessor.getOutboundTopic().getName(),
+                     odeRequest.getDataType());
+            }
          }
       } catch (Exception e) {
          logger.error("Error closing session " + sessionId, e);

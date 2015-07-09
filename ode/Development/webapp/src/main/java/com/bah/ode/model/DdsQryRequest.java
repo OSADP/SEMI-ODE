@@ -13,7 +13,7 @@ public class DdsQryRequest extends DdsRequest {
    private String orderByField = "createdAt";
    private int orderByOrder = 1;
    private int skip = 0;
-   private int limit = 0;
+   private int limit = -1;
 
    public String getSystemQueryName() {
       return systemQueryName;

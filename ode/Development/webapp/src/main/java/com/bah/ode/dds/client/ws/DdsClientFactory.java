@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.CASClient.CASException;
 import com.bah.ode.model.DdsData;
-import com.bah.ode.wrapper.MQTopic;
+import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.wrapper.SSLBuilder;
 import com.bah.ode.wrapper.SSLBuilder.SSLException;
 import com.bah.ode.wrapper.WebSocketClient;
@@ -49,7 +49,7 @@ public class DdsClientFactory {
    
 
    public static WebSocketClient<DdsData> create(AppContext appContext,
-         MQTopic outboundTopic,
+         OdeMetadata metadata,
          Class<? extends WebSocketMessageDecoder<?>> decoderClass)
          throws DdsClientException {
 
@@ -71,9 +71,10 @@ public class DdsClientFactory {
          decoders.add(decoderClass);
          
          ddsClient = new WebSocketClient<DdsData>(uri, sslContext, null,
-               cookieHeader, new DdsMessageHandler(outboundTopic),
+               cookieHeader, new DdsMessageHandler(metadata),
                decoders);
-         logger.info("DDS Client created for inbound topic {}: ", outboundTopic);
+         logger.info("DDS Client created for input topic {} and output topic {}", 
+               metadata.getInputTopic().getName(), metadata.getOutputTopic().getName());
 
       } catch (Exception e) {
          throw new DdsClientException(e);

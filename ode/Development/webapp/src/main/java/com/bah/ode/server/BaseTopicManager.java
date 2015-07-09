@@ -27,7 +27,7 @@ public class BaseTopicManager {
       if (topic == null) {
          int partitions = Integer.valueOf(
                AppContext.getInstance().getParam(
-                     AppContext.DEFAULT_CONSUMER_THREADS));
+                     AppContext.KAFKA_DEFAULT_CONSUMER_THREADS));
          topic = MQTopic.create(topicName, partitions);
          topics.put(topicName, topic);
          subscribers.put(topicName, new AtomicInteger(0));

@@ -23,13 +23,12 @@ public class MQConsumerGroup<K, V, R> {
    private static Logger logger = LoggerFactory
          .getLogger(MQConsumerGroup.class);
 
-   private final ConsumerConnector consumerConnector;
-   private final MQTopic topic;
+   private ConsumerConnector consumerConnector;
+   private MQTopic topic;
    private ExecutorService executor;
    private DataProcessor<V, R> processor;
    private Decoder<K> keyDecoder;
    private Decoder<V> valueDecoder;
-   private boolean running = false;
 
    public MQConsumerGroup(String zookeepers, String a_groupId, 
          MQTopic a_topic, Decoder<K> keyDecoder,
@@ -43,11 +42,9 @@ public class MQConsumerGroup<K, V, R> {
       this.keyDecoder = keyDecoder;
       this.valueDecoder = valueDecoder;
       this.processor = a_processor;
-      running = false;
    }
 
    public void shutDown() {
-      running = false;
       if (consumerConnector != null)
          consumerConnector.shutdown();
       if (executor != null)
@@ -77,16 +74,13 @@ public class MQConsumerGroup<K, V, R> {
       // now create an object to consume the messages
       //
       int threadNumber = 0;
-      running = true;
       for (final KafkaStream<K, V> stream : streams) {
-         if (running) {
-            Future<Object> future = 
-                  executor.submit(
-                        new MQConsumer<K, V, R>(stream, threadNumber, processor));
-   //         String result = future.get().toString();
-   //         logger.info(result);
-            threadNumber++;
-         }
+         Future<Object> future = 
+               executor.submit(
+                     new MQConsumer<K, V, R>(stream, threadNumber, processor));
+//         String result = future.get().toString();
+//         logger.info(result);
+         threadNumber++;
       }
    }
 
@@ -102,20 +96,13 @@ public class MQConsumerGroup<K, V, R> {
       return new ConsumerConfig(props);
    }
 
-//   public static void main(String[] args) {
-//      String zooKeeper = args[0];
-//      String groupId = args[1];
-//      String topic = args[2];
-//      int threads = Integer.parseInt(args[3]);
-//
-//      MQConsumerGroup example = new MQConsumerGroup(zooKeeper, groupId, topic);
-//      example.run(threads);
-//
-//      try {
-//         Thread.sleep(10000);
-//      } catch (InterruptedException ie) {
-//
-//      }
-//      example.shutdown();
-//   }
+   public MQTopic getTopic() {
+      return topic;
+   }
+
+   public void setTopic(MQTopic topic) {
+      this.topic = topic;
+   }
+   
+   
 }

@@ -22,8 +22,9 @@
   </appender>
 
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+  <!-- 
     <file>${CONTEXT_NAME}.log</file>
-
+  -->
     <encoder>
       <pattern>%date %level [%thread] %logger{0} [%file:%line] - %msg%n
       </pattern>
