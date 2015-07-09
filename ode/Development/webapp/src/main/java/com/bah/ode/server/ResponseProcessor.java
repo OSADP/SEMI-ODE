@@ -44,6 +44,7 @@ public class ResponseProcessor implements Runnable {
                public Future<String> process(String data)
                      throws DataProcessorException {
                   try {
+                     //logger.info("{}", data);
                      clientSession.getBasicRemote().sendText(data);
                   } catch (Exception e) {
                      throw new DataProcessorException("Error processing data.", e);
@@ -67,8 +68,10 @@ public class ResponseProcessor implements Runnable {
       return outboundTopic;
    }
 
-   public ResponseProcessor setOutboundTopic(MQTopic ooutboundTopic) {
-      this.outboundTopic = ooutboundTopic;
+   public ResponseProcessor setOutboundTopic(MQTopic outboundTopic) {
+      this.outboundTopic = outboundTopic;
+      if (consumerGroup != null)
+         consumerGroup.setTopic(this.outboundTopic);
       return this;
    }
 

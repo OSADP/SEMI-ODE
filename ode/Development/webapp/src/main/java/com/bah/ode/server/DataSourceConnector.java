@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeDataType;
+import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.server.DdsRequestManager.DdsRequestManagerException;
 import com.bah.ode.wrapper.MQTopic;
@@ -15,7 +16,7 @@ public class DataSourceConnector {
 
    private DdsRequestManager ddsMgr;
    
-   public void sendDataRequest(OdeRequest odeRequest, MQTopic outboundTopic) 
+   public void sendDataRequest(OdeRequest odeRequest, MQTopic outputTopic) 
          throws DataSourceConnectorException {
       try {
          OdeDataType dataType = odeRequest.getDataType();
@@ -25,18 +26,36 @@ public class DataSourceConnector {
             case MAPData:
             case SPaTData:
             case AggregateData:
-               String topicName = outboundTopic.getName();
-               if (!DdsRequestManager.isPassThrough(odeRequest.getDataType())) {
-                  topicName = AppContext.VSD_INBOUND_TOPIC;
-                  
+               OdeMetadata metadata = new OdeMetadata();
+               // By default all data go directly to the output topic
+               metadata.setInputTopic(outputTopic);
+               metadata.setOutputTopic(outputTopic);
+               
+               if (!OdeRequestManager.isPassThrough(odeRequest.getDataType())) {
                   if (!appContext.getParam(AppContext.SPARK_MASTER).isEmpty() 
                         && appContext.getSparkStreamingConext() == null)
                      appContext.init(appContext.getServletContext());
-               }
+
+                  int partitions = Integer.parseInt(appContext.getParam(
+                        AppContext.KAFKA_DEFAULT_CONSUMER_THREADS));
                   
-               ddsMgr = new DdsRequestManager(dataType, topicName);
+                  MQTopic vsdTopic = MQTopic.create(
+                        AppContext.VSD_INBOUND_TOPIC, partitions);
+                  
+                  metadata.setInputTopic(vsdTopic);
+                  ddsMgr = new DdsRequestManager(dataType, metadata);
+                  /*
+                   *  Add subscriber only if it is not pass-through because
+                   *  if it is pass-through, the subscriber has already been
+                   *  added to the outbound queue by the ODE Request Manager
+                   */
+                  ddsMgr.addNewSubscriber();
+               } else {
+                  ddsMgr = new DdsRequestManager(dataType, metadata);
+               }
+               
                logger.info("Connecting to DDS");
-               ddsMgr.sendDdsDataRequest(odeRequest, outboundTopic);
+               ddsMgr.sendDdsDataRequest(odeRequest);
                break;
             case WeatherData:
                //TODO

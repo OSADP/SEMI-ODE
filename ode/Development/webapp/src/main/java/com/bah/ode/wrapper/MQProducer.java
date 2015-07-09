@@ -42,6 +42,7 @@ public class MQProducer<K, V> {
            props.put("partitioner.class", partitionerClass);
         
         props.put("request.required.acks", "1");
+        props.put("producer.type", "sync");
  
         ProducerConfig config = new ProducerConfig(props);
  
@@ -51,13 +52,28 @@ public class MQProducer<K, V> {
     }
 
     public void send (String topic, K key, V value) {
-       KeyedMessage<K, V> data = new KeyedMessage<K, V>(topic, key, value);
+       KeyedMessage<K, V> data;
+       if (key == null)
+          data = new KeyedMessage<K, V>(topic, value);
+       else
+          data = new KeyedMessage<K, V>(topic, key, value);
        
        producer.send(data);
     }
     
-    public void close() {
-       producer.close();
-       logger.info("Producer Closed");
-    }
+   public void shutDown() {
+      producer.close();
+      logger.info("Producer Closed");
+   }
+
+   public Producer<K, V> getProducer() {
+      return producer;
+   }
+
+   public MQProducer<K, V> setProducer(Producer<K, V> producer) {
+      this.producer = producer;
+      return this;
+   }
+   
+   
 }

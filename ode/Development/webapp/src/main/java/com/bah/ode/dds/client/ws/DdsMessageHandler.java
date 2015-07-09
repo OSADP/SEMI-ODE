@@ -21,9 +21,10 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.DdsData;
+import com.bah.ode.model.OdeMetadata;
+import com.bah.ode.model.OdeMsgAndMetadata;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQProducer;
-import com.bah.ode.wrapper.MQTopic;
 import com.bah.ode.wrapper.WebSocketMessageHandler;
 
 public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
@@ -32,27 +33,37 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
          .getLogger(DdsMessageHandler.class);
 
    private MQProducer<String, String> producer;
-   private MQTopic topic;
-
-   public DdsMessageHandler(MQTopic topic) {
+   private OdeMetadata metadata;
+   
+   public DdsMessageHandler(OdeMetadata metadata) {
       this.producer = new MQProducer<String, String>(
                   AppContext.getInstance().getParam(
-                        AppContext.METADATA_BROKER_LIST));
-      this.topic = topic;
+                        AppContext.KAFKA_METADATA_BROKER_LIST));
+      this.metadata = metadata;
    }
 
    @Override
    public void onMessage(DdsData ddsData) {
       try {
          if (producer != null && ddsData.haveData()) {
-            if (ddsData.getIsd() != null)
-               producer.send(topic.getName(), null, JsonUtils.toJson(ddsData.getIsd()));
-            else if (ddsData.getVsd() != null)
-               producer.send(topic.getName(), null, JsonUtils.toJson(ddsData.getVsd()));
-            else if (ddsData.getAsd() != null)
-               producer.send(topic.getName(), null, JsonUtils.toJson(ddsData.getAsd()));
-            else
-               producer.send(topic.getName(), null, ddsData.getFullMessage());
+            OdeMsgAndMetadata omam = new OdeMsgAndMetadata();
+            omam.setMetadata(metadata);
+            omam.setKey(metadata.getOutputTopic().getName());
+            
+            String topicName = metadata.getInputTopic().getName();
+            if (ddsData.getIsd() != null) {
+               omam.setPayload(JsonUtils.toJson(ddsData.getIsd()));
+            } else if (ddsData.getVsd() != null) {
+               omam.setPayload(JsonUtils.toJson(ddsData.getVsd()));
+            } else if (ddsData.getAsd() != null) {
+               omam.setPayload(JsonUtils.toJson(ddsData.getAsd()));
+            } else {
+               //Send non-data messages directly to the output topic
+               topicName = metadata.getOutputTopic().getName();
+               omam.setPayload(ddsData.getFullMessage());
+            }
+            producer.send(topicName, metadata.getOutputTopic().getName(),
+                  JsonUtils.toJson(omam));
          }
       } catch (Exception e) {
          logger.error("Error handling DDS message. ", e);
@@ -63,17 +74,9 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
 
    public void disable() {
       if (null != producer) {
-         producer.close();
+         producer.shutDown();
          producer = null;
       }
-   }
-
-   public MQTopic getTopic() {
-      return topic;
-   }
-
-   public void setTopic(MQTopic inboundTopic) {
-      this.topic = inboundTopic;
    }
 
 }

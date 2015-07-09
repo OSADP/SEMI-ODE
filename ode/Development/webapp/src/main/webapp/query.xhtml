@@ -4,7 +4,11 @@
 <title>ODE Query</title>
 <style type="text/css">
 body {
-   background-color: #FFFFCC
+/*
+	background-color: #FFFFCC
+   color: #808080
+*/ 
+   font-family: Sans-serif;
 }
 
 h1 {
@@ -74,127 +78,130 @@ h2 {
 </style>
 <script type="application/javascript">
    
-   <![CDATA[
-              "use strict";
-      
-              var ws = null;
-              var started = false;
-              var connected = false;
-      
-              function setConnectionState(c, s) {
-                  connected = c;
-                  started = s;
-                  
-                  if (!connected)
-                     started = false;
-                  
-                  document.getElementById('connect').disabled = connected;
-                  document.getElementById('disconnect').disabled = !connected;
-                  document.getElementById('start').disabled = (started || !connected);
-              }
-      
-              function connect() {
-                  var requestUri = document.getElementById('requestUri').value;
-                  if (requestUri == '') {
-                      alert('Please select server side connection implementation.');
-                      return;
-                  }
-                  if ('WebSocket' in window) {
-                      ws = new WebSocket(requestUri);
-                  } else if ('MozWebSocket' in window) {
-                      ws = new MozWebSocket(requestUri);
-                  } else {
-                      alert('WebSocket is not supported by this browser.');
-                      return;
-                  }
-                  ws.onopen = function (event) {
-                      setConnectionState(true, false);
-                      log('Info: WebSocket connection opened.');
-                  };
-                  ws.onmessage = function (event) {
-                     if (!started) {
-                           var message = JSON.parse(event.data);
-                           if (message["code"] != "SUCCESS") {
-                               setConnectionState(true, true);
-                           }
-                     }
-                  
-                     log(event.data);
-                  };
-                  ws.onclose = function (event) {
-                      setConnectionState(false, false);
-                      log('Info: WebSocket connection closed, Code: ' + event.code + (event.reason == "" ? "" : ", Reason: " + event.reason));
-                  };
-              }
-      
-              function disconnect() {
-                  if (ws != null) {
-                      ws.close();
-                      ws = null;
-                  }
-                  setConnectionState(false, false);
-              }
-      
-              function start() {
-                  if (ws != null) {
-                     var request = {};
-                     request["nwLat"] = document.getElementById('nwLat').value;
-                     request["nwLon"] = document.getElementById('nwLon').value;
-                     request["seLat"] = document.getElementById('seLat').value;
-                     request["seLon"] = document.getElementById('seLon').value;
-                     request["startDate"] = document.getElementById('startDate').value;
-                     request["endDate"] = document.getElementById('endDate').value;
-                     var reqStr = JSON.stringify(request); 
-                      ws.send(reqStr);
-                      log('Sent: ' +  reqStr);
-                  } else {
-                      alert('WebSocket connection not established, please connect.');
-                  }
-              }
-      
-              function updateRequestUri(requestUri) {
-                  if (window.location.protocol == 'http:') {
-                      document.getElementById('requestUri').value = 'ws://' + window.location.host + requestUri;
-                  } else {
-                      document.getElementById('requestUri').value = 'wss://' + window.location.host + requestUri;
-                  }
-                  setConnectionState(false, false);
-                  
-                  var now = new Date();
-                  var yesterday = new Date();
-                  yesterday.setDate(now.getDate()-1);
+<![CDATA[
+  "use strict";
 
-                  document.getElementById('startDate').value = yesterday.toISOString();
-                  document.getElementById('endDate').value = now.toISOString();
-              }
+  var ws = null;
+  var started = false;
+  var connected = false;
+
+  function setConnectionState(c, s) {
+      connected = c;
+      started = s;
       
-              function log(msgOrData) {
-                  var console = document.getElementById('console');
-                  var p = document.createElement('p');
-                  p.style.wordWrap = 'break-word';
-                  p.appendChild(document.createTextNode(msgOrData));
-                  console.appendChild(p);
-                  while (console.childNodes.length > 25) {
-                      console.removeChild(console.firstChild);
-                  }
-                  console.scrollTop = console.scrollHeight;
-              }
+      if (!connected)
+         started = false;
       
+      document.getElementById('connect').disabled = connected;
+      document.getElementById('disconnect').disabled = !connected;
+      document.getElementById('send').disabled = (started || !connected);
+  }
+
+  function connect() {
+      var requestUri = document.getElementById('requestUri').value;
+      if (requestUri == '') {
+          alert('Please select server side connection implementation.');
+          return;
+      }
+      if ('WebSocket' in window) {
+          ws = new WebSocket(requestUri);
+      } else if ('MozWebSocket' in window) {
+          ws = new MozWebSocket(requestUri);
+      } else {
+          alert('WebSocket is not supported by this browser.');
+          return;
+      }
+      ws.onopen = function (event) {
+          setConnectionState(true, false);
+          log('Info: WebSocket connection opened.');
+      };
+      ws.onmessage = function (event) {
+         if (!started) {
+               var message = JSON.parse(event.data);
+               if (message["code"] != "SUCCESS") {
+                   setConnectionState(true, true);
+               }
+         }
       
-              document.addEventListener("DOMContentLoaded", function() {
-                  // Remove elements with "noscript" class - <noscript> is not allowed in XHTML
-                  var noscripts = document.getElementsByClassName("noscript");
-                  for (var i = 0; i < noscripts.length; i++) {
-                      noscripts[i].parentNode.removeChild(noscripts[i]);
-                  }
-              }, false);
-          ]]>
+         log(event.data);
+      };
+      ws.onclose = function (event) {
+          setConnectionState(false, false);
+          log('Info: WebSocket connection closed, Code: ' + event.code + (event.reason == "" ? "" : ", Reason: " + event.reason));
+      };
+  }
+
+  function disconnect() {
+      if (ws != null) {
+          ws.close();
+          ws = null;
+      }
+      setConnectionState(false, false);
+  }
+
+  function send() {
+      if (ws != null) {
+         var request = {};
+         request["nwLat"] = document.getElementById('nwLat').value;
+         request["nwLon"] = document.getElementById('nwLon').value;
+         request["seLat"] = document.getElementById('seLat').value;
+         request["seLon"] = document.getElementById('seLon').value;
+         request["startDate"] = document.getElementById('startDate').value;
+         request["endDate"] = document.getElementById('endDate').value;
+         request["skip"] = document.getElementById('skip').value;
+         request["limit"] = document.getElementById('limit').value;
+         var reqStr = JSON.stringify(request); 
+          ws.send(reqStr);
+          log('Sent: ' +  reqStr);
+      } else {
+          alert('WebSocket connection not established, please connect.');
+      }
+  }
+
+  function updateRequestUri(requestUri) {
+      if (window.location.protocol == 'http:') {
+          document.getElementById('requestUri').value = 'ws://' + window.location.host + requestUri;
+      } else {
+          document.getElementById('requestUri').value = 'wss://' + window.location.host + requestUri;
+      }
+      setConnectionState(false, false);
+      
+      var now = new Date();
+      var yesterday = new Date();
+      yesterday.setDate(now.getDate()-1);
+
+      document.getElementById('startDate').value = yesterday.toISOString();
+      document.getElementById('endDate').value = now.toISOString();
+  }
+
+  function log(msgOrData) {
+      var console = document.getElementById('console');
+      var p = document.createElement('p');
+      p.style.wordWrap = 'break-word';
+      p.appendChild(document.createTextNode(msgOrData));
+      console.appendChild(p);
+      while (console.childNodes.length > 25) {
+          console.removeChild(console.firstChild);
+      }
+      console.scrollTop = console.scrollHeight;
+  }
+
+
+  document.addEventListener("DOMContentLoaded", function() {
+      // Remove elements with "noscript" class - <noscript> is not allowed in XHTML
+      var noscripts = document.getElementsByClassName("noscript");
+      for (var i = 0; i < noscripts.length; i++) {
+          noscripts[i].parentNode.removeChild(noscripts[i]);
+      }
+  }, false);
+]]>
       
 
 </script>
 </head>
 <body>
    <h1>ODE Query</h1>
+   <p><a href="subscribe.xhtml">ODE Subscription</a></p>
    <div class="noscript">
       <h2 style="color: #ff0000">Seems your browser doesn't support
          Javascript! Websockets rely on Javascript being enabled. Please
@@ -247,12 +254,16 @@ h2 {
          -->
          <div id="destination">
             <hr />
-            <h2>Destination:</h2><br />
+            <h2>Options:</h2><br />
+            <label>skip</label> <input id="skip" type="text" value = "0" size="10" style="width: 100px" /><br />
+            <label>Limit</label> <input id="limit" type="text" value = "100" size="10" style="width: 100px" /><br />
+<!--               
             <input id="screen" type="checkbox" checked="checked" value="screen" />
               <label for="screen">On Screen</label><br />
             <input id="file" type="checkbox" value="file" />
               <label for="file">Server File Path</label><br />
             <a href="https://ode/download/">https://ode/download/</a><br />
+-->
             <br />
          </div>
       </div>
@@ -261,7 +272,7 @@ h2 {
       <div>
          <hr />
          <button id="connect" disabled="disabled" onclick="connect();">Connect</button>
-         <button id="start" disabled="disabled" onclick="start();">Start</button>
+         <button id="send" disabled="disabled" onclick="send();">Send Request</button>
          <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
       </div>
       <hr />

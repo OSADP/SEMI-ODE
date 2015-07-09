@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.api.ws.OdeStatus;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.DdsClientFactory;
-import com.bah.ode.dds.client.ws.DdsMessageHandler;
 import com.bah.ode.dds.client.ws.IsdDecoder;
 import com.bah.ode.dds.client.ws.VsdDecoder;
 import com.bah.ode.exception.OdeException;
@@ -14,10 +13,11 @@ import com.bah.ode.model.DdsQryRequest;
 import com.bah.ode.model.DdsRequest;
 import com.bah.ode.model.DdsSubRequest;
 import com.bah.ode.model.OdeDataType;
+import com.bah.ode.model.OdeMetadata;
+import com.bah.ode.model.OdeQryRequest;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.server.WebSocketServer.WebSocketServerException;
-import com.bah.ode.wrapper.MQTopic;
 import com.bah.ode.wrapper.WebSocketClient;
 
 public class DdsRequestManager {
@@ -31,42 +31,30 @@ public class DdsRequestManager {
    private static OutboundTopicManagerSingleton otms = 
          OutboundTopicManagerSingleton.getInstance();
    
-   private MQTopic          topic;
    private BaseTopicManager topicManager;
-   
    private WebSocketClient<?> ddsClient;
+   private OdeMetadata metadata;
    
    
-   public DdsRequestManager(OdeDataType dataType, String topicName) {
-      if (isPassThrough(dataType))
+   
+   public DdsRequestManager(OdeDataType dataType, OdeMetadata metadata) {
+      if (OdeRequestManager.isPassThrough(dataType))
          this.topicManager = otms;
       else
          this.topicManager = itms;
-      this.topic = topicManager.getOrCreateTopic(topicName);
+      this.metadata = metadata;
+      this.metadata.setInputTopic(topicManager.getOrCreateTopic(
+            metadata.getInputTopic().getName()));
    }
 
-   public static boolean isPassThrough(OdeDataType dataType) {
-      if (appContext.getParam(AppContext.SPARK_MASTER).isEmpty()) {
-         /*
-          * FOR DEBUG ONLY: Bypass Spark and send directly to outbound topic
-          */
-         return true;
-      } else {
-         if (dataType == OdeDataType.VehicleData) {
-            return false;
-         } else {
-            return true;
-         }
-      }
-   }
 
    public int addNewSubscriber() {
-      return topicManager.addSubscriber(topic.getName());
+      return topicManager.addSubscriber(metadata.getInputTopic().getName());
    }
 
    public int removeSubscriber() throws DdsRequestManagerException {
       int requestersRmaining = 
-            topicManager.removeSubscriber(topic.getName());
+            topicManager.removeSubscriber(metadata.getInputTopic().getName());
       if (ddsClient != null && requestersRmaining <= 0) {
          try {
             ddsClient.close();
@@ -89,8 +77,16 @@ public class DdsRequestManager {
          ddsRequest = new DdsSubRequest()
                .setSystemSubName(DdsRequest.SystemName.SDC.getName());
       } else if (requestType == OdeRequestType.Query) {
-         ddsRequest = new DdsQryRequest()
+         DdsQryRequest qryRequest = new DdsQryRequest()
                .setSystemQueryName(DdsRequest.SystemName.SDPC.getName());
+         if (odeRequest instanceof OdeQryRequest) {
+            OdeQryRequest odeQuery = (OdeQryRequest) odeRequest;
+            qryRequest.setStartDate(odeQuery.getStartDate());
+            qryRequest.setEndDate(odeQuery.getEndDate());
+            qryRequest.setSkip(odeQuery.getSkip());
+            qryRequest.setLimit(odeQuery.getLimit());
+         }
+         ddsRequest = qryRequest;
       } else {
          status.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
                .setMessage(
@@ -125,14 +121,14 @@ public class DdsRequestManager {
       return ddsRequest;
    }
 
-   public void sendDdsDataRequest(OdeRequest odeRequest, MQTopic outboundTopic) throws DdsRequestManagerException {
+   public void sendDdsDataRequest(OdeRequest odeRequest) throws DdsRequestManagerException {
       try {
          // get a data manager to start the data flow
          DdsRequest ddsRequest = buildDdsRequest(odeRequest);
          
          // Send the new request
          String sDdsRequest = ddsRequest.toString();
-         logger.info("Sending subscription request: {}", sDdsRequest);
+         logger.info("Sending request: {}", sDdsRequest);
 
          Class decoder = null;
          if (odeRequest.getDataType() == OdeDataType.IntersectionData) {
@@ -141,17 +137,26 @@ public class DdsRequestManager {
             decoder = VsdDecoder.class;
          }
 
-         ddsClient = DdsClientFactory.create(appContext, topic, decoder);
+         if (ddsClient == null) {
+            ddsClient = DdsClientFactory.create(appContext, metadata, decoder);
+            
+            if (ddsClient == null)
+               throw new DdsRequestManagerException("Error creating DDS Client");
+   
+            ddsClient.connect();
+         }
          
-         if (ddsClient == null)
-            throw new OdeException("Error creating DDS Client");
-
-         ddsClient.connect();
-         ddsClient.send(sDdsRequest);
-         topicManager.addSubscriber(topic.getName());
+         /*
+          * We do not add the subscriber here because it may have already been
+          * added by the ODE Request manager if the data is pass-through.
+          */
+         //topicManager.addSubscriber(topic.getName());
          
-         DdsMessageHandler handler = (DdsMessageHandler) ddsClient.getHandler();
-         handler.setTopic(topic);
+         if (ddsClient.getWsSession() != null)
+            ddsClient.send(sDdsRequest);
+         else
+            throw new DdsRequestManagerException("DDS Client Session is null, probably NOT CONNECTED.");
+            
          
       } catch (Exception e) {
          throw new DdsRequestManagerException("Error sending Data Request.", e);
@@ -163,6 +168,10 @@ public class DdsRequestManager {
 
       public DdsRequestManagerException(String message, Exception e) {
          super(message, e);
+      }
+
+      public DdsRequestManagerException(String message) {
+         super(message);
       }
       
    }

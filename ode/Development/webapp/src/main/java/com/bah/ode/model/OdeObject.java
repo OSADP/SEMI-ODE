@@ -20,17 +20,16 @@ import java.io.Serializable;
 
 import com.bah.ode.util.JsonUtils;
 
-@SuppressWarnings("serial")
 public class OdeObject implements Serializable {
+   private static final long serialVersionUID = 7514526408925039533L;
 
-	public String toJson() {
-		return JsonUtils.toJson(this);
-	}
-
-	@Override
-   public String toString() {
-		return JsonUtils.toJson(this);
+   public String toJson() {
+      return JsonUtils.toJson(this);
    }
-	
-	
+
+   @Override
+   public String toString() {
+      return JsonUtils.toJson(this);
+   }
+
 }

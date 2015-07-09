@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.spark.VsdWorkflow;
 import com.bah.ode.wrapper.MQTopic;
-import com.bah.ode.wrapper.MQTopicInOut;
 
 public class AppContext {
    private static Logger logger = LoggerFactory.getLogger(AppContext.class);
@@ -69,12 +68,13 @@ public class AppContext {
    public static final String SPARK_MASTER = "spark.master";
    public static final String SPARK_STREAMING_DEFAULT_DURATION = "spark.streaming.default.duration";
 
-   public static final String METADATA_BROKER_LIST = "metadata.broker.list";
-   public static final String DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
+   public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
+   public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
    public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
    
    public static final String VSD_INBOUND_TOPIC = "VSD_IN";
-   
+   public static final String VSD_OUTBOUND_TOPIC = "VSD_OUT";
+
    private static AppContext instance = null;
 
    private ServletContext servletContext;
@@ -82,6 +82,7 @@ public class AppContext {
    private SparkConf sparkConf;
    private JavaSparkContext sparkContext;
    private JavaStreamingContext ssc;
+   private boolean streamingContextStarted = false;
 
    public static String getServletBaseUrl(HttpServletRequest request) {
       String proto = request.getScheme();
@@ -103,24 +104,32 @@ public class AppContext {
       if (!getParam(SPARK_MASTER).isEmpty()) {
          sparkConf = new SparkConf()
             .setMaster(getParam(SPARK_MASTER))
-            .setAppName(context.getServletContextName());
+            .setAppName(context.getServletContextName())
+//            // Use Kryo to speed up serialization, recommended as default setup for Spark Streaming
+//            // http://spark.apache.org/docs/1.1.0/tuning.html#data-serialization
+//            .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+//            .set("spark.kryo.registrator", .class.getName);
+            // Enable experimental sort-based shuffle manager that is more memory-efficient in environments with small
+            // executors, such as YARN.  Will most likely become the default in future Spark versions.
+            // https://spark.apache.org/docs/1.1.0/configuration.html#shuffle-behavior
+            .set("spark.shuffle.manager", "SORT")
+//            // Force RDDs generated and persisted by Spark Streaming to be automatically unpersisted from Spark's memory.
+//            // The raw input data received by Spark Streaming is also automatically cleared.  (Setting this to false will
+//            // allow the raw data and persisted RDDs to be accessible outside the streaming application as they will not be
+//            // cleared automatically.  But it comes at the cost of higher memory usage in Spark.)
+//            // http://spark.apache.org/docs/1.1.0/configuration.html#spark-streaming
+//            .set("spark.streaming.unpersist", "true")
+            ;
          
+         logger.info("Creating Spark Context...");
          sparkContext = new JavaSparkContext(sparkConf);
+         
+         logger.info("Creating Spark Streaming Context...");
          ssc = new JavaStreamingContext(
                sparkContext,
                Durations.seconds(Integer.parseInt(
                      getParam(SPARK_STREAMING_DEFAULT_DURATION))));
          
-         
-         int numParitions = 
-               Integer.parseInt(getParam(DEFAULT_CONSUMER_THREADS));
-         
-         VsdWorkflow vsdwf = new VsdWorkflow(this);
-         vsdwf.setup(new MQTopicInOut(MQTopic.create(VSD_INBOUND_TOPIC, numParitions),
-               MQTopic.create("VSD_OUT", numParitions)));
-         
-         ssc.start();
-         logger.info("*** Spark Streaming Context Started ***");
       } else {
          logger.info("*** SPARK DISABLED FOR DEBUG ***");
       }
@@ -174,6 +183,55 @@ public class AppContext {
          ssc = null;
       }
       
+   }
+
+   public synchronized void startStreamingContext() {
+      if (!streamingContextStarted) {
+         
+         int numParitions = 
+               Integer.parseInt(getParam(KAFKA_DEFAULT_CONSUMER_THREADS));
+         
+         logger.info("Creating VSD Process Flow...");
+         VsdWorkflow vsdwf = new VsdWorkflow();
+         vsdwf.setup(ssc, MQTopic.create(VSD_INBOUND_TOPIC, numParitions),
+               getParam(ZK_CONNECTION_STRINGS),
+               "vsd.processor", getParam(KAFKA_METADATA_BROKER_LIST));
+
+         try {
+            logger.info("Starting Spark Process Flow...");
+            ssc.start();
+            streamingContextStarted = true;
+            logger.info("*** Spark Streaming Context Started ***");
+         } catch (Throwable t1) {
+            logger.warn("*** Error starting Spark Streaming Context. Stopping... ***", t1);
+            try {
+               ssc.stop();
+               logger.info("*** Spark Streaming Context Stopped ***");
+            } catch (Throwable t2) {
+               logger.warn("*** Error stopping Spark Streaming Context. Starting... ***", t2);
+            }
+            try {
+               logger.info("*** Restarting Spark Streaming Context. ***");
+               ssc.start();
+               streamingContextStarted = true;
+               logger.info("*** Spark Streaming Context Restarted ***");
+            } catch (Throwable t3) {
+               logger.error("*** Unable to start Spark Streaming Context ***", t3);
+            }
+         }
+      }
+   }
+
+   public synchronized void stopStreamingContext() {
+      if (streamingContextStarted) {
+         streamingContextStarted = false;
+         try {
+            ssc.stop();
+            logger.info("*** Spark Streaming Context Stopped ***");
+         } catch (Throwable t) {
+            logger.warn("*** Error stopping Spark Streaming Context ***", t);
+         }
+      }
    }
 
 }
