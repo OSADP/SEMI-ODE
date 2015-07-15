@@ -1,5 +1,5 @@
 QUERY:{
-   "systemQueryName": "SDPC 2.2",
+   "systemQueryName": "SDW 2.2",
 	"dialogID":"154",
 	"startDateOperator":"GTE",
 	"endDateOperator":"LTE",

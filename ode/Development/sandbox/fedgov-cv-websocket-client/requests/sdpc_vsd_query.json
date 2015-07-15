@@ -3,7 +3,7 @@ QUERY:{
    "dialogID": 154,
    "startDate":"2015-01-01T00:00:00Z",
    "startDateOperator":"GTE",
-   "endDate":"2015-06-01T00:00:00Z",
+   "endDate":"2015-08-01T00:00:00Z",
    "endDateOperator":"LTE",
    "nwLat":"43.652969118285434",
    "nwLon":"-85.94707489013672",

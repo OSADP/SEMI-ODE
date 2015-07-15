@@ -31,5 +31,15 @@
       <artifactId>gson</artifactId>
       <version>2.3.1</version>
     </dependency>
+    <dependency>
+       <groupId>asn.1</groupId>
+       <artifactId>oss.runtime</artifactId>
+       <version>6.1</version>
+    </dependency>
+    <dependency>
+       <groupId>asn.1</groupId>
+       <artifactId>semi</artifactId>
+       <version>2.2</version>
+    </dependency>
   </dependencies>
 </project>
