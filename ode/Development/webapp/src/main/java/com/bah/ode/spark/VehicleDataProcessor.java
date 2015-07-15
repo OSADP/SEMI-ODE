@@ -21,13 +21,12 @@ import com.bah.ode.wrapper.MQProducer;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
 import com.bah.ode.wrapper.MQTopic;
 
-public class VsdWorkflow extends OdeObject {
+public class VehicleDataProcessor extends OdeObject {
    private static final long serialVersionUID = 2480028249180282250L;
 
    public void setup(final JavaStreamingContext ssc, 
-         MQTopic ibTopic, 
+         MQTopic ovdfTopic, 
          String zkConnectionStrings, 
-         String groupId, 
          String brokerList) {
       
       // The code below demonstrates how to read from all the topic's partitions.  We create an input DStream for each
@@ -59,11 +58,11 @@ public class VsdWorkflow extends OdeObject {
       ArrayList<JavaPairDStream<String, String>> dstreams = 
             new ArrayList<JavaPairDStream<String, String>>();
 
-      for (int i = 0; i < ibTopic.getPartitions(); i++) {
+      for (int i = 0; i < ovdfTopic.getPartitions(); i++) {
          JavaPairDStream<String, String> aStream = KafkaUtils
-               .createStream(ssc, zkConnectionStrings, groupId, 
-                     Collections.singletonMap(ibTopic.getName(), 
-                           ibTopic.getPartitions()));
+               .createStream(ssc, zkConnectionStrings, VehicleDataProcessor.class.getName(), 
+                     Collections.singletonMap(ovdfTopic.getName(), 
+                           ovdfTopic.getPartitions()));
 
          dstreams.add(aStream);
       }

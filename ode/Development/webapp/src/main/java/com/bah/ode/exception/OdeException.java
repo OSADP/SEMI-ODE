@@ -17,7 +17,9 @@
 package com.bah.ode.exception;
 
 import com.bah.ode.api.ws.OdeStatus;
-import com.google.gson.JsonObject;
+import com.bah.ode.util.JsonUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class OdeException extends Exception {
 
@@ -59,10 +61,9 @@ public class OdeException extends Exception {
    }
 
    public String toJson() {
-   	JsonObject json = new JsonObject();
-   	json.addProperty("code", code.name());
-   	json.addProperty("message", getMessage());
-   	json.addProperty("cause", getCause().toString());
-   	return json.toString();
+      ObjectNode jsonObject = JsonUtils.newObjectNode("code", code.name());
+      JsonUtils.addNode(jsonObject, "message", getMessage());
+      JsonUtils.addNode(jsonObject, "cause", getCause().toString());
+   	return jsonObject.toString();
    }
 }

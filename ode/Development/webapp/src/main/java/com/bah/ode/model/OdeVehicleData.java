@@ -47,7 +47,9 @@ import com.bah.ode.util.CodecUtils;
 import com.oss.asn1.Coder;
 
 public class OdeVehicleData extends OdeData {
-	private static Logger logger = LoggerFactory.getLogger(OdeVehicleData.class);
+   private static final long serialVersionUID = 33889808649252185L;
+
+   private static Logger logger = LoggerFactory.getLogger(OdeVehicleData.class);
 
 	private String groupId;
 	private OdeDateTime dateTime;
@@ -81,10 +83,6 @@ public class OdeVehicleData extends OdeData {
 		this.vsmEventFlag = CodecUtils.toHex(vsmEventFlag != null ? vsmEventFlag.byteArrayValue() : "".getBytes());
 	}
 	
-	public OdeVehicleData(VehSitDataMessage vsd) {
-		this.setDdsData(new DdsData().setVsd(vsd));
-	}
-
 	public String getGroupId() {
 		return groupId;
 	}

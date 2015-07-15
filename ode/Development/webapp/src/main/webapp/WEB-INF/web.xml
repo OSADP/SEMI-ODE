@@ -129,6 +129,11 @@
       <param-name>zk.connection.strings</param-name>
       <param-value>ip-10-0-16-12.ec2.internal:2181,ip-10-0-16-89.ec2.internal:2181,ip-10-0-16-97.ec2.internal:2181</param-value>
    </context-param>
+   <context-param>
+      <param-name>ode.veh.data.flat.topic</param-name>
+      <param-value>ode.veh.data.flat.topic</param-value>
+   </context-param>
+   
    <listener>
       <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
    </listener>

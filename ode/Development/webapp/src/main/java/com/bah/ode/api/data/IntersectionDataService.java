@@ -29,8 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.api.AbstractService;
 import com.bah.ode.context.AppContext;
-import com.bah.ode.dds.client.ws.DdsClientFactory;
-import com.bah.ode.dds.client.ws.IsdDecoder;
 import com.bah.ode.model.DdsData;
 import com.bah.ode.model.DdsRequest;
 import com.bah.ode.util.JsonUtils;
@@ -95,11 +93,13 @@ public class IntersectionDataService extends AbstractService {
 			logger.info("Stopping : {}", sessionId);
 	      
 			if (wsClient == null) {
-				response = Response.status(Status.NOT_FOUND).entity(JsonUtils.toJson("sessionId", sessionId)).build();
+				response = Response.status(Status.NOT_FOUND).entity(
+				      JsonUtils.newJson("sessionId", sessionId)).build();
 				logger.error("Session ID Not Found: {}", sessionId);
 			} else {
 				wsClient.close();
-				response = Response.ok(JsonUtils.toJson("sessionId", sessionId)).build();
+				response = Response.ok(JsonUtils.newJson(
+				      "sessionId", sessionId)).build();
 			}
 		} catch (Exception e) {
 			throw new WebApplicationException(e);

@@ -23,7 +23,7 @@ public class DdsSubRequest extends DdsRequest {
 
    @Override
    public String toString() {
-      return "SUBSCRIBE:" + JsonUtils.toJson(this);
+      return "SUBSCRIBE:" + this.toJson();
    }
 
    @Override

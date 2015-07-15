@@ -22,6 +22,10 @@ public abstract class OdeRequest extends BaseRequest {
    private OdeRequestType requestType;
    private OdeDataType dataType;
 
+   public OdeRequest() {
+      super();
+   }
+
    public OdeRequest(Double nwLat, Double nwLon, Double seLat, Double seLon,
          OdeRequestType requestType, OdeDataType dataType) {
       super(nwLat, nwLon, seLat, seLon);

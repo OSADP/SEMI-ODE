@@ -48,7 +48,7 @@ public class WebSocketServer {
          .getLogger(WebSocketServer.class);
    
    private DataSourceConnector connector;
-   private ResponseProcessor responseProcessor;
+   private OdeDataDistributor distributor;
    private OdeRequest odeRequest;
 
    /**
@@ -155,44 +155,44 @@ public class WebSocketServer {
          String topicName = OdeRequestManager.buildTopicName(odeRequest);
          
          // Does a topic already existing for this request?
-         MQTopic outboundTopic = OdeRequestManager.getTopic(topicName);
-         if (outboundTopic == null) {
+         MQTopic clientTopic = OdeRequestManager.getTopic(topicName);
+         if (clientTopic == null) {
             logger.info("Creating new topic: {}", topicName);
-            // No outbound topic exists, create a new one
-            outboundTopic = OdeRequestManager.getOrCreateTopic(topicName);
+            // No client topic exists, create a new one
+            clientTopic = OdeRequestManager.getOrCreateTopic(topicName);
             
             if (connector == null)
                connector = new DataSourceConnector();
             
-            connector.sendDataRequest(odeRequest, outboundTopic);
+            connector.sendDataRequest(odeRequest, clientTopic);
             
             msg.setCode(OdeStatus.Code.SUCCESS);
             msg.setMessage("DDS Connection Established.");
             session.getAsyncRemote().sendText(msg.toJson());
             
-            createAndStartRequestProcessor(session, outboundTopic);
+            launchNewDistributor(session, clientTopic);
             OdeRequestManager.addSubscriber(topicName, odeRequest.getDataType());
          } else {
             // Topic already exists by this or another subscriber
-            if (responseProcessor != null) {
-               logger.info("Tapping into existing topic {} using existing Outbound Topic Processor", topicName);
-               if (!responseProcessor.getOutboundTopic().getName().equals(outboundTopic.getName())) {
+            if (distributor != null) {
+               logger.info("Tapping into existing topic {} using existing distributor", topicName);
+               if (!distributor.getClientTopic().getName().equals(clientTopic.getName())) {
                   /* 
                    * This subscriber is subscribing to a new topic. Remove the old
                    * topic and add the new one. 
                    */
                   
                   OdeRequestManager.removeSubscriber(
-                        responseProcessor.getOutboundTopic().getName(), 
+                        distributor.getClientTopic().getName(), 
                         odeRequest.getDataType());
                   
                   OdeRequestManager.addSubscriber(topicName, 
                         odeRequest.getDataType());
-                  responseProcessor.setOutboundTopic(outboundTopic);
+                  distributor.setClientTopic(clientTopic);
                }
             } else {
-               logger.info("Tapping into existing topic {} with new Outbound Topic Processor", topicName);
-               createAndStartRequestProcessor(session, outboundTopic);
+               logger.info("Tapping into existing topic {}", topicName);
+               launchNewDistributor(session, clientTopic);
                OdeRequestManager.addSubscriber(topicName, odeRequest.getDataType());
             }
          }         
@@ -210,12 +210,16 @@ public class WebSocketServer {
       }
    }
 
-   private void createAndStartRequestProcessor(
-         Session session, MQTopic outboundTopic) {
-      // Start the processor to receive data from the outbound topic and 
+   private void launchNewDistributor(
+         Session session, MQTopic clientTopic) {
+      
+      logger.info("Launching new Distributor for client session {} client topic {}",
+            session, clientTopic);
+      
+      // Start the processor to receive data from the client topic and 
       // send it to client session
-      responseProcessor = new ResponseProcessor(session, outboundTopic);
-      Thread respThread = new Thread(responseProcessor);
+      distributor = new OdeDataDistributor(session, clientTopic);
+      Thread respThread = new Thread(distributor);
       respThread.start();
    }
 
@@ -241,11 +245,11 @@ public class WebSocketServer {
          if (connector != null)
             connector.cancelDataRequest();
          
-         if (responseProcessor != null) {
-            responseProcessor.shutDown();
+         if (distributor != null) {
+            distributor.shutDown();
             if (odeRequest != null) {
                OdeRequestManager.removeSubscriber(
-                     responseProcessor.getOutboundTopic().getName(),
+                     distributor.getClientTopic().getName(),
                      odeRequest.getDataType());
             }
          }
