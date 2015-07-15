@@ -31,7 +31,9 @@ import com.bah.ode.asn.oss.semi.IntersectionSituationData;
 import com.oss.asn1.Coder;
 
 public class OdeIntersectionData extends OdeData {
-	private static Logger logger = LoggerFactory.getLogger(OdeIntersectionData.class);
+   private static final long serialVersionUID = -8672926422209668605L;
+
+   private static Logger logger = LoggerFactory.getLogger(OdeIntersectionData.class);
 
 	private OdeGroupId groupId;
 	private OdeGeoRegion serviceRegion;
@@ -51,7 +53,6 @@ public class OdeIntersectionData extends OdeData {
    }
 
 	public OdeIntersectionData(IntersectionSituationData isd) {
-		this.setDdsData(new DdsData().setIsd(isd));
 		this.setGroupId(new OdeGroupId(isd.getGroupID()));
 		this.setServiceRegion(new OdeGeoRegion(isd.getServiceRegion()));
 		this.setMapData(new OdeMapData(isd.getIntersectionRecord().getMapData()));

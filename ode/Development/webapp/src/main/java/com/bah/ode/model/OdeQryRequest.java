@@ -9,6 +9,11 @@ public class OdeQryRequest extends OdeRequest {
    private Integer limit;
    
    
+   
+   public OdeQryRequest() {
+      super();
+   }
+
    public OdeQryRequest(Double nwLat, Double nwLon, Double seLat, Double seLon,
          OdeRequestType requestType, OdeDataType dataType) {
       super(nwLat, nwLon, seLat, seLon, requestType, dataType);

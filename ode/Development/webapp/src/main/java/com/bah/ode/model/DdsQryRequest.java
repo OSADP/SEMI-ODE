@@ -98,7 +98,7 @@ public class DdsQryRequest extends DdsRequest {
 
    @Override
    public String toString() {
-      return "QUERY:" + JsonUtils.toJson(this);
+      return "QUERY:" + this.toJson();
    }
 
    @Override

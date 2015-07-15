@@ -28,7 +28,7 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.spark.VsdWorkflow;
+import com.bah.ode.spark.VehicleDataProcessor;
 import com.bah.ode.wrapper.MQTopic;
 
 public class AppContext {
@@ -72,8 +72,7 @@ public class AppContext {
    public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
    public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
    
-   public static final String VSD_INBOUND_TOPIC = "VSD_IN";
-   public static final String VSD_OUTBOUND_TOPIC = "VSD_OUT";
+   public static final String ODE_VEH_DATA_FLAT_TOPIC = "ode.veh.data.flat.topic";
 
    private static AppContext instance = null;
 
@@ -191,11 +190,11 @@ public class AppContext {
          int numParitions = 
                Integer.parseInt(getParam(KAFKA_DEFAULT_CONSUMER_THREADS));
          
-         logger.info("Creating VSD Process Flow...");
-         VsdWorkflow vsdwf = new VsdWorkflow();
-         vsdwf.setup(ssc, MQTopic.create(VSD_INBOUND_TOPIC, numParitions),
+         logger.info("Creating OVDF Process Flow...");
+         VehicleDataProcessor ovdfWF = new VehicleDataProcessor();
+         ovdfWF.setup(ssc, MQTopic.create(getParam(ODE_VEH_DATA_FLAT_TOPIC), numParitions),
                getParam(ZK_CONNECTION_STRINGS),
-               "vsd.processor", getParam(KAFKA_METADATA_BROKER_LIST));
+               getParam(KAFKA_METADATA_BROKER_LIST));
 
          try {
             logger.info("Starting Spark Process Flow...");

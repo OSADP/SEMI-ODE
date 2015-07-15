@@ -39,10 +39,10 @@ public class DataSourceConnector {
                   int partitions = Integer.parseInt(appContext.getParam(
                         AppContext.KAFKA_DEFAULT_CONSUMER_THREADS));
                   
-                  MQTopic vsdTopic = MQTopic.create(
-                        AppContext.VSD_INBOUND_TOPIC, partitions);
+                  MQTopic ovdfTopic = MQTopic.create(appContext.getParam(
+                        AppContext.ODE_VEH_DATA_FLAT_TOPIC), partitions);
                   
-                  metadata.setInputTopic(vsdTopic);
+                  metadata.setInputTopic(ovdfTopic);
                   ddsMgr = new DdsRequestManager(dataType, metadata);
                   /*
                    *  Add subscriber only if it is not pass-through because

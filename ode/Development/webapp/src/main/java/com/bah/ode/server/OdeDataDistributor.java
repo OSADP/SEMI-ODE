@@ -10,32 +10,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
+import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.DataProcessor;
 import com.bah.ode.wrapper.MQConsumerGroup;
 import com.bah.ode.wrapper.MQTopic;
+import com.fasterxml.jackson.databind.JsonNode;
 
-public class ResponseProcessor implements Runnable {
+public class OdeDataDistributor implements Runnable {
 
-   private static Logger logger = LoggerFactory.getLogger(ResponseProcessor.class);
+   private static Logger logger = LoggerFactory.getLogger(OdeDataDistributor.class);
    private static AppContext appContext = AppContext.getInstance(); 
    
    private Session clientSession;
-   private MQTopic outboundTopic;
+   private MQTopic clientTopic;
    private String groupId;
    private MQConsumerGroup<String, String, String> consumerGroup;
    
    
    
-   public ResponseProcessor(final Session clientSession, MQTopic outboundTopic) {
+   public OdeDataDistributor(final Session clientSession, MQTopic outboundTopic) {
       super();
       this.clientSession = clientSession;
-      this.outboundTopic = outboundTopic;
+      this.clientTopic = outboundTopic;
       this.groupId = clientSession.getId(); 
       
       this.consumerGroup = new MQConsumerGroup<String, String, String> (
             appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
             this.groupId,
-            this.outboundTopic,
+            this.clientTopic,
             new StringDecoder(null),
             new StringDecoder(null),
             new DataProcessor<String, String>() {
@@ -44,8 +46,9 @@ public class ResponseProcessor implements Runnable {
                public Future<String> process(String data)
                      throws DataProcessorException {
                   try {
-                     //logger.info("{}", data);
-                     clientSession.getBasicRemote().sendText(data);
+                     JsonNode jsonObject = JsonUtils.toJsonNode(data);
+                     JsonNode payload = jsonObject.get("payload");
+                     clientSession.getBasicRemote().sendText(payload.toString());
                   } catch (Exception e) {
                      throw new DataProcessorException("Error processing data.", e);
                   }
@@ -59,19 +62,19 @@ public class ResponseProcessor implements Runnable {
       return clientSession;
    }
 
-   public ResponseProcessor setClientSession(Session clientSession) {
+   public OdeDataDistributor setClientSession(Session clientSession) {
       this.clientSession = clientSession;
       return this;
    }
 
-   public MQTopic getOutboundTopic() {
-      return outboundTopic;
+   public MQTopic getClientTopic() {
+      return clientTopic;
    }
 
-   public ResponseProcessor setOutboundTopic(MQTopic outboundTopic) {
-      this.outboundTopic = outboundTopic;
+   public OdeDataDistributor setClientTopic(MQTopic aTopic) {
+      this.clientTopic = aTopic;
       if (consumerGroup != null)
-         consumerGroup.setTopic(this.outboundTopic);
+         consumerGroup.setTopic(this.clientTopic);
       return this;
    }
 
@@ -79,7 +82,7 @@ public class ResponseProcessor implements Runnable {
    public void run() {
       try {
          logger.info("Starting {} consumer threads in group {} for topic {} ...", 
-               outboundTopic.getPartitions(), groupId, outboundTopic.getName());
+               clientTopic.getPartitions(), groupId, clientTopic.getName());
          
          consumerGroup.consume();
       } catch (Exception e) {

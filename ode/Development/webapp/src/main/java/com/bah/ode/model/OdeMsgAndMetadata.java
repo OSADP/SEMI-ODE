@@ -1,19 +1,27 @@
 package com.bah.ode.model;
 
-import java.io.Serializable;
 
-public class OdeMsgAndMetadata implements Serializable {
+public class OdeMsgAndMetadata extends OdeObject {
    private static final long serialVersionUID = 9152243091714512036L;
    
-   private String payload;
    private String key;
+   private String payloadType;
+   private OdeData payload;
    private OdeMetadata metadata;
    
-   public String getPayload() {
+   public String getPayloadType() {
+      return payloadType;
+   }
+   public OdeMsgAndMetadata setPayloadType(String payloadType) {
+      this.payloadType = payloadType;
+      return this;
+   }
+   public OdeData getPayload() {
       return payload;
    }
-   public OdeMsgAndMetadata setPayload(String payload) {
+   public OdeMsgAndMetadata setPayload(OdeData payload) {
       this.payload = payload;
+      this.payloadType = payload.getClass().getName();
       return this;
    }
    public String getKey() {
@@ -37,6 +45,8 @@ public class OdeMsgAndMetadata implements Serializable {
       result = prime * result + ((key == null) ? 0 : key.hashCode());
       result = prime * result + ((metadata == null) ? 0 : metadata.hashCode());
       result = prime * result + ((payload == null) ? 0 : payload.hashCode());
+      result = prime * result
+            + ((payloadType == null) ? 0 : payloadType.hashCode());
       return result;
    }
    @Override
@@ -63,8 +73,11 @@ public class OdeMsgAndMetadata implements Serializable {
             return false;
       } else if (!payload.equals(other.payload))
          return false;
+      if (payloadType == null) {
+         if (other.payloadType != null)
+            return false;
+      } else if (!payloadType.equals(other.payloadType))
+         return false;
       return true;
    }
-
-
 }

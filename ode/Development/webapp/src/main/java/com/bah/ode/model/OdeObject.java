@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 import com.bah.ode.util.JsonUtils;
 
-public class OdeObject implements Serializable {
+public abstract class OdeObject implements Serializable {
    private static final long serialVersionUID = 7514526408925039533L;
 
    public String toJson() {
@@ -29,7 +29,7 @@ public class OdeObject implements Serializable {
 
    @Override
    public String toString() {
-      return JsonUtils.toJson(this);
+      return this.toJson();
    }
 
 }
