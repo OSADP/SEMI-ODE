@@ -52,7 +52,7 @@ public class OdeVehicleDataFlat extends OdeData {
    private static final long serialVersionUID = -7170326566884675515L;
 
    private String serialId;
-   private String createdAt;
+   private String receivedAt;
 
    private String groupId;
 
@@ -99,7 +99,7 @@ public class OdeVehicleDataFlat extends OdeData {
    private Integer day;
    private Integer hour;
    private Integer minute;
-   private Integer second;
+   private Double second;
    private String  dateTime;
 
    private Integer lights;  
@@ -124,7 +124,7 @@ public class OdeVehicleDataFlat extends OdeData {
    
    public OdeVehicleDataFlat(String serialId, GroupID groupId, VehSitRecord vsr) {
       this.serialId = serialId; 
-      this.createdAt = DateTimeUtils.isoDateTime(new Date());
+      this.receivedAt = DateTimeUtils.isoDateTime(new Date());
       
       setGroupId(groupId);
       
@@ -580,18 +580,20 @@ public class OdeVehicleDataFlat extends OdeData {
       setDay(dDateTime.getDay().intValue());
       setHour(dDateTime.getHour().intValue());
       setMinute(dDateTime.getMinute().intValue());
-      setSecond(dDateTime.getSecond().intValue());
-      this.dateTime = DateTimeUtils.isoDateTime(getYear(), getMonth(), getDay(),
-            getHour(), getMinute(), getSecond());
+      setSecond((double)(dDateTime.getSecond().intValue())/1000.0);
+      this.dateTime = DateTimeUtils.isoDateTime(
+            getYear(), getMonth(), getDay(), getHour(), getMinute(), 
+            dDateTime.getSecond().intValue()/1000, 
+            dDateTime.getSecond().intValue()%1000);
    }
 
    public void setTransmissionAndSpeed(TransmissionAndSpeed tm) {
       if (tm.getSize() >= 2) {
-         int t = (tm.byteArrayValue()[1] >> 5) & 0x03; //strip off the speed bits
+         int t = (tm.byteArrayValue()[0] >> 5) & 0x03; //strip off the speed bits
          setTransmission(OdeTransmissionState.values()[t]);
          
-         int s = tm.byteArrayValue()[1] & 0x1F; //strip off the transmission bits 
-         s = (s << 8) | tm.byteArrayValue()[0];
+         int s = tm.byteArrayValue()[0] & 0x1F; //strip off the transmission bits 
+         s = (s << 8) | tm.byteArrayValue()[1];
          
          if (s == 8191)
             this.speed = null;
@@ -610,8 +612,24 @@ public class OdeVehicleDataFlat extends OdeData {
       return serialId;
    }
 
-   public String getCreatedAt() {
-      return createdAt;
+   public void setSerialId(String serialId) {
+      this.serialId = serialId;
+   }
+
+   public String getReceivedAt() {
+      return receivedAt;
+   }
+
+   public void setReceivedAt(String receivedAt) {
+      this.receivedAt = receivedAt;
+   }
+
+   public String getDateTime() {
+      return dateTime;
+   }
+
+   public void setDateTime(String dateTime) {
+      this.dateTime = dateTime;
    }
 
    public String getGroupId() {
@@ -878,16 +896,12 @@ public class OdeVehicleDataFlat extends OdeData {
       this.minute = minute;
    }
 
-   public Integer getSecond() {
+   public Double getSecond() {
       return second;
    }
 
-   public void setSecond(Integer second) {
+   public void setSecond(Double second) {
       this.second = second;
-   }
-
-   public String getDateTime() {
-      return dateTime;
    }
 
    public Integer getLights() {
@@ -1058,6 +1072,7 @@ public class OdeVehicleDataFlat extends OdeData {
             + ((brakesSCS == null) ? 0 : brakesSCS.hashCode());
       result = prime * result
             + ((brakesTraction == null) ? 0 : brakesTraction.hashCode());
+      result = prime * result + ((dateTime == null) ? 0 : dateTime.hashCode());
       result = prime * result + ((day == null) ? 0 : day.hashCode());
       result = prime * result
             + ((elevation == null) ? 0 : elevation.hashCode());
@@ -1075,7 +1090,10 @@ public class OdeVehicleDataFlat extends OdeData {
             + ((longitude == null) ? 0 : longitude.hashCode());
       result = prime * result + ((minute == null) ? 0 : minute.hashCode());
       result = prime * result + ((month == null) ? 0 : month.hashCode());
+      result = prime * result
+            + ((receivedAt == null) ? 0 : receivedAt.hashCode());
       result = prime * result + ((second == null) ? 0 : second.hashCode());
+      result = prime * result + ((serialId == null) ? 0 : serialId.hashCode());
       result = prime * result
             + ((sizeLength == null) ? 0 : sizeLength.hashCode());
       result = prime * result
@@ -1086,8 +1104,6 @@ public class OdeVehicleDataFlat extends OdeData {
       result = prime * result + ((tempId == null) ? 0 : tempId.hashCode());
       result = prime * result
             + ((throttlePos == null) ? 0 : throttlePos.hashCode());
-      result = prime * result
-            + ((dateTime == null) ? 0 : dateTime.hashCode());
       result = prime * result
             + ((tirePressureLF == null) ? 0 : tirePressureLF.hashCode());
       result = prime * result
@@ -1202,6 +1218,11 @@ public class OdeVehicleDataFlat extends OdeData {
             return false;
       } else if (!brakesTraction.equals(other.brakesTraction))
          return false;
+      if (dateTime == null) {
+         if (other.dateTime != null)
+            return false;
+      } else if (!dateTime.equals(other.dateTime))
+         return false;
       if (day == null) {
          if (other.day != null)
             return false;
@@ -1272,10 +1293,20 @@ public class OdeVehicleDataFlat extends OdeData {
             return false;
       } else if (!month.equals(other.month))
          return false;
+      if (receivedAt == null) {
+         if (other.receivedAt != null)
+            return false;
+      } else if (!receivedAt.equals(other.receivedAt))
+         return false;
       if (second == null) {
          if (other.second != null)
             return false;
       } else if (!second.equals(other.second))
+         return false;
+      if (serialId == null) {
+         if (other.serialId != null)
+            return false;
+      } else if (!serialId.equals(other.serialId))
          return false;
       if (sizeLength == null) {
          if (other.sizeLength != null)
@@ -1306,11 +1337,6 @@ public class OdeVehicleDataFlat extends OdeData {
          if (other.throttlePos != null)
             return false;
       } else if (!throttlePos.equals(other.throttlePos))
-         return false;
-      if (dateTime == null) {
-         if (other.dateTime != null)
-            return false;
-      } else if (!dateTime.equals(other.dateTime))
          return false;
       if (tirePressureLF == null) {
          if (other.tirePressureLF != null)
@@ -1396,6 +1422,7 @@ public class OdeVehicleDataFlat extends OdeData {
          return false;
       return true;
    }
+
 
 
 }

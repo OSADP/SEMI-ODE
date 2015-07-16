@@ -18,41 +18,41 @@ package com.bah.ode.util;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.Gson;
 
 public class JsonUtils {
    
-//   private static Gson gson = new Gson();
+   private static Gson gson = new Gson();
    private static ObjectMapper mapper = new ObjectMapper();
    
    public static String toJson(Object o) {
 
       // convert java object to JSON format,
       // and returned as JSON formatted string
-//      return gson.toJson(o);
-      String json = null;
-      try {
-         json = mapper.writeValueAsString(o);
-      } catch (JsonProcessingException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-      return json;
+      return gson.toJson(o);
+//      String json = null;
+//      try {
+//         json = mapper.writeValueAsString(o);
+//      } catch (JsonProcessingException e) {
+//         // TODO Auto-generated catch block
+//         e.printStackTrace();
+//      }
+//      return json;
    }
 
    public static Object fromJson(String s, Class<?> clazz) {
-//      return gson.fromJson(s, clazz);
-      Object o = null;
-      try {
-         o = mapper.readValue(s, clazz);
-      } catch (IOException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-      return o;
+      return gson.fromJson(s, clazz);
+//      Object o = null;
+//      try {
+//         o = mapper.readValue(s, clazz);
+//      } catch (IOException e) {
+//         // TODO Auto-generated catch block
+//         e.printStackTrace();
+//      }
+//      return o;
    }
    
    public static String newJson(String key, Object value) {

@@ -82,6 +82,7 @@ public class AppContext {
    private JavaSparkContext sparkContext;
    private JavaStreamingContext ssc;
    private boolean streamingContextStarted = false;
+   private VehicleDataProcessor ovdfWF;
 
    public static String getServletBaseUrl(HttpServletRequest request) {
       String proto = request.getScheme();
@@ -123,11 +124,7 @@ public class AppContext {
          logger.info("Creating Spark Context...");
          sparkContext = new JavaSparkContext(sparkConf);
          
-         logger.info("Creating Spark Streaming Context...");
-         ssc = new JavaStreamingContext(
-               sparkContext,
-               Durations.seconds(Integer.parseInt(
-                     getParam(SPARK_STREAMING_DEFAULT_DURATION))));
+         ssc = createStreamingContext();
          
       } else {
          logger.info("*** SPARK DISABLED FOR DEBUG ***");
@@ -190,21 +187,27 @@ public class AppContext {
          int numParitions = 
                Integer.parseInt(getParam(KAFKA_DEFAULT_CONSUMER_THREADS));
          
-         logger.info("Creating OVDF Process Flow...");
-         VehicleDataProcessor ovdfWF = new VehicleDataProcessor();
-         ovdfWF.setup(ssc, MQTopic.create(getParam(ODE_VEH_DATA_FLAT_TOPIC), numParitions),
-               getParam(ZK_CONNECTION_STRINGS),
-               getParam(KAFKA_METADATA_BROKER_LIST));
-
+         if (ssc == null){
+            ssc = createStreamingContext();
+         }
+         
+         if (ovdfWF == null) {
+            logger.info("Creating OVDF Process Flow...");
+            ovdfWF = new VehicleDataProcessor();
+            ovdfWF.setup(ssc, MQTopic.create(getParam(ODE_VEH_DATA_FLAT_TOPIC), numParitions),
+                  getParam(ZK_CONNECTION_STRINGS),
+                  getParam(KAFKA_METADATA_BROKER_LIST));
+         }
+         
          try {
-            logger.info("Starting Spark Process Flow...");
+            logger.info("Starting Spark Streaming Context...");
             ssc.start();
             streamingContextStarted = true;
             logger.info("*** Spark Streaming Context Started ***");
          } catch (Throwable t1) {
             logger.warn("*** Error starting Spark Streaming Context. Stopping... ***", t1);
             try {
-               ssc.stop();
+               ssc.stop(false);
                logger.info("*** Spark Streaming Context Stopped ***");
             } catch (Throwable t2) {
                logger.warn("*** Error stopping Spark Streaming Context. Starting... ***", t2);
@@ -221,12 +224,23 @@ public class AppContext {
       }
    }
 
+   private JavaStreamingContext createStreamingContext() {
+      logger.info("Creating Spark Streaming Context...");
+      return ssc = new JavaStreamingContext(
+            sparkContext,
+            Durations.seconds(Integer.parseInt(
+                  getParam(SPARK_STREAMING_DEFAULT_DURATION))));
+   }
+
    public synchronized void stopStreamingContext() {
       if (streamingContextStarted) {
          streamingContextStarted = false;
          try {
-            ssc.stop();
+            ssc.stop(false);
             logger.info("*** Spark Streaming Context Stopped ***");
+            ssc.awaitTermination(10000);
+            ssc = null;
+            ovdfWF = null;
          } catch (Throwable t) {
             logger.warn("*** Error stopping Spark Streaming Context ***", t);
          }
