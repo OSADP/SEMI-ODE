@@ -32,10 +32,6 @@ public class DataSourceConnector {
                metadata.setOutputTopic(outputTopic);
                
                if (!OdeRequestManager.isPassThrough(odeRequest.getDataType())) {
-                  if (!appContext.getParam(AppContext.SPARK_MASTER).isEmpty() 
-                        && appContext.getSparkStreamingConext() == null)
-                     appContext.init(appContext.getServletContext());
-
                   int partitions = Integer.parseInt(appContext.getParam(
                         AppContext.KAFKA_DEFAULT_CONSUMER_THREADS));
                   

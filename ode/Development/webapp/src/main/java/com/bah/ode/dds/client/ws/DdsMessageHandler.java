@@ -88,8 +88,6 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                } else if (ddsData.getAsd() != null) {
                   omam.setPayload(new OdeAdvisoryDataRaw(ddsData.getAsd()));
                } else {
-                  //Send non-data messages directly to the output topic
-                  topicName = metadata.getOutputTopic().getName();
                   omam.setPayload(new OdeFullMessage(ddsData.getFullMessage()));
                }
                producer.send(topicName, metadata.getOutputTopic().getName(),
