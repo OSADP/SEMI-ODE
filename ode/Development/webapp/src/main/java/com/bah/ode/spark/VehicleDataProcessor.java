@@ -2,22 +2,13 @@ package com.bah.ode.spark;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 
-import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.function.Function;
-import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka.KafkaUtils;
 
-import scala.Tuple2;
-
-import com.bah.ode.model.OdeMsgAndMetadata;
 import com.bah.ode.model.OdeObject;
-import com.bah.ode.util.JsonUtils;
-import com.bah.ode.wrapper.MQProducer;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
 import com.bah.ode.wrapper.MQTopic;
 
@@ -55,20 +46,20 @@ public class VehicleDataProcessor extends OdeObject {
       //    unifiedStream.repartition(sparkProcessingParallelism)
       //  }
       
-      ArrayList<JavaPairDStream<String, String>> dstreams = 
-            new ArrayList<JavaPairDStream<String, String>>();
+      ArrayList<JavaPairDStream<String, String>> dstreams = new ArrayList<JavaPairDStream<String, String>>();
 
       for (int i = 0; i < ovdfTopic.getPartitions(); i++) {
-         JavaPairDStream<String, String> aStream = KafkaUtils
-               .createStream(ssc, zkConnectionStrings, VehicleDataProcessor.class.getName(), 
-                     Collections.singletonMap(ovdfTopic.getName(), 
-                           ovdfTopic.getPartitions()));
+         JavaPairDStream<String, String> aStream = KafkaUtils.createStream(
+               ssc,
+               zkConnectionStrings,
+               VehicleDataProcessor.class.getName(),
+               Collections.singletonMap(ovdfTopic.getName(),
+                     ovdfTopic.getPartitions()));
 
          dstreams.add(aStream);
       }
-      JavaPairDStream<String, String> unifiedStream = 
-            ssc.union(dstreams.get(0), dstreams.subList(1, dstreams.size()));
-//    unifiedStream.print();
+      JavaPairDStream<String, String> unifiedStream = ssc.union(
+            dstreams.get(0), dstreams.subList(1, dstreams.size()));
 
 
 
@@ -84,9 +75,9 @@ public class VehicleDataProcessor extends OdeObject {
 //          ssc.sparkContext().broadcast(createProducerPool(
 //          appContext.getParam(AppContext.METADATA_BROKER_LIST)));
     
-    final Broadcast<MQSerialazableProducerPool> producerPool = 
-          ssc.sparkContext().broadcast(new MQSerialazableProducerPool(
-          brokerList));
+      final Broadcast<MQSerialazableProducerPool> producerPool = 
+            ssc.sparkContext().broadcast(new MQSerialazableProducerPool(
+                  brokerList));
     
     // We also use a broadcast variable for Bijection/Injection.
     //    val converter = ssc.sparkContext.broadcast(specificAvroBinaryInjectionForTweet)
@@ -113,47 +104,8 @@ public class VehicleDataProcessor extends OdeObject {
 //         producerPool.value.returnObject(p)
 //       })
 //     })
-//    RddProcessor rddProcessor = new RddProcessor(producerPool, 
-//          ioTopic.getOutTopics());
-
-    Function<JavaPairRDD<String, String>, Void> rddProcessor = 
-          new Function<JavaPairRDD<String, String>, Void>() {
-       private static final long serialVersionUID = 4946021213014494671L;
-
-       @Override
-       public Void call(JavaPairRDD<String, String> rdd) throws Exception {
-          VoidFunction<Iterator<Tuple2<String, String>>> partitionOutputer =
-                new VoidFunction<Iterator<Tuple2<String,String>>>() {
-                  private static final long serialVersionUID = 1L;
-
-                  @Override
-                  public void call(Iterator<
-                        Tuple2<String, String>> partitionOfRecords) 
-                        throws Exception {
-                     MQProducer<String, String> producer = 
-                           producerPool.value().checkOut();
-                     while (partitionOfRecords.hasNext()) {
-                        Tuple2<String, String> record = 
-                              partitionOfRecords.next();
-                        OdeMsgAndMetadata msgAndMetadata = 
-                              (OdeMsgAndMetadata) JsonUtils.fromJson(
-                              record._2(), OdeMsgAndMetadata.class);
-                        
-                        producer.send(msgAndMetadata.getMetadata().getOutputTopic().getName(),
-                              record._1(), record._2());
-                     }
-                     producerPool.value().checkIn(producer);
-                  }
-               };
-//                new MQOutputer(producerPool,
-//                      ioTopic.getOutTopics());
-
-          rdd.foreachPartition(partitionOutputer);
-          return null;
-       }
-    };
-    unifiedStream.foreachRDD(rddProcessor);
-//    unifiedStream.print();
+      RddProcessor rddProcessor = new RddProcessor(producerPool);
+      unifiedStream.foreachRDD(rddProcessor);
    }
 
 }
