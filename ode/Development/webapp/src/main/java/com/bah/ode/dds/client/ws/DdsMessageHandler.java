@@ -33,7 +33,6 @@ import com.bah.ode.model.OdeIntersectionDataRaw;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeMsgAndMetadata;
 import com.bah.ode.model.OdeVehicleDataFlat;
-import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQProducer;
 import com.bah.ode.wrapper.WebSocketMessageHandler;
 
