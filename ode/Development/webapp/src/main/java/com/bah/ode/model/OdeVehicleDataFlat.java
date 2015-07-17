@@ -45,6 +45,7 @@ import com.bah.ode.asn.oss.semi.VsmEventFlag;
 import com.bah.ode.asn.oss.semi.Weather;
 import com.bah.ode.asn.oss.semi.Weather.WeatherReport;
 import com.bah.ode.asn.oss.semi.Weather.Wipers;
+import com.bah.ode.util.ByteUtils;
 import com.bah.ode.util.CodecUtils;
 import com.bah.ode.util.DateTimeUtils;
 
@@ -302,7 +303,8 @@ public class OdeVehicleDataFlat extends OdeData {
       setLights(vehstat.lights != null ? vehstat.lights.intValue() : null);
       
       // ThrottlePosition ::= INTEGER (0..200) -- LSB units are 0.5 percent
-      setThrottlePos(vehstat.throttlePos != null ? vehstat.throttlePos.intValue() * 0.5 : null);
+      if (vehstat.throttlePos != null)
+         setThrottlePos(vehstat.throttlePos.intValue() * 0.5);
       
       setTirePressure(vehstat.tirePressure);
    }
@@ -323,9 +325,10 @@ public class OdeVehicleDataFlat extends OdeData {
       setTirePressureRR(tirePressure.rightRear != null ? tirePressure.rightRear.intValue() : null);
    }
 
-   private void setTempId(TemporaryID tempID2) {
+   private void setTempId(TemporaryID tempID) {
       //TemporaryID ::= OCTET STRING (SIZE(4)) -- a 4 byte string array
-      setTempId(CodecUtils.toHex(tempID2 != null ? tempID2.byteArrayValue() : "".getBytes()));
+      if (tempID != null)
+         setTempId(CodecUtils.toHex(tempID.byteArrayValue()));
    }
 
    private void setPosition(Position3D pos) {
@@ -349,10 +352,10 @@ public class OdeVehicleDataFlat extends OdeData {
       // -- i.e. below the reference ellipsoid, as 0xF001 to 0xFFFF
       // -- unknown as 0xF000
       
-      setLongitude(pos.lat != null ? (double)pos.lat.longValue() / 0.1E-6 : null);
-      setLongitude(pos._long != null ? (double)pos._long.longValue() / 0.1E-6 : null);
+      setLatitude(pos.lat != null ? (double)pos.lat.longValue() * 0.1E-6 : null);
+      setLongitude(pos._long != null ? (double)pos._long.longValue() * 0.1E-6 : null);
       if (pos.elevation != null) {
-         int elev = pos.elevation.byteArrayValue()[1] << 8 | pos.elevation.byteArrayValue()[0];
+         int elev = ByteUtils.unsignedByteArrayToInt(pos.elevation.byteArrayValue());
          if (elev == 0xF000) {
             setElevation(null);
          } else if (elev >= 0x0000 && elev <= 0xEFFF) {
@@ -431,8 +434,9 @@ public class OdeVehicleDataFlat extends OdeData {
          //            --                      -x- 2 bits
          //            --   }
          
-         // Assuming big-endian, high byte first
-         if ((brakes.byteArrayValue()[1] & 0x08) != 0) {
+         int i = ByteUtils.unsignedByteToInt(brakes.byteArrayValue()[0]);
+         byte b = (byte) (i >> 4);
+         if ( b != 0) {
             //       BrakeAppliedStatus ::= BIT STRING {
             //          allOff      (0), -- B'0000  The condition All Off 
             //          leftFront   (1), -- B'0001  Left Front Active
@@ -440,7 +444,7 @@ public class OdeVehicleDataFlat extends OdeData {
             //          rightFront  (4), -- B'0100  Right Front Active
             //          rightRear   (8)  -- B'1000  Right Rear Active
             //      } -- to fit in 4 bits
-            setBrakesApplied((byte)(brakes.byteArrayValue()[1] >> 4));
+            setBrakesApplied(b);
          }
          //      TractionControlState ::= ENUMERATED {
          //         unavailable (0), -- B'00  Not Equipped with tracton control 
@@ -448,7 +452,10 @@ public class OdeVehicleDataFlat extends OdeData {
          //         off         (1), -- B'01  tracton control is Off
          //         on          (2), -- B'10  tracton control is On (but not Engaged)
          //         engaged     (3)  -- B'11  tracton control is Engaged
-         setBrakesTraction((byte)(brakes.byteArrayValue()[1] & 0x03));
+         b = (byte) (i & 0x03);
+         if ( b != 0) {
+            setBrakesTraction(b);
+         }
          
          //      AntiLockBrakeStatus ::= ENUMERATED {
          //         unavailable (0), -- B'00  Vehicle Not Equipped with ABS 
@@ -458,7 +465,11 @@ public class OdeVehicleDataFlat extends OdeData {
          //         engaged     (3)  -- B'11  Vehicle's ABS is Engaged
          //         } 
          //         -- Encoded as a 2 bit value
-         setBrakesABS((byte)(brakes.byteArrayValue()[0] >> 6));
+         i = ByteUtils.unsignedByteToInt(brakes.byteArrayValue()[1]);
+         b = (byte) (i >> 6);
+         if ( b != 0) {
+            setBrakesABS(b);
+         }
          
          //      StabilityControlStatus ::= ENUMERATED {
          //         unavailable (0), -- B'00  Not Equipped with SC
@@ -467,8 +478,10 @@ public class OdeVehicleDataFlat extends OdeData {
          //         on          (2)  -- B'10  On or active (engaged)
          //         } 
          //         -- Encoded as a 2 bit value
-         setBrakesSCS((byte)((brakes.byteArrayValue()[0] & 0x30) >> 4));
-         
+         b = (byte) ((i >> 4) & 0x03);
+         if ( b != 0) {
+            setBrakesSCS(b);
+         }
          //      BrakeBoostApplied ::= ENUMERATED {
          //         unavailable   (0), -- Vehicle not equipped with brake boost
          //                            -- or brake boost data is unavailable
@@ -476,7 +489,10 @@ public class OdeVehicleDataFlat extends OdeData {
          //         on            (2)  -- Vehicle's brake boost is on (applied)
          //         }
          //         -- Encoded as a 2 bit value
-         setBrakesBBA((byte)((brakes.byteArrayValue()[0] & 0x0C) >> 2));
+         b = (byte) ((i >> 2) & 0x03);
+         if ( b != 0) {
+            setBrakesBBA(b);
+         }
          
          //      AuxiliaryBrakeStatus ::= ENUMERATED {
          //         unavailable (0), -- B'00  Vehicle Not Equipped with Aux Brakes 
@@ -486,7 +502,10 @@ public class OdeVehicleDataFlat extends OdeData {
          //         reserved    (3)  -- B'11 
          //         } 
          //         -- Encoded as a 2 bit value
-         setBrakesAux((byte)(brakes.byteArrayValue()[0] & 0x03));
+         b = (byte) (i & 0x03);
+         if ( b != 0) {
+            setBrakesAux(b);
+         }
       }
    }
 
@@ -506,10 +525,11 @@ public class OdeVehicleDataFlat extends OdeData {
          //   -- the value 2000 shall be used for values greater than 2000     
          //   -- the value -2000 shall be used for values less than -2000  
          //   -- a value of 2001 shall be used for Unavailable
-         int accel = accelSet.byteArrayValue()[6] << 8 | accelSet.byteArrayValue()[5];
+         int accel = ByteUtils.unsignedByteArrayToInt(accelSet.byteArrayValue(), 0, 2);
          if (accel != 2001)
             setAccelLong((double)accel / 0.01);
-         accel = accelSet.byteArrayValue()[4] << 8 | accelSet.byteArrayValue()[3];
+         
+         accel = ByteUtils.unsignedByteArrayToInt(accelSet.byteArrayValue(), 2, 2);
          if (accel != 2001)
             setAccelLat((double)accel / 0.01);
          
@@ -526,13 +546,13 @@ public class OdeVehicleDataFlat extends OdeData {
          //    -- value -125 for ranges -7.4 to -8.4G
          //    -- value -126 for ranges larger than -8.4G
          //    -- value -127 for unavailable data
-         accel = accelSet.byteArrayValue()[2];
+         accel = ByteUtils.unsignedByteToInt(accelSet.byteArrayValue()[4]);
          if (accel != 127)
             setAccelLat((double)(accel - 50) * 0.02);
          
          //YawRate ::= INTEGER (-32767..32767) 
          //    -- LSB units of 0.01 degrees per second (signed)
-         accel = accelSet.byteArrayValue()[1] << 8 | accelSet.byteArrayValue()[0];
+         accel = ByteUtils.unsignedByteArrayToInt(accelSet.byteArrayValue(), 5, 2);
          setAccelLat((double)accel / 0.01);
 
       }
@@ -587,19 +607,37 @@ public class OdeVehicleDataFlat extends OdeData {
             dDateTime.getSecond().intValue()%1000);
    }
 
+//   TransmissionAndSpeed ::= OCTET STRING (SIZE(2)) 
+//         -- Bits 14~16 to be made up of the data element
+//         -- DE_TransmissionState 
+//         -- Bits 1~13 to be made up of the data element
+//         -- DE_Speed
+//   Speed ::= INTEGER (0..8191) -- Units of 0.02 m/s
+//         -- The value 8191 indicates that 
+//         -- speed is unavailable
+//   TransmissionState ::= ENUMERATED {
+//      neutral         (0), -- Neutral, speed relative to the vehicle alignment
+//      park            (1), -- Park, speed relative the to vehicle alignment
+//      forwardGears    (2), -- Forward gears, speed relative the to vehicle alignment
+//      reverseGears    (3), -- Reverse gears, speed relative the to vehicle alignment 
+//      reserved1       (4),      
+//      reserved2       (5),      
+//      reserved3       (6),      
+//      unavailable     (7), -- not-equipped or unavailable value,
+//                           -- speed relative to the vehicle alignment
+//
+//      ... -- # LOCAL_CONTENT
+//      }
    public void setTransmissionAndSpeed(TransmissionAndSpeed tm) {
       if (tm.getSize() >= 2) {
-         int t = (tm.byteArrayValue()[0] >> 5) & 0x03; //strip off the speed bits
-         setTransmission(OdeTransmissionState.values()[t]);
-         
-         int s = tm.byteArrayValue()[0] & 0x1F; //strip off the transmission bits 
-         s = (s << 8) | tm.byteArrayValue()[1];
-         
-         if (s == 8191)
+         int i = ByteUtils.unsignedByteArrayToInt(tm.byteArrayValue());
+         setTransmission(OdeTransmissionState.values()[i >> 13]);
+         i = i & 0x1FFF; 
+         if (i == 8191)
             this.speed = null;
          else
             // speed is received in units of 0.02 m/s
-            setSpeed(s * 0.02);
+            setSpeed(i * 0.02);
       }
    }
 

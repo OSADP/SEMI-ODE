@@ -198,7 +198,7 @@ public class WebSocketServer {
          }         
       } catch (Exception ex) {
          OdeStatus status = new OdeStatus()
-            .setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
+            .setCode(OdeStatus.Code.FAILURE)
             .setMessage(String.format("Error processing request %s.",
                   session.getRequestURI()));
          logger.error(status.toString(), ex);
