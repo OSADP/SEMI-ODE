@@ -16,6 +16,8 @@
  *******************************************************************************/
 package com.bah.ode.dds.client.ws;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -46,6 +48,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
 
    private MQProducer<String, String> producer;
    private OdeMetadata metadata;
+   private static AppContext appContext = AppContext.getInstance(); 
    
    public DdsMessageHandler(OdeMetadata metadata) {
       this.producer = new MQProducer<String, String>(
@@ -67,16 +70,19 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
             String topicName = metadata.getInputTopic().getName();
             if (ddsData.getVsd() != null) {
                VehSitDataMessage vsd = ddsData.getVsd();
-               GroupID groupId = vsd.groupID;
+               List<OdeVehicleDataFlat> ovdfList;
+               if (Boolean.valueOf(
+                     appContext.getParam(
+                           AppContext.DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE))) {
+                  ovdfList = getLatestOvdfFromVsd(vsd, 1,
+                        uuid.toString() + "." + seqNum++);
+               } else {
+                  ovdfList = getLatestOvdfFromVsd(
+                        vsd, vsd.getBundle().getSize(),
+                        uuid.toString() + "." + seqNum++);
+               }
                
-               Bundle bundle = vsd.getBundle();
-               
-               int bSize = bundle.getSize();
-               for (int i = 0; i < bSize; i++) {
-                  VehSitRecord vsr = bundle.get(i);
-                  OdeVehicleDataFlat ovdf = new OdeVehicleDataFlat(
-                        uuid.toString() + "." + seqNum++,
-                        groupId, vsr);
+               for (OdeVehicleDataFlat ovdf : ovdfList) {
                   omam.setPayload(ovdf);
                   producer.send(topicName, metadata.getOutputTopic().getName(),
                         omam.toJson());
@@ -99,6 +105,25 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
       }
    }
 
+   public static List<OdeVehicleDataFlat> getLatestOvdfFromVsd(
+         VehSitDataMessage vsd, int count, String serialIdPrefix) {
+      ArrayList<OdeVehicleDataFlat> ovdfList = new ArrayList<OdeVehicleDataFlat>();
+      Bundle bundle = vsd.getBundle();
+      GroupID groupId = vsd.groupID;
+      int bSize = bundle.getSize();
+      int id = 0;
+      //data in the bundle appear to be in reverse chronological order
+      if (bSize > 0 && count > 0 && count <= bSize) {
+         for (int i = count-1; i >= 0; i--) {
+            VehSitRecord vsr = bundle.get(i);
+            OdeVehicleDataFlat ovdf = new OdeVehicleDataFlat(
+                  serialIdPrefix + "." +id, 
+                  groupId, vsr);
+            ovdfList.add(ovdf);
+         }
+      }
+      return ovdfList;
+   }
 
    public void disable() {
       if (null != producer) {

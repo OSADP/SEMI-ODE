@@ -16,6 +16,7 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.bah.ode.asn.OdeTransmissionState;
@@ -45,6 +46,7 @@ import com.bah.ode.asn.oss.semi.VsmEventFlag;
 import com.bah.ode.asn.oss.semi.Weather;
 import com.bah.ode.asn.oss.semi.Weather.WeatherReport;
 import com.bah.ode.asn.oss.semi.Weather.Wipers;
+import com.bah.ode.util.ByteUtils;
 import com.bah.ode.util.CodecUtils;
 import com.bah.ode.util.DateTimeUtils;
 
@@ -64,10 +66,10 @@ public class OdeVehicleDataFlat extends OdeData {
    private Integer EnvFuelCond;
    private Integer EnvFuelEcon;
 
-   private Double accelLat;
-   private Double accelLong;
-   private Double accelVert;
-   private Double accellYaw;
+   private BigDecimal accelLat;
+   private BigDecimal accelLong;
+   private BigDecimal accelVert;
+   private BigDecimal accellYaw;
    
    private Byte brakesApplied;
    private Byte brakesTraction;
@@ -76,21 +78,21 @@ public class OdeVehicleDataFlat extends OdeData {
    private Byte brakesBBA;
    private Byte BrakesAux;
    
-   private Double heading;
+   private BigDecimal heading;
    
    private OdeTransmissionState transmission;
-   private Double speed;
+   private BigDecimal speed;
 
-   private Double steeringAngle;
+   private BigDecimal steeringAngle;
 
    private Integer sizeLength; //(0..16383) -- LSB units are 1 cm
    private Integer sizeWidth;  //(0..1023) -- LSB units are 1 cm
    
    private Byte eventFlag;
 
-   private Double latitude;  // in 1/10th micro degrees
-   private Double longitude; // in 1/10th micro degrees
-   private Double elevation; // in 0.1 meters (decimeters)
+   private BigDecimal latitude;  // in 1/10th micro degrees
+   private BigDecimal longitude; // in 1/10th micro degrees
+   private BigDecimal elevation; // in 0.1 meters (decimeters)
 
    private String tempId; 
 
@@ -99,11 +101,11 @@ public class OdeVehicleDataFlat extends OdeData {
    private Integer day;
    private Integer hour;
    private Integer minute;
-   private Double second;
+   private BigDecimal second;
    private String  dateTime;
 
    private Integer lights;  
-   private Double  throttlePos;      //(0..200) -- LSB units are 0.5 percent
+   private BigDecimal  throttlePos;      //(0..200) -- LSB units are 0.5 percent
    private Integer tirePressureLF;  //(0..1000)
    private Integer tirePressureLR;  //(0..1000)
    private Integer tirePressureRF;  //(0..1000)
@@ -302,7 +304,8 @@ public class OdeVehicleDataFlat extends OdeData {
       setLights(vehstat.lights != null ? vehstat.lights.intValue() : null);
       
       // ThrottlePosition ::= INTEGER (0..200) -- LSB units are 0.5 percent
-      setThrottlePos(vehstat.throttlePos != null ? vehstat.throttlePos.intValue() * 0.5 : null);
+      if (vehstat.throttlePos != null)
+         setThrottlePos(BigDecimal.valueOf(vehstat.throttlePos.intValue() * 5, 1));
       
       setTirePressure(vehstat.tirePressure);
    }
@@ -323,9 +326,10 @@ public class OdeVehicleDataFlat extends OdeData {
       setTirePressureRR(tirePressure.rightRear != null ? tirePressure.rightRear.intValue() : null);
    }
 
-   private void setTempId(TemporaryID tempID2) {
+   private void setTempId(TemporaryID tempID) {
       //TemporaryID ::= OCTET STRING (SIZE(4)) -- a 4 byte string array
-      setTempId(CodecUtils.toHex(tempID2 != null ? tempID2.byteArrayValue() : "".getBytes()));
+      if (tempID != null)
+         setTempId(CodecUtils.toHex(tempID.byteArrayValue()));
    }
 
    private void setPosition(Position3D pos) {
@@ -349,16 +353,16 @@ public class OdeVehicleDataFlat extends OdeData {
       // -- i.e. below the reference ellipsoid, as 0xF001 to 0xFFFF
       // -- unknown as 0xF000
       
-      setLongitude(pos.lat != null ? (double)pos.lat.longValue() / 0.1E-6 : null);
-      setLongitude(pos._long != null ? (double)pos._long.longValue() / 0.1E-6 : null);
+      setLatitude(pos.lat != null ? BigDecimal.valueOf(pos.lat.longValue(), 7) : null);
+      setLongitude(pos._long != null ? BigDecimal.valueOf(pos._long.longValue(), 7) : null);
       if (pos.elevation != null) {
-         int elev = pos.elevation.byteArrayValue()[1] << 8 | pos.elevation.byteArrayValue()[0];
+         int elev = ByteUtils.unsignedByteArrayToInt(pos.elevation.byteArrayValue());
          if (elev == 0xF000) {
             setElevation(null);
          } else if (elev >= 0x0000 && elev <= 0xEFFF) {
-            setElevation((double)elev / 10.0);
+            setElevation(BigDecimal.valueOf(elev, 1));
          } else {
-            setElevation((double)-elev / 10.0);
+            setElevation(BigDecimal.valueOf(-elev, 1));
          }
       } else {
          setElevation(null);
@@ -397,7 +401,7 @@ public class OdeVehicleDataFlat extends OdeData {
          if (angle == 0x7F)
             this.steeringAngle = null;
          else
-            setSteeringAngle((double)angle * 1.5);
+            setSteeringAngle(BigDecimal.valueOf(angle * 15, 1));
       }
    }
 
@@ -405,7 +409,7 @@ public class OdeVehicleDataFlat extends OdeData {
       //    Heading ::= INTEGER (0..28800) 
       //    -- LSB of 0.0125 degrees
       //    -- A range of 0 to 359.9875 degrees
-      setHeading((double)heading2.intValue() * 0.0125 );
+      setHeading(BigDecimal.valueOf(heading2.intValue() * 125, 4));
    }
 
    private void setBreakes(BrakeSystemStatus brakes) {
@@ -431,8 +435,9 @@ public class OdeVehicleDataFlat extends OdeData {
          //            --                      -x- 2 bits
          //            --   }
          
-         // Assuming big-endian, high byte first
-         if ((brakes.byteArrayValue()[1] & 0x08) != 0) {
+         int i = ByteUtils.unsignedByteToInt(brakes.byteArrayValue()[0]);
+         byte b = (byte) (i >> 4);
+         if ( b != 0) {
             //       BrakeAppliedStatus ::= BIT STRING {
             //          allOff      (0), -- B'0000  The condition All Off 
             //          leftFront   (1), -- B'0001  Left Front Active
@@ -440,7 +445,7 @@ public class OdeVehicleDataFlat extends OdeData {
             //          rightFront  (4), -- B'0100  Right Front Active
             //          rightRear   (8)  -- B'1000  Right Rear Active
             //      } -- to fit in 4 bits
-            setBrakesApplied((byte)(brakes.byteArrayValue()[1] >> 4));
+            setBrakesApplied(b);
          }
          //      TractionControlState ::= ENUMERATED {
          //         unavailable (0), -- B'00  Not Equipped with tracton control 
@@ -448,7 +453,10 @@ public class OdeVehicleDataFlat extends OdeData {
          //         off         (1), -- B'01  tracton control is Off
          //         on          (2), -- B'10  tracton control is On (but not Engaged)
          //         engaged     (3)  -- B'11  tracton control is Engaged
-         setBrakesTraction((byte)(brakes.byteArrayValue()[1] & 0x03));
+         b = (byte) (i & 0x03);
+         if ( b != 0) {
+            setBrakesTraction(b);
+         }
          
          //      AntiLockBrakeStatus ::= ENUMERATED {
          //         unavailable (0), -- B'00  Vehicle Not Equipped with ABS 
@@ -458,7 +466,11 @@ public class OdeVehicleDataFlat extends OdeData {
          //         engaged     (3)  -- B'11  Vehicle's ABS is Engaged
          //         } 
          //         -- Encoded as a 2 bit value
-         setBrakesABS((byte)(brakes.byteArrayValue()[0] >> 6));
+         i = ByteUtils.unsignedByteToInt(brakes.byteArrayValue()[1]);
+         b = (byte) (i >> 6);
+         if ( b != 0) {
+            setBrakesABS(b);
+         }
          
          //      StabilityControlStatus ::= ENUMERATED {
          //         unavailable (0), -- B'00  Not Equipped with SC
@@ -467,8 +479,10 @@ public class OdeVehicleDataFlat extends OdeData {
          //         on          (2)  -- B'10  On or active (engaged)
          //         } 
          //         -- Encoded as a 2 bit value
-         setBrakesSCS((byte)((brakes.byteArrayValue()[0] & 0x30) >> 4));
-         
+         b = (byte) ((i >> 4) & 0x03);
+         if ( b != 0) {
+            setBrakesSCS(b);
+         }
          //      BrakeBoostApplied ::= ENUMERATED {
          //         unavailable   (0), -- Vehicle not equipped with brake boost
          //                            -- or brake boost data is unavailable
@@ -476,7 +490,10 @@ public class OdeVehicleDataFlat extends OdeData {
          //         on            (2)  -- Vehicle's brake boost is on (applied)
          //         }
          //         -- Encoded as a 2 bit value
-         setBrakesBBA((byte)((brakes.byteArrayValue()[0] & 0x0C) >> 2));
+         b = (byte) ((i >> 2) & 0x03);
+         if ( b != 0) {
+            setBrakesBBA(b);
+         }
          
          //      AuxiliaryBrakeStatus ::= ENUMERATED {
          //         unavailable (0), -- B'00  Vehicle Not Equipped with Aux Brakes 
@@ -486,7 +503,10 @@ public class OdeVehicleDataFlat extends OdeData {
          //         reserved    (3)  -- B'11 
          //         } 
          //         -- Encoded as a 2 bit value
-         setBrakesAux((byte)(brakes.byteArrayValue()[0] & 0x03));
+         b = (byte) (i & 0x03);
+         if ( b != 0) {
+            setBrakesAux(b);
+         }
       }
    }
 
@@ -506,12 +526,13 @@ public class OdeVehicleDataFlat extends OdeData {
          //   -- the value 2000 shall be used for values greater than 2000     
          //   -- the value -2000 shall be used for values less than -2000  
          //   -- a value of 2001 shall be used for Unavailable
-         int accel = accelSet.byteArrayValue()[6] << 8 | accelSet.byteArrayValue()[5];
+         int accel = ByteUtils.unsignedByteArrayToInt(accelSet.byteArrayValue(), 0, 2);
          if (accel != 2001)
-            setAccelLong((double)accel / 0.01);
-         accel = accelSet.byteArrayValue()[4] << 8 | accelSet.byteArrayValue()[3];
+            setAccelLong(BigDecimal.valueOf(accel, 2));
+         
+         accel = ByteUtils.unsignedByteArrayToInt(accelSet.byteArrayValue(), 2, 2);
          if (accel != 2001)
-            setAccelLat((double)accel / 0.01);
+            setAccelLat(BigDecimal.valueOf(accel, 2));
          
          //VerticalAcceleration ::= INTEGER (-127..127) 
          //    -- LSB units of 0.02 G steps over 
@@ -526,14 +547,14 @@ public class OdeVehicleDataFlat extends OdeData {
          //    -- value -125 for ranges -7.4 to -8.4G
          //    -- value -126 for ranges larger than -8.4G
          //    -- value -127 for unavailable data
-         accel = accelSet.byteArrayValue()[2];
+         accel = ByteUtils.unsignedByteToInt(accelSet.byteArrayValue()[4]);
          if (accel != 127)
-            setAccelLat((double)(accel - 50) * 0.02);
+            setAccelVert(BigDecimal.valueOf((accel - 50) * 2, 2));
          
          //YawRate ::= INTEGER (-32767..32767) 
          //    -- LSB units of 0.01 degrees per second (signed)
-         accel = accelSet.byteArrayValue()[1] << 8 | accelSet.byteArrayValue()[0];
-         setAccelLat((double)accel / 0.01);
+         accel = ByteUtils.unsignedByteArrayToInt(accelSet.byteArrayValue(), 5, 2);
+         setAccellYaw(BigDecimal.valueOf(accel, 2));
 
       }
    }
@@ -580,26 +601,44 @@ public class OdeVehicleDataFlat extends OdeData {
       setDay(dDateTime.getDay().intValue());
       setHour(dDateTime.getHour().intValue());
       setMinute(dDateTime.getMinute().intValue());
-      setSecond((double)(dDateTime.getSecond().intValue())/1000.0);
+      setSecond(BigDecimal.valueOf(dDateTime.getSecond().intValue(), 3));
       this.dateTime = DateTimeUtils.isoDateTime(
             getYear(), getMonth(), getDay(), getHour(), getMinute(), 
             dDateTime.getSecond().intValue()/1000, 
             dDateTime.getSecond().intValue()%1000);
    }
 
+//   TransmissionAndSpeed ::= OCTET STRING (SIZE(2)) 
+//         -- Bits 14~16 to be made up of the data element
+//         -- DE_TransmissionState 
+//         -- Bits 1~13 to be made up of the data element
+//         -- DE_Speed
+//   Speed ::= INTEGER (0..8191) -- Units of 0.02 m/s
+//         -- The value 8191 indicates that 
+//         -- speed is unavailable
+//   TransmissionState ::= ENUMERATED {
+//      neutral         (0), -- Neutral, speed relative to the vehicle alignment
+//      park            (1), -- Park, speed relative the to vehicle alignment
+//      forwardGears    (2), -- Forward gears, speed relative the to vehicle alignment
+//      reverseGears    (3), -- Reverse gears, speed relative the to vehicle alignment 
+//      reserved1       (4),      
+//      reserved2       (5),      
+//      reserved3       (6),      
+//      unavailable     (7), -- not-equipped or unavailable value,
+//                           -- speed relative to the vehicle alignment
+//
+//      ... -- # LOCAL_CONTENT
+//      }
    public void setTransmissionAndSpeed(TransmissionAndSpeed tm) {
       if (tm.getSize() >= 2) {
-         int t = (tm.byteArrayValue()[0] >> 5) & 0x03; //strip off the speed bits
-         setTransmission(OdeTransmissionState.values()[t]);
-         
-         int s = tm.byteArrayValue()[0] & 0x1F; //strip off the transmission bits 
-         s = (s << 8) | tm.byteArrayValue()[1];
-         
-         if (s == 8191)
-            this.speed = null;
-         else
+         int i = ByteUtils.unsignedByteArrayToInt(tm.byteArrayValue());
+         int t = i >> 13;
+         if (t != OdeTransmissionState.unavailable.ordinal())
+            setTransmission(OdeTransmissionState.values()[t]);
+         int s = i & 0x1FFF; 
+         if (s != 8191)
             // speed is received in units of 0.02 m/s
-            setSpeed(s * 0.02);
+            setSpeed(BigDecimal.valueOf(s * 2, 2));
       }
    }
 
@@ -688,35 +727,35 @@ public class OdeVehicleDataFlat extends OdeData {
       EnvFuelEcon = envFuelEcon;
    }
 
-   public Double getAccelLat() {
+   public BigDecimal getAccelLat() {
       return accelLat;
    }
 
-   public void setAccelLat(Double accelLat) {
+   public void setAccelLat(BigDecimal accelLat) {
       this.accelLat = accelLat;
    }
 
-   public Double getAccelLong() {
+   public BigDecimal getAccelLong() {
       return accelLong;
    }
 
-   public void setAccelLong(Double accelLong) {
+   public void setAccelLong(BigDecimal accelLong) {
       this.accelLong = accelLong;
    }
 
-   public Double getAccelVert() {
+   public BigDecimal getAccelVert() {
       return accelVert;
    }
 
-   public void setAccelVert(Double accelVert) {
+   public void setAccelVert(BigDecimal accelVert) {
       this.accelVert = accelVert;
    }
 
-   public Double getAccellYaw() {
+   public BigDecimal getAccellYaw() {
       return accellYaw;
    }
 
-   public void setAccellYaw(Double accellYaw) {
+   public void setAccellYaw(BigDecimal accellYaw) {
       this.accellYaw = accellYaw;
    }
 
@@ -768,11 +807,11 @@ public class OdeVehicleDataFlat extends OdeData {
       BrakesAux = brakesAux;
    }
 
-   public Double getHeading() {
+   public BigDecimal getHeading() { 
       return heading;
    }
 
-   public void setHeading(Double heading) {
+   public void setHeading(BigDecimal heading) {
       this.heading = heading;
    }
 
@@ -784,19 +823,19 @@ public class OdeVehicleDataFlat extends OdeData {
       this.transmission = transmission;
    }
 
-   public Double getSpeed() {
+   public BigDecimal getSpeed() {
       return speed;
    }
 
-   public void setSpeed(Double speed) {
+   public void setSpeed(BigDecimal speed) {
       this.speed = speed;
    }
 
-   public Double getSteeringAngle() {
+   public BigDecimal getSteeringAngle() {
       return steeringAngle;
    }
 
-   public void setSteeringAngle(Double steeringAngle) {
+   public void setSteeringAngle(BigDecimal steeringAngle) {
       this.steeringAngle = steeringAngle;
    }
 
@@ -824,27 +863,27 @@ public class OdeVehicleDataFlat extends OdeData {
       this.eventFlag = eventFlag;
    }
 
-   public Double getLatitude() {
+   public BigDecimal getLatitude() {
       return latitude;
    }
 
-   public void setLatitude(Double latitude) {
+   public void setLatitude(BigDecimal latitude) {
       this.latitude = latitude;
    }
 
-   public Double getLongitude() {
+   public BigDecimal getLongitude() {
       return longitude;
    }
 
-   public void setLongitude(Double longitude) {
+   public void setLongitude(BigDecimal longitude) {
       this.longitude = longitude;
    }
 
-   public Double getElevation() {
+   public BigDecimal getElevation() {
       return elevation;
    }
 
-   public void setElevation(Double elevation) {
+   public void setElevation(BigDecimal elevation) {
       this.elevation = elevation;
    }
 
@@ -896,11 +935,11 @@ public class OdeVehicleDataFlat extends OdeData {
       this.minute = minute;
    }
 
-   public Double getSecond() {
+   public BigDecimal getSecond() {
       return second;
    }
 
-   public void setSecond(Double second) {
+   public void setSecond(BigDecimal second) {
       this.second = second;
    }
 
@@ -912,11 +951,11 @@ public class OdeVehicleDataFlat extends OdeData {
       this.lights = integer;
    }
 
-   public Double getThrottlePos() {
+   public BigDecimal getThrottlePos() {
       return throttlePos;
    }
 
-   public void setThrottlePos(Double throttlePos) {
+   public void setThrottlePos(BigDecimal throttlePos) {
       this.throttlePos = throttlePos;
    }
 

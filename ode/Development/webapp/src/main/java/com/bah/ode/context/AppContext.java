@@ -56,6 +56,7 @@ public class AppContext {
    public static final String DDS_CAS_URL = "dds.cas.url";
    public static final String DDS_CAS_USERNAME = "dds.cas.username";
    public static final String DDS_CAS_PASSWORD = "dds.cas.password";
+   public static final String DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE = "send.latest.vsr.in.vsd.bundle";
 
 	public static final String REQUEST_FILE_DIR = "request.file.dir";
 	public static final String RESPONSE_FILE_DIR = "response.file.dir";
@@ -73,6 +74,7 @@ public class AppContext {
    public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
    
    public static final String ODE_VEH_DATA_FLAT_TOPIC = "ode.veh.data.flat.topic";
+
 
    private static AppContext instance = null;
 
@@ -102,30 +104,33 @@ public class AppContext {
       // For debugging only and running the app on local machine
       // without Spark
       if (!getParam(SPARK_MASTER).isEmpty()) {
-         sparkConf = new SparkConf()
-            .setMaster(getParam(SPARK_MASTER))
-            .setAppName(context.getServletContextName())
-//            // Use Kryo to speed up serialization, recommended as default setup for Spark Streaming
-//            // http://spark.apache.org/docs/1.1.0/tuning.html#data-serialization
-//            .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-//            .set("spark.kryo.registrator", .class.getName);
-            // Enable experimental sort-based shuffle manager that is more memory-efficient in environments with small
-            // executors, such as YARN.  Will most likely become the default in future Spark versions.
-            // https://spark.apache.org/docs/1.1.0/configuration.html#shuffle-behavior
-            .set("spark.shuffle.manager", "SORT")
-//            // Force RDDs generated and persisted by Spark Streaming to be automatically unpersisted from Spark's memory.
-//            // The raw input data received by Spark Streaming is also automatically cleared.  (Setting this to false will
-//            // allow the raw data and persisted RDDs to be accessible outside the streaming application as they will not be
-//            // cleared automatically.  But it comes at the cost of higher memory usage in Spark.)
-//            // http://spark.apache.org/docs/1.1.0/configuration.html#spark-streaming
-//            .set("spark.streaming.unpersist", "true")
-            ;
-         
-         logger.info("Creating Spark Context...");
-         sparkContext = new JavaSparkContext(sparkConf);
-         
-         ssc = createStreamingContext();
-         
+         try {
+            sparkConf = new SparkConf()
+               .setMaster(getParam(SPARK_MASTER))
+               .setAppName(context.getServletContextName())
+   //            // Use Kryo to speed up serialization, recommended as default setup for Spark Streaming
+   //            // http://spark.apache.org/docs/1.1.0/tuning.html#data-serialization
+   //            .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+   //            .set("spark.kryo.registrator", .class.getName);
+               // Enable experimental sort-based shuffle manager that is more memory-efficient in environments with small
+               // executors, such as YARN.  Will most likely become the default in future Spark versions.
+               // https://spark.apache.org/docs/1.1.0/configuration.html#shuffle-behavior
+               .set("spark.shuffle.manager", "SORT")
+   //            // Force RDDs generated and persisted by Spark Streaming to be automatically unpersisted from Spark's memory.
+   //            // The raw input data received by Spark Streaming is also automatically cleared.  (Setting this to false will
+   //            // allow the raw data and persisted RDDs to be accessible outside the streaming application as they will not be
+   //            // cleared automatically.  But it comes at the cost of higher memory usage in Spark.)
+   //            // http://spark.apache.org/docs/1.1.0/configuration.html#spark-streaming
+   //            .set("spark.streaming.unpersist", "true")
+               ;
+            
+            logger.info("Creating Spark Context...");
+            sparkContext = new JavaSparkContext(sparkConf);
+            
+            ssc = createStreamingContext();
+         } catch (Throwable t) {
+            logger.error("Error creating spark contexts.", t);
+         }
       } else {
          logger.info("*** SPARK DISABLED FOR DEBUG ***");
       }

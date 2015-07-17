@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.logging.FileHandler;
@@ -15,6 +16,8 @@ import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.semi.VehSitDataMessage;
 import com.bah.ode.asn.oss.semi.VehSitDataMessage.Bundle;
 import com.bah.ode.asn.oss.semi.VehSitRecord;
+import com.bah.ode.context.AppContext;
+import com.bah.ode.dds.client.ws.DdsMessageHandler;
 import com.bah.ode.model.OdeVehicleDataFlat;
 import com.oss.asn1.Coder;
 
@@ -25,14 +28,18 @@ public class VsdReaderOvdfWriter {
 
    public static void main(String args[]) {
       String filename = new String("message.dat");
+      boolean allVSRs = true;
       // Process command line arguments
       if (args.length > 0) {
          for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-i"))
                filename = new String(args[++i]);
-            else {
+            else if (args[i].equals("-latest")) {
+               allVSRs = false; 
+            } else {
                System.out.println("usage: Reader [ -i <filename>");
                System.out.println("   -i <filename>  ");
+               System.out.println("   -latest  ");
                System.exit(1);
             }
          }
@@ -54,6 +61,8 @@ public class VsdReaderOvdfWriter {
          int numVSDs = 0;
          int numVSRs = 0;
          int numOVDFs = 0;
+         String serialIdPrefix = UUID.randomUUID().toString();
+
          while (scanner.hasNext()) {
             try {
                byte[] pdu = CodecUtils.fromHex(scanner.nextLine());
@@ -62,18 +71,22 @@ public class VsdReaderOvdfWriter {
                      new VehSitDataMessage());
                ins.close();
                
-               Bundle bundle = vsd.getBundle();
-
-               int bSize = bundle.getSize();
-
-               for (int i = 0; i < bSize; i++) {
+               List<OdeVehicleDataFlat> ovdfList;
+               if (allVSRs) {
+                  ovdfList = DdsMessageHandler.getLatestOvdfFromVsd(
+                        vsd, vsd.getBundle().getSize(),
+                        serialIdPrefix);
+               } else {
+                  ovdfList = DdsMessageHandler.getLatestOvdfFromVsd(vsd, 1,
+                        serialIdPrefix);
+               }
+               
+               for (OdeVehicleDataFlat ovdf : ovdfList) {
                   numVSRs++;
-                  VehSitRecord vsr = bundle.get(i);
-                  OdeVehicleDataFlat ovdf = new OdeVehicleDataFlat(UUID
-                        .randomUUID().toString(), vsd.groupID, vsr);
-                  numOVDFs++;
                   ovdfOut.println(JsonUtils.toJson(ovdf));
                }
+
+               numOVDFs++;
                numVSDs++;
             } catch (Exception e) {
                System.out.println("Decode complete.\n" + e.getMessage());
