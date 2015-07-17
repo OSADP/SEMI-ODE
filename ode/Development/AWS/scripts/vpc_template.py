@@ -334,7 +334,7 @@ SecurityGroupIngress(
     FromPort='0',
     GroupId=Ref(pulic_api_sg),
     SourceSecurityGroupId=Ref(hadoop_cluser_sg))
-"""
+
 # TODO NAT Instance Configuration
 amazon_nat_instance = t.add_resource(Instance(
     'amazonNATInstance1',
@@ -346,11 +346,11 @@ amazon_nat_instance = t.add_resource(Instance(
     SecurityGroupIds=[Ref(hadoop_cluser_sg), Ref(pulic_api_sg)],
     SubnetId=Ref(public_api_subnet),
     ))
-"""
+
 
 # Private Route Table needed only if using
 # NAT Instance to provide 'Internet' access
-"""
+
 private_route_table = t.add_resource(
     Route(
         'privateInternetRoute1',
@@ -534,7 +534,7 @@ t.add_output(
                                                                                 # when using Ref(liferay_ec2_instance)
             )]
     )
-"""
+
 
 json_path = os.path.join('..','ODE_cfn_vpc_template.json')
 with open(json_path, 'w') as f:
