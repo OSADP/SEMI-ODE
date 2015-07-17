@@ -88,7 +88,7 @@ public class DdsRequestManager {
          }
          ddsRequest = qryRequest;
       } else {
-         status.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
+         status.setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR)
                .setMessage(
                      String.format(
                            "Invalid request type %s. Valid request types are %s",

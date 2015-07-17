@@ -86,6 +86,10 @@
       <param-value>CV2015</param-value>
    </context-param>
    <context-param>
+      <param-name>send.latest.vsr.in.vsd.bundle</param-name>
+      <param-value>false</param-value>
+   </context-param>
+   <context-param>
       <param-name>request.file.dir</param-name>
       <param-value>requests</param-value>
    </context-param>
