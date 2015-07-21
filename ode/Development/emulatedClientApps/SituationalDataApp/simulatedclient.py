@@ -18,7 +18,7 @@ logger.setLevel(logging.DEBUG)
 # fh.setLevel(logging.DEBUG)
 # create console handler with a higher log level
 ch = logging.StreamHandler(stream=sys.stdout)
-ch.setLevel(logging.DEBUG)
+ch.setLevel(logging.INFO)
 # create formatter and add it to the handlers
 formatter = logging.Formatter('%(asctime)s-%(levelname)s: %(message)s', datefmt="%Y-%m-%dT%H:%M:%S")
 # fh.setFormatter(formatter)
@@ -81,7 +81,7 @@ qry_subs = \
             "nwLon": "-85.94707489013672",
             "seLat": "36.47651531482932",
             "seLon": "-74.53468322753905",
-             "startDate": start_date.strftime(date_format),
+            "startDate": start_date.strftime(date_format),
             "endDate": end_date.strftime(date_format)
 
         },
@@ -109,18 +109,18 @@ def on_message(ws, message):
 
         if msg.get('code'):
             logger.info("ODE Connection Status: %s Message: %s", msg.get('code'), msg.get('message'))
-        if msg.get('serialId'):
+        elif msg.get('serialId'):
             validate_message(msg)
-        if msg.get('payload'):
-            logger.info(msg['payload']['dialogID']['mValue'])
-            logger.debug(msg.keys())
-            validate_message(msg)
-        if msg.get("fullMessage"):
+        # if msg.get('payload'):
+        #     logger.info(msg['payload']['dialogID']['mValue'])
+        #     logger.debug(msg.keys())
+        #     validate_message(msg)
+        elif msg.get("fullMessage"):
             logger.info(msg.get("fullMessage"))
             on_close(ws)
-    except:
+    except Exception as e:
         logger.exception("Unable to convert message to json dictionary object")
-
+        logger.critical("Message Payload: %s\n", message)
         ## validate message to that which is stored locaally
         # iterating over local message  to ensure ordering and values are correct
 
@@ -204,29 +204,45 @@ def extract_json_objects(json_file):
 def validate_message(message):
     """
     Validates JSON result against json file
-    :param message: ODE  Message
+    :param message: ODE  Message in JSON Format
     :return: Result of evaluation in Tuple Form
     """
 
     key = 'dateTime'
     logger.debug("Message value: %s", message[key])
 
+    # Valid  Vehicle Data Keys
+    valid_keys = [u'accelVert', u'sizeWidth', u'elevation', u'hour', u'sizeLength', u'accelLong', u'longitude',\
+                  u'month', u'second', u'accellYaw', u'year', u'latitude', u'heading', u'dateTime', u'speed', \
+                  u'day', u'minute']
+
+    # Search
+    filtered_message  = {k:v for k,v in message.items() if k in valid_keys}
+
     output = [record for record in json_file_data if record[key]== message[key]]
-    logger.debug("Search output: %s",output)
-    # for x in json_file_data:
-    #     logger.debug("JSON Valu: %s", x[key] )
-    #
-    #     if x[key] == message[key]:
-    #         output.append(x)
-    logger.debug(len(output))
-    if output:
-        logger.debug(output[0].keys())
     result = None
     information = None
+    count = len(output)
+    check_counter = 0
+    for data in output
+        filtered_validation_data = {k:v for k,v in data.items() if k in valid_keys}
+        record_delta = set(filtered_validation_data.items()) - set( filtered_message.items())
+        actual_record_delta = set( filtered_message.items()) -  set(filtered_validation_data.items())
+        if len(record_delta) == 0:
+            logger.info("Found Matching Record")
+            logger.debug(data)
+            return (True, None)
+        else:
+            check_counter= check_counter+1
+            if check_counter == count:
 
+                logger.warn("No matching record found. Expected: %s, Actual: %s", list(record_delta), list(actual_record_delta ))
+                logger.debug(record_delta)
+                return (False, record_delta)
 
-    return (result,information)
+    logger.debug(filtered_validation_data)
 
+    return (False, None)
 
 # Command Line Parser Methods
 def get_parser():
@@ -312,7 +328,7 @@ def parse_config_file(file_path):
         config['SUB_TYPE']=config_file.get('ode','subscriptionType')
         config['DATA']=config_file.get('ode','dataType')
         config['VALIDATION_FILE']=config_file.get('ode','validationFile')
-
+        config['INPUT_FILE']=config_file.get('ode','inputFile')
     if config_file.has_section('serviceRegion'):
         if config.get('SUB_TYPE') and config.get('SUB_TYPE')== 'sub':
             for key,value in config_file.items('serviceRegion'):
@@ -369,18 +385,18 @@ def _run_main(config):
     ws.run_forever()
 
 if __name__ == "__main__":
-    #_main() # Parse Command line options
+    _main() # Parse Command line options
 
     # Test harness code
-    parser = get_parser()
-    (options, args) = parser.parse_args()
-    config.update(vars(options))
-    config['CONFIG_FILE']='.//sample_config.ini'
-    if config.get('CONFIG_FILE'):
-        cp = parse_config_file(config['CONFIG_FILE'])
-
-    # config["SUB_TYPE"] = 'qry'  # sub or qry
-    # config["DATA"] = 'veh'  # int, veh, adv, agg
-    # config['HOST'] = "ec2-52-6-61-205.compute-1.amazonaws.com:8080/ode"
-    # common_params['limit'] = "100"
-    _run_main(config)
+    # parser = get_parser()
+    # (options, args) = parser.parse_args()
+    # config.update(vars(options))
+    # config['CONFIG_FILE']='.//sample_config.ini'
+    # if config.get('CONFIG_FILE'):
+    #     cp = parse_config_file(config['CONFIG_FILE'])
+    #
+    # # config["SUB_TYPE"] = 'qry'  # sub or qry
+    # # config["DATA"] = 'veh'  # int, veh, adv, agg
+    # # config['HOST'] = "ec2-52-6-61-205.compute-1.amazonaws.com:8080/ode"
+    # # common_params['limit'] = "100"
+    # _run_main(config)
