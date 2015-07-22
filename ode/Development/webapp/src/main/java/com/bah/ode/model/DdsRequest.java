@@ -16,129 +16,117 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
-import com.bah.ode.util.JsonUtils;
-
 @SuppressWarnings("serial")
-public class DdsRequest extends BaseRequest{
-	
-	public enum Dialog {
+public class DdsRequest extends BaseRequest {
+
+   public enum Dialog {
 		VSD (154),
 		ISD (162),
 		ASD (156),
 		ALL (-1);
-		
-		private final int id;
 
-		Dialog(int id) {
-			this.id = id;
-		}
-		
-		public int getId() {
-			return id;
-		}
-		
-		public static Dialog getById(int id) {
-			Dialog result = null;
-			for (Dialog d : Dialog.values()) {
-				if (d.getId() == id) {
-					result = d;
-					break;
-				}
-			}
-			return result;
-		}
-	}
+      private final int id;
 
-	public enum SystemSubName {
+      Dialog(int id) {
+         this.id = id;
+      }
+
+      public int getId() {
+         return id;
+      }
+
+      public static Dialog getById(int id) {
+         Dialog result = null;
+         for (Dialog d : Dialog.values()) {
+            if (d.getId() == id) {
+               result = d;
+               break;
+            }
+         }
+         return result;
+      }
+   }
+
+	public enum SystemName {
 		SDC ("SDC 2.2"),
 		SDW ("SDW 2.2"),
 		SDPC ("SDPC 2.2");
-		
-		private final String name;
-		
-		SystemSubName (String name) {
-			this.name = name;
-		}
 
-		public String getName() {
-			return name;
-		}
-	}
+      private final String name;
 
-	public enum ResultEncoding {
+      SystemName(String name) {
+         this.name = name;
+      }
+
+      public String getName() {
+         return name;
+      }
+   }
+
+   public enum ResultEncoding {
 		BASE_64 ("base64"),
 		HEX ("hex"),
 		FULL ("full");
-		
-		private final String enc;
-		
-		ResultEncoding (String enc) {
-			this.enc = enc;
-		}
 
-		public String getEnc() {
-			return enc;
-		}
-	}
+      private final String enc;
 
-	private final int vsmType = 31;
-   private String 	systemSubName;
-   private int 		dialogID;
-   private String 	resultEncoding;
-   
-   public static DdsRequest create() {
-   	return new DdsRequest();
+      ResultEncoding(String enc) {
+         this.enc = enc;
+      }
+
+      public String getEnc() {
+         return enc;
+      }
    }
-   
-   public DdsRequest initBase(BaseRequest base) {
-   	super.setNwLat(base.getNwLat())
-   	     .setNwLon(base.getNwLon())
-   	     .setSeLat(base.getSeLat())
-   	     .setSeLon(base.getSeLon());
-   	return this;
+
+   private int dialogID;
+   private String resultEncoding;
+
+   public int getDialogID() {
+      return dialogID;
    }
-   
-	public int getVsmType() {
-		return vsmType;
-	}
 
-	
-	public String getSystemSubName() {
-		return systemSubName;
-	}
+   public DdsRequest setDialogID(int dialogID) {
+      this.dialogID = dialogID;
+      return this;
+   }
 
-	public DdsRequest setSystemSubName(String systemSubName) {
-		this.systemSubName = systemSubName;
-		return this;
-	}
+   public String getResultEncoding() {
+      return resultEncoding;
+   }
 
-	public int getDialogID() {
-		return dialogID;
-	}
+   public DdsRequest setResultEncoding(String resultEncoding) {
+      this.resultEncoding = resultEncoding;
+      return this;
+   }
 
-	public DdsRequest setDialogID(int dialogID) {
-		this.dialogID = dialogID;
-		return this;
-	}
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = prime * result + dialogID;
+      result = prime * result
+            + ((resultEncoding == null) ? 0 : resultEncoding.hashCode());
+      return result;
+   }
 
-	public String getResultEncoding() {
-		return resultEncoding;
-	}
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (!super.equals(obj))
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      DdsRequest other = (DdsRequest) obj;
+      if (dialogID != other.dialogID)
+         return false;
+      if (resultEncoding == null) {
+         if (other.resultEncoding != null)
+            return false;
+      } else if (!resultEncoding.equals(other.resultEncoding))
+         return false;
+      return true;
+   }
 
-	public DdsRequest setResultEncoding(String resultEncoding) {
-		this.resultEncoding = resultEncoding;
-		return this;
-	}
-
-	public String subscriptionRequest() {
-		String json = "SUBSCRIBE:" + JsonUtils.toJson(this);
-		return json;
-	}
-   
-	public String queryRequest() {
-		return "QUERY:" + JsonUtils.toJson(this);
-	}
-   
 }
-
-

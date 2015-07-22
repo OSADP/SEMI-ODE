@@ -44,9 +44,7 @@ public class HttpClientFactoryTest {
       try {
          HttpClientFactory.build(sslContext);
          new Verifications() {{
-            new SSLConnectionSocketFactory(
-                  withAny(sslContext), new String[] { "TLSv1" }, null,
-                  SSLConnectionSocketFactory.getDefaultHostnameVerifier()); times=1;
+            new SSLConnectionSocketFactory(withAny(sslContext)); times=1;
          }};
       } catch (HttpException e) {
          fail(e.toString());
@@ -61,9 +59,7 @@ public class HttpClientFactoryTest {
          factory.createHttpClient();
 
          new Verifications() {{
-            new SSLConnectionSocketFactory(
-                  withAny(sslContext), new String[] { "TLSv1" }, null,
-                  SSLConnectionSocketFactory.getDefaultHostnameVerifier()); times=1;
+            new SSLConnectionSocketFactory(withAny(sslContext)); times=1;
          }};
       } catch (Exception e) {
          fail(e.toString());

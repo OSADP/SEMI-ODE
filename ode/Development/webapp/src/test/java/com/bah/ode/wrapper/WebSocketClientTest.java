@@ -106,14 +106,14 @@ public class WebSocketClientTest {
       String propValue = "propValue";
       
       List<Class<? extends WebSocketMessageDecoder<?>>> decoders = 
-              new ArrayList<Class<? extends WebSocketMessageDecoder<?>>>();
-        decoders.add(String2IntegerDecoder.class);
-        
-        WebSocketClient<Integer> wsClient = new WebSocketClient<Integer>(
-              "http://host:port/path", sslContext, 
-              Collections.singletonMap(propName, (Object)propValue), 
-              Collections.singletonMap("headerKey", Collections.singletonMap("headerName", "headerValue")), 
-              handler, decoders);
+            new ArrayList<Class<? extends WebSocketMessageDecoder<?>>>();
+      decoders.add(String2IntegerDecoder.class);
+      
+      WebSocketClient<Integer> wsClient = new WebSocketClient<Integer>(
+            "http://host:port/path", sslContext, 
+            Collections.singletonMap(propName, (Object)propValue), 
+            Collections.singletonMap("headerKey", Collections.singletonMap("headerName", "headerValue")), 
+            handler, decoders);
       
       assertEquals(2, wsClient.getWsConfig().getUserProperties().size());
       Object actualContext = wsClient.getWsConfig().getUserProperties().get("org.apache.tomcat.websocket.SSL_CONTEXT");
