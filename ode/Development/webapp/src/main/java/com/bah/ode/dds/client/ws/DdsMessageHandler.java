@@ -16,57 +16,120 @@
  *******************************************************************************/
 package com.bah.ode.dds.client.ws;
 
-import javax.websocket.Session;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.asn.oss.semi.GroupID;
+import com.bah.ode.asn.oss.semi.VehSitDataMessage;
+import com.bah.ode.asn.oss.semi.VehSitDataMessage.Bundle;
+import com.bah.ode.asn.oss.semi.VehSitRecord;
+import com.bah.ode.context.AppContext;
 import com.bah.ode.model.DdsData;
-import com.bah.ode.util.JsonUtils;
+import com.bah.ode.model.OdeAdvisoryDataRaw;
+import com.bah.ode.model.OdeFullMessage;
+import com.bah.ode.model.OdeIntersectionDataRaw;
+import com.bah.ode.model.OdeMetadata;
+import com.bah.ode.model.OdeMsgAndMetadata;
+import com.bah.ode.model.OdeVehicleDataFlat;
+import com.bah.ode.wrapper.MQProducer;
 import com.bah.ode.wrapper.WebSocketMessageHandler;
 
 public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
 
    private static final Logger logger = LoggerFactory
          .getLogger(DdsMessageHandler.class);
+   
+   private UUID uuid;  
+   private Long seqNum;
 
-   protected Session clientApp;
-
-   public DdsMessageHandler(Session clientApp) {
-      this.clientApp = clientApp;
+   private MQProducer<String, String> producer;
+   private OdeMetadata metadata;
+   private static AppContext appContext = AppContext.getInstance(); 
+   
+   public DdsMessageHandler(OdeMetadata metadata) {
+      this.producer = new MQProducer<String, String>(
+                  AppContext.getInstance().getParam(
+                        AppContext.KAFKA_METADATA_BROKER_LIST));
+      this.metadata = metadata;
+      this.uuid = UUID.randomUUID();
+      this.seqNum = new Long(0);
    }
 
    @Override
    public void onMessage(DdsData ddsData) {
-      if (clientApp != null && ddsData.haveData()) {
-         int retryCount = 3;
-
-         while (retryCount-- > 0) {
-            try {
-               if (ddsData.getIsd() != null)
-                  clientApp.getBasicRemote().sendText(JsonUtils.toJson(ddsData.getIsd()));
-               else if (ddsData.getVsd() != null)
-                  clientApp.getBasicRemote().sendText(JsonUtils.toJson(ddsData.getVsd()));
-               else if (ddsData.getAsd() != null)
-                  clientApp.getBasicRemote().sendText(JsonUtils.toJson(ddsData.getAsd()));
-               else
-                  clientApp.getBasicRemote().sendText(JsonUtils.toJson(ddsData.getFullMessage()));
-
-               break;
-            } catch (Exception e) {
-               if (retryCount > 0) {
-                  logger.warn("Error sending message to remote end-point. Retrying... count "
-                        + retryCount);
+      try {
+         if (producer != null && ddsData.haveData()) {
+            OdeMsgAndMetadata omam = new OdeMsgAndMetadata();
+            omam.setMetadata(metadata);
+            omam.setKey(metadata.getOutputTopic().getName());
+            
+            String topicName = metadata.getInputTopic().getName();
+            if (ddsData.getVsd() != null) {
+               VehSitDataMessage vsd = ddsData.getVsd();
+               List<OdeVehicleDataFlat> ovdfList;
+               if (Boolean.valueOf(
+                     appContext.getParam(
+                           AppContext.DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE))) {
+                  ovdfList = getLatestOvdfFromVsd(vsd, 1,
+                        uuid.toString() + "." + seqNum++);
                } else {
-                  logger.error("Error sending message to remote end-point. ", e);
+                  ovdfList = getLatestOvdfFromVsd(
+                        vsd, vsd.getBundle().getSize(),
+                        uuid.toString() + "." + seqNum++);
                }
-            } finally {
+               
+               for (OdeVehicleDataFlat ovdf : ovdfList) {
+                  omam.setPayload(ovdf);
+                  producer.send(topicName, metadata.getOutputTopic().getName(),
+                        omam.toJson());
+               }
+            } else { 
+               if (ddsData.getIsd() != null) {
+                  omam.setPayload(new OdeIntersectionDataRaw(ddsData.getIsd()));
+               } else if (ddsData.getAsd() != null) {
+                  omam.setPayload(new OdeAdvisoryDataRaw(ddsData.getAsd()));
+               } else {
+                  omam.setPayload(new OdeFullMessage(ddsData.getFullMessage()));
+               }
+               producer.send(topicName, metadata.getOutputTopic().getName(),
+                     omam.toJson());
             }
          }
+      } catch (Exception e) {
+         logger.error("Error handling DDS message. ", e);
+      } finally {
       }
    }
 
-   public void disable() {
-      clientApp = null;
+   public static List<OdeVehicleDataFlat> getLatestOvdfFromVsd(
+         VehSitDataMessage vsd, int count, String serialIdPrefix) {
+      ArrayList<OdeVehicleDataFlat> ovdfList = new ArrayList<OdeVehicleDataFlat>();
+      Bundle bundle = vsd.getBundle();
+      GroupID groupId = vsd.groupID;
+      int bSize = bundle.getSize();
+      int id = 0;
+      //data in the bundle appear to be in reverse chronological order
+      if (bSize > 0 && count > 0 && count <= bSize) {
+         for (int i = count-1; i >= 0; i--) {
+            VehSitRecord vsr = bundle.get(i);
+            OdeVehicleDataFlat ovdf = new OdeVehicleDataFlat(
+                  serialIdPrefix + "." +id, 
+                  groupId, vsr);
+            ovdfList.add(ovdf);
+         }
+      }
+      return ovdfList;
    }
+
+   public void disable() {
+      if (null != producer) {
+         producer.shutDown();
+         producer = null;
+      }
+   }
+
 }

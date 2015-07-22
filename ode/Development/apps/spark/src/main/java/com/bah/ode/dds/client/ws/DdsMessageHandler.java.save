@@ -1,0 +1,50 @@
+/*******************************************************************************
+ * Copyright (c) 2015 US DOT - Joint Program Office
+ *
+ * The Government has unlimited rights to all documents/material produced under 
+ * this task order. All documents and materials, to include the source code of 
+ * any software produced under this contract, shall be Government owned and the 
+ * property of the Government with all rights and privileges of ownership/copyright 
+ * belonging exclusively to the Government. These documents and materials may 
+ * not be used or sold by the Contractor without written permission from the CO.
+ * All materials supplied to the Government shall be the sole property of the 
+ * Government and may not be used for any other purpose. This right does not 
+ * abrogate any other Government rights.
+ *
+ * Contributors:
+ *     Booz | Allen | Hamilton - initial API and implementation
+ *******************************************************************************/
+package com.bah.ode.dds.client.ws;
+
+import org.apache.spark.streaming.receiver.Receiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.bah.ode.model.DdsData;
+import com.bah.ode.wrapper.WebSocketMessageHandler;
+
+public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
+
+   private static final Logger logger = LoggerFactory
+         .getLogger(DdsMessageHandler.class);
+
+   protected Receiver<DdsData> receiver;
+
+   public DdsMessageHandler(Receiver<DdsData> receiver) {
+      this.receiver = receiver;
+      logger.info("DDS Message Handler Created.");
+   }
+
+   @Override
+   public void onMessage(DdsData ddsData) {
+      if (receiver != null) {
+         receiver.store(ddsData);
+      }
+   }
+
+   public void disable() {
+      receiver.stop("Stop Streaming Requested by User");
+      receiver = null;
+      logger.info("DDS Message Handler Disabled by User.");
+   }
+}

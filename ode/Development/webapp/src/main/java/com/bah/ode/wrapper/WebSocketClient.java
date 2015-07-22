@@ -302,9 +302,14 @@ public class WebSocketClient<T> extends Endpoint {
     *
     * @param message
     *           - the message to be sent
+    * @throws WebSocketException 
     */
-   public void send(String message) {
-      this.wsSession.getAsyncRemote().sendText(message);
+   public void send(String message) throws WebSocketException {
+      try {
+         this.wsSession.getBasicRemote().sendText(message);
+      } catch (IOException e) {
+         throw new WebSocketException("Error sending message", e);
+      }
    }
 
    /**

@@ -1,0 +1,39 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>dot.bah.ode</groupId>
+  <artifactId>ode-parent</artifactId>
+  <packaging>pom</packaging>
+
+  <name>ode</name>
+  <version>1.0</version>
+  
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>dot.bah.ode</groupId>
+        <artifactId>ode-commons</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <type>jar</type>
+        <scope>runtime</scope>
+      </dependency>
+    <!--
+      <dependency>
+        <groupId>dot.bah.ode</groupId>
+        <artifactId>spark-app</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <type>jar</type>
+        <scope>runtime</scope>
+      </dependency>
+    -->
+      <dependency>
+        <groupId>dot.bah.ode</groupId>
+        <artifactId>ode</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <type>war</type>
+        <scope>runtime</scope>
+      </dependency>
+ 
+    </dependencies>
+  </dependencyManagement>
+</project>

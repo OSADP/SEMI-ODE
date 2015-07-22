@@ -16,10 +16,50 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
+import java.util.ArrayList;
+
 public enum OdeDataType {
-	VehicleData,
-	IntersectionData,
-	MAPData,
-	SPaTData,
-	AggregateData
+   VehicleData("veh"), 
+   IntersectionData("int"), 
+   MAPData("map"), 
+   SPaTData("spat"), 
+   AggregateData("agg"),
+   WeatherData("weather");
+   
+   private static final String shortNames = shortNames();
+
+   private final String shortName;
+
+   private OdeDataType(String shortName) {
+      this.shortName = shortName;
+   }
+
+   public String getShortName() {
+      return shortName;
+   }
+   
+   public static OdeDataType getByShortName(String shortName) {
+      OdeDataType result = null;
+      
+      for (OdeDataType value : OdeDataType.values()) {
+         if (shortName.equals(value.getShortName())) {
+            result = value;
+            break;
+         }
+      }
+      return result;
+   }
+   
+   public static String shortNames() {
+      if (shortNames == null) {
+         ArrayList<String> result = new ArrayList<String>();
+         
+         for (OdeDataType value : OdeDataType.values()) {
+            result.add(value.getShortName());
+         }
+         
+         return result.toArray().toString();
+      }
+      return shortNames;
+   }
 }

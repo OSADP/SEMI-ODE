@@ -115,8 +115,8 @@ public class OssReaderJsonWriter {
 										size,
 										fund.getVsmEventFlag());
 						numPDUs++;
-						jsonOut.println(vsd.toJson());
-//						jsonOut.println(gson.toJson(vsr));
+//						jsonOut.println(vsd.toJson());
+						jsonOut.println(gson.toJson(vsr));
 //						jsonOut.println(mapper.writeValueAsString(vsr));
 						if (trace)
 							printer.print(value, printOut);

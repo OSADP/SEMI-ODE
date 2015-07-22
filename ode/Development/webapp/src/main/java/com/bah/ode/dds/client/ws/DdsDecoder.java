@@ -60,6 +60,8 @@ public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
       DdsData ddsData = new DdsData();
 
       try {
+         ddsData.setFullMessage(message);
+         
          Tag tag = getResponseTag(message);
          if (tag != null) {
             ddsData.setControlMessage(new ControlMessage().setTag(tag));
@@ -77,8 +79,6 @@ public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
                   logger.error("Error processing Start Tag", e);
                }
             }
-         } else {
-            ddsData.setFullMessage(message);
          }
       } catch (Exception e) {
          logger.error("Error decoding ", e);
