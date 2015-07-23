@@ -102,7 +102,7 @@ def on_message(ws, message):
     """
 
     # determine message and act accordingly
-    logger.debug(message)
+    logger.debug("Message Value: %s", message)
     #append_to_file(message)
     try:
         msg = json.loads(message)
@@ -117,7 +117,7 @@ def on_message(ws, message):
         #     validate_message(msg)
         elif msg.get("fullMessage"):
             logger.info(msg.get("fullMessage"))
-            on_close(ws)
+#            on_close(ws)
     except Exception as e:
         logger.exception("Unable to convert message to json dictionary object")
         logger.critical("Message Payload: %s\n", message)
@@ -140,7 +140,7 @@ def on_error(ws, error):
 
 def on_close(ws):
     ws.close()
-    logger.info('Closing Web Socket')
+    logger.info('Closing Web Socket via "OnCLose" Function')
     sys.exit()
 
 
@@ -152,7 +152,7 @@ def on_open2(ws):
     :param ws:
     :return:
     """
-    pause = 30
+    pause = 15
 
     def run(*args):
         logger.debug(json.dumps(msg))
@@ -160,7 +160,7 @@ def on_open2(ws):
         ws.send(json.dumps(msg))
         time.sleep(pause)
         #ws.close()
-        logger.info ("On_open Run thread stopping...")
+        logger.debug ("On_open Run thread stopping...")
 
     thread.start_new_thread(run, ())
 
@@ -208,12 +208,12 @@ def validate_message(message):
     :return: Result of evaluation in Tuple Form
     """
 
-    key = 'dateTime'
+    key = 'tempId'
     logger.debug("Message value: %s", message[key])
 
     # Valid  Vehicle Data Keys
     valid_keys = [u'accelVert', u'sizeWidth', u'elevation', u'hour', u'sizeLength', u'accelLong', u'longitude',\
-                  u'month', u'second', u'accellYaw', u'year', u'latitude', u'heading', u'dateTime', u'speed', \
+                  u'month', u'second', u'accellYaw', u'year', u'latitude', u'heading', u'speed', u'tempId', \
                   u'day', u'minute']
 
     # Search
@@ -224,11 +224,11 @@ def validate_message(message):
     information = None
     count = len(output)
     check_counter = 0
-    for data in output
+    for data in output:
         filtered_validation_data = {k:v for k,v in data.items() if k in valid_keys}
         record_delta = set(filtered_validation_data.items()) - set( filtered_message.items())
         actual_record_delta = set( filtered_message.items()) -  set(filtered_validation_data.items())
-        if len(record_delta) == 0:
+        if len(record_delta) == 0 and len(actual_record_delta) == 0:
             logger.info("Found Matching Record")
             logger.debug(data)
             return (True, None)
@@ -240,9 +240,26 @@ def validate_message(message):
                 logger.debug(record_delta)
                 return (False, record_delta)
 
-    logger.debug(filtered_validation_data)
+        logger.debug(filtered_validation_data)
 
     return (False, None)
+
+def validate_datetime():
+    """
+    Validates that the dateTime for a query result is within the requested
+     start and end time interval.
+    :return:
+    """
+    pass
+
+
+def validate_location():
+    """
+    Validates that the dateTime for a query result is within the requested
+     start and end time interval.
+    :return:
+    """
+    pass
 
 # Command Line Parser Methods
 def get_parser():
@@ -338,11 +355,13 @@ def parse_config_file(file_path):
             for key,value in config_file.items('serviceRegion'):
                 print (key,value)
                 qry_subs[config['DATA']][key]=value
-
-    if config_file.has_section('queryParams'):
+            qry_subs[config['DATA']]['startDate']=config_file.get('queryParams','startDate')
+            qry_subs[config['DATA']]['endDate']=config_file.get('queryParams','endDate')
+    if config_file.has_section('queryParams') and config.get('SUB_TYPE')== 'qry':
         common_params['limit']=config_file.get('queryParams','limit')
         common_params['skip']=config_file.get('queryParams','skip')
-
+        qry_subs[config['DATA']]['startDate']=config_file.get('queryParams','startDate')
+        qry_subs[config['DATA']]['endDate']=config_file.get('queryParams','endDate')
 
     return config_file
 
@@ -385,18 +404,4 @@ def _run_main(config):
     ws.run_forever()
 
 if __name__ == "__main__":
-    _main() # Parse Command line options
-
-    # Test harness code
-    # parser = get_parser()
-    # (options, args) = parser.parse_args()
-    # config.update(vars(options))
-    # config['CONFIG_FILE']='.//sample_config.ini'
-    # if config.get('CONFIG_FILE'):
-    #     cp = parse_config_file(config['CONFIG_FILE'])
-    #
-    # # config["SUB_TYPE"] = 'qry'  # sub or qry
-    # # config["DATA"] = 'veh'  # int, veh, adv, agg
-    # # config['HOST'] = "ec2-52-6-61-205.compute-1.amazonaws.com:8080/ode"
-    # # common_params['limit'] = "100"
-    # _run_main(config)
+    _main() # Parse Command line options and run program
