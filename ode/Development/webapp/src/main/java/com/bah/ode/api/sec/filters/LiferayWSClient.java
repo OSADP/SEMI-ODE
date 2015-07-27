@@ -33,12 +33,11 @@ public class LiferayWSClient {
 	/**
 	 * Authenticates user via username and password. Successful  authentication will 
 	 * return the user ID.<br> Unsuccessful authentication will throw NumberFormat Exception 
-	 * @param userEmailAddress
-	 * @param password
+	 * @param userEmailAddress - user's email address
+	 * @param password - user's account password
 	 * @return User ID of the user's Email address
-	 * @throws NumberFormatException
 	 */
-	public long getUserIdByEmail(String userEmailAddress, String password) throws NumberFormatException
+	public long getUserIdByEmail(String userEmailAddress, String password)
 	 {
 		//logger.debug("Authenticating user: {}", userEmailAddress);
 		
@@ -57,10 +56,10 @@ public class LiferayWSClient {
 	
 	 /**
 	  * Returns list of JSON objects describing the User Roles of the User
-	  * @param user
-	  * @param pass
+	  * @param user - username (usually email address)
+	  * @param pass - user password
 	  * @param userId User Id that we wish to know the roles. 
-	  * @return
+	  * @return User roles
 	  */
 	 public String getUserRolesbyId(String user, String pass, long userId){
 		 	

@@ -17,10 +17,9 @@ import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeQryRequest;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
-import com.bah.ode.server.WebSocketServer.WebSocketServerException;
 import com.bah.ode.wrapper.WebSocketClient;
 
-public class DdsRequestManager {
+public class DdsRequestManager extends DataRequestManager {
    private static Logger logger = 
          LoggerFactory.getLogger(DdsRequestManager.class);
 
@@ -31,45 +30,15 @@ public class DdsRequestManager {
    private static OutboundTopicManagerSingleton otms = 
          OutboundTopicManagerSingleton.getInstance();
    
-   private BaseTopicManager topicManager;
    private WebSocketClient<?> ddsClient;
-   private OdeMetadata metadata;
-   
-   
    
    public DdsRequestManager(OdeDataType dataType, OdeMetadata metadata) {
-      if (OdeRequestManager.isPassThrough(dataType))
-         this.topicManager = otms;
-      else
-         this.topicManager = itms;
-      this.metadata = metadata;
-      this.metadata.setInputTopic(topicManager.getOrCreateTopic(
-            metadata.getInputTopic().getName()));
+      super(dataType, metadata, itms, otms);
    }
 
-
-   public int addNewSubscriber() {
-      return topicManager.addSubscriber(metadata.getInputTopic().getName());
-   }
-
-   public int removeSubscriber() throws DdsRequestManagerException {
-      int requestersRmaining = 
-            topicManager.removeSubscriber(metadata.getInputTopic().getName());
-      if (ddsClient != null && requestersRmaining <= 0) {
-         try {
-            ddsClient.close();
-         } catch (Exception e) {
-            throw new DdsRequestManagerException("Error closing DDS Client.", e); 
-         }
-         ddsClient = null;
-      }
-      
-
-      return requestersRmaining;
-   }
 
    public DdsRequest buildDdsRequest(OdeRequest odeRequest)
-               throws WebSocketServerException, OdeException {
+               throws DdsRequestManagerException, OdeException {
       OdeStatus status = new OdeStatus();
       DdsRequest ddsRequest;
       OdeRequestType requestType = odeRequest.getRequestType();
@@ -95,7 +64,7 @@ public class DdsRequestManager {
                            requestType.getShortName(),
                            OdeRequestType.shortNames()));
          logger.error(status.toString());
-         throw new WebSocketServerException(status.toString());
+         throw new DdsRequestManagerException(status.toString());
       }
 
       ddsRequest
