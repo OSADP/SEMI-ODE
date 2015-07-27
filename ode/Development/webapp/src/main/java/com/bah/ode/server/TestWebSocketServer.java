@@ -142,11 +142,9 @@ public class TestWebSocketServer {
                OdeVehicleDataFlat ovdf = 
                      (OdeVehicleDataFlat) JsonUtils.fromJson(
                            message, OdeVehicleDataFlat.class);
-               if (producer != null && 
-                     requestId.equals(metadata.getInputTopic().getName())) {
+               if (producer != null) {
                   omam.setPayload(ovdf);
-                  producer.send(requestId, metadata.getOutputTopic().getName(),
-                        omam.toJson());
+                  producer.send(requestId, requestId, omam.toJson());
                }
                
                //FOR TEST ONLY
