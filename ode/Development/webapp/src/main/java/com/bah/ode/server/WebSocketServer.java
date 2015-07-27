@@ -17,6 +17,8 @@
 package com.bah.ode.server;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
@@ -31,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.api.ws.OdeStatus;
+import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeRequest;
@@ -47,10 +50,17 @@ public class WebSocketServer {
    private static Logger logger = LoggerFactory
          .getLogger(WebSocketServer.class);
    
+   private static Map<String, DataSourceConnector> connectors = 
+         new HashMap<String, DataSourceConnector>();
+   
    private DataSourceConnector connector;
    private OdeDataDistributor distributor;
    private OdeRequest odeRequest;
+   
 
+   public static DataSourceConnector getConnector(String requestId) {
+      return connectors.get(requestId);
+   }
    /**
     * Allows us to intercept the creation of a new session. The session class
     * allows us to send data to the user. In the method onOpen, we'll let the
@@ -145,37 +155,41 @@ public class WebSocketServer {
    public void onMessage(Session session, String message, boolean last,
          @PathParam("rtype") String rtype, @PathParam("dtype") String dtype) {
       String sessionId = session.getId();
-      logger.info("Request Received on Session ID {}: {}", sessionId, message);
+      logger.info("Message Received on Session ID {}: {}", sessionId, message);
 
-      OdeStatus msg = new OdeStatus();
+      OdeStatus status = new OdeStatus();
       try {
-         odeRequest = OdeRequestManager.buildOdeRequest(
-               rtype, dtype, message);
+         if (odeRequest == null)
+            odeRequest = OdeRequestManager.buildOdeRequest(rtype, dtype, message);
          
-         String topicName = OdeRequestManager.buildTopicName(odeRequest);
+         String requestId = OdeRequestManager.buildRequestId(odeRequest);
          
          // Does a topic already existing for this request?
-         MQTopic clientTopic = OdeRequestManager.getTopic(topicName);
+         MQTopic clientTopic = OdeRequestManager.getTopic(requestId);
          if (clientTopic == null) {
-            logger.info("Creating new topic: {}", topicName);
+            logger.info("Creating new request ID: {}", requestId);
             // No client topic exists, create a new one
-            clientTopic = OdeRequestManager.getOrCreateTopic(topicName);
+            clientTopic = OdeRequestManager.getOrCreateTopic(requestId);
             
-            if (connector == null)
-               connector = new DataSourceConnector();
+            if (connector == null) {
+               connector = new DataSourceConnector(clientTopic);
+               connectors.put(requestId, connector);
+               
+               //FOR TEST ONLY
+               if (AppContext.loopbackTest()) {
+                  connector.setClientSession(session);
+               }
+
+            }
             
-            connector.sendDataRequest(odeRequest, clientTopic);
-            
-            msg.setCode(OdeStatus.Code.SUCCESS);
-            msg.setMessage("DDS Connection Established.");
-            session.getAsyncRemote().sendText(msg.toJson());
+            connector.sendDataRequest(odeRequest);
             
             launchNewDistributor(session, clientTopic);
-            OdeRequestManager.addSubscriber(topicName, odeRequest.getDataType());
+            OdeRequestManager.addSubscriber(requestId, odeRequest.getDataType());
+            logger.info("DDS Connection Established for request ID {}.", requestId);
          } else {
             // Topic already exists by this or another subscriber
             if (distributor != null) {
-               logger.info("Tapping into existing topic {} using existing distributor", topicName);
                if (!distributor.getClientTopic().getName().equals(clientTopic.getName())) {
                   /* 
                    * This subscriber is subscribing to a new topic. Remove the old
@@ -186,22 +200,25 @@ public class WebSocketServer {
                         distributor.getClientTopic().getName(), 
                         odeRequest.getDataType());
                   
-                  OdeRequestManager.addSubscriber(topicName, 
+                  OdeRequestManager.addSubscriber(requestId, 
                         odeRequest.getDataType());
                   distributor.setClientTopic(clientTopic);
+                  logger.info(String.format("Tapped into existing request %s using existing distributor", requestId));
                }
             } else {
-               logger.info("Tapping into existing topic {}", topicName);
                launchNewDistributor(session, clientTopic);
-               OdeRequestManager.addSubscriber(topicName, odeRequest.getDataType());
+               OdeRequestManager.addSubscriber(requestId, odeRequest.getDataType());
+               logger.info(String.format("Tapped into existing request %s using a new distributor", requestId));
             }
          }         
+         status.setCode(OdeStatus.Code.SUCCESS);
+         status.setMessage(requestId);
       } catch (Exception ex) {
-         OdeStatus status = new OdeStatus()
-            .setCode(OdeStatus.Code.FAILURE)
+         status.setCode(OdeStatus.Code.FAILURE)
             .setMessage(String.format("Error processing request %s.",
                   session.getRequestURI()));
          logger.error(status.toString(), ex);
+      } finally {
          try {
             session.getBasicRemote().sendText(status.toString());
          } catch (IOException e) {
@@ -214,7 +231,7 @@ public class WebSocketServer {
          Session session, MQTopic clientTopic) {
       
       logger.info("Launching new Distributor for client session {} client topic {}",
-            session, clientTopic);
+            session.getId(), clientTopic);
       
       // Start the processor to receive data from the client topic and 
       // send it to client session
@@ -242,8 +259,10 @@ public class WebSocketServer {
             logger.info("Reason: {}", reason.getCloseCode());
 
          // Do this after rqstMgr.requesterDisconnected()
-         if (connector != null)
+         if (connector != null) {
             connector.cancelDataRequest();
+            connectors.remove(connector.getOutputTopic().getName());
+         }
          
          if (distributor != null) {
             distributor.shutDown();

@@ -122,7 +122,7 @@ h2 {
                }
          }
       
-           	   log(event.data);
+         log(event.data);
       };
       ws.onclose = function (event) {
                 setConnectionState(false, false);
@@ -190,9 +190,8 @@ h2 {
 </head>
 <body>
    <h1>ODE Subscription</h1>
-   <p>
-      <a href="query.xhtml">ODE Query</a>
-   </p>
+   <p><a href="query.xhtml">ODE Query</a></p>
+   <p><a href="deposit.xhtml">ODE Deposit</a></p>
    <div class="noscript">
       <h2 style="color: #ff0000">Seems your browser doesn't support
          Javascript! Websockets rely on Javascript being enabled. Please
@@ -203,18 +202,23 @@ h2 {
          <div id="selectData">
             <hr />
             <h2>Select Data:</h2>
-            <br /> <input id="vsd" type="radio" name="group1"
-               value="/ode/api/ws/sub/veh"
-               onclick="updateRequestUri(this.value);" /> <label
-               for="vsd">Vehicles</label> <br /> <input id="isd"
-               type="radio" name="group1" value="/ode/api/ws/sub/int"
-               onclick="updateRequestUri(this.value);" /> <label
-               for="isd">Intersections</label><br /> <input id="agg"
-               type="radio" name="group1" value="/ode/api/ws/sub/agg"
-               onclick="updateRequestUri(this.value);" /> <label
-               for="agg">Aggregates</label> <br /> <input
-               id="requestUri" type="text" size="40"
-               style="width: 350px" />
+            <br /><input id="vsd" type="radio" name="group1" 
+                     value="/ode/api/ws/sub/veh" 
+                     onclick="updateRequestUri(this.value);" />
+                     <label for="vsd">Vehicles</label>
+            <br /> <input id="isd" type="radio" name="group1"
+                     value="/ode/api/ws/sub/int"
+                     onclick="updateRequestUri(this.value);" />
+                     <label for="isd">Intersections</label>
+            <br /> <input id="agg" type="radio" name="group1" 
+                     value="/ode/api/ws/sub/agg"
+                     onclick="updateRequestUri(this.value);" />
+                     <label for="agg">Aggregates</label>
+            <br /> <input id="test" type="radio" name="group1" 
+                     value="/ode/api/ws/tst/veh"
+                     onclick="updateRequestUri(this.value);" />
+                     <label for="agg">Test Vehicle Data</label>
+            <br /> <input id="requestUri" type="text" size="40" style="width: 350px" />
          </div>
       </div>
       <div id="middle-container">

@@ -33,29 +33,31 @@ public class OdeDataDistributor implements Runnable {
       this.clientSession = clientSession;
       this.clientTopic = outboundTopic;
       this.groupId = clientSession.getId(); 
-      
-      this.consumerGroup = new MQConsumerGroup<String, String, String> (
-            appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
-            this.groupId,
-            this.clientTopic,
-            new StringDecoder(null),
-            new StringDecoder(null),
-            new DataProcessor<String, String>() {
 
-               @Override
-               public Future<String> process(String data)
-                     throws DataProcessorException {
-                  try {
-                     JsonNode jsonObject = JsonUtils.toJsonNode(data);
-                     JsonNode payload = jsonObject.get("payload");
-                     clientSession.getBasicRemote().sendText(payload.toString());
-                  } catch (Exception e) {
-                     throw new DataProcessorException("Error processing data.", e);
+      if (!AppContext.loopbackTest()) {
+         this.consumerGroup = new MQConsumerGroup<String, String, String> (
+               appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
+               this.groupId,
+               this.clientTopic,
+               new StringDecoder(null),
+               new StringDecoder(null),
+               new DataProcessor<String, String>() {
+   
+                  @Override
+                  public Future<String> process(String data)
+                        throws DataProcessorException {
+                     try {
+                        JsonNode jsonObject = JsonUtils.toJsonNode(data);
+                        JsonNode payload = jsonObject.get("payload");
+                        clientSession.getBasicRemote().sendText(payload.toString());
+                     } catch (Exception e) {
+                        throw new DataProcessorException("Error processing data.", e);
+                     }
+                     return null;
                   }
-                  return null;
-               }
-
-            });
+   
+               });
+      }
    }
 
    public Session getClientSession() {
@@ -83,15 +85,16 @@ public class OdeDataDistributor implements Runnable {
       try {
          logger.info("Starting {} consumer threads in group {} for topic {} ...", 
                clientTopic.getPartitions(), groupId, clientTopic.getName());
-         
-         consumerGroup.consume();
+         if (consumerGroup != null)
+            consumerGroup.consume();
       } catch (Exception e) {
          logger.error("Error processing response.", e);
       }
    }
 
    public void shutDown() {
-      consumerGroup.shutDown();
+      if (consumerGroup != null)
+         consumerGroup.shutDown();
    }
 
 }

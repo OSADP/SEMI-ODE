@@ -35,6 +35,7 @@ public class AppContext {
    private static Logger logger = LoggerFactory.getLogger(AppContext.class);
 
    public static final String WEB_SERVER_ROOT = "web.server.root";
+   public static final String LOOPBACK_TEST = "loopback.test";
    public static final String LIFERAY_DB_NAME = "liferay.db.name";
    public static final String LIFERAY_DB_HOST = "liferay.db.host";
    public static final String LIFERAY_WS_SERVER_HOST = "liferay.ws.serverhost";
@@ -103,7 +104,8 @@ public class AppContext {
       // DEBUG ONLY
       // For debugging only and running the app on local machine
       // without Spark
-      if (!getParam(SPARK_MASTER).isEmpty()) {
+      //FOR TEST ONLY
+      if (!loopbackTest()) {
          try {
             sparkConf = new SparkConf()
                .setMaster(getParam(SPARK_MASTER))
@@ -252,4 +254,7 @@ public class AppContext {
       }
    }
 
+   public static boolean loopbackTest() {
+      return Boolean.parseBoolean(getInstance().getParam(LOOPBACK_TEST));
+   }
 }

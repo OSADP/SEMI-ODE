@@ -8,9 +8,8 @@ public class OdeSubRequest extends OdeRequest {
    }
 
    public OdeSubRequest(Double nwLat, Double nwLon, Double seLat, 
-         Double seLon, OdeRequestType requestType,
-         OdeDataType dataType) {
-      super(nwLat, nwLon, seLat, seLon, requestType, dataType);
+         Double seLon, OdeDataType dataType) {
+      super(nwLat, nwLon, seLat, seLon, OdeRequestType.Subscription, dataType);
    }
 
 }
