@@ -1,5 +1,7 @@
 package com.bah.ode.server;
 
+import javax.websocket.Session;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,16 +9,34 @@ import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeRequest;
-import com.bah.ode.server.DdsRequestManager.DdsRequestManagerException;
+import com.bah.ode.model.OdeRequestType;
+import com.bah.ode.server.DataRequestManager.DataRequestManagerException;
 import com.bah.ode.wrapper.MQTopic;
 
 public class DataSourceConnector {
    private static Logger logger = LoggerFactory.getLogger(DataSourceConnector.class);
    private static AppContext appContext = AppContext.getInstance();
 
+   private MQTopic outputTopic;
    private DdsRequestManager ddsMgr;
+   private TestRequestManager testMgr;
    
-   public void sendDataRequest(OdeRequest odeRequest, MQTopic outputTopic) 
+   private Session clientSession;
+   
+
+   public Session getClientSession() {
+      return clientSession;
+   }
+
+   public void setClientSession(Session clientSession) {
+      this.clientSession = clientSession;
+   }
+
+   public DataSourceConnector(MQTopic clientTopic) {
+      this.outputTopic = clientTopic;
+   }
+
+   public void sendDataRequest(OdeRequest odeRequest) 
          throws DataSourceConnectorException {
       try {
          OdeDataType dataType = odeRequest.getDataType();
@@ -39,19 +59,37 @@ public class DataSourceConnector {
                         AppContext.ODE_VEH_DATA_FLAT_TOPIC), partitions);
                   
                   metadata.setInputTopic(ovdfTopic);
-                  ddsMgr = new DdsRequestManager(dataType, metadata);
-                  /*
-                   *  Add subscriber only if it is not pass-through because
-                   *  if it is pass-through, the subscriber has already been
-                   *  added to the outbound queue by the ODE Request Manager
-                   */
-                  ddsMgr.addNewSubscriber();
+                  if (odeRequest.getRequestType() == OdeRequestType.Test) {
+                     testMgr = new TestRequestManager(dataType, metadata);
+                     //FOR TEST ONLY
+                     if (AppContext.loopbackTest())
+                        testMgr.setClientSession(clientSession);
+                  } else {
+                     ddsMgr = new DdsRequestManager(dataType, metadata);
+                     /*
+                      *  Add subscriber only if it is not pass-through because
+                      *  if it is pass-through, the subscriber has already been
+                      *  added to the outbound queue by the ODE Request Manager
+                      */
+                     ddsMgr.addSubscriber();
+                     
+                     logger.info("Connecting to DDS");
+                     ddsMgr.sendDdsDataRequest(odeRequest);
+                  }
                } else {
-                  ddsMgr = new DdsRequestManager(dataType, metadata);
+                  if (odeRequest.getRequestType() == OdeRequestType.Test) {
+                     testMgr = new TestRequestManager(dataType, metadata);
+                     //FOR TEST ONLY
+                     if (AppContext.loopbackTest())
+                        testMgr.setClientSession(clientSession);
+                  } else {
+                     ddsMgr = new DdsRequestManager(dataType, metadata);
+                     
+                     logger.info("Connecting to DDS");
+                     ddsMgr.sendDdsDataRequest(odeRequest);
+                  }
                }
                
-               logger.info("Connecting to DDS");
-               ddsMgr.sendDdsDataRequest(odeRequest);
                break;
             case WeatherData:
                //TODO
@@ -66,12 +104,23 @@ public class DataSourceConnector {
    
    public int cancelDataRequest() throws DataSourceConnectorException {
       try {
-         return ddsMgr.removeSubscriber();
-      } catch (DdsRequestManagerException e) {
+         if (ddsMgr != null)
+            return ddsMgr.removeSubscriber();
+         else
+            return 0;
+      } catch (DataRequestManagerException e) {
          throw new DataSourceConnectorException("Error canceling data request.", e);
       }
    }
 
+
+   public MQTopic getOutputTopic() {
+      return outputTopic;
+   }
+
+   public TestRequestManager getTestMgr() {
+      return testMgr;
+   }
 
    public static class DataSourceConnectorException extends Exception {
       private static final long serialVersionUID = 1L;

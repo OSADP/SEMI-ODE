@@ -302,7 +302,7 @@ public class WebSocketClient<T> extends Endpoint {
     *
     * @param message
     *           - the message to be sent
-    * @throws WebSocketException 
+    * @throws WebSocketException - wraps IOException 
     */
    public void send(String message) throws WebSocketException {
       try {
