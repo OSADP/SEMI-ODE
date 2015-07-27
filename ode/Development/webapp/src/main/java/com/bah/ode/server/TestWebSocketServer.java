@@ -84,7 +84,7 @@ public class TestWebSocketServer {
       try {
          msg.setCode(OdeStatus.Code.SUCCESS)
             .setMessage("Test Connection Established.");
-         session.getAsyncRemote().sendText(msg.toJson());
+         session.getBasicRemote().sendText(msg.toJson());
          
          //FOR TEST ONLY
          if (!AppContext.loopbackTest()) {
@@ -145,6 +145,7 @@ public class TestWebSocketServer {
                if (producer != null) {
                   omam.setPayload(ovdf);
                   producer.send(requestId, requestId, omam.toJson());
+                  session.getBasicRemote().sendText(message);
                }
                
                //FOR TEST ONLY

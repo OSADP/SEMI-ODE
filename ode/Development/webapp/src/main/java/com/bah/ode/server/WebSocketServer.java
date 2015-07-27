@@ -114,7 +114,7 @@ public class WebSocketServer {
             msg.setCode(OdeStatus.Code.SUCCESS)
                .setMessage("ODE Connection Established.");
          }
-         session.getAsyncRemote().sendText(msg.toJson());
+         session.getBasicRemote().sendText(msg.toJson());
 
       } catch (Exception ex) {
          msg.setCode(OdeStatus.Code.SOURCE_CONNECTION_ERROR).setMessage(
