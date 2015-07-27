@@ -200,7 +200,7 @@ public class WebSocketClientTest {
          container.connectToServer(
                wsClient, wsClient.getWsConfig(), wsClient.getUri());
          wsSession.addMessageHandler(handler);
-         wsSession.getAsyncRemote().sendText(message);
+         wsSession.getBasicRemote().sendText(message);
       }};
 
       wsClient.connect();

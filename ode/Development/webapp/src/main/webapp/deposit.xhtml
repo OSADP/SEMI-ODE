@@ -122,13 +122,14 @@ h2 {
           log('Info: WebSocket connection opened.');
       };
       ws.onmessage = function (event) {
+         /*
          if (!started) {
                var message = JSON.parse(event.data);
                if (message["code"] != "SUCCESS") {
                    setConnectionState(true, true);
                }
          }
-      
+         */
          log(event.data);
       };
       ws.onclose = function (event) {
