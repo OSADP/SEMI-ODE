@@ -19,7 +19,7 @@ package com.bah.ode.model;
 import java.util.ArrayList;
 
 public enum OdeRequestType {
-   Subscription("sub"), Query("qry");
+   Subscription("sub"), Query("qry"), Test("tst");
 
    private static final String shortNames = shortNames();
    private final String shortName;

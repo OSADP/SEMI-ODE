@@ -1,6 +1,5 @@
 package com.bah.ode.model;
 
-import com.bah.ode.util.JsonUtils;
 
 public class DdsSubRequest extends DdsRequest {
    private static final long serialVersionUID = -3817847278248921651L;

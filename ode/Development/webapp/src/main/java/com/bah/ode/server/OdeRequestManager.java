@@ -10,6 +10,7 @@ import com.bah.ode.model.OdeQryRequest;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.model.OdeSubRequest;
+import com.bah.ode.model.OdeTstRequest;
 import com.bah.ode.server.WebSocketServer.WebSocketServerException;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQTopic;
@@ -23,7 +24,7 @@ public class OdeRequestManager {
    private static OutboundTopicManagerSingleton otms = 
          OutboundTopicManagerSingleton.getInstance();
    
-   public static String buildTopicName(OdeRequest odeRequest) {
+   public static String buildRequestId(OdeRequest odeRequest) {
       String baseName = otms.buildTopicName(odeRequest);
       return odeRequest.getRequestType().getShortName() +
             odeRequest.getDataType().getShortName() + baseName;
@@ -37,10 +38,11 @@ public class OdeRequestManager {
          odeRequest = (OdeRequest) JsonUtils.fromJson(message,
                OdeSubRequest.class);
       } else if (requestType == OdeRequestType.Query) {
-         OdeQryRequest qryRequest = (OdeQryRequest) JsonUtils.fromJson(message, 
+         odeRequest = (OdeRequest) JsonUtils.fromJson(message, 
                OdeQryRequest.class);
-         odeRequest = qryRequest;
-         System.out.println(qryRequest);
+      } else if (requestType == OdeRequestType.Test) {
+         odeRequest = (OdeRequest) JsonUtils.fromJson(message,
+               OdeTstRequest.class);
       } else {
          OdeStatus status = new OdeStatus()
             .setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR)
@@ -67,23 +69,23 @@ public class OdeRequestManager {
       return odeRequest;
    }
 
-   public static MQTopic getTopic(String topicName) {
-      return otms.getTopic(topicName);
+   public static MQTopic getTopic(String RequestId) {
+      return otms.getTopic(RequestId);
    }
    
-   public static MQTopic getOrCreateTopic(String topicName) {
-      return otms.getOrCreateTopic(topicName);
+   public static MQTopic getOrCreateTopic(String RequestId) {
+      return otms.getOrCreateTopic(RequestId);
    }
 
-   public static void addSubscriber(String topicName, OdeDataType dataType) {
-      int numSubscribers = otms.addSubscriber(topicName);
+   public static void addSubscriber(String RequestId, OdeDataType dataType) {
+      int numSubscribers = otms.addSubscriber(RequestId);
       if (numSubscribers > 0 && !isPassThrough(dataType)) {
          appContext.startStreamingContext();
       }
    }
 
-   public static void removeSubscriber(String topicName, OdeDataType dataType) {
-      int numSubscribersRemaining = otms.removeSubscriber(topicName);
+   public static void removeSubscriber(String RequestId, OdeDataType dataType) {
+      int numSubscribersRemaining = otms.removeSubscriber(RequestId);
       if (numSubscribersRemaining <= 0 && !isPassThrough(dataType)) {
          appContext.stopStreamingContext();
       }
@@ -91,7 +93,8 @@ public class OdeRequestManager {
 
 
    public static boolean isPassThrough(OdeDataType dataType) {
-      if (appContext.getParam(AppContext.SPARK_MASTER).isEmpty()) {
+      //FOR TEST ONLY
+      if (AppContext.loopbackTest()) {
          /*
           * FOR DEBUG ONLY: Bypass Spark and send directly to outbound topic
           */

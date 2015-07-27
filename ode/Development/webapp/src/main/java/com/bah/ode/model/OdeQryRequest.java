@@ -15,8 +15,8 @@ public class OdeQryRequest extends OdeRequest {
    }
 
    public OdeQryRequest(Double nwLat, Double nwLon, Double seLat, Double seLon,
-         OdeRequestType requestType, OdeDataType dataType) {
-      super(nwLat, nwLon, seLat, seLon, requestType, dataType);
+         OdeDataType dataType) {
+      super(nwLat, nwLon, seLat, seLon, OdeRequestType.Query, dataType);
    }
 
    public OdeQryRequest(Double nwLat, Double nwLon, Double seLat, Double seLon, 
