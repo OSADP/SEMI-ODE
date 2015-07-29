@@ -21,7 +21,7 @@ public class DateTimeUtils {
    
    public static String isoDateTime(int year, int month, int dayOfMonth, 
          int hourOfDay, int minute, int second, int millisec) {
-      Calendar calendar = new GregorianCalendar(year, month, dayOfMonth, 
+      Calendar calendar = new GregorianCalendar(year, month-1, dayOfMonth, 
             hourOfDay, minute, second);
       calendar.add(Calendar.MILLISECOND, millisec);;
       return isoDateTime(calendar.getTime());

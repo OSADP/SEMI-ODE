@@ -63,14 +63,15 @@ public class TestWebSocketServer {
     *           - the path parameter identifying the data type being requested.
     *           Valid <code>dtype</code> values are:
     *           <ul>
-    *           <li>ints - Intersection data</li>
-    *           <li>vehs - Vehicle data</li>
-    *           <li>aggs - Aggregate data</li>
+    *           <li>int - Intersection data</li>
+    *           <li>veh - Vehicle data</li>
+    *           <li>agg - Aggregate data</li>
     *           </ul>
     * @param requestId
-    *           - The request ID for the session that requested the data
+    *           - The request ID for the session that requested the data.
     *           The requestId is returned upon successful placement of a 
-    *           data request.
+    *           data request. The test application must send data to the 
+    *           pre-established test channel created by the same test application.
     */
    @OnOpen
    public void onOpen(Session session, EndpointConfig endpointConfig,
@@ -118,14 +119,15 @@ public class TestWebSocketServer {
     *           - the path parameter identifying the data type being requested.
     *           Valid <code>dtype</code> values are:
     *           <ul>
-    *           <li>ints - Intersection data</li>
-    *           <li>vehs - Vehicle data</li>
-    *           <li>aggs - Aggregate data</li>
+    *           <li>int - Intersection data</li>
+    *           <li>veh - Vehicle data</li>
+    *           <li>agg - Aggregate data</li>
     *           </ul>
     * @param requestId
-    *           - The request ID for the session that requested the data
+    *           - The request ID for the session that requested the data.
     *           The requestId is returned upon successful placement of a 
-    *           data request.
+    *           data request. The test application must send data to the 
+    *           pre-established test channel created by the same test application.
     */
    @OnMessage
    public void onMessage(Session session, String message, boolean last,
