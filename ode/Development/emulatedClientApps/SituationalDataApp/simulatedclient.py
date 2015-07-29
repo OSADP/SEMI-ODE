@@ -9,22 +9,28 @@ import ConfigParser
 
 import websocket
 import timehelpers
+import depositClient
+
 # Set TIME to UTC
 # logging.Formatter.converter = time.gmtime
 
-logger = logging.getLogger('simaApp')
+logging_level = logging.INFO
+
+current_date_time = datetime.datetime.now().strftime("%Y-%m-%dT%H_%M_%S")
+log_name = 'simpleApp_{}.log'.format(current_date_time)
+logger = logging.getLogger('simpleApp')
 logger.setLevel(logging.DEBUG)
-# fh = logging.FileHandler('spam.log')
-# fh.setLevel(logging.DEBUG)
+fh = logging.FileHandler(log_name)
+fh.setLevel(logging_level)
 # create console handler with a higher log level
 ch = logging.StreamHandler(stream=sys.stdout)
-ch.setLevel(logging.INFO)
+ch.setLevel(logging_level)
 # create formatter and add it to the handlers
-formatter = logging.Formatter('%(asctime)s-%(levelname)s: %(message)s', datefmt="%Y-%m-%dT%H:%M:%S")
-# fh.setFormatter(formatter)
+formatter = logging.Formatter('%(asctime)s-%(name)s-%(levelname)s: %(message)s', datefmt="%Y-%m-%dT%H:%M:%S")
+fh.setFormatter(formatter)
 ch.setFormatter(formatter)
 # add the handlers to the logger
-# logger.addHandler(fh)
+logger.addHandler(fh)
 logger.addHandler(ch)
 
 base_config = {}
@@ -52,10 +58,17 @@ common_params = {
     "limit": "10"
 }
 
-start_date = datetime.datetime(2015, month=1, day=1,hour=1, minute=1,second=30, tzinfo=timehelpers.ZULU()) #2015-01-01T01:01:30.000Z
+
+# 2015-01-01T01:01:30.000Z to  # 2015-06-15T23:59:59.999Z
+start_date = datetime.datetime(2015, month=1, day=1, hour=1, minute=1, second=30, tzinfo=timehelpers.ZULU())
 end_date = datetime.datetime(2015, month=6, day=1, hour=23, minute=59, second=59, microsecond=999,
-                             tzinfo=timehelpers.ZULU()) # 2015-06-15T23:59:59.999Z
+                             tzinfo=timehelpers.ZULU())
 date_format = '%Y-%m-%dT%H:%M:%S.%f%Z'
+
+# File Name to capture ODE OUTPUT
+# Same date time stamp used for log file
+ode_output_file_name = 'ODE_test_run_{0}.txt'.format(current_date_time)
+log_to_file = False
 
 qry_subs = \
     {
@@ -89,11 +102,13 @@ qry_subs = \
 
 msg = {}  # Empty Message body
 
-json_file = None
+input_file = None
+
 
 def append_to_file(entry):
-    with open("ODE_Output.txt", "a") as myfile:
-        myfile.write(entry.encode('UTF-8')+"\n")
+    with open(ode_output_file_name, "a") as myfile:
+        myfile.write(entry + "\n")
+
 
 # Web Socket Handlers
 def on_message(ws, message):
@@ -103,13 +118,23 @@ def on_message(ws, message):
 
     # determine message and act accordingly
     logger.debug("Message Value: %s", message)
-    #append_to_file(message)
+    if (logger.isEnabledFor(logging.DEBUG) or logger.isEnabledFor(logging.INFO)) and log_to_file:
+        append_to_file(message)
     try:
         msg = json.loads(message)
 
+        # Identify Message and perform action(s)
         if msg.get('code'):
             logger.info("ODE Connection Status: %s Message: %s", msg.get('code'), msg.get('message'))
-        elif msg.get('serialId'):
+
+            if config['UPLOAD_TEST_DATA'] and 'tstvehOdeTstRequest' in msg.get('message'):
+                config['TEST_REQUEST'] = msg.get('message')
+                depositClient.update_config(config)
+                thread.start_new_thread(depositClient._run_main, (config,))
+
+        if msg.get('fullMessage') is not None and 'STOP' in msg.get('fullMessage'):
+            on_close(ws)
+        if msg.get('serialId') is not None:
             validate_message(msg)
         # if msg.get('payload'):
         #     logger.info(msg['payload']['dialogID']['mValue'])
@@ -117,7 +142,7 @@ def on_message(ws, message):
         #     validate_message(msg)
         elif msg.get("fullMessage"):
             logger.info(msg.get("fullMessage"))
-#            on_close(ws)
+        #            on_close(ws)
     except Exception as e:
         logger.exception("Unable to convert message to json dictionary object")
         logger.critical("Message Payload: %s\n", message)
@@ -152,15 +177,15 @@ def on_open2(ws):
     :param ws:
     :return:
     """
-    pause = 15
+    pause = 7
 
     def run(*args):
         logger.debug(json.dumps(msg))
         time.sleep(pause)
         ws.send(json.dumps(msg))
         time.sleep(pause)
-        #ws.close()
-        logger.debug ("On_open Run thread stopping...")
+        # ws.close()
+        logger.debug("On_open Run thread stopping...")
 
     thread.start_new_thread(run, ())
 
@@ -170,7 +195,7 @@ def get_json_file(test_type):
     Get correct json file based on subscription type input Tuple
     :return:
     """
-    os.getcwdu()
+    # os.getcwdu()
     json_files = {
         ('sub', 'veh'): os.path.join('.', 'test_json', 'sub_veh.json'),
         ('sub', 'int'): os.path.join('.', 'test_json', 'sub_int.json'),
@@ -184,22 +209,22 @@ def get_json_file(test_type):
 
 
 def extract_json_objects(json_file):
-
     result = False
     global json_file_data
 
-    with open(json_file) as f:
+    with open(json_file, ) as f:
         for line in f:
             try:
-                if line is None:
+                if line is None or line == "\n":
                     break
-                json_file_data.append(json.loads(line))
+                json_file_data.append(json.loads(line, encoding='utf-8'))
             except:
+                logger.debug("LINE: %s", line)
                 logger.exception("Error Reading JSON FIle: %s", json_file)
-                logger.debug("LINE:")
                 sys.exit()
         result = True
     return result
+
 
 def validate_message(message):
     """
@@ -208,58 +233,80 @@ def validate_message(message):
     :return: Result of evaluation in Tuple Form
     """
 
-    key = 'tempId'
-    logger.debug("Message value: %s", message[key])
+    key = 'dateTime'
+
+    if not validate_datetime(message['dateTime']) and  config['SUB_TYPE']=='qry':
+        logger.warn("Invalid DateTime in Message Record")
+        logger.warn("Start Time: %s,  Actual: %s   End Time: %s", msg['startDate'], message['dateTime'], \
+                    msg['endDate'])
 
     # Valid  Vehicle Data Keys
-    valid_keys = [u'accelVert', u'sizeWidth', u'elevation', u'hour', u'sizeLength', u'accelLong', u'longitude',\
-                  u'month', u'second', u'accellYaw', u'year', u'latitude', u'heading', u'speed', u'tempId', \
-                  u'day', u'minute']
+    valid_keys = [u'accelVert', u'sizeWidth', u'elevation', u'hour', u'sizeLength', u'accelLong', u'longitude', \
+                  u'month', u'second', u'accellYaw', u'year', u'latitude', u'heading', u'speed',
+                  u'day', u'minute', u'dateTime']
 
     # Search
-    filtered_message  = {k:v for k,v in message.items() if k in valid_keys}
+    filtered_message = {k: v for k, v in message.items() if k in valid_keys}
 
-    output = [record for record in json_file_data if record[key]== message[key]]
-    result = None
-    information = None
+    output = [record for record in json_file_data if record[key] == message[key]]
+    if output is None:
+        logger.info('No matching record found based on key of [%s] in validation file. ODE Message: %s', message[key],
+                    message)
+
     count = len(output)
     check_counter = 0
+    logger.debug("ODE Record: %s", message)
+    logger.info('Found %d possible matches', count)
+
     for data in output:
-        filtered_validation_data = {k:v for k,v in data.items() if k in valid_keys}
-        record_delta = set(filtered_validation_data.items()) - set( filtered_message.items())
-        actual_record_delta = set( filtered_message.items()) -  set(filtered_validation_data.items())
+        filtered_validation_data = {k: v for k, v in data.items() if k in valid_keys}
+        record_delta = set(filtered_validation_data.items()) - set(filtered_message.items())
+        actual_record_delta = set(filtered_message.items()) - set(filtered_validation_data.items())
         if len(record_delta) == 0 and len(actual_record_delta) == 0:
-            logger.info("Found Matching Record")
+            logger.info("Found Matching Record. Iterations: (%d)", check_counter + 1)
             logger.debug(data)
             return (True, None)
         else:
-            check_counter= check_counter+1
+            check_counter += 1
+            logger.debug("Record Count: %d, Check Counter: %d", count, check_counter)
+            logger.warn("No matching record found.Found similar record. Iteration: %d, \nExpected: %s,\nActual:   %s",
+                        check_counter, sorted(record_delta), sorted(actual_record_delta))
+            logger.warn("Full Record Output:\nValidation Record: %s\nActual Record:  %s", data, message)
             if check_counter == count:
-
-                logger.warn("No matching record found. Expected: %s, Actual: %s", list(record_delta), list(actual_record_delta ))
-                logger.debug(record_delta)
+                logger.debug("Validation Record: %s", sorted(filtered_validation_data))
+                logger.debug("ODE Record: %s", sorted(filtered_message))
+                logger.debug("Record Count: %d, Check Counter: %d", count, check_counter)
+                logger.warn("End Validation section")
                 return (False, record_delta)
-
-        logger.debug(filtered_validation_data)
-
+    logger.debug("End validation section")
     return (False, None)
 
-def validate_datetime():
+
+def validate_datetime(input_time):
     """
     Validates that the dateTime for a query result is within the requested
      start and end time interval.
     :return:
     """
-    pass
+    import dateutil.parser
+    record_time = dateutil.parser.parse(input_time)
+    if msg.get('endDate') is not None and msg.get('startDate') is not None:
+        if dateutil.parser.parse(msg.get('endDate')) >= record_time >= dateutil.parser.parse(msg.get('startDate')):
+            return True
+        else:
+            return False
+    else:
+        return False
 
 
 def validate_location():
     """
-    Validates that the dateTime for a query result is within the requested
-     start and end time interval.
+    Validates that the latitute and longitutde values for a query result is within the requested
+    bounding  box region. .
     :return:
     """
     pass
+
 
 # Command Line Parser Methods
 def get_parser():
@@ -331,8 +378,8 @@ def _main():
 
     _run_main(config)
 
-def parse_config_file(file_path):
 
+def parse_config_file(file_path):
     config_file = ConfigParser.ConfigParser()
     config_file.optionxform = str
     try:
@@ -341,29 +388,31 @@ def parse_config_file(file_path):
         logger.exception('Unable to Open Config File')
         sys.exit(1)
     if config_file.has_section('ode'):
-        config['HOST']=config_file.get('ode','host')
-        config['SUB_TYPE']=config_file.get('ode','subscriptionType')
-        config['DATA']=config_file.get('ode','dataType')
-        config['VALIDATION_FILE']=config_file.get('ode','validationFile')
-        config['INPUT_FILE']=config_file.get('ode','inputFile')
+        config['HOST'] = config_file.get('ode', 'host')
+        config['SUB_TYPE'] = config_file.get('ode', 'subscriptionType')
+        config['DATA'] = config_file.get('ode', 'dataType')
+        config['UPLOAD_TEST_DATA'] = config_file.getboolean('ode', 'uploadData')
+        config['VALIDATION_FILE'] = config_file.get('ode', 'validationFile')
+        if config['UPLOAD_TEST_DATA']:
+            config['INPUT_FILE'] = config_file.get('ode', 'inputFile')
+
     if config_file.has_section('serviceRegion'):
-        if config.get('SUB_TYPE') and config.get('SUB_TYPE')== 'sub':
-            for key,value in config_file.items('serviceRegion'):
-                area[key]=value # Point is Tuple in form of (Name, Value)
-        else: # Update Query related Params
-            print config_file.items('serviceRegion')
-            for key,value in config_file.items('serviceRegion'):
-                print (key,value)
-                qry_subs[config['DATA']][key]=value
-            qry_subs[config['DATA']]['startDate']=config_file.get('queryParams','startDate')
-            qry_subs[config['DATA']]['endDate']=config_file.get('queryParams','endDate')
-    if config_file.has_section('queryParams') and config.get('SUB_TYPE')== 'qry':
-        common_params['limit']=config_file.get('queryParams','limit')
-        common_params['skip']=config_file.get('queryParams','skip')
-        qry_subs[config['DATA']]['startDate']=config_file.get('queryParams','startDate')
-        qry_subs[config['DATA']]['endDate']=config_file.get('queryParams','endDate')
+        if config.get('SUB_TYPE') and config.get('SUB_TYPE') == 'sub':
+            for key, value in config_file.items('serviceRegion'):
+                area[key] = value  # Point is Tuple in form of (Name, Value)
+        else:  # Update Query related Params
+            for key, value in config_file.items('serviceRegion'):
+                qry_subs[config['DATA']][key] = value
+            qry_subs[config['DATA']]['startDate'] = config_file.get('queryParams', 'startDate')
+            qry_subs[config['DATA']]['endDate'] = config_file.get('queryParams', 'endDate')
+    if config_file.has_section('queryParams') and config.get('SUB_TYPE') == 'qry':
+        common_params['limit'] = config_file.get('queryParams', 'limit')
+        common_params['skip'] = config_file.get('queryParams', 'skip')
+        qry_subs[config['DATA']]['startDate'] = config_file.get('queryParams', 'startDate')
+        qry_subs[config['DATA']]['endDate'] = config_file.get('queryParams', 'endDate')
 
     return config_file
+
 
 def _run_main(config):
     # host = "localhost:10494"
@@ -375,15 +424,18 @@ def _run_main(config):
 
     if subscription_type == 'sub':
         msg = area
-        uri = 'sub/{0}'.format(config['DATA'])
-    else:
+        if not config['UPLOAD_TEST_DATA']:
+            uri = 'sub/{0}'.format(config['DATA'])
+        else:
+            uri = 'tst/{0}'.format(config['DATA'])
+    elif subscription_type == 'qry' and not config['UPLOAD_TEST_DATA']:
         msg = qry_subs[config['DATA']]
         msg.update(common_params)  # add common params
         uri = 'qry/{0}'.format(config['DATA'])
 
     socket_url = "ws://{0}/api/ws/{1}".format(config['HOST'], uri)
 
-    global json_file
+    global input_file
 
     if config.get('VALIDATION_FILE'):
         json_file = config.get('VALIDATION_FILE')
@@ -393,8 +445,15 @@ def _run_main(config):
 
     print "Web socket URL: {}".format(socket_url)
     print '++++++++++'
+    logger.info("Subscriptions Params: %s", msg)
+
+    # if config['UPLOAD_TEST_DATA']:
+    #     config['TEST_REQUEST'] = 'tstvehOdeTstRequest1255178960'
+    #     depositClient.update_config(config)
+    #     thread.start_new_thread(depositClient._run_main, (config,))
+
     websocket.enableTrace(False)
-    ws = websocket.WebSocketApp(socket_url,
+    ws = websocket.WebSocketApp(socket_url, header=[], cookie=None,
                                 on_message=on_message,
                                 on_error=on_error,
                                 on_close=on_close,
@@ -403,5 +462,6 @@ def _run_main(config):
 
     ws.run_forever()
 
+
 if __name__ == "__main__":
-    _main() # Parse Command line options and run program
+    _main()  # Parse Command line options and run program
