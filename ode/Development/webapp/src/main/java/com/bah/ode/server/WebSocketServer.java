@@ -74,16 +74,19 @@ public class WebSocketServer {
     *           - the path parameter identifying the request type. Valid rtypes
     *           are:
     *           <ul>
-    *           <li>sub - subscription request</li>
-    *           <li>qry - QUery request</li>
+    *           <li>sub - subscription request: establishes a subscription
+    *           to real-time data</li>
+    *           <li>qry - Query request: sends a query to warehoused data</li>
+    *           <li>tst - Test request:  establishes a subscription
+    *           to test data channel</li>
     *           </ul>
     * @param dtype
     *           - the path parameter identifying the data type being requested.
     *           Valid <code>dtype</code> values are:
     *           <ul>
-    *           <li>ints - Intersection data</li>
-    *           <li>vehs - Vehicle data</li>
-    *           <li>aggs - Aggregate data</li>
+    *           <li>int - Intersection data</li>
+    *           <li>veh - Vehicle data</li>
+    *           <li>agg - Aggregate data</li>
     *           </ul>
     */
    @OnOpen
@@ -139,16 +142,19 @@ public class WebSocketServer {
     *           - the path parameter identifying the request type. Valid rtypes
     *           are:
     *           <ul>
-    *           <li>sub - subscription request</li>
-    *           <li>qry - QUery request</li>
+    *           <li>sub - subscription request: establishes a subscription
+    *           to real-time data</li>
+    *           <li>qry - Query request: sends a query to warehoused data</li>
+    *           <li>tst - Test request:  establishes a subscription
+    *           to test data channel</li>
     *           </ul>
     * @param dtype
     *           - the path parameter identifying the data type being requested.
     *           Valid <code>dtype</code> values are:
     *           <ul>
-    *           <li>ints - Intersection data</li>
-    *           <li>vehs - Vehicle data</li>
-    *           <li>aggs - Aggregate data</li>
+    *           <li>int - Intersection data</li>
+    *           <li>veh - Vehicle data</li>
+    *           <li>agg - Aggregate data</li>
     *           </ul>
     */
    @OnMessage
