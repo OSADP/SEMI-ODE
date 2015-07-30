@@ -7,6 +7,8 @@ import com.bah.ode.api.ws.OdeStatus;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.DdsClientFactory;
 import com.bah.ode.dds.client.ws.IsdDecoder;
+import com.bah.ode.dds.client.ws.MapDecoder;
+import com.bah.ode.dds.client.ws.SpatDecoder;
 import com.bah.ode.dds.client.ws.VsdDecoder;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.DdsQryRequest;
@@ -18,6 +20,7 @@ import com.bah.ode.model.OdeQryRequest;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.wrapper.WebSocketClient;
+import com.bah.ode.wrapper.WebSocketMessageDecoder;
 
 public class DdsRequestManager extends DataRequestManager {
    private static Logger logger = 
@@ -30,14 +33,43 @@ public class DdsRequestManager extends DataRequestManager {
    private static OutboundTopicManagerSingleton otms = 
          OutboundTopicManagerSingleton.getInstance();
    
+   private DdsRequest ddsRequest;
    private WebSocketClient<?> ddsClient;
    
-   public DdsRequestManager(OdeDataType dataType, OdeMetadata metadata) {
-      super(dataType, metadata, itms, otms);
+   @SuppressWarnings("unchecked")
+   public DdsRequestManager(OdeRequest odeRequest, OdeMetadata metadata) 
+         throws DdsRequestManagerException {
+      super(odeRequest.getDataType(), metadata, itms, otms);
+      
+      try {
+         // get a data manager to start the data flow
+         ddsRequest = buildDdsRequest(odeRequest);
+         
+         Class<?> decoder = null;
+         if (odeRequest.getDataType() == OdeDataType.IntersectionData) {
+            decoder = IsdDecoder.class;
+         } else if (odeRequest.getDataType() == OdeDataType.VehicleData) {
+            decoder = VsdDecoder.class;
+         } else if (odeRequest.getDataType() == OdeDataType.MAPData) {
+            decoder = MapDecoder.class;
+         } else if (odeRequest.getDataType() == OdeDataType.SPaTData) {
+            decoder = SpatDecoder.class;
+         } else if (odeRequest.getDataType() == OdeDataType.AggregateData) {
+            decoder = VsdDecoder.class;
+         }
+   
+         ddsClient = DdsClientFactory.create(appContext, metadata, 
+               (Class<? extends WebSocketMessageDecoder<?>>) decoder);
+         
+         if (ddsClient == null)
+            throw new DdsRequestManagerException("Error creating DDS Client");
+      } catch (Exception e) {
+         throw new DdsRequestManagerException("Error sending Data Request.", e);
+      }
    }
 
 
-   public DdsRequest buildDdsRequest(OdeRequest odeRequest)
+   public static DdsRequest buildDdsRequest(OdeRequest odeRequest)
                throws DdsRequestManagerException, OdeException {
       OdeStatus status = new OdeStatus();
       DdsRequest ddsRequest;
@@ -73,9 +105,12 @@ public class DdsRequestManager extends DataRequestManager {
             .setSeLat(odeRequest.getSeLat()).setSeLon(odeRequest.getSeLon());
 
       OdeDataType dataType = odeRequest.getDataType();
-      if (dataType == OdeDataType.IntersectionData) {
+      if (dataType == OdeDataType.IntersectionData || 
+            dataType == OdeDataType.MAPData        ||
+            dataType == OdeDataType.SPaTData) {
          ddsRequest.setDialogID(DdsRequest.Dialog.ISD.getId());
-      } else if (dataType == OdeDataType.VehicleData) {
+      } else if (dataType == OdeDataType.VehicleData || 
+            dataType == OdeDataType.AggregateData) {
          ddsRequest.setDialogID(DdsRequest.Dialog.VSD.getId());
       } else {
          status.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
@@ -84,37 +119,20 @@ public class DdsRequestManager extends DataRequestManager {
                            "Invalid data type %s requested. Valid data types are %s",
                            dataType, OdeDataType.shortNames()));
          logger.error(status.toString());
-         return null;
+         throw new DdsRequestManagerException(status.getMessage());
       }
 
       return ddsRequest;
    }
 
-   public void sendDdsDataRequest(OdeRequest odeRequest) throws DdsRequestManagerException {
+   public void sendDdsDataRequest() throws DdsRequestManagerException {
       try {
-         // get a data manager to start the data flow
-         DdsRequest ddsRequest = buildDdsRequest(odeRequest);
+         ddsClient.connect();
          
          // Send the new request
          String sDdsRequest = ddsRequest.toString();
          logger.info("Sending request: {}", sDdsRequest);
-
-         Class decoder = null;
-         if (odeRequest.getDataType() == OdeDataType.IntersectionData) {
-            decoder = IsdDecoder.class;
-         } else if (odeRequest.getDataType() == OdeDataType.VehicleData) {
-            decoder = VsdDecoder.class;
-         }
-
-         if (ddsClient == null) {
-            ddsClient = DdsClientFactory.create(appContext, metadata, decoder);
-            
-            if (ddsClient == null)
-               throw new DdsRequestManagerException("Error creating DDS Client");
    
-            ddsClient.connect();
-         }
-         
          /*
           * We do not add the subscriber here because it may have already been
           * added by the ODE Request manager if the data is pass-through.
@@ -131,7 +149,13 @@ public class DdsRequestManager extends DataRequestManager {
          throw new DdsRequestManagerException("Error sending Data Request.", e);
       }
    }
+
    
+   public WebSocketClient<?> getDdsClient() {
+      return ddsClient;
+   }
+
+
    public static class DdsRequestManagerException extends Exception {
       private static final long serialVersionUID = 1L;
 

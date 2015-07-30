@@ -19,40 +19,52 @@ package com.bah.ode.api.ws;
 import com.bah.ode.model.OdeObject;
 
 public class OdeStatus extends OdeObject {
-	private static final long serialVersionUID = -8787345244306039604L;
+   private static final long serialVersionUID = -8787345244306039604L;
+
    public static enum Code {
-   	SUCCESS,
-   	FAILURE,
-   	SOURCE_CONNECTION_ERROR,
-   	INVALID_REQUEST_TYPE_ERROR,
-   	INVALID_DATA_TYPE_ERROR
-	}
-	
-	Code code;
-	String message;
-	public OdeStatus() {
-	   super();
+      SUCCESS, FAILURE, SOURCE_CONNECTION_ERROR, INVALID_REQUEST_TYPE_ERROR, INVALID_DATA_TYPE_ERROR
    }
-	public OdeStatus(Code code, String message) {
-	   super();
-	   this.code = code;
-	   this.message = message;
+
+   Code code;
+   String message;
+   String requestId;
+
+   public OdeStatus() {
+      super();
    }
-	
-	public Code getCode() {
-		return code;
-	}
-	public OdeStatus setCode(Code code) {
-		this.code = code;
-		return this;
-	}
-	public String getMessage() {
-		return message;
-	}
-	public OdeStatus setMessage(String message) {
-		this.message = message;
-		return this;
-	}
-	
-	
+
+   public OdeStatus(Code code, String message) {
+      super();
+      this.code = code;
+      this.message = message;
+   }
+
+   public Code getCode() {
+      return code;
+   }
+
+   public OdeStatus setCode(Code code) {
+      this.code = code;
+      return this;
+   }
+
+   public String getMessage() {
+      return message;
+   }
+
+   public OdeStatus setMessage(String message) {
+      this.message = message;
+      return this;
+   }
+
+   public String getRequestId() {
+      return requestId;
+   }
+
+   public OdeStatus setRequestId(String requestId) {
+      this.requestId = requestId;
+      return this;
+   }
+
+   
 }

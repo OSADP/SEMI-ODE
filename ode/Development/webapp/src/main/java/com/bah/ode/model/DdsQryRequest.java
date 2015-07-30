@@ -1,6 +1,5 @@
 package com.bah.ode.model;
 
-import com.bah.ode.util.JsonUtils;
 
 public class DdsQryRequest extends DdsRequest {
    private static final long serialVersionUID = 2425686751232706772L;

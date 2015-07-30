@@ -75,6 +75,7 @@ public class MQConsumerGroup<K, V, R> {
       //
       int threadNumber = 0;
       for (final KafkaStream<K, V> stream : streams) {
+         @SuppressWarnings("unused")
          Future<Object> future = 
                executor.submit(
                      new MQConsumer<K, V, R>(stream, threadNumber, processor));

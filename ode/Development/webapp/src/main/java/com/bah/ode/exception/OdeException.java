@@ -18,7 +18,6 @@ package com.bah.ode.exception;
 
 import com.bah.ode.api.ws.OdeStatus;
 import com.bah.ode.util.JsonUtils;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class OdeException extends Exception {

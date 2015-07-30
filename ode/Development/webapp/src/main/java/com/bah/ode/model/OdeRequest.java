@@ -16,6 +16,8 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
+import java.math.BigDecimal;
+
 
 @SuppressWarnings("serial")
 public abstract class OdeRequest extends BaseRequest {
@@ -26,7 +28,7 @@ public abstract class OdeRequest extends BaseRequest {
       super();
    }
 
-   public OdeRequest(Double nwLat, Double nwLon, Double seLat, Double seLon,
+   public OdeRequest(BigDecimal nwLat, BigDecimal nwLon, BigDecimal seLat, BigDecimal seLon,
          OdeRequestType requestType, OdeDataType dataType) {
       super(nwLat, nwLon, seLat, seLon);
       this.dataType = dataType;

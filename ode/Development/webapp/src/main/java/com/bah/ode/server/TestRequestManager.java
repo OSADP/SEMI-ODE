@@ -1,7 +1,5 @@
 package com.bah.ode.server;
 
-import javax.websocket.Session;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,19 +18,6 @@ public class TestRequestManager extends DataRequestManager {
    private BaseTopicManager topicManager;
    private OdeMetadata metadata;
    
-   //For test ONLY
-   private Session clientSession;
-   
-   public Session getClientSession() {
-      return clientSession;
-   }
-
-
-   public void setClientSession(Session clientSession) {
-      this.clientSession = clientSession;
-   }
-
-
    public TestRequestManager(OdeDataType dataType, OdeMetadata metadata) {
       super(dataType, metadata, itms, otms);
    }

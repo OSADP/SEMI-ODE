@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.websocket.Session;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,10 +52,22 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    private OdeMetadata metadata;
    private static AppContext appContext = AppContext.getInstance(); 
    
+   // FOR LOOPBACK TEST ONLY
+   private Session clientSession;
+   public Session getClientSession() {
+      return clientSession;
+   }
+   public void setClientSession(Session clientSession) {
+      this.clientSession = clientSession;
+   }
+   // FOR LOOPBACK TEST ONLY
+
    public DdsMessageHandler(OdeMetadata metadata) {
-      this.producer = new MQProducer<String, String>(
-                  AppContext.getInstance().getParam(
-                        AppContext.KAFKA_METADATA_BROKER_LIST));
+      if (!AppContext.loopbackTest()) {
+         this.producer = new MQProducer<String, String>(
+                     AppContext.getInstance().getParam(
+                           AppContext.KAFKA_METADATA_BROKER_LIST));
+      }
       this.metadata = metadata;
       this.uuid = UUID.randomUUID();
       this.seqNum = new Long(0);
@@ -62,7 +76,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    @Override
    public void onMessage(DdsData ddsData) {
       try {
-         if (producer != null && ddsData.haveData()) {
+         if (ddsData.haveData()) {
             OdeMsgAndMetadata omam = new OdeMsgAndMetadata();
             omam.setMetadata(metadata);
             omam.setKey(metadata.getOutputTopic().getName());
@@ -84,8 +98,12 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                
                for (OdeVehicleDataFlat ovdf : ovdfList) {
                   omam.setPayload(ovdf);
-                  producer.send(topicName, metadata.getOutputTopic().getName(),
-                        omam.toJson());
+                  if (!AppContext.loopbackTest()) {
+                     producer.send(topicName, metadata.getOutputTopic().getName(),
+                           omam.toJson());
+                  } else {
+                     clientSession.getBasicRemote().sendText(omam.toJson());
+                  }
                }
             } else { 
                if (ddsData.getIsd() != null) {
@@ -95,8 +113,12 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                } else {
                   omam.setPayload(new OdeFullMessage(ddsData.getFullMessage()));
                }
-               producer.send(topicName, metadata.getOutputTopic().getName(),
-                     omam.toJson());
+               if (!AppContext.loopbackTest()) {
+                  producer.send(topicName, metadata.getOutputTopic().getName(),
+                        omam.toJson());
+               } else {
+                  clientSession.getBasicRemote().sendText(omam.toJson());
+               }
             }
          }
       } catch (Exception e) {
