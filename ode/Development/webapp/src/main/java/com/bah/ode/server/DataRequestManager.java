@@ -15,16 +15,15 @@ public abstract class DataRequestManager {
    protected BaseTopicManager topicManager;
    protected OdeMetadata metadata;
    
-   //For test ONLY
+   // FOR LOOPBACK TEST ONLY
    private Session clientSession;
-   
    public Session getClientSession() {
       return clientSession;
    }
-
    public void setClientSession(Session clientSession) {
       this.clientSession = clientSession;
    }
+   // FOR LOOPBACK TEST ONLY
 
 
    public DataRequestManager(OdeDataType dataType, OdeMetadata metadata,

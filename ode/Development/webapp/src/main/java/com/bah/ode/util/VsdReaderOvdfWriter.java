@@ -14,9 +14,6 @@ import java.util.logging.SimpleFormatter;
 
 import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.semi.VehSitDataMessage;
-import com.bah.ode.asn.oss.semi.VehSitDataMessage.Bundle;
-import com.bah.ode.asn.oss.semi.VehSitRecord;
-import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.DdsMessageHandler;
 import com.bah.ode.model.OdeVehicleDataFlat;
 import com.oss.asn1.Coder;

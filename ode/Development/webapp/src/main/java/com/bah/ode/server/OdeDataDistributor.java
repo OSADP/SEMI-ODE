@@ -75,7 +75,7 @@ public class OdeDataDistributor implements Runnable {
 
    public OdeDataDistributor setClientTopic(MQTopic aTopic) {
       this.clientTopic = aTopic;
-      if (consumerGroup != null)
+      if (!AppContext.loopbackTest())
          consumerGroup.setTopic(this.clientTopic);
       return this;
    }
@@ -85,7 +85,7 @@ public class OdeDataDistributor implements Runnable {
       try {
          logger.info("Starting {} consumer threads in group {} for topic {} ...", 
                clientTopic.getPartitions(), groupId, clientTopic.getName());
-         if (consumerGroup != null)
+         if (!AppContext.loopbackTest())
             consumerGroup.consume();
       } catch (Exception e) {
          logger.error("Error processing response.", e);

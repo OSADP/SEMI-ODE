@@ -26,7 +26,7 @@ public enum OdeDataType {
    AggregateData("agg"),
    WeatherData("weather");
    
-   private static final String shortNames = shortNames();
+   private static String shortNames = shortNames();
 
    private final String shortName;
 
@@ -58,7 +58,7 @@ public enum OdeDataType {
             result.add(value.getShortName());
          }
          
-         return result.toArray().toString();
+         shortNames = result.toString();
       }
       return shortNames;
    }

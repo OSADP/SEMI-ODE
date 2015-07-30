@@ -200,7 +200,7 @@ h2 {
 </script>
 </head>
 <body>
-   <h1>ODE Query</h1>
+   <h1>ODE Query Test UI</h1>
    <p><a href="subscribe.xhtml">ODE Subscription</a></p>
    <p><a href="deposit.xhtml">ODE Deposit</a></p>
    <div class="noscript">
@@ -222,10 +222,16 @@ h2 {
             <input id="adv" type="radio" name="group1" value="/ode/api/ws/qry/adv" onclick="updateRequestUri(this.value);" />
             <label for="adv">Advisory Messages</label> <br />
             
+            <input id="spat" type="radio" name="group1" value="/ode/api/ws/qry/spat" onclick="updateRequestUri(this.value);" />
+            <label for="isd">SPaT</label> <br />
+             
+            <input id="map" type="radio" name="group1" value="/ode/api/ws/qry/map" onclick="updateRequestUri(this.value);" />
+            <label for="isd">Map</label> <br /> 
+
             <input id="requestUri" type="text" size="40" style="width: 350px" />
             <h2>Enter Time Period</h2>
-            <label>Start Date</label> <input id="startDate" type="text" value = "yyyy-MM-ddTHH:mm:ss" size="40" style="width: 350px" /><br />
-            <label>End Date</label> <input id="endDate" type="text" value = "yyyy-MM-ddTHH:mm:ss" size="40" style="width: 350px" /><br />
+            <label>Start Date-Time</label> <input id="startDate" type="text" value = "yyyy-MM-ddTHH:mm:ss" size="40" style="width: 350px" /><br />
+            <label>End Date-Time</label> <input id="endDate" type="text" value = "yyyy-MM-ddTHH:mm:ss" size="40" style="width: 350px" /><br />
          </div>
       </div>
       <div id="middle-container">

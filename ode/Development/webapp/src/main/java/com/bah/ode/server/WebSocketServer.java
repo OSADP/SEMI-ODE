@@ -154,7 +154,7 @@ public class WebSocketServer {
     *           <ul>
     *           <li>int - Intersection data</li>
     *           <li>veh - Vehicle data</li>
-    *           <li>agg - Aggregate data</li>
+    *           <li>adv - Advisory data (Query request type only)</li>
     *           </ul>
     */
    @OnMessage
@@ -164,6 +164,7 @@ public class WebSocketServer {
       logger.info("Message Received on Session ID {}: {}", sessionId, message);
 
       OdeStatus status = new OdeStatus();
+      MQTopic clientTopic = null;
       try {
          if (odeRequest == null)
             odeRequest = OdeRequestManager.buildOdeRequest(rtype, dtype, message);
@@ -171,7 +172,7 @@ public class WebSocketServer {
          String requestId = OdeRequestManager.buildRequestId(odeRequest);
          
          // Does a topic already existing for this request?
-         MQTopic clientTopic = OdeRequestManager.getTopic(requestId);
+         clientTopic = OdeRequestManager.getTopic(requestId);
          if (clientTopic == null) {
             logger.info("Creating new request ID: {}", requestId);
             // No client topic exists, create a new one
@@ -193,6 +194,7 @@ public class WebSocketServer {
             launchNewDistributor(session, clientTopic);
             OdeRequestManager.addSubscriber(requestId, odeRequest.getDataType());
             logger.info("DDS Connection Established for request ID {}.", requestId);
+            status.setMessage("DDS Connection Established");
          } else {
             // Topic already exists by this or another subscriber
             if (distributor != null) {
@@ -209,17 +211,27 @@ public class WebSocketServer {
                   OdeRequestManager.addSubscriber(requestId, 
                         odeRequest.getDataType());
                   distributor.setClientTopic(clientTopic);
-                  logger.info(String.format("Tapped into existing request %s using existing distributor", requestId));
+                  status.setMessage(String.format("Tapped into existing request %s using existing distributor", requestId));
+                  logger.info(status.getMessage());
+               } else {
+                  status.setMessage(String.format("Request %s already fulfilled. . Nothing further to do.", requestId));
+                  logger.info(status.getMessage());
                }
             } else {
                launchNewDistributor(session, clientTopic);
                OdeRequestManager.addSubscriber(requestId, odeRequest.getDataType());
-               logger.info(String.format("Tapped into existing request %s using a new distributor", requestId));
+               status.setMessage(String.format("Tapped into existing request %s using a new distributor", requestId));
+               logger.info(status.getMessage());
             }
          }         
          status.setCode(OdeStatus.Code.SUCCESS);
-         status.setMessage(requestId);
+         status.setRequestId(requestId);
       } catch (Exception ex) {
+         if (clientTopic != null && odeRequest != null) {
+            OdeRequestManager.removeSubscriber(
+                  clientTopic.getName(), 
+                  odeRequest.getDataType());
+         }
          status.setCode(OdeStatus.Code.FAILURE)
             .setMessage(String.format("Error processing request %s.",
                   session.getRequestURI()));

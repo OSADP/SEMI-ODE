@@ -28,9 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.api.AbstractService;
-import com.bah.ode.context.AppContext;
 import com.bah.ode.model.DdsData;
-import com.bah.ode.model.DdsRequest;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.WebSocketClient;
 
@@ -40,13 +38,10 @@ public class IntersectionDataService extends AbstractService {
 	private static final Logger logger = LoggerFactory
 	      .getLogger(IntersectionDataService.class);
 
-	private AppContext appContext;
    private WebSocketClient<DdsData> wsClient = null;
 	
 	public IntersectionDataService() {
 	   super();
-	   
-	   this.appContext = AppContext.getInstance();
    }
 
 	@GET
@@ -56,7 +51,6 @@ public class IntersectionDataService extends AbstractService {
 	      @QueryParam("seLat") double seLat, @QueryParam("seLon") double seLon) {
 		
 		logger.info("Received {}", getUriInfo());
-		DdsRequest request = null;
 		try {
 //			request = (DdsRequest) DdsRequest.create()
 //					.setDialogID(DdsRequest.Dialog.ISD.getId())

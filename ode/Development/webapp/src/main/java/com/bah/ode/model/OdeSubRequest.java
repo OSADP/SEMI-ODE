@@ -1,5 +1,7 @@
 package com.bah.ode.model;
 
+import java.math.BigDecimal;
+
 public class OdeSubRequest extends OdeRequest {
    private static final long serialVersionUID = -5219513940183321970L;
 
@@ -7,8 +9,8 @@ public class OdeSubRequest extends OdeRequest {
       super();
    }
 
-   public OdeSubRequest(Double nwLat, Double nwLon, Double seLat, 
-         Double seLon, OdeDataType dataType) {
+   public OdeSubRequest(BigDecimal nwLat, BigDecimal nwLon, BigDecimal seLat, 
+         BigDecimal seLon, OdeDataType dataType) {
       super(nwLat, nwLon, seLat, seLon, OdeRequestType.Subscription, dataType);
    }
 

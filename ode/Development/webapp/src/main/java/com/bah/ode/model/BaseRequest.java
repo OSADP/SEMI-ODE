@@ -16,20 +16,22 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
+import java.math.BigDecimal;
+
 
 @SuppressWarnings("serial")
 public class BaseRequest extends OdeObject {
 
-   private Double nwLat;
-   private Double nwLon;
-   private Double seLat;
-   private Double seLon;
+   private BigDecimal nwLat;
+   private BigDecimal nwLon;
+   private BigDecimal seLat;
+   private BigDecimal seLon;
    
    public BaseRequest() {
    	super();
    }
    
-	public BaseRequest(Double nwLat, Double nwLon, Double seLat, Double seLon) {
+	public BaseRequest(BigDecimal nwLat, BigDecimal nwLon, BigDecimal seLat, BigDecimal seLon) {
 	   super();
 	   this.nwLat = nwLat;
 	   this.nwLon = nwLon;
@@ -41,38 +43,38 @@ public class BaseRequest extends OdeObject {
 		return new BaseRequest();
 	}
 	
-	public Double getNwLat() {
+	public BigDecimal getNwLat() {
 		return nwLat;
 	}
 
-	public BaseRequest setNwLat(Double nwLat) {
+	public BaseRequest setNwLat(BigDecimal nwLat) {
 		this.nwLat = nwLat;
 		return this;
 	}
 
-	public Double getNwLon() {
+	public BigDecimal getNwLon() {
 		return nwLon;
 	}
 
-	public BaseRequest setNwLon(Double nwLon) {
+	public BaseRequest setNwLon(BigDecimal nwLon) {
 		this.nwLon = nwLon;
 		return this;
 	}
 
-	public Double getSeLat() {
+	public BigDecimal getSeLat() {
 		return seLat;
 	}
 
-	public BaseRequest setSeLat(Double seLat) {
+	public BaseRequest setSeLat(BigDecimal seLat) {
 		this.seLat = seLat;
 		return this;
 	}
 
-	public Double getSeLon() {
+	public BigDecimal getSeLon() {
 		return seLon;
 	}
 
-	public BaseRequest setSeLon(Double seLon) {
+	public BaseRequest setSeLon(BigDecimal seLon) {
 		this.seLon = seLon;
 		return this;
 	}

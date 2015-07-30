@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
+import com.bah.ode.dds.client.ws.DdsMessageHandler;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeRequest;
@@ -21,16 +22,15 @@ public class DataSourceConnector {
    private DdsRequestManager ddsMgr;
    private TestRequestManager testMgr;
    
+   // FOR LOOPBACK TEST ONLY
    private Session clientSession;
-   
-
    public Session getClientSession() {
       return clientSession;
    }
-
    public void setClientSession(Session clientSession) {
       this.clientSession = clientSession;
    }
+   // FOR LOOPBACK TEST ONLY
 
    public DataSourceConnector(MQTopic clientTopic) {
       this.outputTopic = clientTopic;
@@ -65,7 +65,14 @@ public class DataSourceConnector {
                      if (AppContext.loopbackTest())
                         testMgr.setClientSession(clientSession);
                   } else {
-                     ddsMgr = new DdsRequestManager(dataType, metadata);
+                     ddsMgr = new DdsRequestManager(odeRequest, metadata);
+                     //FOR TEST ONLY
+                     if (AppContext.loopbackTest()) {
+                        ddsMgr.setClientSession(clientSession);
+                        DdsMessageHandler handler = (DdsMessageHandler) 
+                              ddsMgr.getDdsClient().getHandler();
+                        handler.setClientSession(clientSession);
+                     }
                      /*
                       *  Add subscriber only if it is not pass-through because
                       *  if it is pass-through, the subscriber has already been
@@ -74,7 +81,7 @@ public class DataSourceConnector {
                      ddsMgr.addSubscriber();
                      
                      logger.info("Connecting to DDS");
-                     ddsMgr.sendDdsDataRequest(odeRequest);
+                     ddsMgr.sendDdsDataRequest();
                   }
                } else {
                   if (odeRequest.getRequestType() == OdeRequestType.Test) {
@@ -83,10 +90,17 @@ public class DataSourceConnector {
                      if (AppContext.loopbackTest())
                         testMgr.setClientSession(clientSession);
                   } else {
-                     ddsMgr = new DdsRequestManager(dataType, metadata);
-                     
+                     ddsMgr = new DdsRequestManager(odeRequest, metadata);
+                     //FOR TEST ONLY
+                     if (AppContext.loopbackTest()) {
+                        ddsMgr.setClientSession(clientSession);
+                        DdsMessageHandler handler = (DdsMessageHandler) 
+                              ddsMgr.getDdsClient().getHandler();
+                        handler.setClientSession(clientSession);
+                     }
+
                      logger.info("Connecting to DDS");
-                     ddsMgr.sendDdsDataRequest(odeRequest);
+                     ddsMgr.sendDdsDataRequest();
                   }
                }
                
