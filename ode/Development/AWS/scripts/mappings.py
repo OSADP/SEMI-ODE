@@ -85,6 +85,21 @@ AWSRegionArch2AMI = {
     }}
 
 """
+
+ CentOS 7 x86_64 (2014_09_29) EBS HVM-b7ee8a69-ee97-4a49-9e68-afaee216db2e-ami-d2a117ba.2
+
+"""
+
+centos_7_AWSRegionArch2AMI = {
+    logicalName: 'centos7AWSRegionArch2AMI',
+    mapping: {
+        constants.US_EAST_1: {HVM64: "ami-96a818fe"},
+        constants.US_WEST_1: {HVM64: "ami-6bcfc42e"},
+        constants.US_WEST_2: {HVM64: "ami-c7d092f7"}
+
+    }}
+
+"""
  Ambari Server and Hadoop Cluster Images
  OS: CentOS 6 (x86_64) - with Updates HVM
  AWS: https://aws.amazon.com/marketplace/pp/B00NQAYLWO

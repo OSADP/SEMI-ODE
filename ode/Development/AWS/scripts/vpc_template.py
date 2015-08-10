@@ -15,16 +15,19 @@ from troposphere import Ref, Tags, Template,Parameter,  Base64, FindInMap, GetAt
 from troposphere.ec2 import Instance, NetworkAcl, Route, \
     VPCGatewayAttachment, SubnetRouteTableAssociation, Subnet, RouteTable, \
     VPC, NetworkAclEntry, InternetGateway, SecurityGroupRule, SecurityGroup, SecurityGroupIngress, EIP,\
-    EIPAssociation, NetworkInterfaceProperty
+    EIPAssociation, NetworkInterfaceProperty, Volume,VolumeAttachment
 
 from troposphere import constants
+
 # ODE Specific Resources
 import mappings
+import user_data
+import template_helpers
 
 ref_stack_id = Ref('AWS::StackId')
 ref_region = Ref('AWS::Region')
 ref_stack_name = Ref('AWS::StackName')
-quad_zero_ip = '0.0.0.0/0'
+quad_zero_ip = constants.QUAD_ZERO  # '0.0.0.0/0'
 bah_office_ip = '128.229.4.2/32'
 
 
@@ -80,21 +83,18 @@ ssh_key_param = t.add_parameter(Parameter(
     ConstraintDescription='Must Not be Empty',
 ))
 
-
 # Instance Type to architecture type -> HVM64, PV64, etc
 t.add_mapping(mappings.AWSInstanceType2Arch[mappings.logicalName],
               mappings.AWSInstanceType2Arch[mappings.mapping])
-# Liferay Mappings
-t.add_mapping(mappings.AWSRegionArch2AMI[mappings.logicalName],
-              mappings.AWSRegionArch2AMI[mappings.mapping])
 
 # Amazon NAT Instance
 t.add_mapping(mappings.ami_nat_instanceAWSRegionArch2AMI[mappings.logicalName],
               mappings.ami_nat_instanceAWSRegionArch2AMI[mappings.mapping])
 
-# Hadoop Cluster Servers Cents 6.5
-t.add_mapping(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName],
-              mappings.centos_65_AWSRegionArch2AMI[mappings.mapping])
+# Alls Servers Centos 7
+# Hadoop Cluster and Application Server
+t.add_mapping(mappings.centos_7_AWSRegionArch2AMI[mappings.logicalName],
+              mappings.centos_7_AWSRegionArch2AMI[mappings.mapping])
 
 VPC = t.add_resource(
     VPC(
@@ -332,8 +332,8 @@ SecurityGroupIngress(
     IpProtocol='tcp',
     ToPort='65535',
     FromPort='0',
-    GroupId=Ref(pulic_api_sg),
-    SourceSecurityGroupId=Ref(hadoop_cluser_sg))
+    GroupId=Ref(hadoop_cluser_sg),
+    SourceSecurityGroupId=Ref(pulic_api_sg))
 
 # TODO NAT Instance Configuration
 amazon_nat_instance = t.add_resource(Instance(
@@ -360,32 +360,33 @@ private_route_table = t.add_resource(
         RouteTableId=Ref(private_route_Table),
     ))
 
-
 # TODO Hadoop Cluster Configuration
+
 hadoop_cluster_ambari = t.add_resource(Instance(
      "hadoopAmbariServer1",
-    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+    ImageId= FindInMap(mappings.centos_7_AWSRegionArch2AMI[mappings.logicalName], ref_region,
                        FindInMap('AWSInstanceType2Arch',constants.M3_MEDIUM,'Arch')),
     InstanceType=constants.M3_MEDIUM,
     KeyName=Ref(ssh_key_param),
+    UserData=user_data.install_ambari_server(),
     NetworkInterfaces=[
         NetworkInterfaceProperty(
             GroupSet=[Ref(hadoop_cluser_sg)],
             AssociatePublicIpAddress='true',
             DeviceIndex='0',
             DeleteOnTermination='true',
-            SubnetId=Ref(public_tools_subnet) )
+            SubnetId=Ref(public_tools_subnet))
     ],
     Tags=Tags(Name="Ambari Server",Role="Hadoop Cluster")
     ))
 
-
 hadoop_master1= t.add_resource(Instance(
      "hadoopMasterServer1",
-    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+    ImageId= FindInMap(mappings.centos_7_AWSRegionArch2AMI[mappings.logicalName], ref_region,
                        FindInMap('AWSInstanceType2Arch',constants.M3_LARGE,'Arch')),
     InstanceType=constants.M3_LARGE,
     KeyName=Ref(ssh_key_param),
+    UserData=user_data.hadoop_work_node_userData(hadoop_cluster_ambari),
     NetworkInterfaces=[
         NetworkInterfaceProperty(
             GroupSet=[Ref(hadoop_cluser_sg)],
@@ -394,15 +395,17 @@ hadoop_master1= t.add_resource(Instance(
             DeleteOnTermination='true',
             SubnetId=Ref(private_hadoop_subnet) )
     ],
-    Tags=Tags(Name="Hadoop Master Server",Role="Hadoop Cluster")
+    Tags=Tags(Name="Hadoop Master Server",Role="Hadoop Cluster"),
+    DependsOn=hadoop_cluster_ambari.title
     ))
 
 hadoop_master2= t.add_resource(Instance(
     "hadoopMasterServer2",
-    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+    ImageId= FindInMap(mappings.centos_7_AWSRegionArch2AMI[mappings.logicalName], ref_region,
                        FindInMap('AWSInstanceType2Arch',constants.M3_LARGE,'Arch')),
     InstanceType=constants.M3_LARGE,
     KeyName=Ref(ssh_key_param),
+    UserData=user_data.hadoop_work_node_userData(hadoop_cluster_ambari),
     NetworkInterfaces=[
         NetworkInterfaceProperty(
             GroupSet=[Ref(hadoop_cluser_sg)],
@@ -411,15 +414,17 @@ hadoop_master2= t.add_resource(Instance(
             DeleteOnTermination='true',
             SubnetId=Ref(private_hadoop_subnet) )
     ],
-    Tags=Tags(Name="Hadoop Master Server",Role="Hadoop Cluster")
+    Tags=Tags(Name="Hadoop Master Server",Role="Hadoop Cluster"),
+    DependsOn=hadoop_cluster_ambari.title
     ))
 
 hadoop_node_1 = t.add_resource(Instance(
      "hadoopNode1",
-    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+    ImageId= FindInMap(mappings.centos_7_AWSRegionArch2AMI[mappings.logicalName], ref_region,
                        FindInMap('AWSInstanceType2Arch',constants.M3_MEDIUM,'Arch')),
     InstanceType=constants.M3_MEDIUM,
     KeyName=Ref(ssh_key_param),
+    UserData=user_data.hadoop_work_node_userData(hadoop_cluster_ambari),
     NetworkInterfaces=[
         NetworkInterfaceProperty(
             GroupSet=[Ref(hadoop_cluser_sg)],
@@ -428,15 +433,17 @@ hadoop_node_1 = t.add_resource(Instance(
             DeleteOnTermination='true',
             SubnetId=Ref(private_hadoop_subnet) )
     ],
-    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster")
+    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster"),
+    DependsOn=hadoop_cluster_ambari.title
     ))
 
 hadoop_node_2 = t.add_resource(Instance(
      "hadoopNode2",
-    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+    ImageId= FindInMap(mappings.centos_7_AWSRegionArch2AMI[mappings.logicalName], ref_region,
                        FindInMap('AWSInstanceType2Arch',constants.M3_MEDIUM,'Arch')),
     InstanceType=constants.M3_MEDIUM,
     KeyName=Ref(ssh_key_param),
+    UserData=user_data.hadoop_work_node_userData(hadoop_cluster_ambari),
     NetworkInterfaces=[
         NetworkInterfaceProperty(
             GroupSet=[Ref(hadoop_cluser_sg)],
@@ -445,15 +452,17 @@ hadoop_node_2 = t.add_resource(Instance(
             DeleteOnTermination='true',
             SubnetId=Ref(private_hadoop_subnet) )
     ],
-    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster")
+    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster"),
+    DependsOn=hadoop_cluster_ambari.title
     ))
 
 hadoop_node_3 = t.add_resource(Instance(
      "hadoopNode3",
-    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+    ImageId= FindInMap(mappings.centos_7_AWSRegionArch2AMI[mappings.logicalName], ref_region,
                        FindInMap('AWSInstanceType2Arch',constants.M3_MEDIUM,'Arch')),
     InstanceType=constants.M3_MEDIUM,
     KeyName=Ref(ssh_key_param),
+    UserData=user_data.hadoop_work_node_userData(hadoop_cluster_ambari),
     NetworkInterfaces=[
         NetworkInterfaceProperty(
             GroupSet=[Ref(hadoop_cluser_sg)],
@@ -462,15 +471,17 @@ hadoop_node_3 = t.add_resource(Instance(
             DeleteOnTermination='true',
             SubnetId=Ref(private_hadoop_subnet) )
     ],
-    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster")
+    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster"),
+    DependsOn=hadoop_cluster_ambari.title
     ))
-
+'''
 hadoop_node_4 = t.add_resource(Instance(
      "hadoopNode4",
-    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+    ImageId= FindInMap(mappings.centos_7_AWSRegionArch2AMI[mappings.logicalName], ref_region,
                        FindInMap('AWSInstanceType2Arch',constants.M3_MEDIUM,'Arch')),
     InstanceType=constants.M3_MEDIUM,
     KeyName=Ref(ssh_key_param),
+    UserData=user_data.hadoop_work_node_userData(hadoop_cluster_ambari),
     NetworkInterfaces=[
         NetworkInterfaceProperty(
             GroupSet=[Ref(hadoop_cluser_sg)],
@@ -479,15 +490,17 @@ hadoop_node_4 = t.add_resource(Instance(
             DeleteOnTermination='true',
             SubnetId=Ref(private_hadoop_subnet) )
     ],
-    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster")
+    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster"),
+    DependsOn=hadoop_cluster_ambari.title
     ))
 
 hadoop_node_5 = t.add_resource(Instance(
      "hadoopNode5",
-    ImageId= FindInMap(mappings.centos_65_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+    ImageId=FindInMap(mappings.centos_7_AWSRegionArch2AMI[mappings.logicalName], ref_region,
                        FindInMap('AWSInstanceType2Arch',constants.M3_MEDIUM,'Arch')),
     InstanceType=constants.M3_MEDIUM,
     KeyName=Ref(ssh_key_param),
+    UserData=user_data.hadoop_work_node_userData(hadoop_cluster_ambari),
     NetworkInterfaces=[
         NetworkInterfaceProperty(
             GroupSet=[Ref(hadoop_cluser_sg)],
@@ -496,18 +509,20 @@ hadoop_node_5 = t.add_resource(Instance(
             DeleteOnTermination='true',
             SubnetId=Ref(private_hadoop_subnet) )
     ],
-    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster")
+    Tags=Tags(Name="Hadoop Node Server",Role="Hadoop Cluster"),
+    DependsOn=hadoop_cluster_ambari.title
     ))
-
-
+'''
 # TODO Liferay  Configure Instance
 
 liferay_ec2_instance = t.add_resource(Instance(
     "liferayInstance1",
-    ImageId=FindInMap('AWSRegionArch2AMI',
-             Ref('AWS::Region'), FindInMap( 'AWSInstanceType2Arch', Ref(liferay_instance_type_param), 'Arch')),
+    ImageId=FindInMap(mappings.centos_7_AWSRegionArch2AMI[mappings.logicalName], ref_region,
+                       FindInMap('AWSInstanceType2Arch',Ref(liferay_instance_type_param),'Arch')),
+
     InstanceType = Ref(liferay_instance_type_param),
     KeyName=Ref(ssh_key_param),
+    UserData=user_data.hadoop_work_node_userData(hadoop_cluster_ambari),
     NetworkInterfaces=[
         NetworkInterfaceProperty(
             GroupSet=[Ref(pulic_api_sg)],
@@ -519,24 +534,43 @@ liferay_ec2_instance = t.add_resource(Instance(
     Tags=Tags(Name="Liferay Portal Server",)
 ))
 
-ipAddress = t.add_resource(
-    EIP('IPAddress',
-        DependsOn='AttachGateway',
-        Domain=Ref(VPC),
-        InstanceId=Ref(liferay_ec2_instance)
-        ))
+# Attaches volume to instance.
+# Default Volume size 20GB
+# Default Mount Point is /dev/xvdb
+template_helpers.create_and_attach_volume(t,"Volume1",hadoop_cluster_ambari)
+template_helpers.create_and_attach_volume(t,"Volume1",hadoop_master1)   #Size='10')
+template_helpers.create_and_attach_volume(t,"Volume1",hadoop_master2)   #,Size=30)
+template_helpers.create_and_attach_volume(t,"Volume1",hadoop_node_1)    #,Size=20)
+template_helpers.create_and_attach_volume(t,"Volume1",hadoop_node_2)    #,Size=20)
+template_helpers.create_and_attach_volume(t,"Volume1",hadoop_node_3)    #,Size=20)
+# template_helpers.create_and_attach_volume(t,"Volume1",hadoop_node_4)    #,Size=20)
+# template_helpers.create_and_attach_volume(t,"Volume1",hadoop_node_5)    #,Size=20)
+
+
+# ipAddress = t.add_resource(
+#     EIP('IPAddress',
+#         DependsOn='AttachGateway',
+#         Domain=Ref(VPC),
+#         InstanceId=Ref(liferay_ec2_instance)
+#         ))
 
 t.add_output(
-    [Output('URL',
+    [Output('LiferayURL',
             Description='Liferay Server application URL with EIP',
             Value=Join('',
                    ['http://', GetAtt(liferay_ec2_instance.title, 'PublicIp')]) # Would not validate against the aws cli
                                                                                 # when using Ref(liferay_ec2_instance)
-            )]
+            ),
+    Output('AmbariURL',
+           Description='Ambari Server IP address',
+           Value=Join('',
+                      ['http://',GetAtt(hadoop_cluster_ambari.title, 'PublicIp'),':8080'])
+            )
+     ]
     )
 
 
-json_path = os.path.join('..','ODE_cfn_vpc_template.json')
+json_path = os.path.join('..','ODE_cfn_vpc_template_cluster.json')
 with open(json_path, 'w') as f:
     f.write(t.to_json(indent=2))
 print ('DONE')

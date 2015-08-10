@@ -1,5 +1,5 @@
 {
-  "Description": "ODE Cloud Formation Template to create VPC with multiple public and private, security groups and route tables. Subnet are sized for 250 host each.",
+  "Description": "ODE Cloud Formation Template to create VPC with multiple public and private, security groups and route tables. Subnet are sized for 250 host each. Template Created: 2015-07-09 09:41:37",
   "Mappings": {
     "AWSInstanceType2Arch": {
       "c1.medium": {
@@ -116,10 +116,32 @@
         "HVM64": "ami-a0e8eec8"
       },
       "us-west-1": {
-        "HVM64": "ami-9d0719d8"
+        "HVM64": "ami-088b924d"
       },
       "us-west-2": {
-        "HVM64": "ami-3d80df0d"
+        "HVM64": "ami-6df5ac5d"
+      }
+    },
+    "amazonNATInstance": {
+      "us-east-1": {
+        "HVM64": "ami-b0210ed8"
+      },
+      "us-west-1": {
+        "HVM64": "ami-ada746e9"
+      },
+      "us-west-2": {
+        "HVM64": "ami-75ae8245"
+      }
+    },
+    "centos65AWSRegionArch2AMI": {
+      "us-east-1": {
+        "HVM64": "ami-c2a818aa"
+      },
+      "us-west-1": {
+        "HVM64": "ami-57cfc412"
+      },
+      "us-west-2": {
+        "HVM64": "ami-81d092b1"
       }
     }
   },
@@ -143,6 +165,26 @@
     }
   },
   "Parameters": {
+    "amazonNATInstanceType": {
+      "AllowedValues": [
+        "t2.micro",
+        "t2.small",
+        "t2.medium",
+        "m3.medium",
+        "m3.large",
+        "m3.xlarge",
+        "m3.2xlarge",
+        "c3.large",
+        "c3.xlarge",
+        "c3.2xlarge",
+        "c3.4xlarge",
+        "c3.8xlarge"
+      ],
+      "ConstraintDescription": "Must be a valid EC2 instance type.",
+      "Default": "t2.small",
+      "Description": "Amazon NAT Server EC2 Instance type",
+      "Type": "String"
+    },
     "liferayPortalInstance": {
       "AllowedValues": [
         "t2.micro",
@@ -174,7 +216,12 @@
       ],
       "ConstraintDescription": "Must be a valid EC2 instance type.",
       "Default": "c3.large",
-      "Description": "Liferay Portal EC2 instance type",
+      "Description": "Liferay Portal EC2 HVM Instance type",
+      "Type": "String"
+    },
+    "sshKeyParam": {
+      "ConstraintDescription": "Must Not be Empty",
+      "Description": "SSH KeyPair Name used to SSH into Instances",
       "Type": "String"
     }
   },
@@ -190,12 +237,6 @@
       },
       "Type": "AWS::EC2::VPCGatewayAttachment"
     },
-    "EIP1": {
-      "Properties": {
-        "Domain": "vpc"
-      },
-      "Type": "AWS::EC2::EIP"
-    },
     "HadoopClusterSG1": {
       "Properties": {
         "GroupDescription": "Enable Hadoop Cluster and Ambari services to work",
@@ -208,9 +249,15 @@
           },
           {
             "CidrIp": "0.0.0.0/0",
-            "FromPort": "80",
+            "FromPort": "8888",
             "IpProtocol": "tcp",
-            "ToPort": "80"
+            "ToPort": "8888"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "18080",
+            "IpProtocol": "tcp",
+            "ToPort": "18080"
           },
           {
             "CidrIp": "0.0.0.0/0",
@@ -223,12 +270,6 @@
             "FromPort": "8080",
             "IpProtocol": "tcp",
             "ToPort": "8080"
-          },
-          {
-            "CidrIp": "0.0.0.0/0",
-            "FromPort": "8081",
-            "IpProtocol": "tcp",
-            "ToPort": "8081"
           }
         ],
         "Tags": [
@@ -281,6 +322,98 @@
       },
       "Type": "AWS::EC2::Route"
     },
+    "amazonNATInstance1": {
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "amazonNATInstance",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                {
+                  "Ref": "amazonNATInstanceType"
+                },
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": {
+          "Ref": "amazonNATInstanceType"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "HadoopClusterSG1"
+          },
+          {
+            "Ref": "publicAPISG1"
+          }
+        ],
+        "SourceDestCheck": "false",
+        "SubnetId": {
+          "Ref": "publicSubnet1"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "NAT Server"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopAmbariServer1": {
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos65AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.medium",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.medium",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "AssociatePublicIpAddress": "true",
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "publicToolsSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Ambari Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::Instance"
+    },
     "hadoopClusterICPM1": {
       "Properties": {
         "FromPort": "-1",
@@ -323,6 +456,342 @@
       },
       "Type": "AWS::EC2::SecurityGroupIngress"
     },
+    "hadoopMasterServer1": {
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos65AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.large",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.large",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "privateHadoopSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Master Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopMasterServer2": {
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos65AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.large",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.large",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "privateHadoopSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Master Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopNode1": {
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos65AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.medium",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.medium",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "privateHadoopSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Node Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopNode2": {
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos65AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.medium",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.medium",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "privateHadoopSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Node Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopNode3": {
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos65AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.medium",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.medium",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "privateHadoopSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Node Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopNode4": {
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos65AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.medium",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.medium",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "privateHadoopSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Node Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopNode5": {
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos65AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.medium",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.medium",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "privateHadoopSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Node Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::Instance"
+    },
     "liferayInstance1": {
       "Properties": {
         "ImageId": {
@@ -344,6 +813,9 @@
         },
         "InstanceType": {
           "Ref": "liferayPortalInstance"
+        },
+        "KeyName": {
+          "Ref": "sshKeyParam"
         },
         "NetworkInterfaces": [
           {
@@ -435,6 +907,19 @@
       },
       "Type": "AWS::EC2::Subnet"
     },
+    "privateInternetRoute1": {
+      "DependsOn": "AttachGateway",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "InstanceId": {
+          "Ref": "amazonNATInstance1"
+        },
+        "RouteTableId": {
+          "Ref": "privateRouteTable1"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
     "privateRouteTable1": {
       "Properties": {
         "Tags": [
@@ -485,6 +970,20 @@
         }
       },
       "Type": "AWS::EC2::SecurityGroup"
+    },
+    "publicClusterTCP1": {
+      "Properties": {
+        "FromPort": "0",
+        "GroupId": {
+          "Ref": "publicAPISG1"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "ToPort": "65535"
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
     },
     "publicRouteTable": {
       "Properties": {
