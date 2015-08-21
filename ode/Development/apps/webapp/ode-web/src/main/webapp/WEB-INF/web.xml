@@ -22,7 +22,7 @@
    </context-param>
    <context-param>
       <param-name>liferay.ws.serverhost</param-name>
-      <param-value>http://liferay-server/liferay</param-value>
+      <param-value>http://localhost/liferay</param-value>
    </context-param>
    <context-param>
       <param-name>liferay.ws.companyId</param-name>
@@ -159,7 +159,7 @@
       <param-value>ode.veh.data.flat.topic</param-value>
    </context-param>
    <context-param>
-   <param-name></param-name>
+   <param-name>ode.spark.jar</param-name>
    <param-value>ode-spark-0.0.1-SNAPSHOT.jar</param-value>
    </context-param>
    <listener>
