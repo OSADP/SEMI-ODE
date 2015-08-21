@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+ 
+<Context allowLinking="true" antiJARLocking="true" path="/ode">
+ <Loader className="org.apache.catalina.loader.VirtualWebappLoader"
+ 			virtualClasspath="/usr/hdp/current/hadoop-client/conf/*"/>
+
+<!-- 
+    <Loader className="org.apache.catalina.loader.virtualWebappLoader"
+          virtualClasspath="/usr/hdp/current/zookeeper-client/*.jar;/usr/hdp/current/tez-client/*.jar;/usr/hdp/current/spark-client/*.jar;/usr/hdp/current/hadoop-client/*.jar;/usr/hdp/current/hadoop-client/conf/;/usr/hdp/current/hadoop-hdfs-client/*.jar;/usr/hdp/current/hadoop-yarn-client/*.jar;/usr/hdp/current/hadoop-mapreduce-client/*.jar"/>
+-->
+</Context>
+
