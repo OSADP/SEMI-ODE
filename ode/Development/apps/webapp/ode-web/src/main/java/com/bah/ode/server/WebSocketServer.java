@@ -102,38 +102,44 @@ public class WebSocketServer {
       logger.info("Connected to ODE on Session ID: {}, " + "Request Type: {}, "
             + "Data Type: {}", sessionId, rtype, dtype);
       
-      
-      if (!endpointConfig.getUserProperties().containsKey(SecurityService.AUTH_HEADER))
-      {
-    	  logger.warn("No Authentication Information");
-      }
-      else{
-    	  logger.warn(endpointConfig.getUserProperties().get(SecurityService.AUTH_HEADER).toString());
-      }
-      
+     
+      boolean isAuthorized = validateRequest(endpointConfig.getUserProperties());
       OdeStatus msg = new OdeStatus();
+      
       try {
-         if (OdeRequestType.getByShortName(rtype) == null) {
-            msg.setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR)
-                  .setMessage(
-                        String.format(
-                              "Invalid request type %s. Valid request types are %s",
-                              rtype, OdeRequestType.shortNames()));
-            logger.error(msg.toString());
-         } else if (OdeDataType.getByShortName(dtype) == null){
-            msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
-                  .setMessage(
-                        String.format(
-                              "Invalid data type %s requested. Valid data types are %s",
-                              dtype, OdeDataType.shortNames()));
-            logger.error(msg.toString());
-         } else {
-            msg.setCode(OdeStatus.Code.SUCCESS)
-               .setMessage("ODE Connection Established.");
-         }
-         session.getBasicRemote().sendText(msg.toJson());
-
-      } catch (Exception ex) {
+    	  if (!isAuthorized){
+    		  msg.setCode(OdeStatus.Code.FAILURE)
+    		  .setMessage("Invalid User Name or Password supplied.");
+    		  session.getBasicRemote().sendText(msg.toJson());
+    		  
+    		  session.close(new CloseReason(CloseReason.CloseCodes.NOT_CONSISTENT,
+    				  						"Invalid or missing Authentication Values"));
+    	  }
+    	  else {
+	         if (OdeRequestType.getByShortName(rtype) == null) {
+	            msg.setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR)
+	                  .setMessage(
+	                        String.format(
+	                              "Invalid request type %s. Valid request types are %s",
+	                              rtype, OdeRequestType.shortNames()));
+	            logger.error(msg.toString());
+	         }
+	         else if (OdeDataType.getByShortName(dtype) == null){
+	            msg.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
+	                  .setMessage(
+	                        String.format(
+	                              "Invalid data type %s requested. Valid data types are %s",
+	                              dtype, OdeDataType.shortNames()));
+	            logger.error(msg.toString());
+	         } 
+	         else {
+	            msg.setCode(OdeStatus.Code.SUCCESS)
+	               .setMessage("ODE Connection Established.");
+	         }
+	         session.getBasicRemote().sendText(msg.toJson());
+    	 }
+      } 
+      catch (Exception ex) {
          msg.setCode(OdeStatus.Code.SOURCE_CONNECTION_ERROR).setMessage(
                String.format("Error processing connection request %s",
                      session.getRequestURI()));
@@ -315,12 +321,29 @@ public class WebSocketServer {
                      distributor.getClientTopic().getName(),
                      odeRequest.getDataType());
             }
+            
          }
       } catch (Exception e) {
          logger.error("Error closing session " + sessionId, e);
       }
    }
 
+   
+   private boolean validateRequest(Map<String,Object> userProperties)
+   {
+	   boolean result = false;
+	   
+	   if (userProperties.containsKey(SecurityService.AUTH_HEADER+"Result")){
+		   result = Boolean.parseBoolean(userProperties.get(SecurityService.AUTH_HEADER+"Result").toString());
+	   }
+	   else { 
+		   logger.warn("No Authentication Result Found");
+		   result=false;
+	   }
+	   
+	   return result;
+   }
+   
    public static class WebSocketServerException extends OdeException {
       public WebSocketServerException(String message) {
          super(message);
