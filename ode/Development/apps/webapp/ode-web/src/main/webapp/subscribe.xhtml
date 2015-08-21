@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ODE Subscription</title>
+<style type="text/css">
+body {
+   /*
+	background-color: #FFFFCC
+   color: #808080
+*/
+   font-family: Sans-serif;
+}
+
+h1 {
+   color: #3366FF
+}
+
+h2 {
+   color: #6699FF
+}
+
+#controls-container {
+   float: left;
+   width: 1500px
+}
+
+#controls-container div {
+   padding: 5px;
+}
+
+#left-container {
+   float: left;
+   width: 400px
+}
+
+#left-container div {
+   padding: 5px;
+}
+
+#middle-container {
+   float: left;
+   width: 400px
+}
+
+#middle-container div {
+   padding: 5px;
+}
+
+#right-container {
+   float: left;
+   width: 400px
+}
+
+#right-container div {
+   padding: 5px;
+}
+
+#console-container {
+   float: left;
+   margin-left: 15px;
+   width: 1200px;
+}
+
+#console {
+   border: 1px solid #CCCCCC;
+   border-right-color: #999999;
+   border-bottom-color: #999999;
+   height: 200px;
+   overflow-y: scroll;
+   padding: 5px;
+   width: 100%;
+}
+
+#console p {
+   padding: 0;
+   margin: 0;
+}
+</style>
+<script type="application/javascript">
+<![CDATA[
+  "use strict";
+
+  var ws = null;
+  var started = false;
+  var connected = false;
+
+  function setConnectionState(c, s) {
+     connected = c;
+     started = s;
+     
+     if (!connected)
+         started = false;
+
+      document.getElementById('connect').disabled = connected;
+            document.getElementById('disconnect').disabled = !connected;
+            document.getElementById('send').disabled = (started || !connected);
+  }
+
+  function connect() {
+      var requestUri = document.getElementById('requestUri').value;
+      if (requestUri == '') {
+          alert('Please select server side connection implementation.');
+          return;
+      }
+      if ('WebSocket' in window) {
+          ws = new WebSocket(requestUri);
+      } else if ('MozWebSocket' in window) {
+          ws = new MozWebSocket(requestUri);
+      } else {
+          alert('WebSocket is not supported by this browser.');
+          return;
+      }
+      ws.onopen = function (event) {
+          setConnectionState(true, false);
+          log('Info: WebSocket connection opened.');
+      };
+      ws.onmessage = function (event) {
+         if (!started) {
+               var message = JSON.parse(event.data);
+               if (message["code"] != "SUCCESS") {
+                   setConnectionState(true, true);
+               }
+         }
+      
+         log(event.data);
+      };
+      ws.onclose = function (event) {
+                setConnectionState(false, false);
+          log('Info: WebSocket connection closed, Code: ' + event.code + (event.reason == "" ? "" : ", Reason: " + event.reason));
+      };
+  }
+
+  function disconnect() {
+      if (ws != null) {
+          ws.close();
+          ws = null;
+      }
+      setConnectionState(false, false);
+  }
+
+  function send() {
+      if (ws != null) {
+      var request = {};
+      request["nwLat"] = document.getElementById('nwLat').value;
+      request["nwLon"] = document.getElementById('nwLon').value;
+      request["seLat"] = document.getElementById('seLat').value;
+      request["seLon"] = document.getElementById('seLon').value;
+      var reqStr = JSON.stringify(request); 
+          ws.send(reqStr);
+                log('Sent: ' +  reqStr);
+      } else {
+          alert('WebSocket connection not established, please connect.');
+      }
+  }
+
+  function updateRequestUri(requestUri) {
+      if (window.location.protocol == 'http:') {
+          document.getElementById('requestUri').value = 'ws://' + window.location.host + requestUri;
+      } else {
+          document.getElementById('requestUri').value = 'wss://' + window.location.host + requestUri;
+      }
+            setConnectionState(false, false);
+  }
+
+  function log(msgOrData) {
+      var console = document.getElementById('console');
+      var p = document.createElement('p');
+      p.style.wordWrap = 'break-word';
+      p.appendChild(document.createTextNode(msgOrData));
+      console.appendChild(p);
+      while (console.childNodes.length > 25) {
+          console.removeChild(console.firstChild);
+      }
+      console.scrollTop = console.scrollHeight;
+  }
+
+
+  document.addEventListener("DOMContentLoaded", function() {
+      // Remove elements with "noscript" class - <noscript> is not allowed in XHTML
+      var noscripts = document.getElementsByClassName("noscript");
+      for (var i = 0; i < noscripts.length; i++) {
+          noscripts[i].parentNode.removeChild(noscripts[i]);
+      }
+  }, false);
+]]>
+
+
+
+</script>
+</head>
+<body>
+   <h1>ODE Subscription</h1>
+   <p><a href="query.xhtml">ODE Query</a></p>
+   <p><a href="deposit.xhtml">ODE Deposit</a></p>
+   <div class="noscript">
+      <h2 style="color: #ff0000">Seems your browser doesn't support
+         Javascript! Websockets rely on Javascript being enabled. Please
+         enable Javascript and reload this page!</h2>
+   </div>
+   <div id="controls-container">
+      <div id="left-container">
+         <div id="selectData">
+            <hr />
+            <h2>Select Data:</h2>
+            <br /><input id="vsd" type="radio" name="group1" 
+                     value="/ode/api/ws/sub/veh" 
+                     onclick="updateRequestUri(this.value);" />
+                     <label for="vsd">Vehicles</label>
+            <br /> <input id="isd" type="radio" name="group1"
+                     value="/ode/api/ws/sub/int"
+                     onclick="updateRequestUri(this.value);" />
+                     <label for="isd">Intersections</label>
+            <br /> <input id="agg" type="radio" name="group1" 
+                     value="/ode/api/ws/sub/agg"
+                     onclick="updateRequestUri(this.value);" />
+                     <label for="agg">Aggregates</label>
+            <br /> <input id="test" type="radio" name="group1" 
+                     value="/ode/api/ws/tst/veh"
+                     onclick="updateRequestUri(this.value);" />
+                     <label for="agg">Test Vehicle Data</label>
+            <br /> <input id="spat" type="radio" name="group1"
+                     value="/ode/api/ws/sub/spat"
+                     onclick="updateRequestUri(this.value);" />
+                     <label for="isd">SPaT</label>
+            <br /> <input id="map" type="radio" name="group1"
+                     value="/ode/api/ws/sub/map"
+                     onclick="updateRequestUri(this.value);" />
+                     <label for="isd">Map</label>
+            <br /> <input id="requestUri" type="text" size="40" style="width: 350px" />
+         </div>
+      </div>
+      <div id="middle-container">
+         <div id="geoRegion">
+            <hr />
+            <h2>Enter Geographic Region</h2>
+            <br /> <label>NW Latitude</label> <input id="nwLat"
+               type="text" value="43.652969118285434" size="40"
+               style="width: 350px" /><br /> <label>NW
+               Longitude</label> <input id="nwLon" type="text"
+               value="-85.94707489013672" size="40" style="width: 350px" /><br />
+            <label>SE Latitude</label> <input id="seLat" type="text"
+               value="36.4765153148293" size="40" style="width: 350px" /><br />
+            <label>SE Longitude</label> <input id="seLon" type="text"
+               value="-74.53468322753906" size="40" style="width: 350px" /><br />
+         </div>
+      </div>
+      <div id="right-container">
+         <!-- 
+            <div id="selectFormat">
+               <hr/>
+               <h2>Select Format:</h2><br/>
+               <input id="json" type="radio" name="group2" value="json"/>
+               <label for="json">JSON</label>
+               <input id="hex" type="radio" name="group2" value="hex"/>
+               <label for="hex">Hex</label>
+               <input id="base64" type="radio" name="group2" value="base64"/>
+               <label for="vsd">Base 64</label>
+               <br/>
+            </div>
+         -->
+         <div id="destination">
+            <hr />
+            <h2>Options:</h2>
+            <!--
+            <br /> <input id="screen" type="checkbox" checked="checked"
+               value="screen" /> <label for="screen">On Screen</label><br />
+            <input id="file" type="checkbox" value="file" /> <label
+               for="file">Server File Path</label><br /> <a
+               href="https://ode/download/">https://ode/download/</a><br />
+            <br />
+            -->
+         </div>
+      </div>
+   </div>
+   <div id="console-container">
+      <div>
+         <hr />
+         <button id="connect" disabled="disabled" onclick="connect();">Connect</button>
+         <button id="send" disabled="disabled" onclick="send();">Send
+            Request</button>
+         <button id="disconnect" disabled="disabled"
+            onclick="disconnect();">Disconnect</button>
+      </div>
+      <hr />
+      <div id="console" />
+   </div>
+</body>
+</html>
