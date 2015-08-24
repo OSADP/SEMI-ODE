@@ -24,8 +24,8 @@ def create_and_attach_volume(template,title, instance,device='/dev/xvdb', **kwar
     :param kwargs: Keyword arguments that are passed to the Volume Consctructor
     :return:
     """
-
-
+    # if 'VolumeType' not in kwargs:
+    #     kwargs['VolumeType']="gp2"
     if 'Size' not in kwargs:
         kwargs['Size']=str(20)
     if type(kwargs['Size']) is not basestring:

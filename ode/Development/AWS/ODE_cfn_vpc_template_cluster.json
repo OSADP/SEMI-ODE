@@ -1,0 +1,1446 @@
+{
+  "Description": "ODE Cloud Formation Template to create VPC with multiple public and private, security groups and route tables. Subnet are sized for 250 host each. Template Created: 2015-08-24 15:17:23",
+  "Mappings": {
+    "AWSInstanceType2Arch": {
+      "c1.medium": {
+        "Arch": "PV64"
+      },
+      "c1.xlarge": {
+        "Arch": "PV64"
+      },
+      "c3.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "c3.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "c3.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "c3.large": {
+        "Arch": "HVM64"
+      },
+      "c3.xlarge": {
+        "Arch": "HVM64"
+      },
+      "cc2.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "cr1.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "g2.2xlarge": {
+        "Arch": "HVMG2"
+      },
+      "hi1.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "hs1.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "i2.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "i2.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "i2.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "i2.xlarge": {
+        "Arch": "HVM64"
+      },
+      "m1.large": {
+        "Arch": "PV64"
+      },
+      "m1.medium": {
+        "Arch": "PV64"
+      },
+      "m1.small": {
+        "Arch": "PV64"
+      },
+      "m1.xlarge": {
+        "Arch": "PV64"
+      },
+      "m2.2xlarge": {
+        "Arch": "PV64"
+      },
+      "m2.4xlarge": {
+        "Arch": "PV64"
+      },
+      "m2.xlarge": {
+        "Arch": "PV64"
+      },
+      "m3.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "m3.large": {
+        "Arch": "HVM64"
+      },
+      "m3.medium": {
+        "Arch": "HVM64"
+      },
+      "m3.xlarge": {
+        "Arch": "HVM64"
+      },
+      "r3.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "r3.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "r3.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "r3.large": {
+        "Arch": "HVM64"
+      },
+      "r3.xlarge": {
+        "Arch": "HVM64"
+      },
+      "t1.micro": {
+        "Arch": "PV64"
+      },
+      "t2.medium": {
+        "Arch": "HVM64"
+      },
+      "t2.micro": {
+        "Arch": "HVM64"
+      },
+      "t2.small": {
+        "Arch": "HVM64"
+      }
+    },
+    "amazonNATInstance": {
+      "us-east-1": {
+        "HVM64": "ami-b0210ed8"
+      },
+      "us-west-1": {
+        "HVM64": "ami-ada746e9"
+      },
+      "us-west-2": {
+        "HVM64": "ami-75ae8245"
+      }
+    },
+    "centos7AWSRegionArch2AMI": {
+      "us-east-1": {
+        "HVM64": "ami-96a818fe"
+      },
+      "us-west-1": {
+        "HVM64": "ami-6bcfc42e"
+      },
+      "us-west-2": {
+        "HVM64": "ami-c7d092f7"
+      }
+    }
+  },
+  "Outputs": {
+    "AmbariURL": {
+      "Description": "Ambari Server IP address",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "hadoopAmbariServer1",
+                "PublicIp"
+              ]
+            },
+            ":8080"
+          ]
+        ]
+      }
+    },
+    "LiferayURL": {
+      "Description": "Liferay Server application URL with EIP",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "liferayInstance1",
+                "PublicIp"
+              ]
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "amazonNATInstanceType": {
+      "AllowedValues": [
+        "t2.micro",
+        "t2.small",
+        "t2.medium",
+        "m3.medium",
+        "m3.large",
+        "m3.xlarge",
+        "m3.2xlarge",
+        "c3.large",
+        "c3.xlarge",
+        "c3.2xlarge",
+        "c3.4xlarge",
+        "c3.8xlarge"
+      ],
+      "ConstraintDescription": "Must be a valid EC2 instance type.",
+      "Default": "t2.small",
+      "Description": "Amazon NAT Server EC2 Instance type",
+      "Type": "String"
+    },
+    "liferayPortalInstance": {
+      "AllowedValues": [
+        "t2.micro",
+        "t2.small",
+        "t2.medium",
+        "m3.medium",
+        "m3.large",
+        "m3.xlarge",
+        "m3.2xlarge",
+        "c3.large",
+        "c3.xlarge",
+        "c3.2xlarge",
+        "c3.4xlarge",
+        "c3.8xlarge",
+        "r3.large",
+        "r3.xlarge",
+        "r3.2xlarge",
+        "r3.4xlarge",
+        "r3.8xlarge",
+        "i2.xlarge",
+        "i2.2xlarge",
+        "i2.4xlarge",
+        "i2.8xlarge",
+        "hi1.4xlarge",
+        "hs1.8xlarge",
+        "cr1.8xlarge",
+        "cc2.8xlarge",
+        "cg1.4xlarge"
+      ],
+      "ConstraintDescription": "Must be a valid EC2 instance type.",
+      "Default": "c3.large",
+      "Description": "Liferay Portal EC2 HVM Instance type",
+      "Type": "String"
+    },
+    "sshKeyParam": {
+      "ConstraintDescription": "Must Not be Empty",
+      "Description": "SSH KeyPair Name used to SSH into Instances",
+      "MinLength": 3,
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "AttachGateway": {
+      "Properties": {
+        "InternetGatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment"
+    },
+    "HadoopClusterSG1": {
+      "Properties": {
+        "GroupDescription": "Enable Hadoop Cluster and Ambari services to work",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "128.229.4.2/32",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "71.178.48.129/32",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "96.255.208.9/32",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "108.48.115.235/32",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "69.243.9.220/32",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "8888",
+            "IpProtocol": "tcp",
+            "ToPort": "8888"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "18080",
+            "IpProtocol": "tcp",
+            "ToPort": "18080"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "7180",
+            "IpProtocol": "tcp",
+            "ToPort": "7180"
+          },
+          {
+            "CidrIp": "128.229.4.2/32",
+            "FromPort": "8080",
+            "IpProtocol": "tcp",
+            "ToPort": "8080"
+          },
+          {
+            "CidrIp": "71.178.48.129/32",
+            "FromPort": "8080",
+            "IpProtocol": "tcp",
+            "ToPort": "8080"
+          },
+          {
+            "CidrIp": "96.255.208.9/32",
+            "FromPort": "8080",
+            "IpProtocol": "tcp",
+            "ToPort": "8080"
+          },
+          {
+            "CidrIp": "108.48.115.235/32",
+            "FromPort": "8080",
+            "IpProtocol": "tcp",
+            "ToPort": "8080"
+          },
+          {
+            "CidrIp": "69.243.9.220/32",
+            "FromPort": "8080",
+            "IpProtocol": "tcp",
+            "ToPort": "8080"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Cluster Security Group"
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "InternetGateway": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          }
+        ]
+      },
+      "Type": "AWS::EC2::InternetGateway"
+    },
+    "Route": {
+      "DependsOn": "AttachGateway",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "RouteTableId": {
+          "Ref": "publicRouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "amazonNATInstance1": {
+      "DependsOn": "InternetGateway",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "amazonNATInstance",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                {
+                  "Ref": "amazonNATInstanceType"
+                },
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": {
+          "Ref": "amazonNATInstanceType"
+        },
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "AssociatePublicIpAddress": "true",
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              },
+              {
+                "Ref": "publicAPISG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "publicSubnet1"
+            }
+          }
+        ],
+        "SourceDestCheck": "false",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "NAT Server"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopAmbariServer1": {
+      "DependsOn": "amazonNATInstance1",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos7AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.medium",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.medium",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "AssociatePublicIpAddress": "true",
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "publicToolsSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Ambari Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash\n",
+                "yum install -y ntp  &&  chkconfig ntpd on\n",
+                "service ntpd start\n",
+                "yum install -y wget\n",
+                "wget -nv http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.1.0/ambari.repo -O /etc/yum.repos.d/ambari.repo\nyum install -y ambari-server\nambari-server setup --silent\n",
+                "sleep 10\n",
+                "chkconfig ambari-server on\n",
+                "ambari-server start\n",
+                "mkdir /data\n",
+                "mkfs -t ext4 /dev/xvdb\n",
+                "mount /dev/xvdb /data\n",
+                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopAmbariServer1Volume1": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::GetAtt": [
+            "hadoopAmbariServer1",
+            "AvailabilityZone"
+          ]
+        },
+        "Size": "20",
+        "VolumeType": "gp2"
+      },
+      "Type": "AWS::EC2::Volume"
+    },
+    "hadoopAmbariServer1Volume1Attachment": {
+      "Properties": {
+        "Device": "/dev/xvdb",
+        "InstanceId": {
+          "Ref": "hadoopAmbariServer1"
+        },
+        "VolumeId": {
+          "Ref": "hadoopAmbariServer1Volume1"
+        }
+      },
+      "Type": "AWS::EC2::VolumeAttachment"
+    },
+    "hadoopClusterICPM1": {
+      "Properties": {
+        "FromPort": "-1",
+        "GroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "IpProtocol": "icmp",
+        "SourceSecurityGroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "ToPort": "-1"
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "hadoopClusterTCP1": {
+      "Properties": {
+        "FromPort": "0",
+        "GroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "ToPort": "65535"
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "hadoopClusterUDP1": {
+      "Properties": {
+        "FromPort": "0",
+        "GroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "IpProtocol": "udp",
+        "SourceSecurityGroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "ToPort": "65535"
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "hadoopMasterServer1": {
+      "DependsOn": "hadoopAmbariServer1",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos7AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.large",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.large",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "privateHadoopSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Master Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash\n",
+                "yum install -y ntp  &&  chkconfig ntpd on\n",
+                "service ntpd start\nyum install -y wget\n",
+                "wget -nv http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.1.0/ambari.repo -O /etc/yum.repos.d/ambari.repo\nyum install -y ambari-agent\n",
+                "# Setup correct file ownership\n",
+                "ambari_agent=/etc/ambari-agent/conf/ambari-agent.ini\n",
+                "sed -i 's/hostname=.*/hostname=",
+                {
+                  "Fn::GetAtt": [
+                    "hadoopAmbariServer1",
+                    "PrivateDnsName"
+                  ]
+                },
+                "/g' $ambari_agent\n",
+                "sleep 60 \n",
+                "chkconfig ambari-agent on\nambari-agent start\n",
+                "mkdir /data\n",
+                "mkfs -t ext4 /dev/xvdb\n",
+                "mount /dev/xvdb /data\n",
+                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopMasterServer1Volume1": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::GetAtt": [
+            "hadoopMasterServer1",
+            "AvailabilityZone"
+          ]
+        },
+        "Size": "15",
+        "VolumeType": "gp2"
+      },
+      "Type": "AWS::EC2::Volume"
+    },
+    "hadoopMasterServer1Volume1Attachment": {
+      "Properties": {
+        "Device": "/dev/xvdb",
+        "InstanceId": {
+          "Ref": "hadoopMasterServer1"
+        },
+        "VolumeId": {
+          "Ref": "hadoopMasterServer1Volume1"
+        }
+      },
+      "Type": "AWS::EC2::VolumeAttachment"
+    },
+    "hadoopMasterServer2": {
+      "DependsOn": "hadoopAmbariServer1",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos7AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.large",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.large",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "privateHadoopSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Master Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash\n",
+                "yum install -y ntp  &&  chkconfig ntpd on\n",
+                "service ntpd start\nyum install -y wget\n",
+                "wget -nv http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.1.0/ambari.repo -O /etc/yum.repos.d/ambari.repo\nyum install -y ambari-agent\n",
+                "# Setup correct file ownership\n",
+                "ambari_agent=/etc/ambari-agent/conf/ambari-agent.ini\n",
+                "sed -i 's/hostname=.*/hostname=",
+                {
+                  "Fn::GetAtt": [
+                    "hadoopAmbariServer1",
+                    "PrivateDnsName"
+                  ]
+                },
+                "/g' $ambari_agent\n",
+                "sleep 60 \n",
+                "chkconfig ambari-agent on\nambari-agent start\n",
+                "mkdir /data\n",
+                "mkfs -t ext4 /dev/xvdb\n",
+                "mount /dev/xvdb /data\n",
+                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopMasterServer2Volume1": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::GetAtt": [
+            "hadoopMasterServer2",
+            "AvailabilityZone"
+          ]
+        },
+        "Size": "15",
+        "VolumeType": "gp2"
+      },
+      "Type": "AWS::EC2::Volume"
+    },
+    "hadoopMasterServer2Volume1Attachment": {
+      "Properties": {
+        "Device": "/dev/xvdb",
+        "InstanceId": {
+          "Ref": "hadoopMasterServer2"
+        },
+        "VolumeId": {
+          "Ref": "hadoopMasterServer2Volume1"
+        }
+      },
+      "Type": "AWS::EC2::VolumeAttachment"
+    },
+    "hadoopNode1": {
+      "DependsOn": "hadoopAmbariServer1",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos7AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.medium",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.medium",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "privateHadoopSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Node Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash\n",
+                "yum install -y ntp  &&  chkconfig ntpd on\n",
+                "service ntpd start\nyum install -y wget\n",
+                "wget -nv http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.1.0/ambari.repo -O /etc/yum.repos.d/ambari.repo\nyum install -y ambari-agent\n",
+                "# Setup correct file ownership\n",
+                "ambari_agent=/etc/ambari-agent/conf/ambari-agent.ini\n",
+                "sed -i 's/hostname=.*/hostname=",
+                {
+                  "Fn::GetAtt": [
+                    "hadoopAmbariServer1",
+                    "PrivateDnsName"
+                  ]
+                },
+                "/g' $ambari_agent\n",
+                "sleep 60 \n",
+                "chkconfig ambari-agent on\nambari-agent start\n",
+                "mkdir /data\n",
+                "mkfs -t ext4 /dev/xvdb\n",
+                "mount /dev/xvdb /data\n",
+                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopNode1Volume1": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::GetAtt": [
+            "hadoopNode1",
+            "AvailabilityZone"
+          ]
+        },
+        "Size": "15",
+        "VolumeType": "gp2"
+      },
+      "Type": "AWS::EC2::Volume"
+    },
+    "hadoopNode1Volume1Attachment": {
+      "Properties": {
+        "Device": "/dev/xvdb",
+        "InstanceId": {
+          "Ref": "hadoopNode1"
+        },
+        "VolumeId": {
+          "Ref": "hadoopNode1Volume1"
+        }
+      },
+      "Type": "AWS::EC2::VolumeAttachment"
+    },
+    "hadoopNode2": {
+      "DependsOn": "hadoopAmbariServer1",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos7AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.medium",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.medium",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "privateHadoopSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Node Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash\n",
+                "yum install -y ntp  &&  chkconfig ntpd on\n",
+                "service ntpd start\nyum install -y wget\n",
+                "wget -nv http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.1.0/ambari.repo -O /etc/yum.repos.d/ambari.repo\nyum install -y ambari-agent\n",
+                "# Setup correct file ownership\n",
+                "ambari_agent=/etc/ambari-agent/conf/ambari-agent.ini\n",
+                "sed -i 's/hostname=.*/hostname=",
+                {
+                  "Fn::GetAtt": [
+                    "hadoopAmbariServer1",
+                    "PrivateDnsName"
+                  ]
+                },
+                "/g' $ambari_agent\n",
+                "sleep 60 \n",
+                "chkconfig ambari-agent on\nambari-agent start\n",
+                "mkdir /data\n",
+                "mkfs -t ext4 /dev/xvdb\n",
+                "mount /dev/xvdb /data\n",
+                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopNode2Volume1": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::GetAtt": [
+            "hadoopNode2",
+            "AvailabilityZone"
+          ]
+        },
+        "Size": "15",
+        "VolumeType": "gp2"
+      },
+      "Type": "AWS::EC2::Volume"
+    },
+    "hadoopNode2Volume1Attachment": {
+      "Properties": {
+        "Device": "/dev/xvdb",
+        "InstanceId": {
+          "Ref": "hadoopNode2"
+        },
+        "VolumeId": {
+          "Ref": "hadoopNode2Volume1"
+        }
+      },
+      "Type": "AWS::EC2::VolumeAttachment"
+    },
+    "hadoopNode3": {
+      "DependsOn": "hadoopAmbariServer1",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos7AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                "m3.medium",
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": "m3.medium",
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "HadoopClusterSG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "privateHadoopSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Hadoop Node Server"
+          },
+          {
+            "Key": "Role",
+            "Value": "Hadoop Cluster"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash\n",
+                "yum install -y ntp  &&  chkconfig ntpd on\n",
+                "service ntpd start\nyum install -y wget\n",
+                "wget -nv http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.1.0/ambari.repo -O /etc/yum.repos.d/ambari.repo\nyum install -y ambari-agent\n",
+                "# Setup correct file ownership\n",
+                "ambari_agent=/etc/ambari-agent/conf/ambari-agent.ini\n",
+                "sed -i 's/hostname=.*/hostname=",
+                {
+                  "Fn::GetAtt": [
+                    "hadoopAmbariServer1",
+                    "PrivateDnsName"
+                  ]
+                },
+                "/g' $ambari_agent\n",
+                "sleep 60 \n",
+                "chkconfig ambari-agent on\nambari-agent start\n",
+                "mkdir /data\n",
+                "mkfs -t ext4 /dev/xvdb\n",
+                "mount /dev/xvdb /data\n",
+                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "hadoopNode3Volume1": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::GetAtt": [
+            "hadoopNode3",
+            "AvailabilityZone"
+          ]
+        },
+        "Size": "15",
+        "VolumeType": "gp2"
+      },
+      "Type": "AWS::EC2::Volume"
+    },
+    "hadoopNode3Volume1Attachment": {
+      "Properties": {
+        "Device": "/dev/xvdb",
+        "InstanceId": {
+          "Ref": "hadoopNode3"
+        },
+        "VolumeId": {
+          "Ref": "hadoopNode3Volume1"
+        }
+      },
+      "Type": "AWS::EC2::VolumeAttachment"
+    },
+    "liferayInstance1": {
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "centos7AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                {
+                  "Ref": "liferayPortalInstance"
+                },
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": {
+          "Ref": "liferayPortalInstance"
+        },
+        "KeyName": {
+          "Ref": "sshKeyParam"
+        },
+        "NetworkInterfaces": [
+          {
+            "AssociatePublicIpAddress": "true",
+            "DeleteOnTermination": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "publicAPISG1"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "publicSubnet1"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Liferay Portal Server"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash\n",
+                "yum install -y ntp  &&  chkconfig ntpd on\n",
+                "service ntpd start\nyum install -y wget\n",
+                "wget -nv http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.1.0/ambari.repo -O /etc/yum.repos.d/ambari.repo\nyum install -y ambari-agent\n",
+                "# Setup correct file ownership\n",
+                "ambari_agent=/etc/ambari-agent/conf/ambari-agent.ini\n",
+                "sed -i 's/hostname=.*/hostname=",
+                {
+                  "Fn::GetAtt": [
+                    "hadoopAmbariServer1",
+                    "PrivateDnsName"
+                  ]
+                },
+                "/g' $ambari_agent\n",
+                "sleep 60 \n",
+                "chkconfig ambari-agent on\nambari-agent start\n",
+                "mkdir /data\n",
+                "mkfs -t ext4 /dev/xvdb\n",
+                "mount /dev/xvdb /data\n",
+                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "liferayInstance1Volume1": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::GetAtt": [
+            "liferayInstance1",
+            "AvailabilityZone"
+          ]
+        },
+        "Size": "15",
+        "VolumeType": "gp2"
+      },
+      "Type": "AWS::EC2::Volume"
+    },
+    "liferayInstance1Volume1Attachment": {
+      "Properties": {
+        "Device": "/dev/xvdb",
+        "InstanceId": {
+          "Ref": "liferayInstance1"
+        },
+        "VolumeId": {
+          "Ref": "liferayInstance1Volume1"
+        }
+      },
+      "Type": "AWS::EC2::VolumeAttachment"
+    },
+    "odeVPC": {
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": "true",
+        "EnableDnsSupport": "true",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DEV VPC"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::VPC"
+    },
+    "privateDatabasSubnet1": {
+      "Properties": {
+        "CidrBlock": "10.0.32.0/24",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Private Database Subnet1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "privateDatabaseRouteAssoc2": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "privateRouteTable1"
+        },
+        "SubnetId": {
+          "Ref": "privateDatabasSubnet1"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "privateHadoopRouteAssoc1": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "privateRouteTable1"
+        },
+        "SubnetId": {
+          "Ref": "privateHadoopSubnet1"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "privateHadoopSubnet1": {
+      "Properties": {
+        "CidrBlock": "10.0.16.0/24",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Private Hadoop Subnet1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "privateInternetRoute1": {
+      "DependsOn": "AttachGateway",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "InstanceId": {
+          "Ref": "amazonNATInstance1"
+        },
+        "RouteTableId": {
+          "Ref": "privateRouteTable1"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "privateRouteTable1": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "publicAPISG1": {
+      "Properties": {
+        "GroupDescription": "Enable Access to the Portal GUI and Rest APIs",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "128.229.4.2/32",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "71.178.48.129/32",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "96.255.208.9/32",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "108.48.115.235/32",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "69.243.9.220/32",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "80",
+            "IpProtocol": "tcp",
+            "ToPort": "80"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "443",
+            "IpProtocol": "tcp",
+            "ToPort": "443"
+          },
+          {
+            "CidrIp": "128.229.4.2/32",
+            "FromPort": "8080",
+            "IpProtocol": "tcp",
+            "ToPort": "8080"
+          },
+          {
+            "CidrIp": "96.255.208.9/32",
+            "FromPort": "8080",
+            "IpProtocol": "tcp",
+            "ToPort": "8080"
+          },
+          {
+            "CidrIp": "108.48.115.235/32",
+            "FromPort": "8080",
+            "IpProtocol": "tcp",
+            "ToPort": "8080"
+          },
+          {
+            "CidrIp": "69.243.9.220/32",
+            "FromPort": "8080",
+            "IpProtocol": "tcp",
+            "ToPort": "8080"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Public Portal Security Group"
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "publicClusterTCP1": {
+      "Properties": {
+        "FromPort": "0",
+        "GroupId": {
+          "Ref": "HadoopClusterSG1"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Ref": "publicAPISG1"
+        },
+        "ToPort": "65535"
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "publicRouteTable": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "publicSubnet1": {
+      "Properties": {
+        "CidrBlock": "10.0.1.0/24",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Public API Subnet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "publicSubnetRouteTableAssoc1": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "publicRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "publicSubnet1"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "publicToolsSubnet1": {
+      "Properties": {
+        "CidrBlock": "10.0.8.0/24",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Public Tools Subnet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "odeVPC"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "publicToolsSubnetRouteTableAssoc1": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "publicRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "publicToolsSubnet1"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    }
+  }
+}

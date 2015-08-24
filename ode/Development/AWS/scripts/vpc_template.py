@@ -30,6 +30,12 @@ ref_stack_name = Ref('AWS::StackName')
 quad_zero_ip = constants.QUAD_ZERO  # '0.0.0.0/0'
 bah_office_ip = '128.229.4.2/32'
 
+# IPs for Remote Access
+matt_remote_ip = "71.178.48.129/32"
+
+team_members_remote_IP = ["96.255.208.9/32",
+                          "108.48.115.235/32",
+                          "69.243.9.220/32"]
 
 t = Template()
 t.add_description("""\
@@ -81,6 +87,7 @@ ssh_key_param = t.add_parameter(Parameter(
     Type = 'String',
     Description= 'SSH KeyPair Name used to SSH into Instances',
     ConstraintDescription='Must Not be Empty',
+    MinLength=3
 ))
 
 # Instance Type to architecture type -> HVM64, PV64, etc
@@ -221,7 +228,7 @@ t.add_resource(
 #         CidrBlock='0.0.0.0/0',
 #     ))
 
-pulic_api_sg = t.add_resource(
+public_api_sg = t.add_resource(
     SecurityGroup(
         title='publicAPISG1',
         GroupDescription='Enable Access to the Portal GUI and Rest APIs',
@@ -232,7 +239,27 @@ pulic_api_sg = t.add_resource(
                 IpProtocol='tcp',
                 FromPort='22',
                 ToPort='22',
-                CidrIp=quad_zero_ip), # TODO IP address of BAH Office, Home office, Bastion Host etc
+                CidrIp=bah_office_ip), # TODO IP address of BAH Office, Home office, Bastion Host etc
+            SecurityGroupRule(              # SSH
+                IpProtocol='tcp',
+                FromPort='22',
+                ToPort='22',
+                CidrIp=matt_remote_ip),
+            SecurityGroupRule(              # SSH
+                IpProtocol='tcp',
+                FromPort='22',
+                ToPort='22',
+                CidrIp=team_members_remote_IP[0]),
+            SecurityGroupRule(              # SSH
+                IpProtocol='tcp',
+                FromPort='22',
+                ToPort='22',
+                CidrIp=team_members_remote_IP[1]),
+            SecurityGroupRule(              # SSH
+                IpProtocol='tcp',
+                FromPort='22',
+                ToPort='22',
+                CidrIp=team_members_remote_IP[2]),
             SecurityGroupRule(              # Web Interface
                 IpProtocol='tcp',
                 FromPort='80',
@@ -242,7 +269,27 @@ pulic_api_sg = t.add_resource(
                 IpProtocol='tcp',
                 FromPort='443',
                 ToPort='443',
-                CidrIp=quad_zero_ip)
+                CidrIp=quad_zero_ip),
+            SecurityGroupRule(              # tomcat Web Interface
+                IpProtocol='tcp',
+                FromPort='8080',
+                ToPort='8080',
+                CidrIp=bah_office_ip),
+            SecurityGroupRule(              # tomcat Web Interface
+                IpProtocol='tcp',
+                FromPort='8080',
+                ToPort='8080',
+                CidrIp=team_members_remote_IP[0]),
+            SecurityGroupRule(              # tomcat Web Interface
+                IpProtocol='tcp',
+                FromPort='8080',
+                ToPort='8080',
+                CidrIp=team_members_remote_IP[1]),
+            SecurityGroupRule(              # tomcat Web Interface
+                IpProtocol='tcp',
+                FromPort='8080',
+                ToPort='8080',
+                CidrIp=team_members_remote_IP[2])
         ]
     ))
 
@@ -257,7 +304,27 @@ hadoop_cluser_sg = t.add_resource(
                 IpProtocol='tcp',
                 FromPort='22',
                 ToPort='22',
-                CidrIp=quad_zero_ip),
+                CidrIp=bah_office_ip),
+             SecurityGroupRule(              # SSH
+                IpProtocol='tcp',
+                FromPort='22',
+                ToPort='22',
+                CidrIp=matt_remote_ip),
+            SecurityGroupRule(              # SSH
+                IpProtocol='tcp',
+                FromPort='22',
+                ToPort='22',
+                CidrIp=team_members_remote_IP[0]),
+            SecurityGroupRule(              # SSH
+                IpProtocol='tcp',
+                FromPort='22',
+                ToPort='22',
+                CidrIp=team_members_remote_IP[1]),
+            SecurityGroupRule(              # SSH
+                IpProtocol='tcp',
+                FromPort='22',
+                ToPort='22',
+                CidrIp=team_members_remote_IP[2]),
             SecurityGroupRule(              # Hue web Interface
                 IpProtocol='tcp',
                 FromPort='8888',
@@ -277,7 +344,27 @@ hadoop_cluser_sg = t.add_resource(
                 IpProtocol='tcp',
                 FromPort='8080',
                 ToPort='8080',
-                CidrIp=quad_zero_ip),
+                CidrIp=bah_office_ip),
+           SecurityGroupRule(               # Ambari Web Interface
+                IpProtocol='tcp',
+                FromPort='8080',
+                ToPort='8080',
+                CidrIp=matt_remote_ip),
+           SecurityGroupRule(               # Ambari Web Interface
+                IpProtocol='tcp',
+                FromPort='8080',
+                ToPort='8080',
+                CidrIp=team_members_remote_IP[0]),
+           SecurityGroupRule(               # Ambari Web Interface
+                IpProtocol='tcp',
+                FromPort='8080',
+                ToPort='8080',
+                CidrIp=team_members_remote_IP[1]),
+           SecurityGroupRule(               # Ambari Web Interface
+                IpProtocol='tcp',
+                FromPort='8080',
+                ToPort='8080',
+                CidrIp=team_members_remote_IP[2]),
            # SecurityGroupRule(               # Spark Web Interface
            #      IpProtocol='tcp',
            #      FromPort='8081',
@@ -333,7 +420,7 @@ SecurityGroupIngress(
     ToPort='65535',
     FromPort='0',
     GroupId=Ref(hadoop_cluser_sg),
-    SourceSecurityGroupId=Ref(pulic_api_sg))
+    SourceSecurityGroupId=Ref(public_api_sg))
 
 # TODO NAT Instance Configuration
 amazon_nat_instance = t.add_resource(Instance(
@@ -341,10 +428,20 @@ amazon_nat_instance = t.add_resource(Instance(
     ImageId=FindInMap(mappings.ami_nat_instanceAWSRegionArch2AMI[mappings.logicalName],
                         ref_region,FindInMap('AWSInstanceType2Arch',Ref(amazon_NAT_instance_type_param),'Arch')),
     InstanceType=Ref(amazon_NAT_instance_type_param),
+    KeyName=Ref(ssh_key_param),
     SourceDestCheck=False,
     Tags=Tags(Name="NAT Server",),
-    SecurityGroupIds=[Ref(hadoop_cluser_sg), Ref(pulic_api_sg)],
-    SubnetId=Ref(public_api_subnet),
+    NetworkInterfaces=[
+        NetworkInterfaceProperty(
+            GroupSet=[Ref(hadoop_cluser_sg),Ref(public_api_sg)],
+            AssociatePublicIpAddress='true',
+            DeviceIndex='0',
+            DeleteOnTermination='true',
+            SubnetId=Ref(public_api_subnet))
+    ],
+    # SecurityGroupIds=[Ref(hadoop_cluser_sg), Ref(pulic_api_sg)],
+    # SubnetId=Ref(public_api_subnet),
+    DependsOn=internetGateway.title
     ))
 
 
@@ -377,7 +474,8 @@ hadoop_cluster_ambari = t.add_resource(Instance(
             DeleteOnTermination='true',
             SubnetId=Ref(public_tools_subnet))
     ],
-    Tags=Tags(Name="Ambari Server",Role="Hadoop Cluster")
+    Tags=Tags(Name="Ambari Server",Role="Hadoop Cluster"),
+    DependsOn=amazon_nat_instance.title
     ))
 
 hadoop_master1= t.add_resource(Instance(
@@ -525,7 +623,7 @@ liferay_ec2_instance = t.add_resource(Instance(
     UserData=user_data.hadoop_work_node_userData(hadoop_cluster_ambari),
     NetworkInterfaces=[
         NetworkInterfaceProperty(
-            GroupSet=[Ref(pulic_api_sg)],
+            GroupSet=[Ref(public_api_sg)],
             AssociatePublicIpAddress='true',
             DeviceIndex='0',
             DeleteOnTermination='true',
@@ -537,12 +635,13 @@ liferay_ec2_instance = t.add_resource(Instance(
 # Attaches volume to instance.
 # Default Volume size 20GB
 # Default Mount Point is /dev/xvdb
-template_helpers.create_and_attach_volume(t,"Volume1",hadoop_cluster_ambari)
-template_helpers.create_and_attach_volume(t,"Volume1",hadoop_master1)   #Size='10')
-template_helpers.create_and_attach_volume(t,"Volume1",hadoop_master2)   #,Size=30)
-template_helpers.create_and_attach_volume(t,"Volume1",hadoop_node_1)    #,Size=20)
-template_helpers.create_and_attach_volume(t,"Volume1",hadoop_node_2)    #,Size=20)
-template_helpers.create_and_attach_volume(t,"Volume1",hadoop_node_3)    #,Size=20)
+template_helpers.create_and_attach_volume(t,"Volume1", hadoop_cluster_ambari,Size="20")
+template_helpers.create_and_attach_volume(t,"Volume1", hadoop_master1, Size="15")   #Size='10')
+template_helpers.create_and_attach_volume(t,"Volume1", hadoop_master2, Size="15")   #,Size=30)
+template_helpers.create_and_attach_volume(t,"Volume1", hadoop_node_1, Size="15")    #,Size=20)
+template_helpers.create_and_attach_volume(t,"Volume1", hadoop_node_2, Size="15")    #,Size=20)
+template_helpers.create_and_attach_volume(t,"Volume1", hadoop_node_3, Size="15")    #,Size=20)
+template_helpers.create_and_attach_volume(t,"Volume1", liferay_ec2_instance, Size="15")
 # template_helpers.create_and_attach_volume(t,"Volume1",hadoop_node_4)    #,Size=20)
 # template_helpers.create_and_attach_volume(t,"Volume1",hadoop_node_5)    #,Size=20)
 
