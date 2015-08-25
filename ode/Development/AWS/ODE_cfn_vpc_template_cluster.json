@@ -1,5 +1,5 @@
 {
-  "Description": "ODE Cloud Formation Template to create VPC with multiple public and private, security groups and route tables. Subnet are sized for 250 host each. Template Created: 2015-08-24 15:17:23",
+  "Description": "ODE Cloud Formation Template to create VPC with multiple public and private, security groups and route tables. Subnet are sized for 250 host each. Template Created: 2015-08-25 12:04:27",
   "Mappings": {
     "AWSInstanceType2Arch": {
       "c1.medium": {
@@ -499,8 +499,7 @@
             "AvailabilityZone"
           ]
         },
-        "Size": "20",
-        "VolumeType": "gp2"
+        "Size": "20"
       },
       "Type": "AWS::EC2::Volume"
     },
@@ -644,8 +643,7 @@
             "AvailabilityZone"
           ]
         },
-        "Size": "15",
-        "VolumeType": "gp2"
+        "Size": "15"
       },
       "Type": "AWS::EC2::Volume"
     },
@@ -747,8 +745,7 @@
             "AvailabilityZone"
           ]
         },
-        "Size": "15",
-        "VolumeType": "gp2"
+        "Size": "15"
       },
       "Type": "AWS::EC2::Volume"
     },
@@ -850,8 +847,7 @@
             "AvailabilityZone"
           ]
         },
-        "Size": "15",
-        "VolumeType": "gp2"
+        "Size": "15"
       },
       "Type": "AWS::EC2::Volume"
     },
@@ -953,8 +949,7 @@
             "AvailabilityZone"
           ]
         },
-        "Size": "15",
-        "VolumeType": "gp2"
+        "Size": "15"
       },
       "Type": "AWS::EC2::Volume"
     },
@@ -1056,8 +1051,7 @@
             "AvailabilityZone"
           ]
         },
-        "Size": "15",
-        "VolumeType": "gp2"
+        "Size": "15"
       },
       "Type": "AWS::EC2::Volume"
     },
@@ -1074,6 +1068,7 @@
       "Type": "AWS::EC2::VolumeAttachment"
     },
     "liferayInstance1": {
+      "DependsOn": "InternetGateway",
       "Properties": {
         "ImageId": {
           "Fn::FindInMap": [
@@ -1159,8 +1154,7 @@
             "AvailabilityZone"
           ]
         },
-        "Size": "15",
-        "VolumeType": "gp2"
+        "Size": "15"
       },
       "Type": "AWS::EC2::Volume"
     },
@@ -1319,6 +1313,12 @@
           },
           {
             "CidrIp": "128.229.4.2/32",
+            "FromPort": "8080",
+            "IpProtocol": "tcp",
+            "ToPort": "8080"
+          },
+          {
+            "CidrIp": "71.178.48.129/32",
             "FromPort": "8080",
             "IpProtocol": "tcp",
             "ToPort": "8080"

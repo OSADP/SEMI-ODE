@@ -279,6 +279,11 @@ public_api_sg = t.add_resource(
                 IpProtocol='tcp',
                 FromPort='8080',
                 ToPort='8080',
+                CidrIp=matt_remote_ip),
+            SecurityGroupRule(              # tomcat Web Interface
+                IpProtocol='tcp',
+                FromPort='8080',
+                ToPort='8080',
                 CidrIp=team_members_remote_IP[0]),
             SecurityGroupRule(              # tomcat Web Interface
                 IpProtocol='tcp',
@@ -629,7 +634,8 @@ liferay_ec2_instance = t.add_resource(Instance(
             DeleteOnTermination='true',
             SubnetId=Ref(public_api_subnet) )
     ],
-    Tags=Tags(Name="Liferay Portal Server",)
+    Tags=Tags(Name="Liferay Portal Server",),
+    DependsOn=internetGateway.title
 ))
 
 # Attaches volume to instance.
