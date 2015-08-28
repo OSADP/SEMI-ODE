@@ -20,6 +20,8 @@ import java.io.IOException;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -87,6 +89,4 @@ public class InitServlet extends HttpServlet {
       super.destroy();
       AppContext.getInstance().shutDown();
    }
-	
-	
 }

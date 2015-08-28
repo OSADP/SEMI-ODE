@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
@@ -97,13 +96,13 @@ public class WebSocketServer {
    @OnOpen
    public void onOpen(Session session, EndpointConfig endpointConfig,
          @PathParam("rtype") String rtype, @PathParam("dtype") String dtype) {
-      String sessionId = session.getId();
+
+	   String sessionId = session.getId();
 
       logger.info("Connected to ODE on Session ID: {}, " + "Request Type: {}, "
             + "Data Type: {}", sessionId, rtype, dtype);
-      
-     
-      boolean isAuthorized =  true;//validateRequest(endpointConfig.getUserProperties());
+      //validateRequest(endpointConfig.getUserProperties());
+      boolean isAuthorized = true ; //validateRequest(endpointConfig.getUserProperties());
       OdeStatus msg = new OdeStatus();
       
       try {
