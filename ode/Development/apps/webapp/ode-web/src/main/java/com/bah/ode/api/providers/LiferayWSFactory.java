@@ -7,10 +7,8 @@ import org.glassfish.hk2.api.Factory;
 import com.bah.ode.api.sec.filters.LiferayWSClient;
 import com.bah.ode.context.AppContext;
 
-/**
- * 
- *  
- *
+/** 
+ * Creates Liferay WebService Client to connect to Lifewaray REST APIs in Jersery application. 
  */
 public class LiferayWSFactory implements Factory<LiferayWSClient> {
 

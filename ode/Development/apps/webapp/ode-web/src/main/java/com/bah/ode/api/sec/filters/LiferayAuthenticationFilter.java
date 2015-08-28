@@ -13,11 +13,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.DatatypeConverter;
 
+import com.bah.ode.api.sec.SecurityService;
+
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class LiferayAuthenticationFilter implements ContainerRequestFilter {
-
-   public static String AUTH_HEADER = "Authorization";
 
    @Context
    private ServletContext context;
@@ -29,8 +29,8 @@ public class LiferayAuthenticationFilter implements ContainerRequestFilter {
    public void filter(ContainerRequestContext requestContext)
          throws IOException {
 
-      String auth = requestContext.getHeaderString(AUTH_HEADER);
-      String[] lap = decode(auth);
+      String auth = requestContext.getHeaderString(SecurityService.AUTH_HEADER);
+      String[] lap = SecurityService.decode(auth);
 
       // If login or password fail
       if (lap == null || lap.length != 2) {
@@ -44,15 +44,14 @@ public class LiferayAuthenticationFilter implements ContainerRequestFilter {
          // if no user is returned then authentication failed
          userId = client.getUserIdByEmail(lap[0], lap[1]);
          requestContext.setProperty("userId", new Long(userId));
+         
       } catch (Exception e) {
+    	 
          requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-               .entity("Unable to Authenticate. Error" + e.toString()).build());
+               .entity("Unable to Authenticate. Error " + e.toString()).build());
       }
 
    }
-
-   
-   
    
    /**
     * Decode the basic auth and convert it to array login/password
@@ -61,31 +60,31 @@ public class LiferayAuthenticationFilter implements ContainerRequestFilter {
     *           The string encoded authentication
     * @return The login (index 0), the password (index 1)
     */
-   private String[] decode(String auth) {
-
-      // Return if the string is empty or null
-      if (auth == null || auth.length() == 0)
-         return null;
-
-      // Replacing "Basic THE_BASE_64" to "THE_BASE_64" directly
-      auth = auth.replaceFirst("[B|b]asic ", "");
-
-      if (auth == null || auth.length() == 0)
-         return null;
-
-      // Decode the Base64 into byte[]
-      byte[] decodedBytes = DatatypeConverter.parseBase64Binary(auth);
-
-      // check for plain text in the password. (ugh)
-
-      // If the decode fails in any case
-      if (decodedBytes == null || decodedBytes.length == 0) {
-         return null;
-      }
-      // Now we can convert the byte[] into a splitted array :
-      // - the first one is login,
-      // - the second one password
-      return new String(decodedBytes).split(":", 2);
-   }
+//   private String[] decode(String auth) {
+//
+//      // Return if the string is empty or null
+//      if (auth == null || auth.length() == 0)
+//         return null;
+//
+//      // Replacing "Basic THE_BASE_64" to "THE_BASE_64" directly
+//      auth = auth.replaceFirst("[B|b]asic ", "");
+//
+//      if (auth == null || auth.length() == 0)
+//         return null;
+//
+//      // Decode the Base64 into byte[]
+//      byte[] decodedBytes = DatatypeConverter.parseBase64Binary(auth);
+//
+//      // check for plain text in the password. (ugh)
+//
+//      // If the decode fails in any case
+//      if (decodedBytes == null || decodedBytes.length == 0) {
+//         return null;
+//      }
+//      // Now we can convert the byte[] into a splitted array :
+//      // - the first one is login,
+//      // - the second one password
+//      return new String(decodedBytes).split(":", 2);
+//   }
 
 }

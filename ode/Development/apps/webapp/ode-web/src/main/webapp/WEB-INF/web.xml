@@ -26,7 +26,10 @@
    </context-param>
    <context-param>
       <param-name>liferay.ws.companyId</param-name>
-      <param-value>20155</param-value> <!-- Will vary based on Destination installation 20155 -->
+      <param-value>10157</param-value> <!-- Will vary based on Destination installation 20155 -->
+      <!-- 	
+      <param-value>10157</param-value> 
+      -->
    </context-param>
    <context-param>
       <param-name>liferay.db.name</param-name>
@@ -141,8 +144,12 @@
    </context-param>
 
    <context-param>
-      <param-name>metadata.broker.list</param-name> 
+      <param-name>metadata.broker.list</param-name>
+      <!-- HDP 2.2 Stack --> 
       <!--<param-value>ip-10-0-16-12.ec2.internal:6667,ip-10-0-16-91.ec2.internal:6667,ip-10-0-16-97.ec2.internal:6667</param-value> -->
+      <!-- HDP 2.3 Stack -->
+      <!-- <param-value>ip-10-0-16-115.ec2.internal:6667,ip-10-0-16-143.ec2.internal:6667</param-value> -->
+   	  <!--  Local Dev -->
    	  <param-value>localhost.localdomain:6667</param-value>
    </context-param>
    <context-param>
@@ -151,7 +158,11 @@
    </context-param>
    <context-param>
       <param-name>zk.connection.strings</param-name>
+    <!-- HDP 2.2 Stack -->
     <!-- <param-value>ip-10-0-16-12.ec2.internal:2181,ip-10-0-16-89.ec2.internal:2181,ip-10-0-16-97.ec2.internal:2181</param-value> -->
+    <!-- HDP 2.3 stack -->
+    <!-- <param-value>ip-10-0-16-115.ec2.internal:2181,ip-10-0-16-10.ec2.internal:2181,ip-10-0-16-143.ec2.internal:2181</param-value> -->
+   	 <!-- Local Dev -->
    	 <param-value>localhost.localdomain:2181</param-value>
    </context-param>
    <context-param>
@@ -162,9 +173,16 @@
    <param-name>ode.spark.jar</param-name>
    <param-value>ode-spark-0.0.1-SNAPSHOT.jar</param-value>
    </context-param>
+   <context-param>
+   <param-name>token.key.rsa.pem</param-name>
+   <param-value>mykey.pem</param-value>
+   </context-param>
    <listener>
       <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
    </listener>
+	<listener>
+	  <listener-class>com.bah.ode.server.InitServeletListener</listener-class>
+	</listener>
 
    <servlet>
       <servlet-name>dispatcherServlet</servlet-name>
@@ -179,19 +197,19 @@
       <servlet-name>dispatcherServlet</servlet-name>
       <url-pattern>/web/*</url-pattern>
    </servlet-mapping>
-
+<!-- 
    <servlet>
       <description>InitServlet is intended to perform eager initializations for ODE application.</description>
       <display-name>InitServlet</display-name>
       <servlet-name>InitServlet</servlet-name>
       <servlet-class>com.bah.ode.server.InitServlet</servlet-class>
-      <load-on-startup>1</load-on-startup>
+      <load-on-startup>0</load-on-startup>
    </servlet>
    <servlet-mapping>
       <servlet-name>InitServlet</servlet-name>
       <url-pattern>/api/sample/javax/*</url-pattern>
    </servlet-mapping>
-
+-->
 	<servlet>
 		<servlet-name>RESTfulServices</servlet-name>
 		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
@@ -209,7 +227,7 @@
 			<param-name>jersey.config.server.provider.scanning.recursive</param-name>
 			<param-value>true</param-value>
 		</init-param>
-		<load-on-startup>2</load-on-startup>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 
    <servlet-mapping>

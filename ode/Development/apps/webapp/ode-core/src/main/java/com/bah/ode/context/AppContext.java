@@ -79,6 +79,7 @@ public class AppContext {
    public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
    
    public static final String ODE_VEH_DATA_FLAT_TOPIC = "ode.veh.data.flat.topic";
+   public static final String TOKEN_KEY_RSA_PEM = "token.key.rsa.pem";
 
    // SParkConf related Constants
    public static final String ODE_SPARK_JAR = "ode.spark.jar";
