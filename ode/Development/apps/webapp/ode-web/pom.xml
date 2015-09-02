@@ -46,6 +46,22 @@
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
   	
+  	<!-- Json web token -->
+  	
+    <dependency>
+      <groupId>org.bitbucket.b_c</groupId>
+      <artifactId>jose4j</artifactId>
+      <version>0.4.4</version>
+    </dependency>
+    
+    <!-- Crypto Library Provider
+         Read RSA Keys from Disk 
+     -->
+	   <dependency>
+		<groupId>org.bouncycastle</groupId>
+		<artifactId>bcpkix-jdk15on</artifactId>
+		<version>1.51</version>
+	</dependency>
   	    <!-- Spring MVC -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -164,6 +180,19 @@
     	<artifactId>ode-spark</artifactId>
     	<version>0.0.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+    	<groupId>org.apache.spark</groupId>
+    	<artifactId>spark-yarn_2.10</artifactId>
+    	<version>
+    		${apache.spark.version}.${hdp.stack.version}.${hdp.release.increment}-${hdp.build.version}
+    	</version>
+    	<exclusions>
+    		<exclusion>
+    			<artifactId>jersey-server</artifactId>
+    			<groupId>com.sun.jersey</groupId>
+    		</exclusion>
+    	</exclusions>
+    </dependency>
   </dependencies>
   
      <build>
@@ -203,8 +232,6 @@
                      <goal>copy-resources</goal>
                   </goals>
                   <configuration>
-                   
-				      
                      <outputDirectory>${finalLocation}</outputDirectory>
                      <resources>
                         <resource>
