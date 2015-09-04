@@ -33,13 +33,13 @@ import javax.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.api.ws.OdeStatus;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.wrapper.MQTopic;
+import com.bah.ode.api.ws.OdeStatus;
 import com.bah.ode.api.sec.SecurityService;
 import com.bah.ode.api.sec.filters.WebSocketAuthenticationConfiguration;
 
@@ -61,7 +61,6 @@ public class WebSocketServer {
    private OdeDataDistributor distributor;
    private OdeRequest odeRequest;
    
-
    public static DataSourceConnector getConnector(String requestId) {
       return connectors.get(requestId);
    }
@@ -101,18 +100,17 @@ public class WebSocketServer {
 
       logger.info("Connected to ODE on Session ID: {}, " + "Request Type: {}, "
             + "Data Type: {}", sessionId, rtype, dtype);
-      //validateRequest(endpointConfig.getUserProperties());
-      boolean isAuthorized = true ; //validateRequest(endpointConfig.getUserProperties());
+
       OdeStatus msg = new OdeStatus();
-      
+      boolean isAuthorized = validateRequest(endpointConfig.getUserProperties());
       try {
     	  if (!isAuthorized){
     		  msg.setCode(OdeStatus.Code.FAILURE)
-    		  .setMessage("Invalid User Name or Password supplied.");
+    		  .setMessage("Invalid or missing token.");
     		  session.getBasicRemote().sendText(msg.toJson());
     		  
-    		  session.close(new CloseReason(CloseReason.CloseCodes.NOT_CONSISTENT,
-    				  						"Invalid or missing Authentication Values"));
+    		  session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY,
+    				  						"Invalid or missing token"));
     	  }
     	  else {
 	         if (OdeRequestType.getByShortName(rtype) == null) {
@@ -136,7 +134,7 @@ public class WebSocketServer {
 	               .setMessage("ODE Connection Established.");
 	         }
 	         session.getBasicRemote().sendText(msg.toJson());
-    	 }
+    	  } // end if 
       } 
       catch (Exception ex) {
          msg.setCode(OdeStatus.Code.SOURCE_CONNECTION_ERROR).setMessage(

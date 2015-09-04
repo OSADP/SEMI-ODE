@@ -16,13 +16,16 @@
  *******************************************************************************/
 package com.bah.ode.api.sec;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.xml.bind.DatatypeConverter;
 
 public class SecurityService {
 
-	public static String AUTH_HEADER  ="Authorization";
+	public static String AUTH_HEADER = HttpHeaders.AUTHORIZATION;
+
 	public static String INVALID_AUTHENTICATION = "Invalid Authentication Attempt";
 	public static String TOKEN_QUERY_PARAM = "token";
+	public static String ACCESS_TOKEN = "access_token";
 	
 	/**
     * Decode the basic auth and convert it to array login/password

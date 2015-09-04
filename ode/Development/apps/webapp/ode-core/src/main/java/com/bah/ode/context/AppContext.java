@@ -240,7 +240,11 @@ public class AppContext {
 //      }
       
    }
-
+   
+   public  ApplicationId getApplicationId(){
+	   return sparkAppId;
+   }
+   
    public synchronized void startStreamingContext() {
       if (!streamingContextStarted && null==yarnManager) {
     	try {

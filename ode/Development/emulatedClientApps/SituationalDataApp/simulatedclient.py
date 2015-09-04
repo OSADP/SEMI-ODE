@@ -10,11 +10,12 @@ import ConfigParser
 import websocket
 import timehelpers
 import depositClient
+import restApi
 
 # Set TIME to UTC
 # logging.Formatter.converter = time.gmtime
 
-logging_level = logging.INFO
+logging_level = logging.DEBUG
 
 current_date_time = datetime.datetime.now().strftime("%Y-%m-%dT%H_%M_%S")
 log_name = 'simpleApp_{}.log'.format(current_date_time)
@@ -127,8 +128,8 @@ def on_message(ws, message):
         if msg.get('code'):
             logger.info("ODE Connection Status: %s Message: %s", msg.get('code'), msg.get('message'))
 
-            if config['UPLOAD_TEST_DATA'] and 'tstvehOdeTstRequest' in msg.get('message'):
-                config['TEST_REQUEST'] = msg.get('message')
+            if config['UPLOAD_TEST_DATA'] and  msg.get('requestId'): # 'tstvehOdeTstRequest' in msg.get('message'):
+                config['TEST_REQUEST'] = msg.get('requestId')
                 depositClient.update_config(config)
                 thread.start_new_thread(depositClient._run_main, (config,))
 
@@ -308,6 +309,7 @@ def validate_location():
     pass
 
 
+
 # Command Line Parser Methods
 def get_parser():
     """
@@ -396,6 +398,10 @@ def parse_config_file(file_path):
         if config['UPLOAD_TEST_DATA']:
             config['INPUT_FILE'] = config_file.get('ode', 'inputFile')
 
+        config['USERNAME'] = config_file.get('ode','userName')
+        config['PASSWORD'] = config_file.get('ode', 'password')
+
+
     if config_file.has_section('serviceRegion'):
         if config.get('SUB_TYPE') and config.get('SUB_TYPE') == 'sub':
             for key, value in config_file.items('serviceRegion'):
@@ -412,6 +418,7 @@ def parse_config_file(file_path):
         qry_subs[config['DATA']]['endDate'] = config_file.get('queryParams', 'endDate')
 
     return config_file
+
 
 
 def _run_main(config):
@@ -432,8 +439,18 @@ def _run_main(config):
         msg = qry_subs[config['DATA']]
         msg.update(common_params)  # add common params
         uri = 'qry/{0}'.format(config['DATA'])
+    else:
+        logger.warn("Invalid Option combination")
+        sys.exit(1)
 
-    socket_url = "ws://{0}/api/ws/{1}".format(config['HOST'], uri)
+    if config['USERNAME'] is not None and config['PASSWORD'] is not None:
+        token = restApi.login('http://'+config['HOST'], config['USERNAME'], config['PASSWORD'])
+
+    if token is None:
+        logger.warn("Unable to get Access Token from Web Service")
+        sys.exit(-1)
+
+    socket_url = "ws://{0}/api/ws/{1}?token={2}".format(config['HOST'], uri, token)
 
     global input_file
 
@@ -445,7 +462,7 @@ def _run_main(config):
 
     print "Web socket URL: {}".format(socket_url)
     print '++++++++++'
-    logger.info("Subscriptions Params: %s", msg)
+    logger.info("Subscriptions Params: %s",json.dumps(msg))
 
     # if config['UPLOAD_TEST_DATA']:
     #     config['TEST_REQUEST'] = 'tstvehOdeTstRequest1255178960'
@@ -453,7 +470,10 @@ def _run_main(config):
     #     thread.start_new_thread(depositClient._run_main, (config,))
 
     websocket.enableTrace(False)
-    ws = websocket.WebSocketApp(socket_url, header=[], cookie=None,
+    # auth_header  = "Authorization: Basic dXNlckBsaWZlcmF5LmNvbTp0ZXN0" # user@liferay.com:test
+    # invalid_auth_header = "Authorization: Basic dXNlckBsaWZlcmF5LmNvbTp0ZXXX"
+    ws = websocket.WebSocketApp(socket_url, header=[], # [auth_header, ],
+                                cookie=None,
                                 on_message=on_message,
                                 on_error=on_error,
                                 on_close=on_close,

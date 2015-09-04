@@ -3,6 +3,7 @@ package com.bah.ode.spark;
 import org.apache.spark.SparkConf;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
+import org.apache.spark.util.Utils;
 
 import com.bah.ode.wrapper.MQTopic;
 
@@ -23,9 +24,8 @@ public class VehicleDataProcessorWrapper {
 	
 	public static void main(String[] args) {
 	
-		
 		SparkConf sparkConf = new SparkConf();
-
+		
 		VehicleDataProcessor ovdfWF  = new VehicleDataProcessor();
 		
 		String numPartitions =args[0];
@@ -45,6 +45,8 @@ public class VehicleDataProcessorWrapper {
 		
 		ssc.start();
 		ssc.awaitTermination();
+	
 	}
+	
 
 }

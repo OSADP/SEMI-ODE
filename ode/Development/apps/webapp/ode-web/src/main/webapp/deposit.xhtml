@@ -231,6 +231,25 @@ h2 {
         reader.readAsBinaryString(file);
      }
   }
+  
+  function getToken()  {
+	  var url = 'http://'+ window.location.host + '/ode/api/auth/login';
+
+	  var client = new XMLHttpRequest();
+	  client.open("GET", url, true);
+	  client.setRequestHeader('Authorization','Basic '+hash)	  
+	  client.send();
+	 
+	  client.onreadystatechange=function()
+	  {
+		  if (client.readyState==4 && client.status==200)
+		    {
+			  	var message = JSON.parse(client.responseText);
+			  	token = message["message"];
+			  }
+	    }
+  }
+
 
   document.addEventListener("DOMContentLoaded", function() {
       // Remove elements with "noscript" class - <noscript> is not allowed in XHTML

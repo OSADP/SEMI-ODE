@@ -67,7 +67,7 @@ public class LiferayWSClient {
             .path(String.valueOf(userId)).request(MediaType.WILDCARD_TYPE)
             .get(String.class);
    }
-
+   
    /**
     * Builds authentication client to communicate with Liferay Web Services
     * 

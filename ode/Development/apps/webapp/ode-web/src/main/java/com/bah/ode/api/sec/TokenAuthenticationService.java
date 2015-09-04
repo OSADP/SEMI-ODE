@@ -2,19 +2,11 @@ package com.bah.ode.api.sec;
 
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.security.Key;
 import java.security.KeyPair;
-import java.security.PublicKey;
 import java.security.Security;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,8 +34,6 @@ import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.dds.client.ws.CASClient;
-
 
 /**
  * Generates and validates JWT Tokens
@@ -58,6 +48,7 @@ public class TokenAuthenticationService {
 	
 	private RsaJsonWebKey rsaJsonWebKey;
 	private JsonWebKey jwk;
+	
 	
 	public TokenAuthenticationService(String pemFilePath)
 	{
@@ -81,34 +72,32 @@ public class TokenAuthenticationService {
 		this.rsaJsonWebKey = RsaJwkGenerator.generateJwk(2048);
 		
 		this.rsaJsonWebKey.setKeyId("k1");
-		logger.info("RSA Getkey: " + rsaJsonWebKey.getKey());
-		logger.info("RSaKey toJSON: " +rsaJsonWebKey.toJson());
-		logger.info("Pub Key: " +rsaJsonWebKey.getPublicKey().toString());
+//		logger.info("RSA Getkey: " + rsaJsonWebKey.getKey());
+//		logger.info("RSaKey toJSON: " +rsaJsonWebKey.toJson());
+//		logger.info("Pub Key: " +rsaJsonWebKey.getPublicKey().toString());
 
 		String jwkJson = "{\"kty\":\"oct\",\"k\":\"Fdh9u8rINxfivbrianbbVT1u232VQBZYKx1HGAGPt2I\"}";
 	    this.jwk = JsonWebKey.Factory.newJwk(jwkJson);
-	    logger.info("jwk String: " + jwk.getKey().toString());
-	    logger.info("jwk: " + jwk.getKey());
-	    logger.info("jwk: " + jwk.getKey().toString());
+//	    logger.info("jwk String: " + jwk.getKey().toString());
+//	    logger.info("jwk: " + jwk.getKey());
+//	    logger.info("jwk: " + jwk.getKey().toString());
 	}
 	
-	public String generateToken(long userId)
+	public AccessToken generateToken(long userId)
 	{	  
-		String token = null;
+		AccessToken accessToken = null;
 		try{
 			
 			JwtClaims claims = createClaims(userId);
-			String jwt = buildJwsToken(claims);
-			token = buildJweToken(jwt);
-			logger.info(claims.toJson());
-			logger.info("jwt: " + jwt); 
-			logger.info("token: " + token);
+			JsonWebSignature jwt = buildJwsToken(claims);
+			JsonWebEncryption jwe = buildJweToken(jwt.getCompactSerialization());
+			accessToken  = new AccessToken(claims,jwe, true);
 		}
 		catch (Throwable t)
 		{
 			logger.error("Error creating token", t);
 		}
-		return token;	
+		return accessToken;	
 	}
 	
 	public boolean isValid(String jwe) throws JoseException
@@ -118,20 +107,10 @@ public class TokenAuthenticationService {
 			return result;
 		}
 		try{
-			
-			String jwt = deocodeJwe(jwe);
+			String jwt = decodeJwe(jwe);
+			 
 
-			logger.info("Decoded JWT: " +jwt);
-			
-			JwtConsumer jwtConsumer = new JwtConsumerBuilder()
-	        //.setRequireExpirationTime() // the JWT must have an expiration time
-	        .setAllowedClockSkewInSeconds(60) // allow some leeway in validating time based claims to account for clock skew
-	        .setRequireSubject() // the JWT must have a subject claim
-	        .setExpectedIssuer(CLAIMS_ISSUER) // whom the JWT needs to have been issued by
-	        .setExpectedAudience(CLAIMS_AUDIENCE) // to whom the JWT is intended for
-	        .setVerificationKey(rsaJsonWebKey.getKey()) // verify the signature with the public key
-	        .setJweAlgorithmConstraints(AlgorithmConstraints.DISALLOW_NONE)
-	        .build(); // create the JwtConsumer instance
+			JwtConsumer jwtConsumer = getJwtConsumer();
 			
 			jwtConsumer.processToClaims(jwt);
 			result = true;
@@ -144,16 +123,35 @@ public class TokenAuthenticationService {
 		return result;
 	}
 	
+	public JwtClaims getJwsClaims(String jws) throws Exception
+	{
+		JwtConsumer jwtConsumer = getJwtConsumer();
+		return jwtConsumer.processToClaims(jws);
+	}
+	
+	private JwtConsumer getJwtConsumer()
+	{
+		JwtConsumer jwtConsumer = new JwtConsumerBuilder()
+         .setRequireExpirationTime() // the JWT must have an expiration time
+        .setAllowedClockSkewInSeconds(30) // allow some leeway in validating time based claims to account for clock skew
+        .setRequireSubject() // the JWT must have a subject claim
+        .setExpectedIssuer(CLAIMS_ISSUER) // whom the JWT needs to have been issued by
+        .setExpectedAudience(CLAIMS_AUDIENCE) // to whom the JWT is intended for
+        .setVerificationKey(rsaJsonWebKey.getKey()) // verify the signature with the public key
+        .setJweAlgorithmConstraints(AlgorithmConstraints.DISALLOW_NONE)
+        .build(); // create the JwtConsumer instance
+		return jwtConsumer;
+	}
 	private JwtClaims createClaims(long userId)
 	{
 		JwtClaims claims = new JwtClaims();
 	    claims.setIssuer(CLAIMS_ISSUER);  					// who creates the token and signs it
 	    claims.setAudience(CLAIMS_AUDIENCE); 				// to whom the token is intended to be sent
-	    claims.setExpirationTimeMinutesInTheFuture(60); // time when the token will expire (10 minutes from now)
-	    claims.setGeneratedJwtId(); 					// a unique identifier for the token
-	    claims.setIssuedAtToNow();  					// when the token was issued/created (now)
-	    claims.setNotBeforeMinutesInThePast(2); 		// time before which the token is not yet valid (2 minutes ago)
-	    claims.setSubject(String.valueOf(userId)); 		// the subject/principal is whom the token is about
+	    claims.setExpirationTimeMinutesInTheFuture(5); 	// time when the token will expire (15 minutes from now)
+	    claims.setGeneratedJwtId(); 						// a unique identifier for the token
+	    claims.setIssuedAtToNow();  						// when the token was issued/created (now)
+	    claims.setNotBeforeMinutesInThePast(2); 			// time before which the token is not yet valid (2 minutes ago)
+	    claims.setSubject(String.valueOf(userId)); 			// the subject/principal is whom the token is about
 	    
 	    List<String> requestTypes = Arrays.asList("qry", "sub");
 	    claims.setStringListClaim("requestType", requestTypes); 
@@ -163,11 +161,10 @@ public class TokenAuthenticationService {
 	    return claims;
 	}
 
-	private String buildJwsToken(JwtClaims claims) throws JoseException
+	private JsonWebSignature buildJwsToken(JwtClaims claims) throws JoseException
 	{
 
 	    // Give the JWK a Key ID (kid), which is just the polite thing to do
-	    rsaJsonWebKey.setKeyId("k1");
 		JsonWebSignature jws = new JsonWebSignature();
 		 
 		jws.setPayload(claims.toJson());
@@ -181,10 +178,11 @@ public class TokenAuthenticationService {
 
 	    // Set the signature algorithm on the JWT/JWS that will integrity protect the claims
     	jws.setAlgorithmHeaderValue(AlgorithmIdentifiers.RSA_USING_SHA256);
-    	return jws.getCompactSerialization();
+    	//return jws.getCompactSerialization();
+    	return jws;
 	}
 	
-	private String buildJweToken(String jwt) throws JoseException
+	private JsonWebEncryption buildJweToken(String jwt) throws JoseException
 	{
 	    // Create a new Json Web Encryption object
 	    JsonWebEncryption senderJwe = new JsonWebEncryption();
@@ -195,12 +193,8 @@ public class TokenAuthenticationService {
 	    senderJwe.setPlaintext(jwt);
 	    
 	    senderJwe.setKey(jwk.getKey());
-	    String compactSerialization = senderJwe.getCompactSerialization();
-	    logger.info("Header: + " + senderJwe.getHeaders().getFullHeaderAsJsonString());
-	    logger.info("Header: "  + senderJwe.getHeaders().getEncodedHeader());
-	    logger.info("Payload: " + senderJwe.getPayload());
-	   	   
-	   return compactSerialization;
+	   return senderJwe;
+ 
 		
 	}
 	
@@ -226,7 +220,7 @@ public class TokenAuthenticationService {
 				);
 	}
 	
-	public String deocodeJwe(String jwe) throws JoseException, InvalidJwtException
+	public String decodeJwe(String jwe) throws JoseException, InvalidJwtException
 	{
 		if (!isValidJweHeader(jwe))
 		{
@@ -243,24 +237,39 @@ public class TokenAuthenticationService {
 	    return receiverJwe.getPlaintextString();
 	     
 	}
+	public AccessToken decodeToken(String jsonToken) throws Exception
+	{
+		boolean valid = false;
+		JsonWebEncryption jwe = null;
+
+		JwtClaims claims = null;
+		try {
+			valid = isValid(jsonToken);
+		}
+		catch (Exception e) {  }	
+		String jwt = decodeJwe(jsonToken);
+		JwtConsumer jwtConsumer = new JwtConsumerBuilder()
+									.setSkipSignatureVerification()
+									.setSkipAllValidators()
+									.build();
+		claims = jwtConsumer.processToClaims(jwt);
+		jwe = new JsonWebEncryption();
+		jwe.setCompactSerialization(jsonToken);
+		
+		return new AccessToken(claims,jwe, valid);
+	}
 	
 	private void loadRsaPEMFile(InputStream pemInputStream) throws IOException, JoseException
 	{
-//		CertificateFactory fact = CertificateFactory.getInstance("X.509");
-////		FileInputStream is = new FileInputStream (args[0]);
-//		X509Certificate cer = (X509Certificate) fact.generateCertificate(pemInputStream);
-////		PublicKey key = cer.getPublicKey();
-//		rsaJsonWebKey = (RsaJsonWebKey) PublicJsonWebKey.Factory.newPublicJwk(cer.getPublicKey();;
-//		this.rsaJsonWebKey.setPrivateKey(cer.());
-//		
-//		
-		BufferedReader br = new BufferedReader(new InputStreamReader(pemInputStream )); // new FileReader(pemKeyPath));
+ 		// Bouncy Castle Parser 		
+		BufferedReader br = new BufferedReader(new InputStreamReader(pemInputStream )); 
 		Security.addProvider(new BouncyCastleProvider());
 		PEMParser pp = new PEMParser(br);
 		PEMKeyPair pemKeyPair = (PEMKeyPair) pp.readObject();
 		KeyPair kp = new JcaPEMKeyConverter().getKeyPair(pemKeyPair);
 		pp.close();
-		rsaJsonWebKey = (RsaJsonWebKey) PublicJsonWebKey.Factory.newPublicJwk(kp.getPublic());
+		this.rsaJsonWebKey = (RsaJsonWebKey) PublicJsonWebKey.Factory.newPublicJwk(kp.getPublic());
+	    this.rsaJsonWebKey.setKeyId("k1");
 		this.rsaJsonWebKey.setPrivateKey(kp.getPrivate());
 	}
 }

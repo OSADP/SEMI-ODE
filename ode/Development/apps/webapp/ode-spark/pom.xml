@@ -77,8 +77,8 @@
    				<include>com.101tec:zkclient:*</include>
    				<include>com.google.code.gson:*</include>
     			<include>com.yammer.metrics:metrics-core:*</include>
-    			<include>org.apache.hadoop:*</include>                                                                                                           
-   				<!--<include>org.apache.hadoop:hadoop-yarn*:*</include> -->   
+    			<include>org.apache.hadoop:*</include>                                                                                                        
+   				<!--<includei>org.apache.hadoop:hadoop-yarn*:*</include> -->   
               </includes>
                 <excludes>
                 <!--  
