@@ -79,9 +79,9 @@ public class OdeRequestManager {
 
    public static void addSubscriber(String RequestId, OdeDataType dataType) {
       int numSubscribers = otms.addSubscriber(RequestId);
-      if (numSubscribers > 0 && !isPassThrough(dataType)) {
-         appContext.startStreamingContext();
-      }
+//      if (numSubscribers > 0 && !isPassThrough(dataType)) {
+//         appContext.startStreamingContext();
+//      }
    }
 
    public static void removeSubscriber(String RequestId, OdeDataType dataType) {

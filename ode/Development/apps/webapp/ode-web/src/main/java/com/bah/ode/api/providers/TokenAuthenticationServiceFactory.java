@@ -11,13 +11,12 @@ import com.bah.ode.context.AppContext;
 public class TokenAuthenticationServiceFactory implements Factory<TokenAuthenticationService> { 
 
 	@Context
-	ServletContext context;
+	private ServletContext context;
 	
 	@Override
-	public TokenAuthenticationService provide() {
-//		TokenAuthenticationService service = null;
+	public TokenAuthenticationService provide() {		
+		
 		return  new TokenAuthenticationService(context.getInitParameter(AppContext.TOKEN_KEY_RSA_PEM));
-//		return service;
 	}
 	@Override
 	public void dispose(TokenAuthenticationService instance) {

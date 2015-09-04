@@ -84,6 +84,10 @@ h2 {
   var ws = null;
   var started = false;
   var connected = false;
+  var hash = 'c2FtcGxlVXNlckBsaWZlcmF5LmNvbTpDb21wbGV4UGFzc3dvcmQ=';
+  var user = 'sampleUser@liferay.com';
+  var pw = 'ComplexPassword';
+  var token = null;
 
   function setConnectionState(c, s) {
       connected = c;
@@ -160,9 +164,9 @@ h2 {
 
   function updateRequestUri(requestUri) {
       if (window.location.protocol == 'http:') {
-          document.getElementById('requestUri').value = 'ws://' + window.location.host + requestUri;
+          document.getElementById('requestUri').value = 'ws://' + window.location.host + requestUri +'?token='+token;
       } else {
-          document.getElementById('requestUri').value = 'wss://' + window.location.host + requestUri;
+          document.getElementById('requestUri').value = 'wss://' + window.location.host + requestUri + '?token='+token;
       }
       setConnectionState(false, false);
       
@@ -186,6 +190,24 @@ h2 {
       console.scrollTop = console.scrollHeight;
   }
 
+  function getToken()  {
+	  var url = 'http://'+ window.location.host + '/ode/api/auth/login';
+
+	  var client = new XMLHttpRequest();
+	  client.open("GET", url, true);
+	  client.setRequestHeader('Authorization','Basic '+hash)	  
+	  client.send();
+	 
+	  client.onreadystatechange=function()
+	  {
+		  if (client.readyState==4 && client.status==200)
+		    {
+			  	var message = JSON.parse(client.responseText);
+			  	token = message["message"];
+			  }
+	    }
+  }
+
 
   document.addEventListener("DOMContentLoaded", function() {
       // Remove elements with "noscript" class - <noscript> is not allowed in XHTML
@@ -199,7 +221,7 @@ h2 {
 
 </script>
 </head>
-<body>
+<body onload="getToken();">
    <h1>ODE Query Test UI</h1>
    <p><a href="subscribe.xhtml">ODE Subscription</a></p>
    <p><a href="deposit.xhtml">ODE Deposit</a></p>
