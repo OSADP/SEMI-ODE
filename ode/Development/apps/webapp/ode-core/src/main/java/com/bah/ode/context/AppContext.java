@@ -60,19 +60,12 @@ public class AppContext {
    public static final String DDS_CAS_PASSWORD = "dds.cas.password";
    public static final String DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE = "send.latest.vsr.in.vsd.bundle";
 
-	public static final String REQUEST_FILE_DIR = "request.file.dir";
-	public static final String RESPONSE_FILE_DIR = "response.file.dir";
-	public static final String DEPOSIT_FILE_DIR = "deposit.file.dir";
-	public static final String DEPOSIT_SYSTEM_NAME = "deposit.system.name";
-	public static final String DEPOSIT_ENCODE_TYPE = "deposit.encode.type";
-	public static final String DEPOSIT_DELAY = "deposit.delay";
-	
-	//Spark parameters
-	public static final String SPARK_MASTER = "spark.master";
-	public static final String SPARK_STREAMING_DEFAULT_DURATION = "spark.streaming.default.duration";
-    public static final String SPARK_ASSEMBLY_JAR = "spark.assembly.jar";
-    public static final String SPARK_EXECUTOR_MEMORY = "spark.executor.memory";
-    public static final String SPARK_DRIVER_MEMORY = "spark.driver.memory";
+   // Spark parameters
+   public static final String SPARK_MASTER = "spark.master";
+   public static final String SPARK_STREAMING_DEFAULT_DURATION = "spark.streaming.default.duration";
+   public static final String SPARK_ASSEMBLY_JAR = "spark.assembly.jar";
+   public static final String SPARK_EXECUTOR_MEMORY = "spark.executor.memory";
+   public static final String SPARK_DRIVER_MEMORY = "spark.driver.memory";
 
    public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
    public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
@@ -309,20 +302,20 @@ public class AppContext {
 //   }
 
    public synchronized void stopStreamingContext() {
-      if (streamingContextStarted || null!=yarnManager) {
-    	  try {
-    		  yarnManager.stopSparkJob();
-    		  yarnManager=null;
-    		  sparkAppId=null;
-    		  streamingContextStarted = false;
-//            ssc.stop(false);
-    		  logger.info("*** Spark Streaming Context Stopped ***");
-//            ssc.awaitTermination(10000);
-    		  ssc = null;
-//            ovdfWF = null;
-    	  } catch (Throwable t) {
-    		  logger.warn("*** Error stopping Spark Streaming Context ***", t);
-    	  }
+      if (streamingContextStarted || null != yarnManager) {
+         try {
+            yarnManager.stopSparkJob();
+            yarnManager = null;
+            sparkAppId = null;
+            streamingContextStarted = false;
+            // ssc.stop(false);
+            logger.info("*** Spark Streaming Context Stopped ***");
+            // ssc.awaitTermination(10000);
+            ssc = null;
+            // ovdfWF = null;
+         } catch (Throwable t) {
+            logger.warn("*** Error stopping Spark Streaming Context ***", t);
+         }
       }
    }
 
