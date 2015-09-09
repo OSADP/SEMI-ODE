@@ -111,7 +111,13 @@ $(document ).ready(function() {
   });
   // Radio button click handler
     $("#selectData input:radio").click(function() {
-		updateRequestUri( $(this).val());
+		if (token!=null){
+    	updateRequestUri( $(this).val());
+    	}
+		else {
+			dialog.dialog( "open" );
+		}
+    
    });
   
   function setConnectionState(c, s) {
@@ -235,6 +241,8 @@ $(document ).ready(function() {
 	    success: function (data){
 	 	 	token = data.message;
 			setConnectionState(true,false)
+			if ( $("#selectData input:radio").is(":checked"))
+				updateRequestUri( $("#selectData input:radio").filter(":checked").val());
 	    }
 	  });  
   }
