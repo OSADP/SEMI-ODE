@@ -13,7 +13,7 @@
    <context-param>
       <param-name>loopback.test</param-name>
       <!-- <param-value>true</param-value> -->
-      <param-value>true</param-value>
+      <param-value>false</param-value>
    </context-param>
    
    <context-param>
@@ -100,30 +100,6 @@
       <param-value>false</param-value>
    </context-param>
    <context-param>
-      <param-name>request.file.dir</param-name>
-      <param-value>requests</param-value>
-   </context-param>
-   <context-param>
-      <param-name>response.file.dir</param-name>
-      <param-value>responses</param-value>
-   </context-param>
-   <context-param>
-      <param-name>deposit.file.dir</param-name>
-      <param-value>deposits</param-value>
-   </context-param>
-   <context-param>
-      <param-name>deposit.system.name</param-name>
-      <param-value>SDC 2.2</param-value>
-   </context-param>
-   <context-param>
-      <param-name>deposit.encode.type</param-name>
-      <param-value>hex</param-value>
-   </context-param>
-   <context-param>
-      <param-name>deposit.delay</param-name>
-      <param-value>200</param-value>
-   </context-param>
-   <context-param>
       <param-name>spark.master</param-name>
       <param-value>yarn-client</param-value>
       <!-- <param-value>local[2]</param-value> -->
@@ -148,9 +124,10 @@
       <!-- HDP 2.2 Stack --> 
       <!--<param-value>ip-10-0-16-12.ec2.internal:6667,ip-10-0-16-91.ec2.internal:6667,ip-10-0-16-97.ec2.internal:6667</param-value> -->
       <!-- HDP 2.3 Stack -->
-      <!-- <param-value>ip-10-0-16-115.ec2.internal:6667,ip-10-0-16-143.ec2.internal:6667</param-value> -->
-   	  <!--  Local Dev -->
+      <param-value>ip-10-0-16-115.ec2.internal:6667,ip-10-0-16-143.ec2.internal:6667</param-value>
+      <!--  Local Dev
    	  <param-value>localhost.localdomain:6667</param-value>
+      -->
    </context-param>
    <context-param>
       <param-name>default.consumer.threads</param-name>
@@ -161,9 +138,10 @@
     <!-- HDP 2.2 Stack -->
     <!-- <param-value>ip-10-0-16-12.ec2.internal:2181,ip-10-0-16-89.ec2.internal:2181,ip-10-0-16-97.ec2.internal:2181</param-value> -->
     <!-- HDP 2.3 stack -->
-    <!-- <param-value>ip-10-0-16-115.ec2.internal:2181,ip-10-0-16-10.ec2.internal:2181,ip-10-0-16-143.ec2.internal:2181</param-value> -->
-   	 <!-- Local Dev -->
+    <param-value>ip-10-0-16-115.ec2.internal:2181,ip-10-0-16-10.ec2.internal:2181,ip-10-0-16-143.ec2.internal:2181</param-value>
+    <!-- Local Dev
    	 <param-value>localhost.localdomain:2181</param-value>
+    -->
    </context-param>
    <context-param>
       <param-name>ode.veh.data.flat.topic</param-name>
@@ -210,25 +188,25 @@
       <url-pattern>/api/sample/javax/*</url-pattern>
    </servlet-mapping>
 -->
-	<servlet>
-		<servlet-name>RESTfulServices</servlet-name>
-		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-		  <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
-            <param-value>com.bah.ode.api.OdeResourceConfig</param-value>
-        </init-param>
-		
-		<init-param>
-			<param-name>jersey.config.server.provider.packages</param-name>
-			<param-value>com.bah.ode.api</param-value>
-		</init-param>
-		<init-param>
-			<!-- Default value is true for Jersery -->
-			<param-name>jersey.config.server.provider.scanning.recursive</param-name>
-			<param-value>true</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
+   <servlet>
+      <servlet-name>RESTfulServices</servlet-name>
+      <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+      <init-param>
+         <param-name>javax.ws.rs.Application</param-name>
+         <param-value>com.bah.ode.api.OdeResourceConfig</param-value>
+      </init-param>
+
+      <init-param>
+         <param-name>jersey.config.server.provider.packages</param-name>
+         <param-value>com.bah.ode.api</param-value>
+      </init-param>
+      <init-param>
+         <!-- Default value is true for Jersery -->
+         <param-name>jersey.config.server.provider.scanning.recursive</param-name>
+         <param-value>true</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup>
+   </servlet>
 
    <servlet-mapping>
       <servlet-name>RESTfulServices</servlet-name>
