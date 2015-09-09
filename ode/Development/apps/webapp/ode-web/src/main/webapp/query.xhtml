@@ -106,10 +106,15 @@ $(document ).ready(function() {
   $('#send').click(function(){
 	send();
   });
-  // Radio button click handler
-    $("#selectData input:radio").click(function() {
-		updateRequestUri( $(this).val());
-   });
+  //Radio button click handler
+  $("#selectData input:radio").click(function() {
+	  if (token==null){
+		dialog.dialog( "open" );
+    }
+	  else{
+	  updateRequestUri( $(this).val());
+	  }
+ });
   
   function setConnectionState(c, s) {
      connected = c;
@@ -243,6 +248,8 @@ $(document ).ready(function() {
 	    success: function (data){
 	 	 	token = data.message;
 			setConnectionState(true,false)
+			if ( $("#selectData input:radio").is(":checked"))
+				updateRequestUri( $("#selectData input:radio").filter(":checked").val());
 	    }
 	  });  
   }
