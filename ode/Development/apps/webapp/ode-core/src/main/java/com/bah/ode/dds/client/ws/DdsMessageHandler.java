@@ -32,6 +32,7 @@ import com.bah.ode.asn.oss.semi.VehSitRecord;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.DdsData;
 import com.bah.ode.model.OdeAdvisoryDataRaw;
+import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeFullMessage;
 import com.bah.ode.model.OdeIntersectionDataRaw;
 import com.bah.ode.model.OdeMetadata;
@@ -79,10 +80,10 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
          if (ddsData.haveData()) {
             OdeMsgAndMetadata omam = new OdeMsgAndMetadata();
             omam.setMetadata(metadata);
-            omam.setKey(metadata.getOutputTopic().getName());
             
-            String topicName = metadata.getInputTopic().getName();
+            String topicName;
             if (ddsData.getVsd() != null) {
+               topicName = metadata.getInputTopic().getName();
                VehSitDataMessage vsd = ddsData.getVsd();
                List<OdeVehicleDataFlat> ovdfList;
                if (Boolean.valueOf(
@@ -97,25 +98,29 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                }
                
                for (OdeVehicleDataFlat ovdf : ovdfList) {
+                  omam.setKey(ovdf.getSerialId());
+                  omam.getMetadata().setKey(omam.getKey());
                   omam.setPayload(ovdf);
+                  omam.setPayloadType(OdeDataType.VehicleData.name());
                   if (!AppContext.loopbackTest()) {
-                     producer.send(topicName, metadata.getOutputTopic().getName(),
-                           omam.toJson());
+                     producer.send(topicName, omam.getKey(), omam.toJson());
                   } else {
-                     clientSession.getBasicRemote().sendText(omam.toJson());
+                     clientSession.getBasicRemote().sendText(ovdf.toJson());
                   }
                }
             } else { 
                if (ddsData.getIsd() != null) {
+                  topicName = metadata.getInputTopic().getName();
                   omam.setPayload(new OdeIntersectionDataRaw(ddsData.getIsd()));
                } else if (ddsData.getAsd() != null) {
+                  topicName = metadata.getInputTopic().getName();
                   omam.setPayload(new OdeAdvisoryDataRaw(ddsData.getAsd()));
                } else {
+                  topicName = metadata.getOutputTopic().getName();
                   omam.setPayload(new OdeFullMessage(ddsData.getFullMessage()));
                }
                if (!AppContext.loopbackTest()) {
-                  producer.send(topicName, metadata.getOutputTopic().getName(),
-                        omam.toJson());
+                  producer.send(topicName, omam.getKey(), omam.toJson());
                } else {
                   clientSession.getBasicRemote().sendText(omam.toJson());
                }
@@ -138,8 +143,9 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
       if (bSize > 0 && count > 0 && count <= bSize) {
          for (int i = count-1; i >= 0; i--) {
             VehSitRecord vsr = bundle.get(i);
+            String serialId = serialIdPrefix + "." + id++;
             OdeVehicleDataFlat ovdf = new OdeVehicleDataFlat(
-                  serialIdPrefix + "." +id, 
+                  serialId, 
                   groupId, vsr);
             ovdfList.add(ovdf);
          }

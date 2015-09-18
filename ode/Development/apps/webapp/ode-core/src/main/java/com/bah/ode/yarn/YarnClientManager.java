@@ -1,16 +1,12 @@
 package com.bah.ode.yarn;
 
-import java.util.ArrayList;
-
-import org.apache.spark.deploy.yarn.Client;
-import org.apache.spark.deploy.yarn.ClientArguments;
-
-import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
+import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.spark.SparkConf;
-
+import org.apache.spark.deploy.yarn.Client;
+import org.apache.spark.deploy.yarn.ClientArguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +123,7 @@ public class YarnClientManager {
 	   		sparkStreamingDefaultDuration);
 	   
 	    ClientArguments cArgs = new ClientArguments(args, sparkConf); 
-	    // create an instance of yarn Client client
+	    // create an instance of yarn Client
 	    this.client = new Client(cArgs, config, sparkConf); 
 	    
 	    // submit Spark job to YARN 

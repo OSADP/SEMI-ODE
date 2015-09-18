@@ -17,7 +17,6 @@
 package com.bah.ode.model;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import com.bah.ode.asn.OdeTransmissionState;
 import com.bah.ode.asn.oss.dsrc.AccelerationSet4Way;
@@ -50,11 +49,8 @@ import com.bah.ode.util.ByteUtils;
 import com.bah.ode.util.CodecUtils;
 import com.bah.ode.util.DateTimeUtils;
 
-public class OdeVehicleDataFlat extends OdeData {
+public class OdeVehicleDataFlat extends OdeDataAbstractFinal {
    private static final long serialVersionUID = -7170326566884675515L;
-
-   private String serialId;
-   private String receivedAt;
 
    private String groupId;
 
@@ -105,7 +101,7 @@ public class OdeVehicleDataFlat extends OdeData {
    private String  dateTime;
 
    private Integer lights;  
-   private BigDecimal  throttlePos;      //(0..200) -- LSB units are 0.5 percent
+   private BigDecimal  throttlePos; //(0..200) -- LSB units are 0.5 percent
    private Integer tirePressureLF;  //(0..1000)
    private Integer tirePressureLR;  //(0..1000)
    private Integer tirePressureRF;  //(0..1000)
@@ -124,9 +120,13 @@ public class OdeVehicleDataFlat extends OdeData {
    private Long    wipersStatusRear;
    private Integer wipersRateRear;   
    
+   private BigDecimal minSpeed;
+   private BigDecimal maxSpeed;
+   private BigDecimal avgSpeed;
+
    public OdeVehicleDataFlat(String serialId, GroupID groupId, VehSitRecord vsr) {
-      this.serialId = serialId; 
-      this.receivedAt = DateTimeUtils.isoDateTime(new Date());
+      super();
+      setSerialId(serialId); 
       
       setGroupId(groupId);
       
@@ -647,22 +647,6 @@ public class OdeVehicleDataFlat extends OdeData {
             .byteArrayValue() : "".getBytes());
    }
 
-   public String getSerialId() {
-      return serialId;
-   }
-
-   public void setSerialId(String serialId) {
-      this.serialId = serialId;
-   }
-
-   public String getReceivedAt() {
-      return receivedAt;
-   }
-
-   public void setReceivedAt(String receivedAt) {
-      this.receivedAt = receivedAt;
-   }
-
    public String getDateTime() {
       return dateTime;
    }
@@ -1079,14 +1063,39 @@ public class OdeVehicleDataFlat extends OdeData {
       this.wipersRateRear = wipersRateRear;
    }
 
-   public static long getSerialversionuid() {
-      return serialVersionUID;
+   public BigDecimal getMinSpeed() {
+      return minSpeed;
+   }
+
+   public void setMinSpeed(BigDecimal minSpeed) {
+      this.minSpeed = minSpeed;
+   }
+
+   public BigDecimal getMaxSpeed() {
+      return maxSpeed;
+   }
+
+   public void setMaxSpeed(BigDecimal maxSpeed) {
+      this.maxSpeed = maxSpeed;
+   }
+
+   public BigDecimal getAvgSpeed() {
+      return avgSpeed;
+   }
+
+   public void setAvgSpeed(BigDecimal avgSpeed) {
+      this.avgSpeed = avgSpeed;
+   }
+
+   @Override
+   public void init() {
+      setDataType(OdeDataType.VehicleData);
    }
 
    @Override
    public int hashCode() {
       final int prime = 31;
-      int result = 1;
+      int result = super.hashCode();
       result = prime * result
             + ((BrakesAux == null) ? 0 : BrakesAux.hashCode());
       result = prime * result + ((EnvEmiss == null) ? 0 : EnvEmiss.hashCode());
@@ -1101,6 +1110,7 @@ public class OdeVehicleDataFlat extends OdeData {
             + ((accelVert == null) ? 0 : accelVert.hashCode());
       result = prime * result
             + ((accellYaw == null) ? 0 : accellYaw.hashCode());
+      result = prime * result + ((avgSpeed == null) ? 0 : avgSpeed.hashCode());
       result = prime * result
             + ((brakesABS == null) ? 0 : brakesABS.hashCode());
       result = prime * result
@@ -1127,12 +1137,11 @@ public class OdeVehicleDataFlat extends OdeData {
       result = prime * result + ((lights == null) ? 0 : lights.hashCode());
       result = prime * result
             + ((longitude == null) ? 0 : longitude.hashCode());
+      result = prime * result + ((maxSpeed == null) ? 0 : maxSpeed.hashCode());
+      result = prime * result + ((minSpeed == null) ? 0 : minSpeed.hashCode());
       result = prime * result + ((minute == null) ? 0 : minute.hashCode());
       result = prime * result + ((month == null) ? 0 : month.hashCode());
-      result = prime * result
-            + ((receivedAt == null) ? 0 : receivedAt.hashCode());
       result = prime * result + ((second == null) ? 0 : second.hashCode());
-      result = prime * result + ((serialId == null) ? 0 : serialId.hashCode());
       result = prime * result
             + ((sizeLength == null) ? 0 : sizeLength.hashCode());
       result = prime * result
@@ -1187,7 +1196,7 @@ public class OdeVehicleDataFlat extends OdeData {
    public boolean equals(Object obj) {
       if (this == obj)
          return true;
-      if (obj == null)
+      if (!super.equals(obj))
          return false;
       if (getClass() != obj.getClass())
          return false;
@@ -1231,6 +1240,11 @@ public class OdeVehicleDataFlat extends OdeData {
          if (other.accellYaw != null)
             return false;
       } else if (!accellYaw.equals(other.accellYaw))
+         return false;
+      if (avgSpeed == null) {
+         if (other.avgSpeed != null)
+            return false;
+      } else if (!avgSpeed.equals(other.avgSpeed))
          return false;
       if (brakesABS == null) {
          if (other.brakesABS != null)
@@ -1322,6 +1336,16 @@ public class OdeVehicleDataFlat extends OdeData {
             return false;
       } else if (!longitude.equals(other.longitude))
          return false;
+      if (maxSpeed == null) {
+         if (other.maxSpeed != null)
+            return false;
+      } else if (!maxSpeed.equals(other.maxSpeed))
+         return false;
+      if (minSpeed == null) {
+         if (other.minSpeed != null)
+            return false;
+      } else if (!minSpeed.equals(other.minSpeed))
+         return false;
       if (minute == null) {
          if (other.minute != null)
             return false;
@@ -1332,20 +1356,10 @@ public class OdeVehicleDataFlat extends OdeData {
             return false;
       } else if (!month.equals(other.month))
          return false;
-      if (receivedAt == null) {
-         if (other.receivedAt != null)
-            return false;
-      } else if (!receivedAt.equals(other.receivedAt))
-         return false;
       if (second == null) {
          if (other.second != null)
             return false;
       } else if (!second.equals(other.second))
-         return false;
-      if (serialId == null) {
-         if (other.serialId != null)
-            return false;
-      } else if (!serialId.equals(other.serialId))
          return false;
       if (sizeLength == null) {
          if (other.sizeLength != null)

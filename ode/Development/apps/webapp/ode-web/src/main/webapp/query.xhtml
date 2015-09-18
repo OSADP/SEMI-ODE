@@ -304,8 +304,8 @@ $(document ).ready(function() {
  
       valid = valid && checkRegexp( name, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter." );
       valid = valid && checkRegexp( email, emailRegex, "eg. ui@jquery.com" );
-      valid = valid && checkRegexp( password, /^([0-9a-zA-Z])+$/, "Password field only allow : a-z 0-9" );
- 
+      valid = valid && checkRegexp( password, /^[0-9a-zA-Z!#$%&*_\-]+$/, "Password field only allow : a-z 0-9!#$%&*_-" );
+       
       if ( valid ) {
         getToken(email.val(),password.val());
         dialog.dialog( "close" );
