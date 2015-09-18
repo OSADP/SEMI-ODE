@@ -27,6 +27,11 @@
          <artifactId>ode-core</artifactId>
          <version>0.0.1-SNAPSHOT</version>
       </dependency>
+      <dependency>
+         <groupId>dot.bah.ode</groupId>
+         <artifactId>ode-spark</artifactId>
+         <version>0.0.1-SNAPSHOT</version>
+      </dependency>
 
       <!-- Json web token -->
       <dependency>

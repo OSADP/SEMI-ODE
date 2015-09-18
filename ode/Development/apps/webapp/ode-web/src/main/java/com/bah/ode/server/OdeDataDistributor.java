@@ -1,5 +1,6 @@
 package com.bah.ode.server;
 
+import java.io.IOException;
 import java.util.concurrent.Future;
 
 import javax.websocket.Session;
@@ -10,11 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
+import com.bah.ode.model.OdeDataType;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.DataProcessor;
 import com.bah.ode.wrapper.MQConsumerGroup;
 import com.bah.ode.wrapper.MQTopic;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class OdeDataDistributor implements Runnable {
 
@@ -47,15 +50,26 @@ public class OdeDataDistributor implements Runnable {
                   public Future<String> process(String data)
                         throws DataProcessorException {
                      try {
-                        JsonNode jsonObject = JsonUtils.toJsonNode(data);
-                        JsonNode payload = jsonObject.get("payload");
-                        clientSession.getBasicRemote().sendText(payload.toString());
+                        ObjectNode jsonObject = JsonUtils.toObjectNode(data);
+                        if (isValidData(jsonObject)) {
+                           clientSession.getBasicRemote().sendText(data);
+                        } else {
+                           JsonNode payload = jsonObject.get("payload");
+                           if (isValidData(payload))
+                              clientSession.getBasicRemote().sendText(payload.toString());
+                        }
                      } catch (Exception e) {
                         throw new DataProcessorException("Error processing data.", e);
                      }
                      return null;
                   }
-   
+
+                  private boolean isValidData(JsonNode data) throws IOException {
+                     JsonNode dataType;
+                     return data != null &&
+                           (dataType = data.get("dataType")) != null && 
+                           OdeDataType.getByShortName(dataType.textValue()) != null;
+                  }
                });
       }
    }

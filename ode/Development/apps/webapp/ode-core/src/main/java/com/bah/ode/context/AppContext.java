@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,13 +87,12 @@ public class AppContext {
 
    private ServletContext servletContext;
    
+   private String sparkMaster;
    private SparkConf sparkConf;
    private JavaSparkContext sparkContext;
-   private JavaStreamingContext ssc=null; // set to null 
    private boolean streamingContextStarted = false;
-   private  YarnClientManager yarnManager=null;
+   private  YarnClientManager yarnManager = null;
    private ApplicationId sparkAppId = null;
-//   private VehicleDataProcessor ovdfWF;
 
    public static String getServletBaseUrl(HttpServletRequest request) {
       String proto = request.getScheme();
@@ -109,6 +107,7 @@ public class AppContext {
 
    public void init(ServletContext context) {
       this.servletContext = context;
+      sparkMaster = getParam(SPARK_MASTER);
 
       // DEBUG ONLY
       // For debugging only and running the app on local machine
@@ -118,17 +117,19 @@ public class AppContext {
          try {        	
         	 
             sparkConf = new SparkConf()
-               .setMaster(getParam(SPARK_MASTER))
+               .setMaster(sparkMaster)
                .setAppName(context.getServletContextName())
-               
-               .set("spark.yarn.jar", SPARK_HOME+"/lib/"+ getParam(SPARK_ASSEMBLY_JAR))
-              .setExecutorEnv("CLASSPATH", "$CLASSPATH:"+SPARK_HOME+"/lib/*:"
-            		    + "/usr/hdp/current/hadoop-client/*:"
-                 		+ "/usr/hdp/current/hadoop-client/lib/*:"
-                 		+ "/usr/hdp/current/hadoop-hdfs-client/*:"
-                 		+ "/usr/hdp/current/hadoop-hdfs-client/lib/*:"
-                 		+ "/usr/hdp/current/hadoop-yarn-client/*:"
-                 		+ "/usr/hdp/current/hadoop-yarn-client/lib/*")
+               .set("spark.shuffle.manager", "SORT");
+            
+            if (sparkMaster.startsWith("yarn")) {
+               sparkConf.set("spark.yarn.jar", SPARK_HOME+"/lib/"+ getParam(SPARK_ASSEMBLY_JAR))
+                  .setExecutorEnv("CLASSPATH", "$CLASSPATH:"+SPARK_HOME+"/lib/*:"
+                       + "/usr/hdp/current/hadoop-client/*:"
+                       + "/usr/hdp/current/hadoop-client/lib/*:"
+                       + "/usr/hdp/current/hadoop-hdfs-client/*:"
+                       + "/usr/hdp/current/hadoop-hdfs-client/lib/*:"
+                       + "/usr/hdp/current/hadoop-yarn-client/*:"
+                       + "/usr/hdp/current/hadoop-yarn-client/lib/*")
 //               .setSparkHome(SPARK_HOME)
 //               .setExecutorEnv("SPARK_HOME",		SPARK_HOME)
 //               .setExecutorEnv("HADOOP_CONF_DIR", 	HADOOP_CONF_DIR)
@@ -144,38 +145,40 @@ public class AppContext {
 //               .set("spark.yarn.appMasterEnv.YARN_CONF_DIR",  YARN_CONF_DIR)
 //               .set("spark.yarn.appMasterEnv.HADOOP_HOME", HADOOP_HOME)
 //               .set("spark.yarn.appMasterEnv.HADOOP_YARN_HOME",HADOOP_YARN_HOME)
-               .set("spark.yarn.application.classpath","$CLASSPATH:$HADOOP_CONF_DIR:"
-            		+ "/usr/hdp/current/hadoop-client/*:"
-               		+ "/usr/hdp/current/hadoop-client/lib/*:"
-               		+ "/usr/hdp/current/hadoop-hdfs-client/*:"
-               		+ "/usr/hdp/current/hadoop-hdfs-client/lib/*:"
-               		+ "/usr/hdp/current/hadoop-yarn-client/*:"
-               		+ "/usr/hdp/current/hadoop-yarn-client/lib/*")
+                  .set("spark.yarn.application.classpath","$CLASSPATH:$HADOOP_CONF_DIR:"
+                        + "/usr/hdp/current/hadoop-client/*:"
+                        + "/usr/hdp/current/hadoop-client/lib/*:"
+                        + "/usr/hdp/current/hadoop-hdfs-client/*:"
+                        + "/usr/hdp/current/hadoop-hdfs-client/lib/*:"
+                        + "/usr/hdp/current/hadoop-yarn-client/*:"
+                        + "/usr/hdp/current/hadoop-yarn-client/lib/*")
 //            		   				  
 //          .set("spark.yarn.access.namenodes","hdfs://localhost.localdomain:8020")
 //          .set("spark.yarn.am.extraJavaOptions","-Dhdp.version=2.3.0.0-2557") // TODO If required for cluster use, 
 //          .set("spark.driver.extraJavaOptions" ,"-Dhdp.version=2.3.0.0-2557")// TODO  add these variables to web.xml
              
 //           .set("spark.yarn.appMasterEnv.hdp.version","2.3.0.0-2557")
-   //            // Use Kryo to speed up serialization, recommended as default setup for Spark Streaming
-   //            // http://spark.apache.org/docs/1.1.0/tuning.html#data-serialization
-   //            .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-   //            .set("spark.kryo.registrator", .class.getName);
+//            // Use Kryo to speed up serialization, recommended as default setup for Spark Streaming
+//            // http://spark.apache.org/docs/1.1.0/tuning.html#data-serialization
+//            .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+//            .set("spark.kryo.registrator", .class.getName);
                // Enable experimental sort-based shuffle manager that is more memory-efficient in environments with small
                // executors, such as YARN.  Will most likely become the default in future Spark versions.
                // https://spark.apache.org/docs/1.1.0/configuration.html#shuffle-behavior
-               .set("spark.shuffle.manager", "SORT")
-   //            // Force RDDs generated and persisted by Spark Streaming to be automatically unpersisted from Spark's memory.
-   //            // The raw input data received by Spark Streaming is also automatically cleared.  (Setting this to false will
-   //            // allow the raw data and persisted RDDs to be accessible outside the streaming application as they will not be
-   //            // cleared automatically.  But it comes at the cost of higher memory usage in Spark.)
-   //            // http://spark.apache.org/docs/1.1.0/configuration.html#spark-streaming
-   //            .set("spark.streaming.unpersist", "true")
-               ;
+//            // Force RDDs generated and persisted by Spark Streaming to be automatically unpersisted from Spark's memory.
+//            // The raw input data received by Spark Streaming is also automatically cleared.  (Setting this to false will
+//            // allow the raw data and persisted RDDs to be accessible outside the streaming application as they will not be
+//            // cleared automatically.  But it comes at the cost of higher memory usage in Spark.)
+//            // http://spark.apache.org/docs/1.1.0/configuration.html#spark-streaming
+//            .set("spark.streaming.unpersist", "true")
+                        ;
+               startSparkOnYarn();
+            } else {
+               sparkContext = getOrSetSparkContext();
+            }
             
             logger.info("Creating Spark Context...");            
             
-            startStreamingContext();
 
          } catch (Throwable t) {
             logger.error("Error creating spark contexts.", t);
@@ -184,7 +187,6 @@ public class AppContext {
          logger.info("*** SPARK DISABLED FOR DEBUG ***");
       }
       
-      @SuppressWarnings("unchecked")
       Enumeration<String> parmNames = context.getInitParameterNames();
 
       while (parmNames.hasMoreElements()) {
@@ -218,72 +220,57 @@ public class AppContext {
       return sparkConf;
    }
 
+   public JavaSparkContext getOrSetSparkContext() {
+      if (sparkContext == null){
+         logger.info("Creating Spark Context...");
+         sparkContext = new JavaSparkContext(sparkConf);
+      }
+      return sparkContext;
+   }
+
    public JavaSparkContext getSparkContext() {
       return sparkContext;
    }
 
-   public JavaStreamingContext getSparkStreamingConext() {
-      return ssc;
+   public void setSparkContext(JavaSparkContext sparkContext) {
+      this.sparkContext = sparkContext;
    }
 
    public void shutDown() {
-//      if (null != ssc) {
-    	  stopStreamingContext();    	  
-//         ssc = null;
-//      }
-      
+      stopSparkOnYarn();
    }
    
    public  ApplicationId getApplicationId(){
 	   return sparkAppId;
    }
    
-   public synchronized void startStreamingContext() {
+   public synchronized void startSparkOnYarn() {
       if (!streamingContextStarted && null==yarnManager) {
-    	try {
-    		streamingContextStarted = true;
-//         int numParitions = 
-//               Integer.parseInt(getParam(KAFKA_DEFAULT_CONSUMER_THREADS));
-         yarnManager = new YarnClientManager(sparkConf);
-         yarnManager.setKafkaMetaDataBrokerList(getParam(KAFKA_METADATA_BROKER_LIST))
-         			.setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
-         			.setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
-         			.setOdeVehDataFlatTopic(getParam(ODE_VEH_DATA_FLAT_TOPIC))
-         			.setSparkStreamingDefaultDuration(getParam(SPARK_STREAMING_DEFAULT_DURATION))
-         			.setClass("com.bah.ode.spark.VehicleDataProcessorWrapper")
-         			.setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR));
-         sparkAppId = yarnManager.submitSparkJob();
-         logger.info("Spark ApplicationID: {}", sparkAppId.toString());		
-         
-         
-//         if (ssc == null){
-//            ssc = createStreamingContext();
-//         }
-         
-//         if (ovdfWF == null) {
-//            logger.info("Creating OVDF Process Flow...");
-//            ovdfWF = new VehicleDataProcessor();
-//            ovdfWF.setup(ssc, MQTopic.create(getParam(ODE_VEH_DATA_FLAT_TOPIC), numParitions),
-//                  getParam(ZK_CONNECTION_STRINGS),
-//                  getParam(KAFKA_METADATA_BROKER_LIST));
-//         }
-         
-        
-            logger.info("Starting Spark Streaming Context...");
-//            ssc.start();
-//            streamingContextStarted = true;
+         try {
+            streamingContextStarted = true;
+            yarnManager = new YarnClientManager(sparkConf);
+            yarnManager.setKafkaMetaDataBrokerList(getParam(KAFKA_METADATA_BROKER_LIST))
+               .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
+               .setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
+               .setOdeVehDataFlatTopic(getParam(ODE_VEH_DATA_FLAT_TOPIC))
+               .setSparkStreamingDefaultDuration(getParam(SPARK_STREAMING_DEFAULT_DURATION))
+               .setClass("com.bah.ode.spark.VehicleDataProcessorWrapper")
+               .setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR));
+            logger.info("Starting Spark ...");
+            sparkAppId = yarnManager.submitSparkJob();
+            logger.info("Spark ApplicationID: {}", sparkAppId.toString());    
+            
+            
             logger.info("*** Spark Streaming Context Started ***");
          } catch (Throwable t1) {
             logger.warn("*** Error starting Spark Streaming Context. Stopping... ***", t1);
             try {
-//               ssc.stop(false);
                logger.info("*** Spark Streaming Context Stopped ***");
             } catch (Throwable t2) {
                logger.warn("*** Error stopping Spark Streaming Context. Starting... ***", t2);
             }
             try {
                logger.info("*** Restarting Spark Streaming Context. ***");
-//               ssc.start();
                streamingContextStarted = true;
                logger.info("*** Spark Streaming Context Restarted ***");
             } catch (Throwable t3) {
@@ -293,26 +280,14 @@ public class AppContext {
       }
    }
 
-//   private JavaStreamingContext createStreamingContext() {
-//      logger.info("Creating Spark Streaming Context...");
-//      return ssc = new JavaStreamingContext(
-//            sparkContext,
-//            Durations.seconds(Integer.parseInt(
-//                  getParam(SPARK_STREAMING_DEFAULT_DURATION))));
-//   }
-
-   public synchronized void stopStreamingContext() {
+   public synchronized void stopSparkOnYarn() {
       if (streamingContextStarted || null != yarnManager) {
          try {
             yarnManager.stopSparkJob();
             yarnManager = null;
             sparkAppId = null;
             streamingContextStarted = false;
-            // ssc.stop(false);
             logger.info("*** Spark Streaming Context Stopped ***");
-            // ssc.awaitTermination(10000);
-            ssc = null;
-            // ovdfWF = null;
          } catch (Throwable t) {
             logger.warn("*** Error stopping Spark Streaming Context ***", t);
          }

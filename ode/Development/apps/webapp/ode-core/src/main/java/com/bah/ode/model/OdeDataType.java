@@ -20,11 +20,13 @@ import java.util.ArrayList;
 
 public enum OdeDataType {
    VehicleData("veh"), 
-   IntersectionData("int"), 
+   IntersectionData("int"),
+   AdvisoryData("adv"),
    MAPData("map"), 
    SPaTData("spat"), 
    AggregateData("agg"),
-   WeatherData("weather");
+   WeatherData("weather"),
+   OtherData("other");
    
    private static String shortNames = shortNames();
 

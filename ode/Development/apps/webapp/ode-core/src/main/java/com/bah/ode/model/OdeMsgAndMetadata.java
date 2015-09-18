@@ -6,7 +6,7 @@ public class OdeMsgAndMetadata extends OdeObject {
    
    private String key;
    private String payloadType;
-   private OdeData payload;
+   private OdeDataAbstractFinal payload;
    private OdeMetadata metadata;
    
    public String getPayloadType() {
@@ -19,7 +19,7 @@ public class OdeMsgAndMetadata extends OdeObject {
    public OdeData getPayload() {
       return payload;
    }
-   public OdeMsgAndMetadata setPayload(OdeData payload) {
+   public OdeMsgAndMetadata setPayload(OdeDataAbstractFinal payload) {
       this.payload = payload;
       this.payloadType = payload.getClass().getName();
       return this;

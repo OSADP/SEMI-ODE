@@ -18,6 +18,7 @@ package com.bah.ode.util;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -92,14 +93,11 @@ public class JsonUtils {
       return mapper.createObjectNode();
    }
 
-   public static JsonNode toJsonNode(String tree) {
-      JsonNode jsonNode = null;
-      try {
-         jsonNode = mapper.readTree(tree);
-      } catch (IOException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
+   public static ObjectNode toObjectNode(String tree) 
+         throws JsonProcessingException, IOException {
+      ObjectNode jsonNode = (ObjectNode) mapper.readTree(tree);
       return jsonNode;
    }
+   
+
 }

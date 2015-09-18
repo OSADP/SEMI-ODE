@@ -6,19 +6,19 @@ import javax.servlet.ServletContextListener;
 
 import com.bah.ode.context.AppContext;
 
-public class InitServeletListener  implements ServletContextListener {
-	
-	@Override
-	public void contextInitialized(ServletContextEvent sce) {
-		ServletContext servletContext = sce.getServletContext();
+public class InitServeletListener implements ServletContextListener {
+   @Override
+   public void contextInitialized(ServletContextEvent sce) {
+      ServletContext servletContext = sce.getServletContext();
+      AppContext.getInstance().init(servletContext);
+   }
 
-		AppContext appContext = AppContext.getInstance();
-		appContext.init(servletContext);	
-	}
+   @Override
+   public void contextDestroyed(ServletContextEvent sce) {
+      AppContext.getInstance().shutDown();
+      if (AppContext.getInstance().getParam(AppContext.SPARK_MASTER).startsWith("local")) {
+         LocalSparkProcessor.stopStreamingContext();
+      }
+   }
 
-	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-		AppContext.getInstance().shutDown();
-		
-	}	   
 }

@@ -5,9 +5,17 @@ import com.bah.ode.wrapper.MQTopic;
 public class OdeMetadata extends OdeObject {
    private static final long serialVersionUID = 7892898609083630517L;
 
+   private String  key;
    private MQTopic inputTopic;
    private MQTopic outputTopic;
    
+   public String getKey() {
+      return key;
+   }
+   public OdeMetadata setKey(String key) {
+      this.key = key;
+      return this;
+   }
    public MQTopic getInputTopic() {
       return inputTopic;
    }
@@ -28,6 +36,7 @@ public class OdeMetadata extends OdeObject {
       int result = 1;
       result = prime * result
             + ((inputTopic == null) ? 0 : inputTopic.hashCode());
+      result = prime * result + ((key == null) ? 0 : key.hashCode());
       result = prime * result
             + ((outputTopic == null) ? 0 : outputTopic.hashCode());
       return result;
@@ -45,6 +54,11 @@ public class OdeMetadata extends OdeObject {
          if (other.inputTopic != null)
             return false;
       } else if (!inputTopic.equals(other.inputTopic))
+         return false;
+      if (key == null) {
+         if (other.key != null)
+            return false;
+      } else if (!key.equals(other.key))
          return false;
       if (outputTopic == null) {
          if (other.outputTopic != null)
