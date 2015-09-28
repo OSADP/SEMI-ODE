@@ -94,8 +94,8 @@ public class TestWebSocketServer {
                   AppContext.KAFKA_METADATA_BROKER_LIST));
          }
          
-         if (WebSocketServer.getConnector(requestId) != null)
-            this.testMgr = WebSocketServer.getConnector(requestId).getTestMgr();
+         if (OdeWsRequestProcessor.getConnector(requestId) != null)
+            this.testMgr = OdeWsRequestProcessor.getConnector(requestId).getTestMgr();
       } catch (Exception ex) {
          msg.setCode(OdeStatus.Code.SOURCE_CONNECTION_ERROR).setMessage(
                String.format("Error processing connection request %s",

@@ -46,9 +46,9 @@ import com.bah.ode.wrapper.MQTopic;
  * context root and "ws" is the address to access this class from the server
  */
 @ServerEndpoint("/api/ws/{rtype}/{dtype}")
-public class WebSocketServer {
+public class OdeWsRequestProcessor {
    private static Logger logger = LoggerFactory
-         .getLogger(WebSocketServer.class);
+         .getLogger(OdeWsRequestProcessor.class);
    
    private static Map<String, DataSourceConnector> connectors = 
          new HashMap<String, DataSourceConnector>();
@@ -295,8 +295,8 @@ public class WebSocketServer {
       }
    }
 
-   public static class WebSocketServerException extends OdeException {
-      public WebSocketServerException(String message) {
+   public static class OdeWsRequestException extends OdeException {
+      public OdeWsRequestException(String message) {
          super(message);
       }
 

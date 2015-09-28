@@ -11,7 +11,7 @@ import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.model.OdeSubRequest;
 import com.bah.ode.model.OdeTstRequest;
-import com.bah.ode.server.WebSocketServer.WebSocketServerException;
+import com.bah.ode.server.OdeWsRequestProcessor.OdeWsRequestException;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQTopic;
 
@@ -31,7 +31,7 @@ public class OdeRequestManager {
    }
 
    public static OdeRequest buildOdeRequest(String rtype, String dtype, String message)
-         throws WebSocketServerException {
+         throws OdeWsRequestException {
       OdeRequest odeRequest = null;
       OdeRequestType requestType = OdeRequestType.getByShortName(rtype);
       if (requestType == OdeRequestType.Subscription) {
@@ -51,7 +51,7 @@ public class OdeRequestManager {
                         "Invalid request type %s. Valid request types are %s.",
                         rtype, OdeRequestType.shortNames()));
          logger.error(status.toString());
-         throw new WebSocketServerException(status.toString());
+         throw new OdeWsRequestException(status.toString());
       }
       odeRequest.setRequestType(OdeRequestType.getByShortName(rtype));
 
@@ -63,7 +63,7 @@ public class OdeRequestManager {
                         "Invalid data type %s. Valid data types are %s.",
                         dtype, OdeDataType.shortNames()));
          logger.error(status.toString());
-         throw new WebSocketServerException(status.toString());
+         throw new OdeWsRequestException(status.toString());
       }
       odeRequest.setDataType(OdeDataType.getByShortName(dtype));
       return odeRequest;
