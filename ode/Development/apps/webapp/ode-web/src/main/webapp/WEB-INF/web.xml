@@ -105,8 +105,16 @@
       <param-value>local[2]</param-value>
    </context-param>
    <context-param>
-      <param-name>spark.streaming.default.duration</param-name>
-      <param-value>1</param-value>
+      <param-name>spark.streaming.microbatch.duration.ms</param-name>
+      <param-value>1000</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.streaming.window.microbatches</param-name>
+      <param-value>60</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.streaming.slide.microbatches</param-name>
+      <param-value>30</param-value>
    </context-param>
    
    

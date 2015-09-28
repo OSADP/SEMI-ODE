@@ -236,7 +236,7 @@ $(document ).ready(function() {
   }
   
   function getToken(email, password)  {
-	  var url = 'http://'+ window.location.host + '/ode/api/auth/login';
+     var url = window.location.protocol+'//'+ window.location.host + '/ode/api/auth/login';
 	  $.ajax({
 	    type: "GET",
 	    dataType:'json',

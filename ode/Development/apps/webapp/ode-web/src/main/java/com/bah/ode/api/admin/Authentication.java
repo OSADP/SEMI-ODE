@@ -19,6 +19,7 @@ import com.bah.ode.api.sec.TokenAuthenticationService;
 import com.bah.ode.api.sec.TokenRepository;
 import com.bah.ode.api.ws.OdeStatus;
 
+//TODO: change path to tokens
 @Path("/auth")
 public class Authentication {
 	
@@ -31,6 +32,7 @@ public class Authentication {
 	@Context 
 	ContainerRequestContext crc;
 	 
+	//TODO: change path to 'new' 
 	@GET
 	@Path("/login")
 	public Response userLogin() throws Exception
@@ -51,6 +53,7 @@ public class Authentication {
 		}
 	}
 	
+	//TODO: Change verb to DELETE
 	@POST
 	@Path("/logout")
 	public Response userLogout()  
@@ -66,14 +69,14 @@ public class Authentication {
 		try {
 			AccessToken token = (AccessToken) crc.getProperty(SecurityService.ACCESS_TOKEN);
 			boolean result = null!=tokenRepository.destroyToken(token);
-			logger.info("Removing Token: {}", result);
+			logger.info("Revoked Token: {}", result);
 
 		} catch (Exception e) {
 			logger.warn("Logout Error", e);
 			msg.setCode(OdeStatus.Code.FAILURE).setMessage("Invalid Token");
 			return Response.status(Status.UNAUTHORIZED).entity(msg).build();
 		}
-		return Response.ok(msg.setCode(OdeStatus.Code.SUCCESS).setMessage("Successfull Logout")).build();
+		return Response.ok(msg.setCode(OdeStatus.Code.SUCCESS).setMessage("Successful Logout")).build();
 	}
 
 }

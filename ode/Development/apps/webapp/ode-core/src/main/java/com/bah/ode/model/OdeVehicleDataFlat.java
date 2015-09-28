@@ -86,7 +86,7 @@ public class OdeVehicleDataFlat extends OdeDataAbstractFinal {
    
    private Byte eventFlag;
 
-   private BigDecimal latitude;  // in 1/10th micro degrees
+   private BigDecimal latitude;  // in degrees
    private BigDecimal longitude; // in 1/10th micro degrees
    private BigDecimal elevation; // in 0.1 meters (decimeters)
 

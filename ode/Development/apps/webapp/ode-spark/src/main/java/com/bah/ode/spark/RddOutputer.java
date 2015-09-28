@@ -31,9 +31,9 @@ public class RddOutputer implements Function<JavaPairRDD<String, String>, Void> 
       if (rdd.keys().count() == 0)
          return null;
       
-      SQLContext hiveContext = SqlContextSingleton.getInstance(rdd.context());
+      SQLContext sqlContext = SqlContextSingleton.getInstance(rdd.context());
 
-      DataFrame ovdfDataFrame = hiveContext.jsonRDD(rdd.keys());
+      DataFrame ovdfDataFrame = sqlContext.jsonRDD(rdd.keys());
 //      ovdfDataFrame.show(10);
       
       // Register as table
@@ -41,7 +41,7 @@ public class RddOutputer implements Function<JavaPairRDD<String, String>, Void> 
 
       // Calculate stats for speed column on table using SQL
       DataFrame ovdfAggsDataFrame = 
-            hiveContext.sql("SELECT MIN(speed), MAX(speed), AVG(speed) FROM OVDF");
+            sqlContext.sql("SELECT MIN(speed), MAX(speed), AVG(speed) FROM OVDF");
 
 //      ovdfAggsDataFrame.show();
       

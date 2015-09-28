@@ -233,7 +233,7 @@ h2 {
   }
   
   function getToken()  {
-	  var url = 'http://'+ window.location.host + '/ode/api/auth/login';
+     var url = window.location.protocol+'//'+ window.location.host + '/ode/api/auth/login';
 
 	  var client = new XMLHttpRequest();
 	  client.open("GET", url, true);
