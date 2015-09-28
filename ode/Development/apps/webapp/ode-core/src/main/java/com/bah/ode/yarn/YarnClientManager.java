@@ -24,7 +24,7 @@ public class YarnClientManager {
 	private String odeVehDataFlatTopic;
 	private String zkConnectionString;
 	private String kafkaMetaDataBrokerList;
-	private String sparkStreamingDefaultDuration;
+	private String sparkStreamingMicrobatchDurationMs;
 	private String className;
 	private String userJar;
 	private Client client;
@@ -59,9 +59,9 @@ public class YarnClientManager {
 		return this;
 	}
 
-	public YarnClientManager setSparkStreamingDefaultDuration(
-			String sparkStreamingDefaultDuration) {
-		this.sparkStreamingDefaultDuration = sparkStreamingDefaultDuration;
+	public YarnClientManager setSparkStreamingMicrobatchDuration(
+			String sparkStreamingMicrobatchDurationMs) {
+		this.sparkStreamingMicrobatchDurationMs = sparkStreamingMicrobatchDurationMs;
 		return this;
 	}
 	
@@ -106,7 +106,7 @@ public class YarnClientManager {
 	    		"--arg", odeVehDataFlatTopic,
 	    		"--arg", zkConnectionString,
 	    		"--arg", kafkaMetaDataBrokerList,
-	    		"--arg", sparkStreamingDefaultDuration,
+	    		"--arg", sparkStreamingMicrobatchDurationMs,
 	    		};
 	   
 	   logger.info("**** Spark Streaming Arguments ****"
@@ -115,12 +115,12 @@ public class YarnClientManager {
 	   		+ "\nInput Topic: {}"
 	   		+ "\nZookeeper Connection String: {}"
 	   		+ "\nkafka Broker Connection String {}"
-	   		+"\nSpark Streamin Duration: {}",
+	   		+"\nSpark Streamin Duration (ms): {}",
 	   		userJar,numPartitions.toString(),
 	   		odeVehDataFlatTopic,
 	   		zkConnectionString,
 	   		kafkaMetaDataBrokerList,
-	   		sparkStreamingDefaultDuration);
+	   		sparkStreamingMicrobatchDurationMs);
 	   
 	    ClientArguments cArgs = new ClientArguments(args, sparkConf); 
 	    // create an instance of yarn Client

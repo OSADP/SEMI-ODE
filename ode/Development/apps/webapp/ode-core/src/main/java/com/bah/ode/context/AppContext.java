@@ -61,7 +61,9 @@ public class AppContext {
 
    // Spark parameters
    public static final String SPARK_MASTER = "spark.master";
-   public static final String SPARK_STREAMING_DEFAULT_DURATION = "spark.streaming.default.duration";
+   public static final String SPARK_STREAMING_MICROBATCH_DURATION_MS = "spark.streaming.microbatch.duration.ms";
+   public static final String SPARK_STREAMING_WINDOW_MICROBATCHES = "spark.streaming.window.microbatches";
+   public static final String SPARK_STREAMING_SLIDE_MICROBATCHES = "spark.streaming.slide.microbatches";
    public static final String SPARK_ASSEMBLY_JAR = "spark.assembly.jar";
    public static final String SPARK_EXECUTOR_MEMORY = "spark.executor.memory";
    public static final String SPARK_DRIVER_MEMORY = "spark.driver.memory";
@@ -253,7 +255,7 @@ public class AppContext {
                .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
                .setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
                .setOdeVehDataFlatTopic(getParam(ODE_VEH_DATA_FLAT_TOPIC))
-               .setSparkStreamingDefaultDuration(getParam(SPARK_STREAMING_DEFAULT_DURATION))
+               .setSparkStreamingMicrobatchDuration(getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
                .setClass("com.bah.ode.spark.VehicleDataProcessorWrapper")
                .setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR));
             logger.info("Starting Spark ...");

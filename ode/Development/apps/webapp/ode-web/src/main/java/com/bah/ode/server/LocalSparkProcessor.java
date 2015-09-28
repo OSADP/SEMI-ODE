@@ -30,9 +30,9 @@ public class LocalSparkProcessor {
             logger.info("Creating Spark Streaming Context...");
             ssc = new JavaStreamingContext(
                   appContext.getOrSetSparkContext(),
-                  Durations.seconds(Integer.parseInt(
+                  Durations.milliseconds(Integer.parseInt(
                         AppContext.getInstance().getParam(
-                              AppContext.SPARK_STREAMING_DEFAULT_DURATION))));
+                              AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS))));
          }
          
          if (ovdfProcessor == null) {
