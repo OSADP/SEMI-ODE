@@ -83,6 +83,8 @@ public class AppContext {
    public static final String HADOOP_CONF_DIR = HADOOP_HOME+"/conf";
    public static final String HADOOP_YARN_HOME = "/usr/hdp/current/hadoop-yarn-client";
    public static final String YARN_CONF_DIR = HADOOP_YARN_HOME+"/conf";
+
+   public static final String AGGREGATES_TOPIC = "AGGREGATES_TOPIC";
      
    
    private static AppContext instance = null;
