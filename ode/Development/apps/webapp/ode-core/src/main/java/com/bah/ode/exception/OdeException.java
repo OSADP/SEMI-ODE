@@ -16,7 +16,7 @@
  *******************************************************************************/
 package com.bah.ode.exception;
 
-import com.bah.ode.api.ws.OdeStatus;
+import com.bah.ode.model.OdeStatus;
 import com.bah.ode.util.JsonUtils;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

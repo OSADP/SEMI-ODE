@@ -3,7 +3,6 @@ package com.bah.ode.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.api.ws.OdeStatus;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.DdsClientFactory;
 import com.bah.ode.dds.client.ws.IsdDecoder;
@@ -19,6 +18,7 @@ import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeQryRequest;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
+import com.bah.ode.model.OdeStatus;
 import com.bah.ode.wrapper.WebSocketClient;
 import com.bah.ode.wrapper.WebSocketMessageDecoder;
 

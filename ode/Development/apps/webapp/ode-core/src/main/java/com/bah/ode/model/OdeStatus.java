@@ -14,10 +14,8 @@
  * Contributors:
  *     Booz | Allen | Hamilton - initial API and implementation
  *******************************************************************************/
-package com.bah.ode.api.ws;
+package com.bah.ode.model;
 
-import com.bah.ode.model.OdeData;
-import com.bah.ode.model.OdeDataType;
 
 public class OdeStatus extends OdeData {
    private static final long serialVersionUID = -8787345244306039604L;
