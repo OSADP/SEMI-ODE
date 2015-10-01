@@ -3,12 +3,12 @@ package com.bah.ode.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.api.ws.OdeStatus;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeQryRequest;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
+import com.bah.ode.model.OdeStatus;
 import com.bah.ode.model.OdeSubRequest;
 import com.bah.ode.model.OdeTstRequest;
 import com.bah.ode.server.WebSocketServer.WebSocketServerException;

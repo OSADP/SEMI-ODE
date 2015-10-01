@@ -28,13 +28,13 @@ import javax.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.api.ws.OdeStatus;
-import com.bah.ode.api.ws.OdeStatus.Code;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeMsgAndMetadata;
+import com.bah.ode.model.OdeStatus;
 import com.bah.ode.model.OdeVehicleDataFlat;
+import com.bah.ode.model.OdeStatus.Code;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQProducer;
 

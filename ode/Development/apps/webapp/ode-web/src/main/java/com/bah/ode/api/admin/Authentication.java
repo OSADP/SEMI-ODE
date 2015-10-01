@@ -17,7 +17,7 @@ import com.bah.ode.api.sec.AccessToken;
 import com.bah.ode.api.sec.SecurityService;
 import com.bah.ode.api.sec.TokenAuthenticationService;
 import com.bah.ode.api.sec.TokenRepository;
-import com.bah.ode.api.ws.OdeStatus;
+import com.bah.ode.model.OdeStatus;
 
 //TODO: change path to tokens
 @Path("/auth")

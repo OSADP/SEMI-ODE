@@ -38,8 +38,8 @@ import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
+import com.bah.ode.model.OdeStatus;
 import com.bah.ode.wrapper.MQTopic;
-import com.bah.ode.api.ws.OdeStatus;
 import com.bah.ode.api.sec.SecurityService;
 import com.bah.ode.api.sec.filters.WebSocketAuthenticationConfiguration;
 
