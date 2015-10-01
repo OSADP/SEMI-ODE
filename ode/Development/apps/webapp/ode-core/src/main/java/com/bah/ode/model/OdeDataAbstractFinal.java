@@ -22,25 +22,16 @@ import com.bah.ode.util.DateTimeUtils;
 
 public abstract class OdeDataAbstractFinal extends OdeData{
    private static final long serialVersionUID = -7711340868799607662L;
-   private String dataType;
    private String serialId;
    private String receivedAt;
 
    
-   protected abstract void init();
+   protected abstract void initDefault();
 
    public OdeDataAbstractFinal() {
       super();
-      init();
+      initDefault();
       this.receivedAt = DateTimeUtils.isoDateTime(new Date());
-   }
-
-   public String getDataType() {
-      return dataType;
-   }
-
-   public void setDataType(OdeDataType dataType) {
-      this.dataType = dataType.getShortName();
    }
 
    public String getSerialId() {
@@ -62,8 +53,7 @@ public abstract class OdeDataAbstractFinal extends OdeData{
    @Override
    public int hashCode() {
       final int prime = 31;
-      int result = 1;
-      result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
+      int result = super.hashCode();
       result = prime * result
             + ((receivedAt == null) ? 0 : receivedAt.hashCode());
       result = prime * result + ((serialId == null) ? 0 : serialId.hashCode());
@@ -74,16 +64,11 @@ public abstract class OdeDataAbstractFinal extends OdeData{
    public boolean equals(Object obj) {
       if (this == obj)
          return true;
-      if (obj == null)
+      if (!super.equals(obj))
          return false;
       if (getClass() != obj.getClass())
          return false;
       OdeDataAbstractFinal other = (OdeDataAbstractFinal) obj;
-      if (dataType == null) {
-         if (other.dataType != null)
-            return false;
-      } else if (!dataType.equals(other.dataType))
-         return false;
       if (receivedAt == null) {
          if (other.receivedAt != null)
             return false;

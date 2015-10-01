@@ -1,6 +1,5 @@
 package com.bah.ode.server;
 
-import org.apache.spark.sql.AnalysisException;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.slf4j.Logger;
@@ -22,7 +21,7 @@ public class LocalSparkProcessor {
    private static AppContext appContext = AppContext.getInstance();
 
    public static synchronized void startStreamingContext() {
-      if (appContext.getParam(AppContext.SPARK_MASTER).startsWith("local")) {
+      if (!streamingContextStarted) {
          int numParitions = 
          Integer.parseInt(appContext.getParam(AppContext.KAFKA_DEFAULT_CONSUMER_THREADS));
 
@@ -50,20 +49,7 @@ public class LocalSparkProcessor {
             streamingContextStarted = true;
             logger.info("*** Spark Streaming Context Started ***");
          } catch (Throwable t1) {
-            logger.warn("*** Error starting Spark Streaming Context. Stopping... ***", t1);
-            try {
-               ssc.stop(false);
-               logger.info("*** Spark Streaming Context Stopped ***");
-            } catch (Throwable t2) {
-               logger.warn("*** Error stopping Spark Streaming Context. Starting... ***", t2);
-            }
-            try {
-               logger.info("*** Restarting Spark Streaming Context. ***");
-               ssc.start();
-               logger.info("*** Spark Streaming Context Restarted ***");
-            } catch (Throwable t3) {
-               logger.error("*** Unable to start Spark Streaming Context ***", t3);
-            }
+            logger.warn("*** Error starting Spark Streaming Context. ***", t1);
          }
       }
    }
@@ -74,14 +60,17 @@ public class LocalSparkProcessor {
          try {
             ssc.stop(false);
             logger.info("*** Spark Streaming Context Stopped ***");
-            ssc.awaitTerminationOrTimeout(10000);
-            ssc = null;
-            ovdfProcessor = null;
-         } catch (Throwable t) {
-            if (t instanceof AnalysisException)
+            
+            try {
+               ssc.awaitTerminationOrTimeout(10000);
+            } catch (Throwable t) {
                logger.warn("Exception during spark job execution: " + t.getMessage());
-            else
-               logger.warn("*** Error stopping Spark Streaming Context ***", t);
+            } finally {
+               ssc = null;
+               ovdfProcessor = null;
+            }
+         } catch (Throwable t) {
+            logger.warn("*** Error stopping Spark Streaming Context ***", t);
          }
       }
    }
