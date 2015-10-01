@@ -49,7 +49,7 @@ import com.bah.ode.util.ByteUtils;
 import com.bah.ode.util.CodecUtils;
 import com.bah.ode.util.DateTimeUtils;
 
-public class OdeVehicleDataFlat extends OdeDataAbstractFinal {
+public final class OdeVehicleDataFlat extends OdeDataAbstractFinal {
    private static final long serialVersionUID = -7170326566884675515L;
 
    private String groupId;
@@ -1088,11 +1088,6 @@ public class OdeVehicleDataFlat extends OdeDataAbstractFinal {
    }
 
    @Override
-   public void init() {
-      setDataType(OdeDataType.VehicleData);
-   }
-
-   @Override
    public int hashCode() {
       final int prime = 31;
       int result = super.hashCode();
@@ -1474,6 +1469,17 @@ public class OdeVehicleDataFlat extends OdeDataAbstractFinal {
       } else if (!year.equals(other.year))
          return false;
       return true;
+   }
+
+   @Override
+   protected void setDataType() {
+      setDataType(OdeDataType.VehicleData);
+   }
+
+   @Override
+   protected void initDefault() {
+      // TODO Auto-generated method stub
+      
    }
 
 

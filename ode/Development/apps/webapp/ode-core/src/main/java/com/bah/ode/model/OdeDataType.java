@@ -19,9 +19,17 @@ package com.bah.ode.model;
 import java.util.ArrayList;
 
 public enum OdeDataType {
-   VehicleData("veh"), 
+   Status("status"),
+   Control("control"),
+   VehicleData("veh"),
+   VehicleSituationData("vsd"),
+   VehicleSituationDataAsnBase64("vsdasn64"),
    IntersectionData("int"),
+   IntersectionSituationData("isd"),
+   IntersectionSituationDataAsnBase64("isdasn64"),
    AdvisoryData("adv"),
+   AdvisorySituationData("asd"),
+   AdvisorySituationDataAsnBase64("asdasn64"),
    MAPData("map"), 
    SPaTData("spat"), 
    AggregateData("agg"),

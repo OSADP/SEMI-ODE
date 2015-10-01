@@ -16,6 +16,47 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
-public class OdeData extends OdeObject{
+public abstract class OdeData extends OdeObject{
    private static final long serialVersionUID = -7711340868799607662L;
+   private String dataType;
+
+   
+   public OdeData() {
+      super();
+      setDataType();
+   }
+
+   protected abstract void setDataType();
+   
+   public String getDataType() {
+      return dataType;
+   }
+
+   public void setDataType(OdeDataType dataType) {
+      this.dataType = dataType.getShortName();
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
+      return result;
+   }
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      OdeData other = (OdeData) obj;
+      if (dataType == null) {
+         if (other.dataType != null)
+            return false;
+      } else if (!dataType.equals(other.dataType))
+         return false;
+      return true;
+   }
 }

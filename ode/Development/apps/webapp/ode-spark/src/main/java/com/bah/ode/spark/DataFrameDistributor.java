@@ -28,8 +28,7 @@ public class DataFrameDistributor extends BaseDistributor
       
       while (partitionOfRecords.hasNext()) {
          Row record = partitionOfRecords.next();
-         String outputTopic = AppContext.getInstance()
-               .getParam(AppContext.AGGREGATES_TOPIC);
+         String outputTopic = AppContext.AGGREGATES_TOPIC;
          String tempId = record.getString(0);
          
          ObjectNode aggregates = JsonUtils.newNode()
