@@ -1,5 +1,5 @@
 {
-  "Description": "ODE Cloud Formation Template to create VPC with multiple public and private, security groups and route tables. Subnet are sized for 250 host each. Template Created: 2015-08-25 12:04:27",
+  "Description": "ODE Cloud Formation Template to create VPC with multiple public and private, security groups and route tables. Subnet are sized for 250 host each. Template Created: 2015-10-01 08:25:23",
   "Mappings": {
     "AWSInstanceType2Arch": {
       "c1.medium": {
@@ -483,7 +483,7 @@
                 "mkdir /data\n",
                 "mkfs -t ext4 /dev/xvdb\n",
                 "mount /dev/xvdb /data\n",
-                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+                "echo \"/dev/xvdb /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
               ]
             ]
           }
@@ -627,7 +627,7 @@
                 "mkdir /data\n",
                 "mkfs -t ext4 /dev/xvdb\n",
                 "mount /dev/xvdb /data\n",
-                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+                "echo \"/dev/xvdb /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
               ]
             ]
           }
@@ -729,7 +729,7 @@
                 "mkdir /data\n",
                 "mkfs -t ext4 /dev/xvdb\n",
                 "mount /dev/xvdb /data\n",
-                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+                "echo \"/dev/xvdb /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
               ]
             ]
           }
@@ -831,7 +831,7 @@
                 "mkdir /data\n",
                 "mkfs -t ext4 /dev/xvdb\n",
                 "mount /dev/xvdb /data\n",
-                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+                "echo \"/dev/xvdb /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
               ]
             ]
           }
@@ -933,7 +933,7 @@
                 "mkdir /data\n",
                 "mkfs -t ext4 /dev/xvdb\n",
                 "mount /dev/xvdb /data\n",
-                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+                "echo \"/dev/xvdb /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
               ]
             ]
           }
@@ -1035,7 +1035,7 @@
                 "mkdir /data\n",
                 "mkfs -t ext4 /dev/xvdb\n",
                 "mount /dev/xvdb /data\n",
-                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+                "echo \"/dev/xvdb /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
               ]
             ]
           }
@@ -1138,7 +1138,7 @@
                 "mkdir /data\n",
                 "mkfs -t ext4 /dev/xvdb\n",
                 "mount /dev/xvdb /data\n",
-                "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+                "echo \"/dev/xvdb /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
               ]
             ]
           }
