@@ -21,7 +21,7 @@ def hadoop_work_node_userData(instance):
         'mkdir /data\n',
         'mkfs -t ext4 /dev/xvdb\n',
         'mount /dev/xvdb /data\n',
-        "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n",
+        "echo \"/dev/xvdb /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n",
         # "service firewalld stop\n"
     ]))
 
@@ -41,7 +41,7 @@ def install_ambari_server():
         'mkdir /data\n',
         "mkfs -t ext4 /dev/xvdb\n",
         "mount /dev/xvdb /data\n",
-        "echo \"/dev/xvdb' /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n",
+        "echo \"/dev/xvdb /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n",
         # "service firewalld stop\n"
     ]))
 
