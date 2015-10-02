@@ -2,7 +2,7 @@ package com.bah.ode.model;
 
 import com.bah.ode.asn.oss.semi.AdvisorySituationData;
 
-public final class OdeAdvisoryDataRaw extends OdeDataAbstractFinal {
+public final class OdeAdvisoryDataRaw extends OdeData {
 
    private static final long serialVersionUID = 8233414612786188661L;
    

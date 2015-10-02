@@ -49,7 +49,7 @@ import com.bah.ode.util.ByteUtils;
 import com.bah.ode.util.CodecUtils;
 import com.bah.ode.util.DateTimeUtils;
 
-public final class OdeVehicleDataFlat extends OdeDataAbstractFinal {
+public final class OdeVehicleDataFlat extends OdeData {
    private static final long serialVersionUID = -7170326566884675515L;
 
    private String groupId;

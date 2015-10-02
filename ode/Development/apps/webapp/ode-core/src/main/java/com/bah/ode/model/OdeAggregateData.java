@@ -1,6 +1,6 @@
 package com.bah.ode.model;
 
-public final class OdeAggregateData extends OdeDataAbstractFinal {
+public final class OdeAggregateData extends OdeData {
 
    private static final long serialVersionUID = 1595406822366147861L;
 

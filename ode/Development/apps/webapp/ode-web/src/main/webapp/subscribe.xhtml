@@ -89,37 +89,37 @@ h2 {
 $(document ).ready(function() {
 //    document.addEventListener("DOMContentLoaded", function() {
 //      // Remove elements with "noscript" class - <noscript> is not allowed in XHTML
-      var noscripts = document.getElementsByClassName("noscript");
-      for (var i = 0; i < noscripts.length; i++) {
-         noscripts[i].parentNode.removeChild(noscripts[i]);
-      }
-//  }, false);
+   var noscripts = document.getElementsByClassName("noscript");
+   for (var i = 0; i < noscripts.length; i++) {
+      noscripts[i].parentNode.removeChild(noscripts[i]);
+   }
+  
+  $('#connect').click(function(){
+     connect();
+   });
+  $('#disconnect').click(function(){
+     disconnect();
+  });
+  $('#send').click(function(){
+     send();
+  });
+
+
+   // Radio button click handler
+   $("#selectData input:radio").click(function() {
+    if (token!=null){
+       updateRequestUri( $(this).val());
+    }
+    else {
+       dialog.dialog( "open" );
+    }
+   });
   
   var ws = null;
   var started = false;
   var connected = false;
   var token = null;
-  
-  $('#connect').click(function(){
-	connect();
-  });
-  $('#disconnect').click(function(){
-	disconnect();
-  });
-  $('#send').click(function(){
-	send();
-  });
-  // Radio button click handler
-    $("#selectData input:radio").click(function() {
-		if (token!=null){
-    	updateRequestUri( $(this).val());
-    	}
-		else {
-			dialog.dialog( "open" );
-		}
-    
-   });
-  
+   
   function setConnectionState(c, s) {
      connected = c;
      started = s;
@@ -127,13 +127,12 @@ $(document ).ready(function() {
      if (!connected)
          started = false;
 
-      $('#connect').prop("disabled",connected);
-      $('#disconnect').prop("disabled",!connected);
+      $('#connect').prop("disabled", connected);
+      $('#disconnect').prop("disabled", !connected);
       $('#send').prop("disabled", (started || !connected));
-  	  setButtonHoverOver('connect',connected);
-	  setButtonHoverOver('disconnect',connected);
-	  setButtonHoverOver('send',(started || !connected))
-	  
+      setButtonHoverOver('connect', connected);
+      setButtonHoverOver('disconnect', connected);
+      setButtonHoverOver('send', (started || !connected))
   }
   
   function setButtonHoverOver(buttonId,isHoverEnabled){
@@ -334,6 +333,7 @@ $(document ).ready(function() {
 
    });  // jquery 
 ]]>
+
 
 
 

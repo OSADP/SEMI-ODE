@@ -21,6 +21,7 @@ import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.model.OdeStatus;
 import com.bah.ode.wrapper.WebSocketClient;
 import com.bah.ode.wrapper.WebSocketMessageDecoder;
+import com.bah.ode.wrapper.WebSocketClient.WebSocketException;
 
 public class DdsRequestManager extends DataRequestManager {
    private static Logger logger = 
@@ -167,5 +168,16 @@ public class DdsRequestManager extends DataRequestManager {
          super(message);
       }
       
+   }
+
+
+   public void cancelDdsSubscription() throws DdsRequestManagerException {
+      if (ddsClient != null) {
+         try {
+            ddsClient.close();
+         } catch (WebSocketException e) {
+            throw new DdsRequestManagerException("Error closing DDS Client: ", e);
+         }
+      }
    }
 }

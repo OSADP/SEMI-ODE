@@ -46,7 +46,7 @@ import com.bah.ode.asn.oss.semi.VsmEventFlag;
 import com.bah.ode.util.CodecUtils;
 import com.oss.asn1.Coder;
 
-public final class OdeVehicleData extends OdeDataAbstractFinal {
+public final class OdeVehicleData extends OdeData {
    private static final long serialVersionUID = 33889808649252185L;
 
    private static Logger logger = LoggerFactory.getLogger(OdeVehicleData.class);

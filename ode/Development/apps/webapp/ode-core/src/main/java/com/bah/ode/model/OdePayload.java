@@ -16,71 +16,47 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
-import java.util.Date;
-
-import com.bah.ode.util.DateTimeUtils;
-
-public abstract class OdeDataAbstractFinal extends OdeData{
+public abstract class OdePayload extends OdeObject {
    private static final long serialVersionUID = -7711340868799607662L;
-   private String serialId;
-   private String receivedAt;
+   private String dataType;
 
    
-   protected abstract void initDefault();
-
-   public OdeDataAbstractFinal() {
+   public OdePayload() {
       super();
-      initDefault();
-      this.receivedAt = DateTimeUtils.isoDateTime(new Date());
+      setDataType();
    }
 
-   public String getSerialId() {
-      return serialId;
+   protected abstract void setDataType();
+   
+   public String getDataType() {
+      return dataType;
    }
 
-   public void setSerialId(String serialId) {
-      this.serialId = serialId;
-   }
-
-   public String getReceivedAt() {
-      return receivedAt;
-   }
-
-   public void setReceivedAt(String receivedAt) {
-      this.receivedAt = receivedAt;
+   public void setDataType(OdeDataType dataType) {
+      this.dataType = dataType.getShortName();
    }
 
    @Override
    public int hashCode() {
       final int prime = 31;
-      int result = super.hashCode();
-      result = prime * result
-            + ((receivedAt == null) ? 0 : receivedAt.hashCode());
-      result = prime * result + ((serialId == null) ? 0 : serialId.hashCode());
+      int result = 1;
+      result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
       return result;
    }
-
    @Override
    public boolean equals(Object obj) {
       if (this == obj)
          return true;
-      if (!super.equals(obj))
+      if (obj == null)
          return false;
       if (getClass() != obj.getClass())
          return false;
-      OdeDataAbstractFinal other = (OdeDataAbstractFinal) obj;
-      if (receivedAt == null) {
-         if (other.receivedAt != null)
+      OdePayload other = (OdePayload) obj;
+      if (dataType == null) {
+         if (other.dataType != null)
             return false;
-      } else if (!receivedAt.equals(other.receivedAt))
-         return false;
-      if (serialId == null) {
-         if (other.serialId != null)
-            return false;
-      } else if (!serialId.equals(other.serialId))
+      } else if (!dataType.equals(other.dataType))
          return false;
       return true;
    }
-
-
 }

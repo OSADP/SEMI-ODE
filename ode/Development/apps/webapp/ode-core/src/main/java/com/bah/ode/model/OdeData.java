@@ -16,47 +16,71 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
-public abstract class OdeData extends OdeObject{
+import java.util.Date;
+
+import com.bah.ode.util.DateTimeUtils;
+
+public abstract class OdeData extends OdePayload{
    private static final long serialVersionUID = -7711340868799607662L;
-   private String dataType;
+   private String serialId;
+   private String receivedAt;
 
    
+   protected abstract void initDefault();
+
    public OdeData() {
       super();
-      setDataType();
+      initDefault();
+      this.receivedAt = DateTimeUtils.isoDateTime(new Date());
    }
 
-   protected abstract void setDataType();
-   
-   public String getDataType() {
-      return dataType;
+   public String getSerialId() {
+      return serialId;
    }
 
-   public void setDataType(OdeDataType dataType) {
-      this.dataType = dataType.getShortName();
+   public void setSerialId(String serialId) {
+      this.serialId = serialId;
+   }
+
+   public String getReceivedAt() {
+      return receivedAt;
+   }
+
+   public void setReceivedAt(String receivedAt) {
+      this.receivedAt = receivedAt;
    }
 
    @Override
    public int hashCode() {
       final int prime = 31;
-      int result = 1;
-      result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
+      int result = super.hashCode();
+      result = prime * result
+            + ((receivedAt == null) ? 0 : receivedAt.hashCode());
+      result = prime * result + ((serialId == null) ? 0 : serialId.hashCode());
       return result;
    }
+
    @Override
    public boolean equals(Object obj) {
       if (this == obj)
          return true;
-      if (obj == null)
+      if (!super.equals(obj))
          return false;
       if (getClass() != obj.getClass())
          return false;
       OdeData other = (OdeData) obj;
-      if (dataType == null) {
-         if (other.dataType != null)
+      if (receivedAt == null) {
+         if (other.receivedAt != null)
             return false;
-      } else if (!dataType.equals(other.dataType))
+      } else if (!receivedAt.equals(other.receivedAt))
+         return false;
+      if (serialId == null) {
+         if (other.serialId != null)
+            return false;
+      } else if (!serialId.equals(other.serialId))
          return false;
       return true;
    }
+
+
 }

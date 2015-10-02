@@ -52,26 +52,26 @@ public class VehicleDataProcessor extends OdeObject {
          // unifiedStream.cache().print(10);
 
          JavaPairDStream<String, String> payloadStream2 = unifiedStream
-               .mapToPair(omam -> new Tuple2<String, String>(omam._1, JsonUtils
-                     .getJson(omam._2, "payload")));
+               .mapToPair(pam -> new Tuple2<String, String>(pam._1, JsonUtils
+                     .getJson(pam._2, "payload")));
 
          // System.out.println("payloadStream2");
          // System.out.println("===============");
          // payloadStream2.cache().print(10);
 
          // JavaDStream<String> payloadStream =
-         // unifiedStream.map(omam -> JsonUtils.getJson(omam._2, "payload"));
+         // unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "payload"));
 
          JavaPairDStream<String, String> metadataStream2 = unifiedStream
-               .mapToPair(omam -> new Tuple2<String, String>(omam._1, JsonUtils
-                     .getJson(omam._2, "metadata")));
+               .mapToPair(pam -> new Tuple2<String, String>(pam._1, JsonUtils
+                     .getJson(pam._2, "metadata")));
 
          // System.out.println("metadataStream2");
          // System.out.println("===============");
          // metadataStream2.cache().print(10);
 
          // JavaDStream<String> metadataStream =
-         // unifiedStream.map(omam -> JsonUtils.getJson(omam._2, "metadata"));
+         // unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "metadata"));
          //
          Integer microbatchDuration = Integer.valueOf(appContext
                .getParam(AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS));
@@ -100,7 +100,7 @@ public class VehicleDataProcessor extends OdeObject {
          // joinedStream2.cache().print(10);
 
          // JavaPairDStream<String, String> joinedStream =
-         // joinedStream2.mapToPair(omam->omam._2);
+         // joinedStream2.mapToPair(pam->pam._2);
          // System.out.println("joinedStream");
          // System.out.println("===============");
          // joinedStream.cache().print(10);
