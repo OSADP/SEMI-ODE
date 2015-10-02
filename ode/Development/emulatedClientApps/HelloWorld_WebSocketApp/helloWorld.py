@@ -5,6 +5,7 @@ import datetime
 
 from odeClient import client, timehelpers
 
+
 import logging
 logger = logging.getLogger("odeClient")
 logger.setLevel(logging.DEBUG)
@@ -63,22 +64,30 @@ ode.setRequest(qry_request)
 """
  The connect method will start the Websocket connection.
 
- client.on_message is a prebuilt on_message call back function  for the Web Socket Interface
+ client.on_message is a prebuilt on_message call back function  for the Web Socket.
  Developers will need to create their own on_message call back function based on their needs
+ in order to process messages.
 
  The "on_message" call back takes  two arguments, a reference to the websocket and the message itself
- Sample call method definition:
+ Sample call back  method definition:
  def on_message(ws,message):
       print message
 
 """
 
 #ode.connect(on_message=client.on_message)
-#ode.connect(on_message=ode.on_messageQueue)
-import Queue
-myQueue = Queue.Queue()
-async = client.AsyncODEClient(myQueue,odeClient=ode)
-async.start()
+
+"""
+The Asynchronous ODE Client behaves like the regular ODE Client with the following differences:
+ * The Asynchronous client will buffer the ODE Output in a thread safe internal Queue
+ * The get_message(N number of messages) will return up to N message from the internal Queue
+ ** If the Queue contains less then N message, then you receive however many messages that are present at request time.
+ * The current output from the get_messages function is a list of JSON encoded Strings
+ ** You must parse  each entry with a JSON parser  in order to manipulate the entry.
+ """
+
+async = client.AsyncODEClient(odeClient=ode)
+async.start() # will connect to the ODE in a separate thread.
 import time
 while True:
     if not async.is_buffer_empty():

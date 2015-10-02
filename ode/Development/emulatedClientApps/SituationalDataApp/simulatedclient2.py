@@ -54,20 +54,12 @@ message_codes = [
 
 areas_subs = ["veh", "int", "agg"]
 
-#
-area = {
-    'nwLat': "43.652969118285434",
-    'nwLon': "-85.94707489013672",
-    'seLat': "36.4765153148293",
-    'seLon': "-74.53468322753906",
-}
-
 nwLat = "43.652969118285434",
 nwLon = "-85.94707489013672",
 seLat = "36.4765153148293",
 seLon = "-74.53468322753906",
 
-region = client.GeographicRegion(nwLat,nwLon,seLat,seLon)
+region = client.GeographicRegion(nwLat, nwLon, seLat, seLon)
 
 # 2015-01-01T01:01:30.000Z to  2015-06-15T23:59:59.999Z
 start_date = datetime.datetime(2015, month=1, day=1, hour=1, minute=1, second=30, tzinfo=timehelpers.ZULU())
@@ -80,42 +72,33 @@ date_format = '%Y-%m-%dT%H:%M:%S.%f%Z'
 ode_output_file_name = 'ODE_test_run_{0}.txt'.format(current_date_time)
 log_to_file = True
 
-qry_data_type = "veh" # veh, int,  adv
 skip = 0,
 limit = 100
-qry_request = client.QueryRequest(qry_data_type,
-                                  region,
-                                  start_date.strftime(timehelpers.date_format),
-                                  end_date.strftime(timehelpers.date_format),
-                                  skip,
-                                  limit)
 
 qry_subs = \
     {
-        "veh": { client.QueryRequest("veh",
-                                  region,
-                                  start_date.strftime(timehelpers.date_format),
-                                  end_date.strftime(timehelpers.date_format),
-                                  skip,
-                                  limit)
+        "veh": {client.QueryRequest("veh",
+                                    region,
+                                    start_date.strftime(timehelpers.date_format),
+                                    end_date.strftime(timehelpers.date_format),
+                                    skip,
+                                    limit)
+
+                },
+        "adv": {client.QueryRequest("adv",
+                                region,
+                                start_date.strftime(timehelpers.date_format),
+                                end_date.strftime(timehelpers.date_format),
+                                skip,
+                                limit)
 
         },
-        "adv": {
-                client.QueryRequest("adv",
-                                  region,
-                                  start_date.strftime(timehelpers.date_format),
-                                  end_date.strftime(timehelpers.date_format),
-                                  skip,
-                                  limit)
-
-        },
-        "int": {
-                client.QueryRequest("int",
-                                  region,
-                                  start_date.strftime(timehelpers.date_format),
-                                  end_date.strftime(timehelpers.date_format),
-                                  skip,
-                                  limit)
+        "int": {client.QueryRequest("int",
+                                region,
+                                start_date.strftime(timehelpers.date_format),
+                                end_date.strftime(timehelpers.date_format),
+                                skip,
+                                limit)
         },
     }
 
@@ -123,89 +106,10 @@ msg = {}  # Empty Message body
 
 input_file = None
 
+
 def append_to_file(entry):
     with open(ode_output_file_name, "a") as myfile:
         myfile.write(entry + "\n")
-
-
-# Web Socket Handlers
-def on_message(ws, message):
-    """
-    Handler that processes messages received by the web socket
-    """
-
-    # determine message and act accordingly
-    logger.debug("Message Value: %s", message)
-    if (logger.isEnabledFor(logging.DEBUG) or logger.isEnabledFor(logging.INFO)) and log_to_file:
-        append_to_file(message)
-    try:
-        msg = json.loads(message)
-
-        # Identify Message and perform action(s)
-        if msg.get('code'):
-            logger.info("ODE Connection Status: %s Message: %s", msg.get('code'), msg.get('message'))
-
-            if config['UPLOAD_TEST_DATA'] and  msg.get('requestId'): # 'tstvehOdeTstRequest' in msg.get('message'):
-                config['TEST_REQUEST'] = msg.get('requestId')
-                depositClient.update_config(config)
-                thread.start_new_thread(depositClient._run_main, (config,))
-
-        if msg.get('fullMessage') is not None and 'STOP' in msg.get('fullMessage'):
-            on_close(ws)
-        if msg.get('serialId') is not None:
-            validate_message(msg)
-        # if msg.get('payload'):
-        #     logger.info(msg['payload']['dialogID']['mValue'])
-        #     logger.debug(msg.keys())
-        #     validate_message(msg)
-        elif msg.get("fullMessage"):
-            logger.info(msg.get("fullMessage"))
-        #            on_close(ws)
-    except Exception as e:
-        logger.exception("Unable to convert message to json dictionary object")
-        logger.critical("Message Payload: %s\n", message)
-        ## validate message to that which is stored locaally
-        # iterating over local message  to ensure ordering and values are correct
-
-
-def on_error(ws, error):
-    """
-    Stop the subscription / query on the ODE and then close the socket.
-    :param ws:
-    :param error:
-    :return:
-    """
-    # ws.close()
-    logger.exception(error)
-    logger.critical("Closing Web Socket Connection")
-    on_close(ws)
-
-
-def on_close(ws):
-    ws.close()
-    logger.info('Closing Web Socket via "OnCLose" Function')
-    sys.exit()
-
-
-def on_open2(ws):
-    """
-     On Web Socket Open Handler
-     Transmits a request to the ODE to start subscription/query
-
-    :param ws:
-    :return:
-    """
-    pause = 7
-
-    def run(*args):
-        logger.debug(json.dumps(msg))
-        time.sleep(pause)
-        ws.send(json.dumps(msg))
-        time.sleep(pause)
-        # ws.close()
-        logger.debug("On_open Run thread stopping...")
-
-    thread.start_new_thread(run, ())
 
 
 def get_json_file(test_type):
@@ -244,6 +148,149 @@ def extract_json_objects(json_file):
     return result
 
 
+def validate_datetime(input_time):
+    """
+    Validates that the dateTime for a query result is within the requested
+     start and end time interval.
+    :return:
+    """
+    import dateutil.parser
+    record_time = dateutil.parser.parse(input_time)
+    if msg.get('endDate') is not None and msg.get('startDate') is not None:
+        if dateutil.parser.parse(msg.get('endDate')) >= record_time >= dateutil.parser.parse(msg.get('startDate')):
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
+def validate_location():
+    """
+    Validates that the latitute and longitutde values for a query result is within the requested
+    bounding  box region. .
+    :return:
+    """
+    pass
+
+
+###
+#
+# Main Part of the Application
+#
+###
+def _main():
+    parser = clientConfig.get_parser()
+    (options, args) = parser.parse_args()
+    cp = None
+    config.update(vars(options))
+    if config.get('CONFIG_FILE'):
+        cp = parse_config_file(config['CONFIG_FILE'])
+
+    _run_main(config, cp)
+
+def parse_config_file(file_path):
+    config_file = ConfigParser.ConfigParser()
+    config_file.optionxform = str
+    try:
+        config_file.readfp(open(file_path))
+    except Exception as e:
+        logger.exception('Unable to Open Config File')
+        sys.exit(1)
+    if config_file.has_section('ode'):
+        config['HOST'] = config_file.get('ode', 'host')
+        config['REQUEST_TYPE'] = config_file.get('ode', 'requestType')
+        config['DATA'] = config_file.get('ode', 'dataType')
+        config['UPLOAD_TEST_DATA'] = config_file.getboolean('ode', 'uploadData')
+        config['VALIDATION_FILE'] = config_file.get('ode', 'validationFile')
+        if config['UPLOAD_TEST_DATA']:
+            config['INPUT_FILE'] = config_file.get('ode', 'inputFile')
+
+        config['USERNAME'] = config_file.get('ode', 'userName')
+        config['PASSWORD'] = config_file.get('ode', 'password')
+
+    return config_file
+
+def build_request(config,config_file):
+    request = None
+    area = {}
+    for key, value in config_file.items('serviceRegion'):
+        area[key] = value
+
+    region = build_region(area)
+
+    if config.get('REQUEST_TYPE') and config.get('REQUEST_TYPE') == 'sub':
+        request = client.SubscriptionRequest(config_file.get('ode', 'dataType'),
+                                             region)
+
+    if config_file.has_section('queryParams') and config.get('REQUEST_TYPE') == 'qry':
+        request = client.QueryRequest(config_file.get('ode', 'dataType'),
+                                      region,
+                                      config_file.get('queryParams', 'startDate'),
+                                      config_file.get('queryParams', 'endDate'),
+                                      config_file.get('queryParams', 'limit'),
+                                      config_file.get('queryParams', 'skip') )
+    return request
+
+def build_region(regionValues):
+
+    return client.GeographicRegion(regionValues["nwLat"],
+                                   regionValues["nwLon"],
+                                   regionValues["seLat"],
+                                   regionValues["seLon"] )
+
+def _run_main(config,config_file=None):
+
+    ode = client.ODEClient(config['HOST'], config['USERNAME'], config['PASSWORD'])
+
+    request = build_request(config,config_file)
+
+    logger.info("Subscriptions Params: %s", request.toJson() )
+
+    ode.setRequest(request)
+    ode.connect(on_message=on_message)
+
+# Web Socket Handlers
+# That is written by the application developer
+def on_message(ws, message):
+    """
+    Handler that processes messages received by the web socket
+    """
+
+    # determine message and act accordingly
+    logger.debug("Message Value: %s", message)
+    if (logger.isEnabledFor(logging.DEBUG) or logger.isEnabledFor(logging.INFO)) and log_to_file:
+        append_to_file(message)
+    try:
+        msg = json.loads(message)
+
+        # Identify Message and perform action(s)
+        if msg.get('code'):
+            logger.info("ODE Connection Status: %s Message: %s", msg.get('code'), msg.get('message'))
+
+            if config['UPLOAD_TEST_DATA'] and msg.get('requestId'):  # 'tstvehOdeTstRequest' in msg.get('message'):
+                config['TEST_REQUEST'] = msg.get('requestId')
+                depositClient.update_config(config)
+                thread.start_new_thread(depositClient._run_main, (config,))
+
+        if msg.get('fullMessage') is not None and 'STOP' in msg.get('fullMessage'):
+            on_close(ws)
+        if msg.get('serialId') is not None:
+            validate_message(msg)
+        # if msg.get('payload'):
+        #     logger.info(msg['payload']['dialogID']['mValue'])
+        #     logger.debug(msg.keys())
+        #     validate_message(msg)
+        elif msg.get("fullMessage"):
+            logger.info(msg.get("fullMessage"))
+            #            on_close(ws)
+    except Exception as e:
+        logger.exception("Unable to convert message to json dictionary object")
+        logger.critical("Message Payload: %s\n", message)
+        ## validate message to that which is stored locaally
+        # iterating over local message  to ensure ordering and values are correct
+
+
 def validate_message(message):
     """
     Validates JSON result against json file
@@ -253,7 +300,7 @@ def validate_message(message):
 
     key = 'dateTime'
 
-    if not validate_datetime(message['dateTime']) and  config['REQUEST_TYPE']=='qry':
+    if not validate_datetime(message['dateTime']) and config['REQUEST_TYPE'] == 'qry':
         logger.warn("Invalid DateTime in Message Record")
         logger.warn("Start Time: %s,  Actual: %s   End Time: %s", msg['startDate'], message['dateTime'], \
                     msg['endDate'])
@@ -298,205 +345,6 @@ def validate_message(message):
                 return (False, record_delta)
     logger.debug("End validation section")
     return (False, None)
-
-
-def validate_datetime(input_time):
-    """
-    Validates that the dateTime for a query result is within the requested
-     start and end time interval.
-    :return:
-    """
-    import dateutil.parser
-    record_time = dateutil.parser.parse(input_time)
-    if msg.get('endDate') is not None and msg.get('startDate') is not None:
-        if dateutil.parser.parse(msg.get('endDate')) >= record_time >= dateutil.parser.parse(msg.get('startDate')):
-            return True
-        else:
-            return False
-    else:
-        return False
-
-
-def validate_location():
-    """
-    Validates that the latitute and longitutde values for a query result is within the requested
-    bounding  box region. .
-    :return:
-    """
-    pass
-
-
-
-# Command Line Parser Methods
-def get_parser():
-    """
-    Creates and returns Parser object
-    :return: optparse.OptionParser
-    """
-    parser = OptionParser(
-        description="Situation Data App Example",
-        conflict_handler="resolve")
-
-    parser.add_option('-?', action='callback', callback=print_help, help=SUPPRESS_HELP)
-
-    req_group = OptionGroup(parser, "Required Parameters")
-    req_group.add_option('-t', '--type', help='Request Type Query - qry, Subscription = sub )',
-                         metavar='type',
-                         dest='REQUEST_TYPE',
-                         default='sub')
-
-    req_group.add_option('-d', '--data', help='Data Type (Vehicle, Intersection, Aggregate, Advisory)',
-                         metavar='data',
-                         dest='DATA',
-                         default='veh')
-
-    req_group.add_option('-h', '--host', help='Hostname',
-                         metavar='host',
-                         dest='HOST',
-                         default='localhost:8080/ode')
-
-    parser.add_option_group(req_group)
-
-    group = OptionGroup(parser, "Optional Parameters")
-
-    group.add_option('-f', '--file', help='Full Path to a File containing JSON output that will be used to'
-                                          'validaate ODE output instead of default JSON files',
-                     metavar='file',
-                     dest='VALIDATION_FILE',
-                     default=None, )
-    group.add_option('-c', '--config', help='Full path to config file File that can be used to override all Settings.'
-                                            'Config file will override all command line parameters',
-                     metavar='config_file',
-                     dest='CONFIG_FILE',
-                     default=None)
-    parser.add_option_group(group)
-
-    return parser
-
-
-def usage(parser):
-    parser.print_help()
-    sys.exit(2)
-
-
-def print_help(option, opt_str, value, parser, *args, **kwargs):
-    """
-    Call back function to handle printing help when passed -?
-    Utitilized instead of updating validation method
-    """
-    usage(parser)
-
-
-def _main():
-    parser = clientConfig.get_parser()
-    (options, args) = parser.parse_args()
-
-    config.update(vars(options))
-    if config.get('CONFIG_FILE'):
-        cp =parse_config_file(config['CONFIG_FILE'])
-
-    _run_main(config)
-
-
-def parse_config_file(file_path):
-    config_file = ConfigParser.ConfigParser()
-    config_file.optionxform = str
-    try:
-        config_file.readfp(open(file_path))
-    except Exception as e:
-        logger.exception('Unable to Open Config File')
-        sys.exit(1)
-    if config_file.has_section('ode'):
-        config['HOST'] = config_file.get('ode', 'host')
-        config['REQUEST_TYPE'] = config_file.get('ode', 'requestType')
-        config['DATA'] = config_file.get('ode', 'dataType')
-        config['UPLOAD_TEST_DATA'] = config_file.getboolean('ode', 'uploadData')
-        config['VALIDATION_FILE'] = config_file.get('ode', 'validationFile')
-        if config['UPLOAD_TEST_DATA']:
-            config['INPUT_FILE'] = config_file.get('ode', 'inputFile')
-
-        config['USERNAME'] = config_file.get('ode','userName')
-        config['PASSWORD'] = config_file.get('ode', 'password')
-
-
-    if config_file.has_section('serviceRegion'):
-        if config.get('REQUEST_TYPE') and config.get('REQUEST_TYPE') == 'sub':
-            for key, value in config_file.items('serviceRegion'):
-                area[key] = value  # Point is Tuple in form of (Name, Value)
-        else:  # Update Query related Params
-            for key, value in config_file.items('serviceRegion'):
-                qry_subs[config['DATA']][key] = value
-            qry_subs[config['DATA']]['startDate'] = config_file.get('queryParams', 'startDate')
-            qry_subs[config['DATA']]['endDate'] = config_file.get('queryParams', 'endDate')
-    if config_file.has_section('queryParams') and config.get('REQUEST_TYPE') == 'qry':
-        common_params['limit'] = config_file.get('queryParams', 'limit')
-        common_params['skip'] = config_file.get('queryParams', 'skip')
-        qry_subs[config['DATA']]['startDate'] = config_file.get('queryParams', 'startDate')
-        qry_subs[config['DATA']]['endDate'] = config_file.get('queryParams', 'endDate')
-
-    return config_file
-
-
-
-def _run_main(config):
-    # host = "localhost:10494"
-    # socket_url = "ws://localhost:10494/ode/api/ws/sub/ints" # veh, int,agg,
-    #	ws://ec2-52-6-61-205.compute-1.amazonaws.com/ode/api/ws/qry/int  #adv, int, veh
-
-    subscription_type = config['REQUEST_TYPE']
-    global msg
-
-    if subscription_type == 'sub':
-        msg = area
-        if not config['UPLOAD_TEST_DATA']:
-            uri = 'sub/{0}'.format(config['DATA'])
-        else:
-            uri = 'tst/{0}'.format(config['DATA'])
-    elif subscription_type == 'qry' and not config['UPLOAD_TEST_DATA']:
-        msg = qry_subs[config['DATA']]
-        msg.update(common_params)  # add common params
-        uri = 'qry/{0}'.format(config['DATA'])
-    else:
-        logger.warn("Invalid Option combination")
-        sys.exit(1)
-
-    if config['USERNAME'] is not None and config['PASSWORD'] is not None:
-        token = restApi.login('http://'+config['HOST'], config['USERNAME'], config['PASSWORD'])
-
-    if token is None:
-        logger.warn("Unable to get Access Token from Web Service")
-        sys.exit(-1)
-
-    socket_url = "ws://{0}/api/ws/{1}?token={2}".format(config['HOST'], uri, token)
-
-    global input_file
-
-    if config.get('VALIDATION_FILE'):
-        json_file = config.get('VALIDATION_FILE')
-    else:
-        json_file = get_json_file((subscription_type, config['DATA']))
-    extract_json_objects(json_file)
-
-    print "Web socket URL: {}".format(socket_url)
-    print '++++++++++'
-    logger.info("Subscriptions Params: %s",json.dumps(msg))
-
-    # if config['UPLOAD_TEST_DATA']:
-    #     config['TEST_REQUEST'] = 'tstvehOdeTstRequest1255178960'
-    #     depositClient.update_config(config)
-    #     thread.start_new_thread(depositClient._run_main, (config,))
-
-    websocket.enableTrace(False)
-
-    ws = websocket.WebSocketApp(socket_url, header=[], # [auth_header, ],
-                                cookie=None,
-                                on_message=on_message,
-                                on_error=on_error,
-                                on_close=on_close,
-                                )
-    ws.on_open = on_open2
-
-    ws.run_forever()
 
 
 if __name__ == "__main__":

@@ -103,10 +103,8 @@ class ODEClient(object):
     def on_messageQueue(self,ws, message):
         self.queue.put_nowait(message)
 
-
-
 class AsyncODEClient(threading.Thread):
-    def __init__ (self, q , *args, **kwargs):
+    def __init__ (self, *args, **kwargs):
         if kwargs.get("odeClient",None) is not None:
             self.client = kwargs.get("odeClient")
         else:
