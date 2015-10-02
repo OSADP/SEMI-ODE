@@ -30,7 +30,7 @@ import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.semi.IntersectionSituationData;
 import com.oss.asn1.Coder;
 
-public final class OdeIntersectionData extends OdeDataAbstractFinal {
+public final class OdeIntersectionData extends OdeData {
    private static final long serialVersionUID = -8672926422209668605L;
 
    private static Logger logger = LoggerFactory.getLogger(OdeIntersectionData.class);

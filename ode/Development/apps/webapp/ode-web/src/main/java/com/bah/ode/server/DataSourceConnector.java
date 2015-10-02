@@ -11,7 +11,6 @@ import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
-import com.bah.ode.server.DataRequestManager.DataRequestManagerException;
 import com.bah.ode.wrapper.MQTopic;
 
 public class DataSourceConnector {
@@ -118,11 +117,16 @@ public class DataSourceConnector {
    
    public int cancelDataRequest() throws DataSourceConnectorException {
       try {
-         if (ddsMgr != null)
-            return ddsMgr.removeSubscriber();
-         else
+         if (ddsMgr != null) {
+            int requestersRmaining = ddsMgr.removeSubscriber();
+            if (requestersRmaining == 0) {
+               ddsMgr.cancelDdsSubscription();
+            }
+            return requestersRmaining;
+         } else {
             return 0;
-      } catch (DataRequestManagerException e) {
+         }
+      } catch (Exception e) {
          throw new DataSourceConnectorException("Error canceling data request.", e);
       }
    }

@@ -1,25 +1,25 @@
 package com.bah.ode.model;
 
 
-public class OdeMsgAndMetadata extends OdeObject {
+public class OdePayloadAndMetadata extends OdeObject {
    private static final long serialVersionUID = 9152243091714512036L;
    
    private String key;
    private String payloadType;
-   private OdeDataAbstractFinal payload;
+   private OdePayload payload;
    private OdeMetadata metadata;
    
    public String getPayloadType() {
       return payloadType;
    }
-   public OdeMsgAndMetadata setPayloadType(String payloadType) {
+   public OdePayloadAndMetadata setPayloadType(String payloadType) {
       this.payloadType = payloadType;
       return this;
    }
-   public OdeData getPayload() {
+   public OdePayload getPayload() {
       return payload;
    }
-   public OdeMsgAndMetadata setPayload(OdeDataAbstractFinal payload) {
+   public OdePayloadAndMetadata setPayload(OdePayload payload) {
       this.payload = payload;
       this.payloadType = payload.getClass().getName();
       return this;
@@ -27,14 +27,14 @@ public class OdeMsgAndMetadata extends OdeObject {
    public String getKey() {
       return key;
    }
-   public OdeMsgAndMetadata setKey(String key) {
+   public OdePayloadAndMetadata setKey(String key) {
       this.key = key;
       return this;
    }
    public OdeMetadata getMetadata() {
       return metadata;
    }
-   public OdeMsgAndMetadata setMetadata(OdeMetadata metadata) {
+   public OdePayloadAndMetadata setMetadata(OdeMetadata metadata) {
       this.metadata = metadata;
       return this;
    }
@@ -57,7 +57,7 @@ public class OdeMsgAndMetadata extends OdeObject {
          return false;
       if (getClass() != obj.getClass())
          return false;
-      OdeMsgAndMetadata other = (OdeMsgAndMetadata) obj;
+      OdePayloadAndMetadata other = (OdePayloadAndMetadata) obj;
       if (key == null) {
          if (other.key != null)
             return false;

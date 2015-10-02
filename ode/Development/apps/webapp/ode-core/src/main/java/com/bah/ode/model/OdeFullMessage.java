@@ -1,6 +1,6 @@
 package com.bah.ode.model;
 
-public final class OdeFullMessage extends OdeDataAbstractFinal {
+public final class OdeFullMessage extends OdePayload {
    private static final long serialVersionUID = -2887658115524006534L;
    
    public String fullMessage;
@@ -11,7 +11,8 @@ public final class OdeFullMessage extends OdeDataAbstractFinal {
    }
 
    @Override
-   protected void initDefault() {
+   protected void setDataType() {
+      setDataType(OdeDataType.OtherData);
    }
 
    @Override
@@ -38,11 +39,6 @@ public final class OdeFullMessage extends OdeDataAbstractFinal {
       } else if (!fullMessage.equals(other.fullMessage))
          return false;
       return true;
-   }
-
-   @Override
-   protected void setDataType() {
-      setDataType(OdeDataType.OtherData);
    }
 
 }
