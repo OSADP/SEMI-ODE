@@ -18,7 +18,7 @@ public class OdeDataMessage extends OdeObject {
 
    public OdeDataMessage(OdePayload payload) {
       super();
-      this.metadata = new OdeMsgMetadata();
+      this.metadata = new OdeMsgMetadata().setPayloadType(payload.getDataType());
       this.payload = payload;
    }
    

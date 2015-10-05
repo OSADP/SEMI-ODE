@@ -1,9 +1,11 @@
 
 import logging
-import time
+import Queue
 import sys
 import json 
-import thread
+import threading, thread
+import time
+
 import websocket
 import restApi
 
@@ -11,6 +13,15 @@ import restApi
 enableWebSocketTrace = False
 logger = logging.getLogger('odeClient')
 websocket.enableTrace(enableWebSocketTrace)
+
+message_codes = [
+    'SUCCESS',
+    'FAILURE',
+    'SOURCE_CONNECTION_ERROR',
+    'INVALID_REQUEST_TYPE_ERROR',
+    'INVALID_DATA_TYPE_ERROR'
+]
+
 
 class ODEClient(object):
 
@@ -23,6 +34,7 @@ class ODEClient(object):
             self.token = None
         self.ws = None
         self.request = None
+        self.queue = Queue.Queue()
 
     def get_token(self,username,password):
         self.token= restApi.login(self.host,username,password)
@@ -40,14 +52,14 @@ class ODEClient(object):
         self.request = request
 
     def _on_open(self,ws):
-        pause = 5
+        pause = 3
         def run(*args):
             logger.debug(self.request.toJson())
             time.sleep(pause)
             ws.send(self.request.toJson())
             time.sleep(pause)
         # ws.close()
-            logger.debug("On_open Run thread stopping...")
+        #    logger.debug("On_open Run thread stopping...")
 
         thread.start_new_thread(run, ())
 
@@ -74,6 +86,55 @@ class ODEClient(object):
 
         self.ws.run_forever()
 
+    def getMessages(self, number_of_message):
+        """
+        Get list messages from an Internal non-blocking FIFO queue object 
+ 
+        :return: list of up to number_of_message, may return less if queue contains less messages
+        """
+        results = []
+        for n in range(number_of_message):
+            if not self.queue.notempty():
+                result.append(self.queue.get_nowait())
+            else:
+                break
+        return result
+
+    def on_messageQueue(self,ws, message):
+        self.queue.put_nowait(message)
+
+class AsyncODEClient(threading.Thread):
+    def __init__ (self, *args, **kwargs):
+        if kwargs.get("odeClient",None) is not None:
+            self.client = kwargs.get("odeClient")
+        else:
+            self.client = ODEClient(*args,**kwargs)
+        
+        self.queue = Queue.Queue()
+        threading.Thread.__init__ (self)
+    
+    def is_buffer_empty(self):
+        return self.queue.empty()
+    
+    def get_messages(self, number_of_message):
+        """
+        Get list messages from an Internal non-blocking FIFO queue object 
+ 
+        :return: list of up to number_of_message, may return less if queue contains less messages
+        """
+        result = []
+        for n in range(number_of_message):
+            if not self.is_buffer_empty():
+                result.append(self.queue.get_nowait())
+            else:
+                break
+        return result
+
+    def on_messageQueue(self, ws, message):
+        self.queue.put_nowait(message)
+
+    def run(self,*args,**kwargs):
+         self.client.connect(on_message=self.on_messageQueue, *args,**kwargs) 
 
 class GeographicRegion(object):
     def __init__(self,northWestLat,northWestLon,southEastLat,southEastLon):
