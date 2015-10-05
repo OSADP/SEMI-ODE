@@ -14,19 +14,6 @@ import websocket
 # current_date_time = datetime.datetime.now().strftime("%Y-%m-%dT%H_%M_%S")
 # log_name = 'simpleApp{}.log'.format(current_date_time)
 logger = logging.getLogger('simpleApp.depositClient')
-# logger.setLevel(logging.DEBUG)
-# fh = logging.FileHandler(log_name)
-# fh.setLevel(logging_level)
-# # create console handler with a higher log level
-# ch = logging.StreamHandler(stream=sys.stdout)
-# ch.setLevel(logging_level)
-# # create formatter and add it to the handlers
-# formatter = logging.Formatter('%(asctime)s-%(levelname)s: %(message)s', datefmt="%Y-%m-%dT%H:%M:%S")
-# fh.setFormatter(formatter)
-# ch.setFormatter(formatter)
-# # add the handlers to the logger
-# logger.addHandler(fh)
-# logger.addHandler(ch)
 
 base_config = {}
 config = defaultdict(lambda: None, base_config)
@@ -112,24 +99,10 @@ def parse_config_file(file_path):
         sys.exit(1)
     if config_file.has_section('ode'):
         config['HOST']=config_file.get('ode','host')
-        config['SUB_TYPE']=config_file.get('ode','subscriptionType')
+        config['SUB_TYPE']=config_file.get('ode','requestType')
         config['DATA']=config_file.get('ode','dataType')
         config['VALIDATION_FILE']=config_file.get('ode','validationFile')
         config['INPUT_FILE']=config_file.get('ode','inputFile')
-    # if config_file.has_section('serviceRegion'):
-    #     if config.get('SUB_TYPE') and config.get('SUB_TYPE')== 'sub':
-    #         for key,value in config_file.items('serviceRegion'):
-    #             area[key]=value # Point is Tuple in form of (Name, Value)
-    #     else: # Update Query related Params
-    #         for key,value in config_file.items('serviceRegion'):
-    #             qry_subs[config['DATA']][key]=value
-    #         qry_subs[config['DATA']]['startDate']=config_file.get('queryParams','startDate')
-    #         qry_subs[config['DATA']]['endDate']=config_file.get('queryParams','endDate')
-    # if config_file.has_section('queryParams') and config.get('SUB_TYPE')== 'qry':
-    #     common_params['limit']=config_file.get('queryParams','limit')
-    #     common_params['skip']=config_file.get('queryParams','skip')
-    #     qry_subs[config['DATA']]['startDate']=config_file.get('queryParams','startDate')
-    #     qry_subs[config['DATA']]['endDate']=config_file.get('queryParams','endDate')
 
     return config_file
 
@@ -138,7 +111,7 @@ def _run_main(config):
     # socket_url = "ws://localhost:10494/ode/api/ws/sub/ints" # veh, int,agg,
     #	ws://ec2-52-6-61-205.compute-1.amazonaws.com/ode/api/ws/qry/int  #adv, int, veh
 
-    subscription_type = config['SUB_TYPE']
+    subscription_type = config['REQUEST_TYPE']
 
     if subscription_type == 'sub':
         uri = '{0}'.format(config['DATA'])
