@@ -52,17 +52,19 @@ public class OdeDataDistributor implements Runnable {
                         throws DataProcessorException {
                      try {
                         ObjectNode jsonObject = JsonUtils.toObjectNode(data);
-                        if (isValidData(jsonObject)) {
+                        OdeDataType odeDataType = getDataType(jsonObject);
+                        if (odeDataType != null) {
                            ObjectNode dm = JsonUtils.newNode();
-                           dm.putObject("metadata");
+                           dm.putObject("metadata").put("payloadType", odeDataType.getShortName());
                            dm.putObject("payload").setAll(jsonObject);
                            WebSocketUtils.send(clientSession, dm.toString());
                         } else {
                            JsonNode payload = jsonObject.get("payload");
-                           if (isValidData(payload)) {
+                           odeDataType = getDataType(payload);
+                           if (odeDataType != null) {
                               ObjectNode p = JsonUtils.toObjectNode(payload.toString());
                               ObjectNode dm = JsonUtils.newNode();
-                              dm.putObject("metadata");
+                              dm.putObject("metadata").put("payloadType", odeDataType.getShortName());
                               dm.putObject("payload").setAll(p);
                               WebSocketUtils.send(clientSession, dm.toString());
                            }
@@ -73,11 +75,15 @@ public class OdeDataDistributor implements Runnable {
                      return null;
                   }
 
-                  private boolean isValidData(JsonNode data) throws IOException {
-                     JsonNode dataType;
-                     return data != null &&
-                           (dataType = data.get("dataType")) != null && 
-                           OdeDataType.getByShortName(dataType.textValue()) != null;
+                  private OdeDataType getDataType(JsonNode data) throws IOException {
+                     OdeDataType odeDataType = null;
+                     if (data != null) {
+                        JsonNode dataType = data.get("dataType");
+                        if (dataType != null) { 
+                           odeDataType = OdeDataType.getByShortName(dataType.textValue());
+                        }
+                     }
+                     return odeDataType;
                   }
                });
       }
