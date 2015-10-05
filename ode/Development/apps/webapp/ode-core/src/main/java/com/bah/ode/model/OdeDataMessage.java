@@ -1,5 +1,9 @@
 package com.bah.ode.model;
 
+import java.io.IOException;
+
+import javax.websocket.Session;
+
 public class OdeDataMessage extends OdeObject {
 
    private static final long serialVersionUID = 2319770058057267706L;

@@ -167,7 +167,7 @@ $(document ).ready(function() {
       ws.onmessage = function (event) {
          if (!started) {
                var message = JSON.parse(event.data);
-               if (message["code"] != "SUCCESS") {
+               if (message["payload"]["code"] != "SUCCESS") {
                    setConnectionState(true, true);
                }
          }

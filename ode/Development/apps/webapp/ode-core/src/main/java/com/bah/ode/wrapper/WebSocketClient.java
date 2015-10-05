@@ -39,6 +39,8 @@ import javax.websocket.WebSocketContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.util.WebSocketUtils;
+
 public class WebSocketClient<T> extends Endpoint {
    private static final Logger logger = LoggerFactory
          .getLogger(WebSocketClient.class);
@@ -306,7 +308,7 @@ public class WebSocketClient<T> extends Endpoint {
     */
    public void send(String message) throws WebSocketException {
       try {
-         this.wsSession.getBasicRemote().sendText(message);
+         WebSocketUtils.send(this.wsSession, message);
       } catch (IOException e) {
          throw new WebSocketException("Error sending message", e);
       }

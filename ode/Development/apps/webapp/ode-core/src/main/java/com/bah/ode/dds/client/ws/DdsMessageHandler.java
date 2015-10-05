@@ -32,12 +32,14 @@ import com.bah.ode.asn.oss.semi.VehSitRecord;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.DdsData;
 import com.bah.ode.model.OdeAdvisoryDataRaw;
+import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeFullMessage;
 import com.bah.ode.model.OdeIntersectionDataRaw;
 import com.bah.ode.model.OdeMetadata;
-import com.bah.ode.model.OdeMsgAndMetadata;
+import com.bah.ode.model.OdePayloadAndMetadata;
 import com.bah.ode.model.OdeVehicleDataFlat;
+import com.bah.ode.util.WebSocketUtils;
 import com.bah.ode.wrapper.MQProducer;
 import com.bah.ode.wrapper.WebSocketMessageHandler;
 
@@ -78,8 +80,8 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    public void onMessage(DdsData ddsData) {
       try {
          if (ddsData.haveData()) {
-            OdeMsgAndMetadata omam = new OdeMsgAndMetadata();
-            omam.setMetadata(metadata);
+            OdePayloadAndMetadata pam = new OdePayloadAndMetadata();
+            pam.setMetadata(metadata);
             
             String topicName;
             if (ddsData.getVsd() != null) {
@@ -98,31 +100,31 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                }
                
                for (OdeVehicleDataFlat ovdf : ovdfList) {
-                  omam.setKey(ovdf.getSerialId());
-                  omam.getMetadata().setKey(omam.getKey());
-                  omam.setPayload(ovdf);
-                  omam.setPayloadType(OdeDataType.VehicleData.name());
+                  pam.setKey(ovdf.getSerialId());
+                  pam.getMetadata().setKey(pam.getKey());
+                  pam.setPayload(ovdf);
+                  pam.setPayloadType(OdeDataType.VehicleData.name());
                   if (!AppContext.loopbackTest()) {
-                     producer.send(topicName, omam.getKey(), omam.toJson());
+                     producer.send(topicName, pam.getKey(), pam.toJson());
                   } else {
-                     clientSession.getBasicRemote().sendText(ovdf.toJson());
+                     WebSocketUtils.send(clientSession, new OdeDataMessage(ovdf).toJson());
                   }
                }
             } else { 
                if (ddsData.getIsd() != null) {
                   topicName = metadata.getInputTopic().getName();
-                  omam.setPayload(new OdeIntersectionDataRaw(ddsData.getIsd()));
+                  pam.setPayload(new OdeIntersectionDataRaw(ddsData.getIsd()));
                } else if (ddsData.getAsd() != null) {
                   topicName = metadata.getInputTopic().getName();
-                  omam.setPayload(new OdeAdvisoryDataRaw(ddsData.getAsd()));
+                  pam.setPayload(new OdeAdvisoryDataRaw(ddsData.getAsd()));
                } else {
                   topicName = metadata.getOutputTopic().getName();
-                  omam.setPayload(new OdeFullMessage(ddsData.getFullMessage()));
+                  pam.setPayload(new OdeFullMessage(ddsData.getFullMessage()));
                }
                if (!AppContext.loopbackTest()) {
-                  producer.send(topicName, omam.getKey(), omam.toJson());
+                  producer.send(topicName, pam.getKey(), pam.toJson());
                } else {
-                  clientSession.getBasicRemote().sendText(omam.toJson());
+                  WebSocketUtils.send(clientSession, new OdeDataMessage(pam.getPayload()).toJson());
                }
             }
          }
