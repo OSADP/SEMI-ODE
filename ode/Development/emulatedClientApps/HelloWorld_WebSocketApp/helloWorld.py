@@ -41,7 +41,7 @@ sub_data_type = "int"  # veh, int, agg
 sub_request =  client.SubscriptionRequest(sub_data_type, region)
 
 #host = "52.20.100.211:8080/ode"#  "192.168.33.12:8080/ode"
-host = "192.168.33.12:8080/ode"
+host = "192.168.33.12/ode"
 
 userName="user@liferay.com"
 password="test"
@@ -75,7 +75,7 @@ ode.setRequest(qry_request)
 
 """
 
-#ode.connect(on_message=client.on_message)
+ode.connect(on_message=client.on_message)
 
 """
 The Asynchronous ODE Client behaves like the regular ODE Client with the following differences:
@@ -85,12 +85,12 @@ The Asynchronous ODE Client behaves like the regular ODE Client with the followi
  * The current output from the get_messages function is a list of JSON encoded Strings
  ** You must parse  each entry with a JSON parser  in order to manipulate the entry.
  """
-
-async = client.AsyncODEClient(odeClient=ode)
-async.start() # will connect to the ODE in a separate thread.
-import time
-while True:
-    if not async.is_buffer_empty():
-        val = async.get_messages(4)
-        print "Outputting: ", val
-    time.sleep(5)
+#
+# async = client.AsyncODEClient(odeClient=ode)
+# async.start() # will connect to the ODE in a separate thread.
+# import time
+# while True:
+#     if not async.is_buffer_empty():
+#         val = async.get_messages(4)
+#         print "Outputting: ", val
+#     time.sleep(5)
