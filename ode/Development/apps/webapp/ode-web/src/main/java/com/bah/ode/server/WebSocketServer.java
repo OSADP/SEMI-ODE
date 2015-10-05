@@ -35,10 +35,12 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
+import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.model.OdeStatus;
+import com.bah.ode.util.WebSocketUtils;
 import com.bah.ode.wrapper.MQTopic;
 import com.bah.ode.api.sec.SecurityService;
 import com.bah.ode.api.sec.filters.WebSocketAuthenticationConfiguration;
@@ -104,15 +106,15 @@ public class WebSocketServer {
       OdeStatus msg = new OdeStatus();
       boolean isAuthorized = validateRequest(endpointConfig.getUserProperties());
       try {
-    	  if (!isAuthorized){
-    		  msg.setCode(OdeStatus.Code.FAILURE)
-    		  .setMessage("Invalid or missing token.");
-    		  session.getBasicRemote().sendText(msg.toJson());
-    		  
-    		  session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY,
-    				  						"Invalid or missing token"));
-    	  }
-    	  else {
+         if (!isAuthorized) {
+            msg.setCode(OdeStatus.Code.FAILURE).setMessage(
+                  "Invalid or missing token.");
+            WebSocketUtils.send(session, new OdeDataMessage(msg).toJson());
+
+            session.close(new CloseReason(
+                  CloseReason.CloseCodes.VIOLATED_POLICY,
+                  "Invalid or missing token"));
+         } else {
 	         if (OdeRequestType.getByShortName(rtype) == null) {
 	            msg.setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR)
 	                  .setMessage(
@@ -133,7 +135,7 @@ public class WebSocketServer {
 	            msg.setCode(OdeStatus.Code.SUCCESS)
 	               .setMessage("ODE Connection Established.");
 	         }
-	         session.getBasicRemote().sendText(msg.toJson());
+	         WebSocketUtils.send(session, new OdeDataMessage(msg).toJson());
     	  } // end if 
       } 
       catch (Exception ex) {
@@ -255,7 +257,7 @@ public class WebSocketServer {
          logger.error(status.toString(), ex);
       } finally {
          try {
-            session.getBasicRemote().sendText(status.toString());
+            WebSocketUtils.send(session, new OdeDataMessage(status).toString());
          } catch (IOException e) {
             logger.error("Error sending error message back to client", e);
          }

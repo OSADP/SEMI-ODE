@@ -30,12 +30,14 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
+import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeMetadata;
-import com.bah.ode.model.OdeMsgAndMetadata;
+import com.bah.ode.model.OdePayloadAndMetadata;
 import com.bah.ode.model.OdeStatus;
-import com.bah.ode.model.OdeVehicleDataFlat;
 import com.bah.ode.model.OdeStatus.Code;
+import com.bah.ode.model.OdeVehicleDataFlat;
 import com.bah.ode.util.JsonUtils;
+import com.bah.ode.util.WebSocketUtils;
 import com.bah.ode.wrapper.MQProducer;
 
 /**
@@ -85,7 +87,7 @@ public class TestWebSocketServer {
       try {
          msg.setCode(OdeStatus.Code.SUCCESS)
             .setMessage("Test Connection Established.");
-         session.getBasicRemote().sendText(msg.toJson());
+         WebSocketUtils.send(session, new OdeDataMessage(msg).toJson());
          
          //FOR TEST ONLY
          if (!AppContext.loopbackTest()) {
@@ -135,31 +137,34 @@ public class TestWebSocketServer {
       OdeStatus status = new OdeStatus();
       try {
          if (message != null && !message.isEmpty()) {
-            OdeMsgAndMetadata omam = new OdeMsgAndMetadata();
+            OdePayloadAndMetadata pam = new OdePayloadAndMetadata();
             if (testMgr != null) {
                OdeMetadata metadata = testMgr.getMetadata();
-               omam.setMetadata(metadata);
-               omam.setKey(metadata.getOutputTopic().getName());
+               pam.setMetadata(metadata);
+               pam.setKey(metadata.getOutputTopic().getName());
                
                OdeVehicleDataFlat ovdf = 
                      (OdeVehicleDataFlat) JsonUtils.fromJson(
                            message, OdeVehicleDataFlat.class);
                if (producer != null) {
-                  omam.setPayload(ovdf);
-                  producer.send(requestId, requestId, omam.toJson());
-                  session.getBasicRemote().sendText(message);
+                  pam.setPayload(ovdf);
+                  producer.send(requestId, requestId, pam.toJson());
+                  WebSocketUtils.send(session, message);
                }
                
                //FOR TEST ONLY
                if (AppContext.loopbackTest()) {
-                  testMgr.getClientSession().getBasicRemote().sendText(message);
+                  WebSocketUtils.send(testMgr.getClientSession(),
+                        new OdeDataMessage(
+                              (OdeVehicleDataFlat) 
+                              JsonUtils.fromJson(message, OdeVehicleDataFlat.class)).toJson());
                }
             } else {
                status.setCode(Code.FAILURE);
                status.setMessage("Test Manager NOT Initialized. "
                      + "Send a Test Request to ODE before sending test data."); 
                logger.error(status.getMessage());
-               session.getBasicRemote().sendText(status.toJson());
+               WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
             }
          }
       } catch (Exception ex) {

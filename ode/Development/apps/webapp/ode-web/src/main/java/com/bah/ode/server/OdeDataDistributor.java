@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.util.JsonUtils;
+import com.bah.ode.util.WebSocketUtils;
 import com.bah.ode.wrapper.DataProcessor;
 import com.bah.ode.wrapper.MQConsumerGroup;
 import com.bah.ode.wrapper.MQTopic;
@@ -52,11 +53,19 @@ public class OdeDataDistributor implements Runnable {
                      try {
                         ObjectNode jsonObject = JsonUtils.toObjectNode(data);
                         if (isValidData(jsonObject)) {
-                           clientSession.getBasicRemote().sendText(data);
+                           ObjectNode dm = JsonUtils.newNode();
+                           dm.putObject("metadata");
+                           dm.putObject("payload").setAll(jsonObject);
+                           WebSocketUtils.send(clientSession, dm.toString());
                         } else {
                            JsonNode payload = jsonObject.get("payload");
-                           if (isValidData(payload))
-                              clientSession.getBasicRemote().sendText(payload.toString());
+                           if (isValidData(payload)) {
+                              ObjectNode p = JsonUtils.toObjectNode(payload.toString());
+                              ObjectNode dm = JsonUtils.newNode();
+                              dm.putObject("metadata");
+                              dm.putObject("payload").setAll(p);
+                              WebSocketUtils.send(clientSession, dm.toString());
+                           }
                         }
                      } catch (Exception e) {
                         throw new DataProcessorException("Error processing data.", e);
