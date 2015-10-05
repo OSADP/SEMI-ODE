@@ -1,8 +1,5 @@
 package com.bah.ode.model;
 
-import java.io.IOException;
-
-import javax.websocket.Session;
 
 public class OdeDataMessage extends OdeObject {
 

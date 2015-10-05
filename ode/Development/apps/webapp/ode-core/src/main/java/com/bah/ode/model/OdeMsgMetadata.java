@@ -10,6 +10,11 @@ public class OdeMsgMetadata extends OdeObject {
       return payloadType;
    }
 
+   public OdeMsgMetadata setPayloadType(OdeDataType payloadType) {
+      this.payloadType = payloadType.getShortName();
+      return this;
+   }
+   
    public OdeMsgMetadata setPayloadType(String payloadType) {
       this.payloadType = payloadType;
       return this;
