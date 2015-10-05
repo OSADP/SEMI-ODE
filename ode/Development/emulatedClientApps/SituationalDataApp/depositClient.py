@@ -107,9 +107,6 @@ def parse_config_file(file_path):
     return config_file
 
 def _run_main(config):
-    # host = "localhost:10494"
-    # socket_url = "ws://localhost:10494/ode/api/ws/sub/ints" # veh, int,agg,
-    #	ws://ec2-52-6-61-205.compute-1.amazonaws.com/ode/api/ws/qry/int  #adv, int, veh
 
     subscription_type = config['REQUEST_TYPE']
 
@@ -144,8 +141,4 @@ def _run_main(config):
 
 if __name__ == "__main__":
     pass
-    # #_main() # Parse Command line options and run program
-    # config['CONFIG_FILE']='.//sample_config.ini'
-    # parse_config_file(config['CONFIG_FILE'])
-    # config['TEST_REQUEST']='tstvehOdeTstRequest1255178960'
-    # _run_main(config)
+
