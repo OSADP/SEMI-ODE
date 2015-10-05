@@ -21,6 +21,7 @@ import java.util.ArrayList;
 public enum OdeDataType {
    Status("status"),
    Control("control"),
+   Authorization("auth"),
    VehicleData("veh"),
    VehicleSituationData("vsd"),
    VehicleSituationDataAsnBase64("vsdasn64"),

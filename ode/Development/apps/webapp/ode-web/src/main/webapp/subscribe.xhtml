@@ -228,22 +228,28 @@ $(document ).ready(function() {
   }
   
   function getToken(email, password)  {
-	  var url = window.location.protocol+'//'+ window.location.host + '/ode/api/auth/login';
-	  $.ajax({
-	    type: "GET",
-	    dataType:'json',
-		url: url,
-	    async: false,
-	    headers: {
-	      "Authorization": "Basic " + btoa(email + ":" + password)
-	    },
-	    success: function (data){
-	 	 	token = data.message;
-			setConnectionState(true,false)
-			if ( $("#selectData input:radio").is(":checked"))
-				updateRequestUri( $("#selectData input:radio").filter(":checked").val());
-	    }
-	  });  
+     var url = window.location.protocol+'//'+ window.location.host + '/ode/api/auth/login';
+     $.ajax({
+        type: "GET",
+        dataType:'json',
+        url: url,
+        async: false,
+        headers: {
+           "Authorization": "Basic " + btoa(email + ":" + password)
+        },
+        success: function (data) {
+           log("Login Response: " + JSON.stringify(data));
+           var payload = data["payload"];
+           if (payload != null) {
+             token = payload["token"];
+             if (token != null) {
+                setConnectionState(true,false)
+                if ( $("#selectData input:radio").is(":checked"))
+                   updateRequestUri( $("#selectData input:radio").filter(":checked").val());
+             }
+           }
+        }
+     });  
   }
   
   // modal window handlers 
