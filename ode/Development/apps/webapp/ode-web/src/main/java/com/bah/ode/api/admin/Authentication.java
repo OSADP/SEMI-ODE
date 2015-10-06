@@ -19,8 +19,6 @@ import com.bah.ode.api.sec.TokenAuthenticationService;
 import com.bah.ode.api.sec.TokenRepository;
 import com.bah.ode.model.OdeAuthorization;
 import com.bah.ode.model.OdeDataMessage;
-import com.bah.ode.model.OdeDataType;
-import com.bah.ode.model.OdeMsgMetadata;
 import com.bah.ode.model.OdeStatus;
 
 //TODO: change path to tokens
@@ -41,22 +39,18 @@ public class Authentication {
    public Response userLogin() throws Exception {
 
       AccessToken token = tokenProvider.generateToken((long) crc.getProperty("userId"));
-      OdeDataMessage dm = new OdeDataMessage();
+      OdeDataMessage dm;
       if (null != token) {
          tokenRepository.addToken(token);
          OdeAuthorization auth = new OdeAuthorization()
             .setToken(token.getWebToken());
-         dm.setMetadata(new OdeMsgMetadata()
-           .setPayloadType(OdeDataType.Authorization))
-           .setPayload(auth);
+         dm = new OdeDataMessage(auth);
          return Response.ok(dm.toJson()).build();
       } else {
          OdeStatus msg = new OdeStatus();
          msg.setCode(OdeStatus.Code.FAILURE).setMessage(
                "Unable to create Authentication Token");
-         dm.setMetadata(new OdeMsgMetadata()
-           .setPayloadType(OdeDataType.Status))
-           .setPayload(msg);
+         dm = new OdeDataMessage(msg);
          return Response.status(Status.INTERNAL_SERVER_ERROR).entity(dm.toJson())
                .build();
       }
