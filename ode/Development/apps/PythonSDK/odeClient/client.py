@@ -8,20 +8,17 @@ import time
 
 import websocket
 import restApi
-
+import exceptions
+import response
 
 enableWebSocketTrace = False
 logger = logging.getLogger('odeClient')
 websocket.enableTrace(enableWebSocketTrace)
 
-message_codes = [
-    'SUCCESS',
-    'FAILURE',
-    'SOURCE_CONNECTION_ERROR',
-    'INVALID_REQUEST_TYPE_ERROR',
-    'INVALID_DATA_TYPE_ERROR'
-]
-
+supported_types = {
+		"sub":["int","veh","agg"],
+		"qry":["int","veh","adv"]
+	}
 
 class ODEClient(object):
 
@@ -101,7 +98,7 @@ class ODEClient(object):
         return result
 
     def on_messageQueue(self,ws, message):
-        self.queue.put_nowait(message)
+        self.queue.put_nowait(response.BaseResponse(message))
 
 class AsyncODEClient(threading.Thread):
     def __init__ (self, *args, **kwargs):
@@ -115,6 +112,12 @@ class AsyncODEClient(threading.Thread):
     
     def is_buffer_empty(self):
         return self.queue.empty()
+    
+    def get_all_messages(self):
+        if not self.is_buffer_empty():
+            return self.get_messages(self.queue.qsize())
+        else:
+            return []
     
     def get_messages(self, number_of_message):
         """
@@ -131,7 +134,7 @@ class AsyncODEClient(threading.Thread):
         return result
 
     def on_messageQueue(self, ws, message):
-        self.queue.put_nowait(message)
+        self.queue.put_nowait(response.BaseResponse(message))
 
     def run(self,*args,**kwargs):
          self.client.connect(on_message=self.on_messageQueue, *args,**kwargs) 
@@ -154,9 +157,13 @@ class GeographicRegion(object):
 
 class BaseRequest(object):
     def __init__(self, requestType, dataType, geographicRegion):
-        self.dataType = dataType
-        self.requestType = requestType
-        self.geographicRegion = geographicRegion        
+        self.geographicRegion = geographicRegion
+        
+        if supported_types.has_key(requestType) and dataType in supported_types[requestType]:
+            self.requestType = requestType
+            self.dataType = dataType       
+        else:
+            raise exceptions.UnsupportedRequestType("Unsupported request type for {} and {}".format(requestType,dataType))
 
     def toJson(self):
         return self.geographicRegion.toJson()

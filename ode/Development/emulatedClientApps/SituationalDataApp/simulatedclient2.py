@@ -16,7 +16,8 @@ import depositClient
 import simulatedClientPresets
 import clientConfig
 
-from odeClient import client, timehelpers
+from odeClient import client, timehelpers, dataType
+from odeClient.response import BaseResponse as OdeResponse
 
 # Logging Setup and Configuration
 #
@@ -49,8 +50,6 @@ date_format = '%Y-%m-%dT%H:%M:%S.%f%Z'
 ode_output_file_name = 'ODE_test_run_{0}.txt'.format(current_date_time)
 log_to_file = True
 
-
-
 base_config = {}
 config = defaultdict(lambda: None, base_config)
 
@@ -67,17 +66,12 @@ region = simulatedClientPresets.pre_built_region()
 start_date = simulatedClientPresets.start_date.strftime(timehelpers.date_format)
 end_date = simulatedClientPresets.end_date.strftime(timehelpers.date_format)
 
-
 skip = simulatedClientPresets.skip
 limit = simulatedClientPresets.limit
 
-# qry_subs = simulatedClientPresets.pre_built_queries()
-
-
-#msg = {}  # Empty Message body
+un_supported_payloads_codes = [x[1] for x in dataType.all_dataTypes() if x[1] !='veh']
 
 input_file = None
-
 
 def append_to_file(entry):
     with open(ode_output_file_name, "a") as myfile:
@@ -238,54 +232,51 @@ def _run_main(config,config_file=None):
     logger.info("Subscriptions Params: %s", request.toJson() )
 
     ode.setRequest(request)
-    ode.connect(on_message=on_message) # open continuous
+    ode.connect(on_message=on_message) # open continuous connection.
 
-# Web Socket Handlers
+# Web Socket Handler
 # That is written by the application developer
+#
 def on_message(ws, message):
     """
     Handler that processes messages received by the web socket
     """
 
-    # determine message and act accordingly
+    # determine message type and act accordingly
     logger.debug("Message Value: %s", message)
     if (logger.isEnabledFor(logging.DEBUG) or logger.isEnabledFor(logging.INFO)) and log_to_file:
         append_to_file(message)
     try:
-
-        msg = json.loads(message)
+        msg = OdeResponse(message)
 
         # Identify Message and perform action(s)
-        if msg.get('code'):
-            logger.info("ODE Connection Status: %s Message: %s", msg.get('code'), msg.get('message'))
-
-            if config['UPLOAD_TEST_DATA'] and msg.get('requestId'):  # 'tstvehOdeTstRequest' in msg.get('message'):
-                config['TEST_REQUEST'] = msg.get('requestId')
+        # Used for the Test Deposit
+        if msg.get_payload_type()=='status':
+            logger.info("ODE Connection Status: %s Message: %s", msg.get_payload_value('code'), msg.get_payload_value('message'))
+            if config['UPLOAD_TEST_DATA'] and msg.get_payload_value('requestId'):
+                config['TEST_REQUEST'] = msg.get_payload_value('requestId')
                 depositClient.update_config(config)
                 thread.start_new_thread(depositClient._run_main, (config,))
 
-        if msg.get('fullMessage') is not None and 'STOP' in msg.get('fullMessage'):
+        if msg.get_payload_type() == 'other' and 'STOP' in msg.get_payload_value('fullMessage'):
             ws.close()
-        if msg.get('serialId') is not None:
-            validate_message(msg)
-        # if msg.get('payload'):
-        #     logger.info(msg['payload']['dialogID']['mValue'])
-        #     logger.debug(msg.keys())
-        #     validate_message(msg)
-        elif msg.get("fullMessage"):
+
+        if msg.get_payload_type() == 'veh':
+            validate_message(msg.payload)
+        elif  msg.get_payload_type() in un_supported_payloads_codes :
+            logger.info("No validation function defined for payload type: %s",msg.get_payload_type())
+
+        elif msg.get_payload_value("fullMessage"):
             logger.info(msg.get("fullMessage"))
 
     except Exception as e:
         logger.exception("Unable to convert message to json dictionary object")
         logger.critical("Message Payload: %s\n", message)
-        ## validate message to that which is stored locaally
-        # iterating over local message  to ensure ordering and values are correct
 
-
-def validate_message(message):
+def validate_message(msg_payload):
     """
     Validates JSON result against json file
-    :param message: ODE  Message in JSON Format
+    :param msg_payload: ODE  Message in JSON Format
     :return: Result of evaluation in Tuple Form
     """
 
@@ -302,16 +293,16 @@ def validate_message(message):
                   u'day', u'minute', u'dateTime']
 
     # Search
-    filtered_message = {k: v for k, v in message.items() if k in valid_keys}
+    filtered_message = {k: v for k, v in msg_payload.items() if k in valid_keys}
 
-    output = [record for record in json_file_data if record[key] == message[key]]
+    output = [record for record in json_file_data if record[key] == msg_payload[key]]
     if output is None:
-        logger.info('No matching record found based on key of [%s] in validation file. ODE Message: %s', message[key],
-                    message)
+        logger.info('No matching record found based on key of [%s] in validation file. ODE Message: %s', msg_payload[key],
+                    msg_payload)
 
     count = len(output)
     check_counter = 0
-    logger.debug("ODE Record: %s", message)
+    logger.debug("ODE Record: %s", msg_payload)
     logger.info('Found %d possible matches', count)
 
     for data in output:
@@ -327,7 +318,7 @@ def validate_message(message):
             logger.debug("Record Count: %d, Check Counter: %d", count, check_counter)
             logger.warn("No matching record found.Found similar record. Iteration: %d, \nExpected: %s,\nActual:   %s",
                         check_counter, sorted(record_delta), sorted(actual_record_delta))
-            logger.warn("Full Record Output:\nValidation Record: %s\nActual Record:  %s", data, message)
+            logger.warn("Full Record Output:\nValidation Record: %s\nActual Record:  %s", data, msg_payload)
             if check_counter == count:
                 logger.debug("Validation Record: %s", sorted(filtered_validation_data))
                 logger.debug("ODE Record: %s", sorted(filtered_message))
