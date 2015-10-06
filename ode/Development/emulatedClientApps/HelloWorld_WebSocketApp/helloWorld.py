@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger("odeClient")
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler(stream=sys.stdout)
-ch.setLevel(logging.DEBUG)
+ch.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s-%(name)s-%(levelname)s: %(message)s', datefmt="%Y-%m-%dT%H:%M:%S")
 ch.setFormatter(formatter)
 
@@ -40,12 +40,10 @@ qry_request = client.QueryRequest(qry_data_type,
 sub_data_type = "int"  # veh, int, agg
 sub_request =  client.SubscriptionRequest(sub_data_type, region)
 
-#host = "52.20.100.211:8080/ode"#  "192.168.33.12:8080/ode"
-host = "192.168.33.12/ode"
+host = "52.20.100.211:8080/ode"
 
 userName="user@liferay.com"
 password="test"
-
 
 ode = client.ODEClient(host)
 # ode = client.ODEClient(host,userName,password)
@@ -58,8 +56,8 @@ ode = client.ODEClient(host)
 ode.get_token(userName,password)
 
 # set Request Object
-#ode.setRequest(sub_request)
-ode.setRequest(qry_request)
+ode.setRequest(sub_request)
+#ode.setRequest(qry_request)
 
 """
  The connect method will start the Websocket connection.
@@ -69,28 +67,35 @@ ode.setRequest(qry_request)
  in order to process messages.
 
  The "on_message" call back takes  two arguments, a reference to the websocket and the message itself
+ The ODE will return JSON formatted strings, so the message will need to parsed using a JSON library,
+ or convdeted to an ODE Response.
  Sample call back  method definition:
  def on_message(ws,message):
       print message
 
 """
 
-ode.connect(on_message=client.on_message)
+#ode.connect(on_message=client.on_message)
 
 """
 The Asynchronous ODE Client behaves like the regular ODE Client with the following differences:
  * The Asynchronous client will buffer the ODE Output in a thread safe internal Queue
  * The get_message(N number of messages) will return up to N message from the internal Queue
  ** If the Queue contains less then N message, then you receive however many messages that are present at request time.
- * The current output from the get_messages function is a list of JSON encoded Strings
- ** You must parse  each entry with a JSON parser  in order to manipulate the entry.
+ * The current output from the get_messages function is a list of ODE Response Objects
  """
-#
-# async = client.AsyncODEClient(odeClient=ode)
-# async.start() # will connect to the ODE in a separate thread.
-# import time
-# while True:
-#     if not async.is_buffer_empty():
-#         val = async.get_messages(4)
-#         print "Outputting: ", val
-#     time.sleep(5)
+
+async = client.AsyncODEClient(odeClient=ode)
+async.start() # will connect to the ODE in a separate thread.
+import time
+while True:
+    if not async.is_buffer_empty():
+        items = async.get_all_messages()
+        #items = async.get_messages(4) # Specifiy number of items to process
+        print ""
+        for record in items:
+            print record
+            print record.metaData # json
+            print record.payload # json
+            #print record.get_payload_value(key)
+    time.sleep(10)

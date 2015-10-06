@@ -19,7 +19,6 @@ def login(host,username,password):
 
     auth_header = { 'Authorization' : 'Basic ' + auth }
     r, c = client.request(url,method=GET, headers=auth_header )
-
     token = None
 
     if r is not None and r.status == 200:
