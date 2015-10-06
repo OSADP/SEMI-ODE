@@ -3,6 +3,8 @@
 import thread, time, datetime, json, sys, os
 import logging
 
+import dateutil.parser
+
 from optparse import OptionParser, SUPPRESS_HELP, OptionGroup
 from collections import defaultdict
 import ConfigParser
@@ -11,6 +13,9 @@ import websocket
 import timehelpers
 import depositClient
 import restApi
+
+import clientConfig
+from odeClient import client, timehelpers
 
 # Set TIME to UTC
 # logging.Formatter.converter = time.gmtime
@@ -48,19 +53,23 @@ message_codes = [
 ]
 
 areas_subs = ["veh", "int", "agg"]
+
+#
 area = {
     'nwLat': "43.652969118285434",
     'nwLon': "-85.94707489013672",
     'seLat': "36.4765153148293",
     'seLon': "-74.53468322753906",
 }
-common_params = {
-    "skip": "0",
-    "limit": "10"
-}
 
+nwLat = "43.652969118285434",
+nwLon = "-85.94707489013672",
+seLat = "36.4765153148293",
+seLon = "-74.53468322753906",
 
-# 2015-01-01T01:01:30.000Z to  # 2015-06-15T23:59:59.999Z
+region = client.GeographicRegion(nwLat,nwLon,seLat,seLon)
+
+# 2015-01-01T01:01:30.000Z to  2015-06-15T23:59:59.999Z
 start_date = datetime.datetime(2015, month=1, day=1, hour=1, minute=1, second=30, tzinfo=timehelpers.ZULU())
 end_date = datetime.datetime(2015, month=6, day=1, hour=23, minute=59, second=59, microsecond=999,
                              tzinfo=timehelpers.ZULU())
@@ -69,42 +78,50 @@ date_format = '%Y-%m-%dT%H:%M:%S.%f%Z'
 # File Name to capture ODE OUTPUT
 # Same date time stamp used for log file
 ode_output_file_name = 'ODE_test_run_{0}.txt'.format(current_date_time)
-log_to_file = False
+log_to_file = True
+
+qry_data_type = "veh" # veh, int,  adv
+skip = 0,
+limit = 100
+qry_request = client.QueryRequest(qry_data_type,
+                                  region,
+                                  start_date.strftime(timehelpers.date_format),
+                                  end_date.strftime(timehelpers.date_format),
+                                  skip,
+                                  limit)
 
 qry_subs = \
     {
-        "veh": {
-            "nwLat": "43.652969118285434",
-            "nwLon": "-85.94707489013672",
-            "seLat": "36.47651531482931",
-            "seLon": "-74.53468322753902",
-            "startDate": start_date.strftime(date_format),
-            "endDate": end_date.strftime(date_format)
+        "veh": { client.QueryRequest("veh",
+                                  region,
+                                  start_date.strftime(timehelpers.date_format),
+                                  end_date.strftime(timehelpers.date_format),
+                                  skip,
+                                  limit)
+
         },
         "adv": {
-            "nwLat": "43.652969118285434",
-            "nwLon": "-85.94707489013672",
-            "seLat": "36.4765153148293",
-            "seLon": "-74.53468322753901",
-            "startDate": start_date.strftime(date_format),
-            "endDate": end_date.strftime(date_format)
+                client.QueryRequest("adv",
+                                  region,
+                                  start_date.strftime(timehelpers.date_format),
+                                  end_date.strftime(timehelpers.date_format),
+                                  skip,
+                                  limit)
 
         },
         "int": {
-            "nwLat": "43.652969118285199",
-            "nwLon": "-85.94707489013672",
-            "seLat": "36.47651531482932",
-            "seLon": "-74.53468322753905",
-            "startDate": start_date.strftime(date_format),
-            "endDate": end_date.strftime(date_format)
-
+                client.QueryRequest("int",
+                                  region,
+                                  start_date.strftime(timehelpers.date_format),
+                                  end_date.strftime(timehelpers.date_format),
+                                  skip,
+                                  limit)
         },
     }
 
 msg = {}  # Empty Message body
 
 input_file = None
-
 
 def append_to_file(entry):
     with open(ode_output_file_name, "a") as myfile:
@@ -236,7 +253,7 @@ def validate_message(message):
 
     key = 'dateTime'
 
-    if not validate_datetime(message['dateTime']) and  config['SUB_TYPE']=='qry':
+    if not validate_datetime(message['dateTime']) and  config['REQUEST_TYPE']=='qry':
         logger.warn("Invalid DateTime in Message Record")
         logger.warn("Start Time: %s,  Actual: %s   End Time: %s", msg['startDate'], message['dateTime'], \
                     msg['endDate'])
@@ -313,7 +330,7 @@ def validate_location():
 # Command Line Parser Methods
 def get_parser():
     """
-    Creaates and returns Parser object
+    Creates and returns Parser object
     :return: optparse.OptionParser
     """
     parser = OptionParser(
@@ -323,9 +340,9 @@ def get_parser():
     parser.add_option('-?', action='callback', callback=print_help, help=SUPPRESS_HELP)
 
     req_group = OptionGroup(parser, "Required Parameters")
-    req_group.add_option('-t', '--type', help='Subscription Type Query - qry, Subscription = sub )',
+    req_group.add_option('-t', '--type', help='Request Type Query - qry, Subscription = sub )',
                          metavar='type',
-                         dest='SUB_TYPE',
+                         dest='REQUEST_TYPE',
                          default='sub')
 
     req_group.add_option('-d', '--data', help='Data Type (Vehicle, Intersection, Aggregate, Advisory)',
@@ -371,12 +388,12 @@ def print_help(option, opt_str, value, parser, *args, **kwargs):
 
 
 def _main():
-    parser = get_parser()
+    parser = clientConfig.get_parser()
     (options, args) = parser.parse_args()
 
     config.update(vars(options))
     if config.get('CONFIG_FILE'):
-        cp = parse_config_file(config['CONFIG_FILE'])
+        cp =parse_config_file(config['CONFIG_FILE'])
 
     _run_main(config)
 
@@ -391,7 +408,7 @@ def parse_config_file(file_path):
         sys.exit(1)
     if config_file.has_section('ode'):
         config['HOST'] = config_file.get('ode', 'host')
-        config['SUB_TYPE'] = config_file.get('ode', 'subscriptionType')
+        config['REQUEST_TYPE'] = config_file.get('ode', 'requestType')
         config['DATA'] = config_file.get('ode', 'dataType')
         config['UPLOAD_TEST_DATA'] = config_file.getboolean('ode', 'uploadData')
         config['VALIDATION_FILE'] = config_file.get('ode', 'validationFile')
@@ -403,7 +420,7 @@ def parse_config_file(file_path):
 
 
     if config_file.has_section('serviceRegion'):
-        if config.get('SUB_TYPE') and config.get('SUB_TYPE') == 'sub':
+        if config.get('REQUEST_TYPE') and config.get('REQUEST_TYPE') == 'sub':
             for key, value in config_file.items('serviceRegion'):
                 area[key] = value  # Point is Tuple in form of (Name, Value)
         else:  # Update Query related Params
@@ -411,7 +428,7 @@ def parse_config_file(file_path):
                 qry_subs[config['DATA']][key] = value
             qry_subs[config['DATA']]['startDate'] = config_file.get('queryParams', 'startDate')
             qry_subs[config['DATA']]['endDate'] = config_file.get('queryParams', 'endDate')
-    if config_file.has_section('queryParams') and config.get('SUB_TYPE') == 'qry':
+    if config_file.has_section('queryParams') and config.get('REQUEST_TYPE') == 'qry':
         common_params['limit'] = config_file.get('queryParams', 'limit')
         common_params['skip'] = config_file.get('queryParams', 'skip')
         qry_subs[config['DATA']]['startDate'] = config_file.get('queryParams', 'startDate')
@@ -426,7 +443,7 @@ def _run_main(config):
     # socket_url = "ws://localhost:10494/ode/api/ws/sub/ints" # veh, int,agg,
     #	ws://ec2-52-6-61-205.compute-1.amazonaws.com/ode/api/ws/qry/int  #adv, int, veh
 
-    subscription_type = config['SUB_TYPE']
+    subscription_type = config['REQUEST_TYPE']
     global msg
 
     if subscription_type == 'sub':
@@ -470,8 +487,7 @@ def _run_main(config):
     #     thread.start_new_thread(depositClient._run_main, (config,))
 
     websocket.enableTrace(False)
-    # auth_header  = "Authorization: Basic dXNlckBsaWZlcmF5LmNvbTp0ZXN0" # user@liferay.com:test
-    # invalid_auth_header = "Authorization: Basic dXNlckBsaWZlcmF5LmNvbTp0ZXXX"
+
     ws = websocket.WebSocketApp(socket_url, header=[], # [auth_header, ],
                                 cookie=None,
                                 on_message=on_message,
