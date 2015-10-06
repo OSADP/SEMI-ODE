@@ -64,7 +64,7 @@ class ODEClient(object):
     def connect(self, on_message, on_open=None, **kwargs):
 
         if self.token is None or self.request is None:
-            logger.critical("Missing Token or Request")
+            raise exceptions.ODEConnectionException("Missing Token or Request")
         
         uri = "{0}/{1}".format(self.request.requestType, self.request.dataType)
 
