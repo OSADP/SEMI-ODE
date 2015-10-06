@@ -1,5 +1,5 @@
 {
-  "Description": "ODE Cloud Formation Template to create VPC with multiple public and private, security groups and route tables. Subnet are sized for 250 host each. Template Created: 2015-10-01 08:25:23",
+  "Description": "ODE Cloud Formation Template to create VPC with multiple public and private, security groups and route tables. Subnet are sized for 250 host each. Template Created: 2015-10-05 11:56:23",
   "Mappings": {
     "AWSInstanceType2Arch": {
       "c1.medium": {
@@ -1387,6 +1387,7 @@
     "publicSubnet1": {
       "Properties": {
         "CidrBlock": "10.0.1.0/24",
+        "MapPublicIpOnLaunch": "true",
         "Tags": [
           {
             "Key": "Name",
@@ -1413,6 +1414,7 @@
     "publicToolsSubnet1": {
       "Properties": {
         "CidrBlock": "10.0.8.0/24",
+        "MapPublicIpOnLaunch": "true",
         "Tags": [
           {
             "Key": "Application",

@@ -1,22 +1,25 @@
 #!/bin/env python
 
-import thread, time, datetime, json, sys, os
+import thread
+import datetime
+import json
+import sys
+import os
 import logging
-
 import dateutil.parser
 
 from optparse import OptionParser, SUPPRESS_HELP, OptionGroup
 from collections import defaultdict
 import ConfigParser
 
-import websocket
-import timehelpers
 import depositClient
-import restApi
-
+import simulatedClientPresets
 import clientConfig
+
 from odeClient import client, timehelpers
 
+# Logging Setup and Configuration
+#
 # Set TIME to UTC
 # logging.Formatter.converter = time.gmtime
 
@@ -39,32 +42,6 @@ ch.setFormatter(formatter)
 logger.addHandler(fh)
 logger.addHandler(ch)
 
-base_config = {}
-config = defaultdict(lambda: None, base_config)
-
-json_file_data = []
-
-message_codes = [
-    'SUCCESS',
-    'FAILURE',
-    'SOURCE_CONNECTION_ERROR',
-    'INVALID_REQUEST_TYPE_ERROR',
-    'INVALID_DATA_TYPE_ERROR'
-]
-
-areas_subs = ["veh", "int", "agg"]
-
-nwLat = "43.652969118285434",
-nwLon = "-85.94707489013672",
-seLat = "36.4765153148293",
-seLon = "-74.53468322753906",
-
-region = client.GeographicRegion(nwLat, nwLon, seLat, seLon)
-
-# 2015-01-01T01:01:30.000Z to  2015-06-15T23:59:59.999Z
-start_date = datetime.datetime(2015, month=1, day=1, hour=1, minute=1, second=30, tzinfo=timehelpers.ZULU())
-end_date = datetime.datetime(2015, month=6, day=1, hour=23, minute=59, second=59, microsecond=999,
-                             tzinfo=timehelpers.ZULU())
 date_format = '%Y-%m-%dT%H:%M:%S.%f%Z'
 
 # File Name to capture ODE OUTPUT
@@ -72,37 +49,32 @@ date_format = '%Y-%m-%dT%H:%M:%S.%f%Z'
 ode_output_file_name = 'ODE_test_run_{0}.txt'.format(current_date_time)
 log_to_file = True
 
-skip = 0,
-limit = 100
 
-qry_subs = \
-    {
-        "veh": {client.QueryRequest("veh",
-                                    region,
-                                    start_date.strftime(timehelpers.date_format),
-                                    end_date.strftime(timehelpers.date_format),
-                                    skip,
-                                    limit)
 
-                },
-        "adv": {client.QueryRequest("adv",
-                                region,
-                                start_date.strftime(timehelpers.date_format),
-                                end_date.strftime(timehelpers.date_format),
-                                skip,
-                                limit)
+base_config = {}
+config = defaultdict(lambda: None, base_config)
 
-        },
-        "int": {client.QueryRequest("int",
-                                region,
-                                start_date.strftime(timehelpers.date_format),
-                                end_date.strftime(timehelpers.date_format),
-                                skip,
-                                limit)
-        },
-    }
+json_file_data = []
 
-msg = {}  # Empty Message body
+areas_subs = ["veh", "int", "agg"]
+
+#
+# Built in presents
+#
+region = simulatedClientPresets.pre_built_region()
+
+# 2015-01-01T01:01:30.000Z to  2015-06-15T23:59:59.999Z
+start_date = simulatedClientPresets.start_date.strftime(timehelpers.date_format)
+end_date = simulatedClientPresets.end_date.strftime(timehelpers.date_format)
+
+
+skip = simulatedClientPresets.skip
+limit = simulatedClientPresets.limit
+
+# qry_subs = simulatedClientPresets.pre_built_queries()
+
+
+#msg = {}  # Empty Message body
 
 input_file = None
 
@@ -114,7 +86,7 @@ def append_to_file(entry):
 
 def get_json_file(test_type):
     """
-    Get correct json file based on subscription type input Tuple
+    Get correct json file based on (request type, data type)  input Tuple
     :return:
     """
     # os.getcwdu()
@@ -154,15 +126,16 @@ def validate_datetime(input_time):
      start and end time interval.
     :return:
     """
-    import dateutil.parser
-    record_time = dateutil.parser.parse(input_time)
-    if msg.get('endDate') is not None and msg.get('startDate') is not None:
-        if dateutil.parser.parse(msg.get('endDate')) >= record_time >= dateutil.parser.parse(msg.get('startDate')):
-            return True
-        else:
-            return False
-    else:
-        return False
+    pass
+    # import dateutil.parser
+    # record_time = dateutil.parser.parse(input_time)
+    # if msg.get('endDate') is not None and msg.get('startDate') is not None:
+    #     if dateutil.parser.parse(msg.get('endDate')) >= record_time >= dateutil.parser.parse(msg.get('startDate')):
+    #         return True
+    #     else:
+    #         return False
+    # else:
+    #     return False
 
 
 def validate_location():
@@ -187,6 +160,8 @@ def _main():
     if config.get('CONFIG_FILE'):
         cp = parse_config_file(config['CONFIG_FILE'])
 
+    logger.info("USer Config: %s", config)
+
     _run_main(config, cp)
 
 def parse_config_file(file_path):
@@ -209,27 +184,42 @@ def parse_config_file(file_path):
         config['USERNAME'] = config_file.get('ode', 'userName')
         config['PASSWORD'] = config_file.get('ode', 'password')
 
+    if config_file.has_section('queryParams'):
+        config['START_DATE'] = config_file.get('queryParams', 'startDate')
+        config['END_DATE'] = config_file.get('queryParams', 'endDate')
+        config['SKIP']  = config_file.get('queryParams','skip')
+        config['LIMIT'] = config_file.get('queryParams','limit')
+    area = None
+
+    if config_file.has_section('serviceRegion'):
+        area={}
+        for key, value in config_file.items('serviceRegion'):
+            area[key] = value
+
+    config['SERVICE_REGION'] = area
+
     return config_file
 
-def build_request(config,config_file):
+def build_request(config):
     request = None
-    area = {}
-    for key, value in config_file.items('serviceRegion'):
-        area[key] = value
 
-    region = build_region(area)
+    area = config.get('SERVICE_REGION', None)
+    region = None
+    if area is not None:
+        region = build_region(area)
+    else:
+        region = simulatedClientPresets.pre_built_region()
 
-    if config.get('REQUEST_TYPE') and config.get('REQUEST_TYPE') == 'sub':
-        request = client.SubscriptionRequest(config_file.get('ode', 'dataType'),
-                                             region)
+    if config.get('REQUEST_TYPE',None) and config.get('REQUEST_TYPE') == 'sub':
+        request = client.SubscriptionRequest(config.get('DATA'),region)
 
-    if config_file.has_section('queryParams') and config.get('REQUEST_TYPE') == 'qry':
-        request = client.QueryRequest(config_file.get('ode', 'dataType'),
+    elif config.get('REQUEST_TYPE',None) and config.get('REQUEST_TYPE') == 'qry':
+        request = client.QueryRequest(config.get('DATA'),
                                       region,
-                                      config_file.get('queryParams', 'startDate'),
-                                      config_file.get('queryParams', 'endDate'),
-                                      config_file.get('queryParams', 'limit'),
-                                      config_file.get('queryParams', 'skip') )
+                                      config.get('START_DATE', start_date),
+                                      config.get('END_DATE', end_date),
+                                      config.get('LIMIT', limit),
+                                      config.get('SKIP', skip))
     return request
 
 def build_region(regionValues):
@@ -243,12 +233,12 @@ def _run_main(config,config_file=None):
 
     ode = client.ODEClient(config['HOST'], config['USERNAME'], config['PASSWORD'])
 
-    request = build_request(config,config_file)
+    request = build_request(config)
 
     logger.info("Subscriptions Params: %s", request.toJson() )
 
     ode.setRequest(request)
-    ode.connect(on_message=on_message)
+    ode.connect(on_message=on_message) # open continuous
 
 # Web Socket Handlers
 # That is written by the application developer
@@ -262,6 +252,7 @@ def on_message(ws, message):
     if (logger.isEnabledFor(logging.DEBUG) or logger.isEnabledFor(logging.INFO)) and log_to_file:
         append_to_file(message)
     try:
+
         msg = json.loads(message)
 
         # Identify Message and perform action(s)
@@ -274,7 +265,7 @@ def on_message(ws, message):
                 thread.start_new_thread(depositClient._run_main, (config,))
 
         if msg.get('fullMessage') is not None and 'STOP' in msg.get('fullMessage'):
-            on_close(ws)
+            ws.close()
         if msg.get('serialId') is not None:
             validate_message(msg)
         # if msg.get('payload'):
@@ -283,7 +274,7 @@ def on_message(ws, message):
         #     validate_message(msg)
         elif msg.get("fullMessage"):
             logger.info(msg.get("fullMessage"))
-            #            on_close(ws)
+
     except Exception as e:
         logger.exception("Unable to convert message to json dictionary object")
         logger.critical("Message Payload: %s\n", message)
@@ -300,10 +291,10 @@ def validate_message(message):
 
     key = 'dateTime'
 
-    if not validate_datetime(message['dateTime']) and config['REQUEST_TYPE'] == 'qry':
-        logger.warn("Invalid DateTime in Message Record")
-        logger.warn("Start Time: %s,  Actual: %s   End Time: %s", msg['startDate'], message['dateTime'], \
-                    msg['endDate'])
+    # if not validate_datetime(message['dateTime']) and config['REQUEST_TYPE'] == 'qry':
+    #     logger.warn("Invalid DateTime in Message Record")
+    #     logger.warn("Start Time: %s,  Actual: %s   End Time: %s", msg['startDate'], message['dateTime'], \
+    #                 msg['endDate'])
 
     # Valid  Vehicle Data Keys
     valid_keys = [u'accelVert', u'sizeWidth', u'elevation', u'hour', u'sizeLength', u'accelLong', u'longitude', \
