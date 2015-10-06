@@ -25,8 +25,9 @@ def login(host,username,password):
     r, c = client.request(url,method=GET, headers=auth_header )
 
     token = None
-    data = response.BaseResponse(c)
+    
     if r is not None and r.status == 200:
+        data = response.BaseResponse(c)
         if data.get_payload_type() == _AUTH_TYPE:
             token = data.get_payload_value('token')  
     else:
