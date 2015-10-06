@@ -8,7 +8,7 @@ public class OdeAuthorization extends OdePayload{
    
    @Override
    protected void setDataType() {
-      setDataType(OdeDataType.Status);
+      setDataType(OdeDataType.Authorization);
    }
 
    public String getToken() {

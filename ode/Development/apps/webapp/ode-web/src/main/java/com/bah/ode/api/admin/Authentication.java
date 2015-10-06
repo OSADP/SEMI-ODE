@@ -41,20 +41,23 @@ public class Authentication {
    public Response userLogin() throws Exception {
 
       AccessToken token = tokenProvider.generateToken((long) crc.getProperty("userId"));
+      OdeDataMessage dm = new OdeDataMessage();
       if (null != token) {
          tokenRepository.addToken(token);
          OdeAuthorization auth = new OdeAuthorization()
             .setToken(token.getWebToken());
-         OdeDataMessage dm = new OdeDataMessage()
-            .setMetadata(new OdeMsgMetadata()
-               .setPayloadType(OdeDataType.Authorization))
-            .setPayload(auth);
+         dm.setMetadata(new OdeMsgMetadata()
+           .setPayloadType(OdeDataType.Authorization))
+           .setPayload(auth);
          return Response.ok(dm.toJson()).build();
       } else {
          OdeStatus msg = new OdeStatus();
          msg.setCode(OdeStatus.Code.FAILURE).setMessage(
                "Unable to create Authentication Token");
-         return Response.status(Status.INTERNAL_SERVER_ERROR).entity(msg)
+         dm.setMetadata(new OdeMsgMetadata()
+           .setPayloadType(OdeDataType.Status))
+           .setPayload(msg);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).entity(dm.toJson())
                .build();
       }
    }

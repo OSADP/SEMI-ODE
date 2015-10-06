@@ -1,5 +1,6 @@
 package com.bah.ode.wrapper;
 
+import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeObject;
 
 public class MQTopic extends OdeObject {
@@ -47,6 +48,12 @@ public class MQTopic extends OdeObject {
 
    public Integer getPartitions() {
       return partitions;
+   }
+   
+   public static int defaultPartitions() {
+      return Integer.valueOf(
+            AppContext.getInstance().getParam(
+                  AppContext.KAFKA_DEFAULT_CONSUMER_THREADS));
    }
 
    public MQTopic setPartitions(Integer partitions) {
