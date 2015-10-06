@@ -116,6 +116,7 @@ public_tools_subnet = t.add_resource(
     Subnet(
         'publicToolsSubnet1',
         CidrBlock='10.0.8.0/24',
+        MapPublicIpOnLaunch=True,
         VpcId=Ref(VPC),
         Tags=Tags( Name="Public Tools Subnet",
             Application=ref_stack_id)))
@@ -124,6 +125,7 @@ public_api_subnet = t.add_resource(
     Subnet(
         'publicSubnet1',
         CidrBlock='10.0.1.0/24',
+        MapPublicIpOnLaunch=True,
         VpcId=Ref(VPC),
         Tags=Tags(
             Name="Public API Subnet")))
