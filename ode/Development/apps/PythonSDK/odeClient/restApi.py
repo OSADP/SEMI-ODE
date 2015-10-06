@@ -3,12 +3,16 @@ import logging
 
 import httplib2
 import base64
-#logger = logging.getLogger(__name__)
+#logger = logging.getLogger('odeClient')
+
+import response
 
 uriBase = "/api"
 POST = 'POST'
 GET = 'GET'
 DELETE = 'DELETE'
+
+_AUTH_TYPE = 'auth'
 
 def login(host,username,password):
     client = httplib2.Http()
@@ -21,9 +25,14 @@ def login(host,username,password):
     r, c = client.request(url,method=GET, headers=auth_header )
 
     token = None
-
+    
     if r is not None and r.status == 200:
-        token = json.loads(c)['message']
+        data = response.BaseResponse(c)
+        if data.get_payload_type() == _AUTH_TYPE:
+            token = data.get_payload_value('token')  
+    else:
+        pass
+    
     return token
 
 def logout(host,token):
@@ -34,12 +43,15 @@ def logout(host,token):
     r, c = client.request(url,method=POST, headers=token_header)
 
     status = None
+    data = json.loads(c)
 
     if r is not None and r.status ==200:
-        status  = json.loads(c)['code']
+        print c
+        #status  = json.loads(c)['code']
     elif r is not None and  r.status==401:
-        status  = json.loads(c)['code']
+        print r,c #status  = json.loads(c)['code']
     else:
+        print c 
         status = 'FAILURE'
     return status
 

@@ -1,6 +1,8 @@
 
-import Exception
+#import Exception
 
+class UnsupportedRequestType(Exception):
+    pass
 
 class ODEConnectionException(Exception):
     pass
