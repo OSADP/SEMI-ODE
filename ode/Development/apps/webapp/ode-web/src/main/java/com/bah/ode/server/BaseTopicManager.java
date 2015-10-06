@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.bah.ode.context.AppContext;
 import com.bah.ode.wrapper.MQTopic;
 
 public class BaseTopicManager {
@@ -25,10 +24,7 @@ public class BaseTopicManager {
    public synchronized MQTopic getOrCreateTopic(String topicName) {
       MQTopic topic = topics.get(topicName);
       if (topic == null) {
-         int partitions = Integer.valueOf(
-               AppContext.getInstance().getParam(
-                     AppContext.KAFKA_DEFAULT_CONSUMER_THREADS));
-         topic = MQTopic.create(topicName, partitions);
+         topic = MQTopic.create(topicName, MQTopic.defaultPartitions());
          topics.put(topicName, topic);
          subscribers.put(topicName, new AtomicInteger(0));
       }

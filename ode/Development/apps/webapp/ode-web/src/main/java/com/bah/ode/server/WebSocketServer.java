@@ -181,18 +181,28 @@ public class WebSocketServer {
          @PathParam("rtype") String rtype, @PathParam("dtype") String dtype) {
       String sessionId = session.getId();
       logger.info("Message Received on Session ID {}: {}", sessionId, message);
+      OdeDataType dataTypeRequested = OdeDataType.getByShortName(dtype);
       
       OdeStatus status = new OdeStatus();
       MQTopic clientTopic = null;
       try {
-         if (odeRequest == null)
-            odeRequest = OdeRequestManager.buildOdeRequest(rtype, dtype, message);
-         
+         // Is there a request already for this data?
+         if (odeRequest == null) {
+            if (dataTypeRequested == OdeDataType.AggregateData) {
+               odeRequest = OdeRequestManager.buildOdeRequest(rtype, 
+                     OdeDataType.VehicleData.getShortName(), message);
+            }
+            else {
+               odeRequest = OdeRequestManager.buildOdeRequest(rtype, dtype, message);
+            }
+            
+         }
+
          String requestId = OdeRequestManager.buildRequestId(odeRequest);
-         
-         // Does a topic already existing for this request?
+         // Use the request Id to determine if there is an existing request for the same data
          clientTopic = OdeRequestManager.getTopic(requestId);
          if (clientTopic == null) {
+            // Note: requestId should not be null. So if we get a NPE, we have an internal error
             logger.info("Creating new request ID: {}", requestId);
             // No client topic exists, create a new one
             clientTopic = OdeRequestManager.getOrCreateTopic(requestId);
@@ -210,7 +220,13 @@ public class WebSocketServer {
             
             connector.sendDataRequest(odeRequest);
             
-            launchNewDistributor(session, clientTopic);
+            
+            if (dataTypeRequested == OdeDataType.AggregateData) {
+               launchNewDistributor(session, MQTopic.create(
+                     AppContext.AGGREGATES_TOPIC, MQTopic.defaultPartitions()));
+            } else {
+               launchNewDistributor(session, clientTopic);
+            }
             OdeRequestManager.addSubscriber(requestId, odeRequest.getDataType());
             logger.info("DDS Connection Established for request ID {}.", requestId);
             status.setMessage("DDS Connection Established");
