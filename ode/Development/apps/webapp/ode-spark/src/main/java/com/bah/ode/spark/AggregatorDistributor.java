@@ -35,7 +35,9 @@ public class AggregatorDistributor extends BaseDistributor
 
       // Calculate stats for speed column on table using SQL
       DataFrame ovdfAggsDataFrame = 
-            sqlContext.sql("SELECT tempId, MIN(speed), AVG(speed), MAX(speed) FROM OVDF GROUP BY tempId");
+            sqlContext.sql("SELECT tempId, COUNT(speed), "
+                  + "MIN(speed), AVG(speed), MAX(speed) "
+                  + "FROM OVDF GROUP BY tempId");
 
 //      ovdfAggsDataFrame.show(10);
 
