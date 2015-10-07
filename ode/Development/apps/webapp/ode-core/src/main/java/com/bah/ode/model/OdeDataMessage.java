@@ -5,7 +5,7 @@ public class OdeDataMessage extends OdeObject {
 
    private static final long serialVersionUID = 2319770058057267706L;
 
-   private OdeMsgMetadata metadata;
+   private OdePayloadMetadata metadata;
    private OdePayload     payload;
 
    
@@ -15,20 +15,20 @@ public class OdeDataMessage extends OdeObject {
 
    public OdeDataMessage(OdePayload payload) {
       super();
-      this.metadata = new OdeMsgMetadata(payload);
+      this.metadata = new OdePayloadMetadata(payload);
       this.payload = payload;
    }
    
-   public OdeDataMessage(OdeMsgMetadata metadata, OdePayload payload) {
+   public OdeDataMessage(OdePayloadMetadata metadata, OdePayload payload) {
       super();
       this.metadata = metadata;
       this.payload = payload;
    }
    
-   public OdeMsgMetadata getMetadata() {
+   public OdePayloadMetadata getMetadata() {
       return metadata;
    }
-   public OdeDataMessage setMetadata(OdeMsgMetadata metadata) {
+   public OdeDataMessage setMetadata(OdePayloadMetadata metadata) {
       this.metadata = metadata;
       return this;
    }
