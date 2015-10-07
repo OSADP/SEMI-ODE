@@ -1,12 +1,12 @@
 package com.bah.ode.model;
 
-public class OdePayloadMetadata extends OdeObject {
+public class OdeMsgMetadata extends OdeMessage {
 
    private static final long serialVersionUID = 3979762143291085955L;
    
    private String payloadType;
 
-   public OdePayloadMetadata(OdePayload payload) {
+   public OdeMsgMetadata(OdeMsgPayload payload) {
       this.payloadType = payload.getDataType();
    }
 
@@ -14,12 +14,12 @@ public class OdePayloadMetadata extends OdeObject {
       return payloadType;
    }
 
-   public OdePayloadMetadata setPayloadType(OdeDataType payloadType) {
+   public OdeMsgMetadata setPayloadType(OdeDataType payloadType) {
       this.payloadType = payloadType.getShortName();
       return this;
    }
    
-   public OdePayloadMetadata setPayloadType(String payloadType) {
+   public OdeMsgMetadata setPayloadType(String payloadType) {
       this.payloadType = payloadType;
       return this;
    }
@@ -41,7 +41,7 @@ public class OdePayloadMetadata extends OdeObject {
          return false;
       if (getClass() != obj.getClass())
          return false;
-      OdePayloadMetadata other = (OdePayloadMetadata) obj;
+      OdeMsgMetadata other = (OdeMsgMetadata) obj;
       if (payloadType == null) {
          if (other.payloadType != null)
             return false;

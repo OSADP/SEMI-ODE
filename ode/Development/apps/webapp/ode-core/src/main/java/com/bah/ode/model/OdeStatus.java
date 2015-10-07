@@ -17,7 +17,7 @@
 package com.bah.ode.model;
 
 
-public class OdeStatus extends OdePayload {
+public class OdeStatus extends OdeMsgPayload {
    private static final long serialVersionUID = -8787345244306039604L;
 
    public static enum Code {

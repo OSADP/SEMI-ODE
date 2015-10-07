@@ -1,6 +1,6 @@
 package com.bah.ode.model;
 
-public class OdeAuthorization extends OdePayload{
+public class OdeAuthorization extends OdeMsgPayload{
 
    private static final long serialVersionUID = -8496344900381434672L;
 

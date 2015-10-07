@@ -1,6 +1,6 @@
 package com.bah.ode.model;
 
-public final class OdeFullMessage extends OdePayload {
+public final class OdeFullMessage extends OdeMsgPayload {
    private static final long serialVersionUID = -2887658115524006534L;
    
    public String fullMessage;

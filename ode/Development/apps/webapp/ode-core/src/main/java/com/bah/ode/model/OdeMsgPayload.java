@@ -16,12 +16,12 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
-public abstract class OdePayload extends OdeObject {
+public abstract class OdeMsgPayload extends OdeMessage {
    private static final long serialVersionUID = -7711340868799607662L;
-   private String dataType;
+   private String  dataType;
 
    
-   public OdePayload() {
+   public OdeMsgPayload() {
       super();
       setDataType();
    }
@@ -32,8 +32,9 @@ public abstract class OdePayload extends OdeObject {
       return dataType;
    }
 
-   public void setDataType(OdeDataType dataType) {
+   public OdeMsgPayload setDataType(OdeDataType dataType) {
       this.dataType = dataType.getShortName();
+      return this;
    }
 
    @Override
@@ -43,6 +44,7 @@ public abstract class OdePayload extends OdeObject {
       result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
       return result;
    }
+
    @Override
    public boolean equals(Object obj) {
       if (this == obj)
@@ -51,7 +53,7 @@ public abstract class OdePayload extends OdeObject {
          return false;
       if (getClass() != obj.getClass())
          return false;
-      OdePayload other = (OdePayload) obj;
+      OdeMsgPayload other = (OdeMsgPayload) obj;
       if (dataType == null) {
          if (other.dataType != null)
             return false;
