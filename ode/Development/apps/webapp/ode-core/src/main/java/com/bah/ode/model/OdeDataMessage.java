@@ -1,41 +1,41 @@
 package com.bah.ode.model;
 
 
-public class OdeDataMessage extends OdeObject {
+public class OdeDataMessage extends OdeMessage {
 
    private static final long serialVersionUID = 2319770058057267706L;
 
-   private OdePayloadMetadata metadata;
-   private OdePayload     payload;
+   private OdeMsgMetadata metadata;
+   private OdeMsgPayload  payload;
 
    
    public OdeDataMessage() {
       super();
    }
 
-   public OdeDataMessage(OdePayload payload) {
+   public OdeDataMessage(OdeMsgPayload payload) {
       super();
-      this.metadata = new OdePayloadMetadata(payload);
-      this.payload = payload;
+      this.metadata = new OdeMsgMetadata(payload);
+      this.payload  = payload;
    }
    
-   public OdeDataMessage(OdePayloadMetadata metadata, OdePayload payload) {
+   public OdeDataMessage(OdeMsgMetadata metadata, OdeMsgPayload payload) {
       super();
       this.metadata = metadata;
       this.payload = payload;
    }
    
-   public OdePayloadMetadata getMetadata() {
+   public OdeMsgMetadata getMetadata() {
       return metadata;
    }
-   public OdeDataMessage setMetadata(OdePayloadMetadata metadata) {
+   public OdeDataMessage setMetadata(OdeMsgMetadata metadata) {
       this.metadata = metadata;
       return this;
    }
-   public OdePayload getPayload() {
+   public OdeMsgPayload getPayload() {
       return payload;
    }
-   public OdeDataMessage setPayload(OdePayload payload) {
+   public OdeDataMessage setPayload(OdeMsgPayload payload) {
       this.payload = payload;
       return this;
    }

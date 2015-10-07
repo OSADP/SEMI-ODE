@@ -256,6 +256,11 @@ $(document ).ready(function() {
                    updateRequestUri( $("#selectData input:radio").filter(":checked").val());
              }
            }
+        },
+        error: function (jqXHR, textStatus, errorThrown ) {
+           log("Status: " + textStatus);
+           log("Error Thrown: " + errorThrown);
+           log("Details: " + JSON.stringify(jqXHR));
         }
      });  
   }

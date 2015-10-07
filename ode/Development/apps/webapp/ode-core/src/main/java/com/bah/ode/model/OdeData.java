@@ -20,7 +20,7 @@ import java.util.Date;
 
 import com.bah.ode.util.DateTimeUtils;
 
-public abstract class OdeData extends OdePayload{
+public abstract class OdeData extends OdeMsgPayload{
    private static final long serialVersionUID = -7711340868799607662L;
    private String serialId;
    private String receivedAt;
