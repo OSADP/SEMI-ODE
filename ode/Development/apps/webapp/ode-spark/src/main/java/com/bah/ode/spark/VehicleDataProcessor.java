@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import scala.Tuple2;
 
-import com.bah.ode.context.AppContext;
+//import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeObject;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
@@ -23,7 +23,7 @@ public class VehicleDataProcessor extends OdeObject {
    private static final long serialVersionUID = 2480028249180282250L;
    private static Logger logger = LoggerFactory
          .getLogger(VehicleDataProcessor.class);
-   private static AppContext appContext = AppContext.getInstance();
+   //private static AppContext appContext = AppContext.getInstance();
 
    public void setup(final JavaStreamingContext ssc, MQTopic ovdfTopic,
          String zkConnectionStrings, String brokerList) {
@@ -73,14 +73,16 @@ public class VehicleDataProcessor extends OdeObject {
          // JavaDStream<String> metadataStream =
          // unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "metadata"));
          //
-         Integer microbatchDuration = Integer.valueOf(appContext
-               .getParam(AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS));
+         SparkConf conf = ssc.sparkContext().getConf();
 
-         Integer windowDuration = Integer.valueOf(appContext
-               .getParam(AppContext.SPARK_STREAMING_WINDOW_MICROBATCHES));
+         Integer microbatchDuration = Integer.valueOf(conf.get("SPARK_STREAMING_MICROBATCH_DURATION_MS"));
+         //Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS));
 
-         Integer slideDuration = Integer.valueOf(appContext
-               .getParam(AppContext.SPARK_STREAMING_SLIDE_MICROBATCHES));
+         Integer windowDuration = Integer.valueOf(conf.get("SPARK_STREAMING_WINDOW_MICROBATCHES"));
+        		 //Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_WINDOW_MICROBATCHES));
+
+         Integer slideDuration = Integer.valueOf(conf.get("SPARK_STREAMING_SLIDE_MICROBATCHES"));
+        		// Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_SLIDE_MICROBATCHES));
 
          JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata =
                payloadStream2.join(metadataStream2);
@@ -89,7 +91,7 @@ public class VehicleDataProcessor extends OdeObject {
                payloadAndMetadata.window(
                      Durations.milliseconds(microbatchDuration * windowDuration),
                      Durations.milliseconds(microbatchDuration * slideDuration));
-         
+
          final Broadcast<MQSerialazableProducerPool> producerPool = ssc
                .sparkContext().broadcast(
                      new MQSerialazableProducerPool(brokerList));
