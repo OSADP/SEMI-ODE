@@ -3,6 +3,7 @@ package com.bah.ode.spark;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.apache.spark.SparkConf;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import scala.Tuple2;
+
 
 //import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeObject;
@@ -75,13 +77,13 @@ public class VehicleDataProcessor extends OdeObject {
          //
          SparkConf conf = ssc.sparkContext().getConf();
 
-         Integer microbatchDuration = Integer.valueOf(conf.get("SPARK_STREAMING_MICROBATCH_DURATION_MS"));
+         Integer microbatchDuration = Integer.valueOf(conf.get("SPARK_STREAMING_MICROBATCH_DURATION_MS", "1000"));
          //Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS));
 
-         Integer windowDuration = Integer.valueOf(conf.get("SPARK_STREAMING_WINDOW_MICROBATCHES"));
+         Integer windowDuration = Integer.valueOf(conf.get("SPARK_STREAMING_WINDOW_MICROBATCHES", "60"));
         		 //Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_WINDOW_MICROBATCHES));
 
-         Integer slideDuration = Integer.valueOf(conf.get("SPARK_STREAMING_SLIDE_MICROBATCHES"));
+         Integer slideDuration = Integer.valueOf(conf.get("SPARK_STREAMING_SLIDE_MICROBATCHES", "30"));
         		// Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_SLIDE_MICROBATCHES));
 
          JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata =
