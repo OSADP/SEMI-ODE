@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='OdeClient',
-    version='0.1',
+    version='0.2',
     packages=['odeClient'],
     url='',
     license='',
@@ -13,7 +13,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['websocket-client', 'httplib2'],
+    install_requires=['websocket-client', 'httplib2','python-dateutil'],
     classifiers=[
         # How mature is this project? Common values are
         #   3 - Alpha

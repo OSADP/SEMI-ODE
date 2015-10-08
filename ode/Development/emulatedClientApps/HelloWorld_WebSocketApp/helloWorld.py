@@ -1,7 +1,14 @@
 __author__ = '562474'
 
+import os
 import sys
 import datetime
+
+try:
+    import odeClient
+except:
+    current_file_path = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(1,os.path.join(current_file_path,'..','..','apps','PythonSDK'))
 
 from odeClient import client, timehelpers
 
@@ -37,16 +44,16 @@ qry_request = client.QueryRequest(qry_data_type,
                                   skip,
                                   limit)
 
-sub_data_type = "int"  # veh, int, agg
+sub_data_type = "veh"  # veh, int, agg
 sub_request =  client.SubscriptionRequest(sub_data_type, region)
 
-host = "52.20.100.211:8080/ode"
+host = "192.168.33.12:8080/ode"
 
 userName="user@liferay.com"
 password="test"
 
 ode = client.ODEClient(host)
-# ode = client.ODEClient(host,userName,password)
+#ode = client.ODEClient(host,userName,password)
 
 # only required if no userName or password is
 # provided in the constructor.
@@ -75,7 +82,7 @@ ode.setRequest(sub_request)
 
 """
 
-#ode.connect(on_message=client.on_message)
+ode.connect(on_message=client.on_message)
 
 """
 The Asynchronous ODE Client behaves like the regular ODE Client with the following differences:
@@ -85,17 +92,17 @@ The Asynchronous ODE Client behaves like the regular ODE Client with the followi
  * The current output from the get_messages function is a list of ODE Response Objects
  """
 
-async = client.AsyncODEClient(odeClient=ode)
-async.start() # will connect to the ODE in a separate thread.
-import time
-while True:
-    if not async.is_buffer_empty():
-        items = async.get_all_messages()
-        #items = async.get_messages(4) # Specifiy number of items to process
-        print ""
-        for record in items:
-            print record
-            print record.metaData # json
-            print record.payload # json
-            #print record.get_payload_value(key)
-    time.sleep(10)
+# async = client.AsyncODEClient(odeClient=ode)
+# async.start() # will connect to the ODE in a separate thread.
+# import time
+# while True:
+#     if not async.is_buffer_empty():
+#         items = async.get_all_messages()
+#         #items = async.get_messages(4) # Specifiy number of items to process
+#         print ""
+#         for record in items:
+#             print record
+#             print record.metaData # json
+#             print record.payload # json
+#             #print record.get_payload_value(key)
+#     time.sleep(10)

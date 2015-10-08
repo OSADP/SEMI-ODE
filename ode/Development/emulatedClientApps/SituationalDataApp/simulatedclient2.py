@@ -8,9 +8,16 @@ import os
 import logging
 import dateutil.parser
 
-from optparse import OptionParser, SUPPRESS_HELP, OptionGroup
 from collections import defaultdict
 import ConfigParser
+
+import sys
+
+try:
+    import odeClient
+except:
+    current_file_path = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(1,os.path.join(current_file_path,'..','..','apps','PythonSDK'))
 
 import depositClient
 import simulatedClientPresets
@@ -155,7 +162,9 @@ def _main():
         cp = parse_config_file(config['CONFIG_FILE'])
 
     logger.info("USer Config: %s", config)
-
+    if config['PASSWORD'] is None:
+        logger.exception("Missing Password. ")
+        sys.exit(1)
     _run_main(config, cp)
 
 def parse_config_file(file_path):
@@ -166,6 +175,7 @@ def parse_config_file(file_path):
     except Exception as e:
         logger.exception('Unable to Open Config File')
         sys.exit(1)
+    logger.info("Reading Config File: %s",file_path)
     if config_file.has_section('ode'):
         config['HOST'] = config_file.get('ode', 'host')
         config['REQUEST_TYPE'] = config_file.get('ode', 'requestType')
