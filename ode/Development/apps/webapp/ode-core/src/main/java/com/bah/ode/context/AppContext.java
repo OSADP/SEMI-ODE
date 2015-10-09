@@ -124,9 +124,9 @@ public class AppContext {
               .setMaster(sparkMaster)
               .setAppName(context.getServletContextName())
               .set("spark.shuffle.manager", "SORT")
-              .set("SPARK_STREAMING_MICROBATCH_DURATION_MS", SPARK_STREAMING_MICROBATCH_DURATION_MS)
-              .set("SPARK_STREAMING_WINDOW_MICROBATCHES", SPARK_STREAMING_WINDOW_MICROBATCHES)
-              .set("SPARK_STREAMING_SLIDE_MICROBATCHES", SPARK_STREAMING_SLIDE_MICROBATCHES);
+              .set("spark.streaming.microbatch.duration.ms", getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
+              .set("spark.streaming.window.microbatches", getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
+              .set("spark.streaming.slide.microbatches", getParam(SPARK_STREAMING_SLIDE_MICROBATCHES));
 
             if (sparkMaster.startsWith("yarn")) {
                sparkConf.set("spark.yarn.jar", SPARK_HOME+"/lib/"+ getParam(SPARK_ASSEMBLY_JAR))

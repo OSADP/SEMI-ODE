@@ -77,13 +77,13 @@ public class VehicleDataProcessor extends OdeObject {
          //
          SparkConf conf = ssc.sparkContext().getConf();
 
-         Integer microbatchDuration = Integer.valueOf(conf.get("SPARK_STREAMING_MICROBATCH_DURATION_MS", "1000"));
+         Integer microbatchDuration = Integer.valueOf(conf.get("spark.streaming.microbatch.duration.ms", "1000"));
          //Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS));
 
-         Integer windowDuration = Integer.valueOf(conf.get("SPARK_STREAMING_WINDOW_MICROBATCHES", "60"));
+         Integer windowDuration = Integer.valueOf(conf.get("spark.streaming.window.microbatches", "60"));
         		 //Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_WINDOW_MICROBATCHES));
 
-         Integer slideDuration = Integer.valueOf(conf.get("SPARK_STREAMING_SLIDE_MICROBATCHES", "30"));
+         Integer slideDuration = Integer.valueOf(conf.get("spark.streaming.slide.microbatches", "30"));
         		// Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_SLIDE_MICROBATCHES));
 
          JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata =
