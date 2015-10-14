@@ -8,6 +8,7 @@ public class OdeMetadata extends OdeObject {
    private String  key;
    private MQTopic inputTopic;
    private MQTopic outputTopic;
+   private OdeRequest odeRequest;
    
    public String getKey() {
       return key;
@@ -30,6 +31,13 @@ public class OdeMetadata extends OdeObject {
       this.outputTopic = outputTopic;
       return this;
    }
+   public OdeRequest getOdeRequest() {
+      return odeRequest;
+   }
+   public OdeMetadata setOdeRequest(OdeRequest odeRequest) {
+      this.odeRequest = odeRequest;
+      return this;
+   }
    @Override
    public int hashCode() {
       final int prime = 31;
@@ -37,6 +45,8 @@ public class OdeMetadata extends OdeObject {
       result = prime * result
             + ((inputTopic == null) ? 0 : inputTopic.hashCode());
       result = prime * result + ((key == null) ? 0 : key.hashCode());
+      result = prime * result
+            + ((odeRequest == null) ? 0 : odeRequest.hashCode());
       result = prime * result
             + ((outputTopic == null) ? 0 : outputTopic.hashCode());
       return result;
@@ -59,6 +69,11 @@ public class OdeMetadata extends OdeObject {
          if (other.key != null)
             return false;
       } else if (!key.equals(other.key))
+         return false;
+      if (odeRequest == null) {
+         if (other.odeRequest != null)
+            return false;
+      } else if (!odeRequest.equals(other.odeRequest))
          return false;
       if (outputTopic == null) {
          if (other.outputTopic != null)

@@ -1,6 +1,5 @@
 package com.bah.ode.model;
 
-import java.math.BigDecimal;
 
 public class OdeQryRequest extends OdeRequest {
    private static final long serialVersionUID = 2596739570485872508L;
@@ -12,30 +11,6 @@ public class OdeQryRequest extends OdeRequest {
    
    
    
-   public OdeQryRequest() {
-      super();
-   }
-
-   public OdeQryRequest(BigDecimal nwLat, BigDecimal nwLon, BigDecimal seLat, BigDecimal seLon,
-         OdeDataType dataType) {
-      super(nwLat, nwLon, seLat, seLon, OdeRequestType.Query, dataType);
-   }
-
-   public OdeQryRequest(BigDecimal nwLat, BigDecimal nwLon, BigDecimal seLat, BigDecimal seLon, 
-         OdeRequestType requestType, OdeDataType dataType, 
-         String startDate, String endDate) {
-      super(nwLat, nwLon, seLat, seLon, requestType, dataType);
-      this.startDate = startDate;
-      this.endDate = endDate;
-   }
-
-   public OdeQryRequest(BigDecimal nwLat, BigDecimal nwLon, BigDecimal seLat, BigDecimal seLon, 
-         OdeRequestType requestType, OdeDataType dataType, 
-         String startDate, String endDate, int skip, int limit) {
-      this(nwLat, nwLon, seLat, seLon, requestType, dataType, startDate, endDate);
-      this.skip = skip;
-      this.limit = limit;
-   }
    public String getStartDate() {
       return startDate;
    }
