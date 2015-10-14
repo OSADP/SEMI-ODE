@@ -16,24 +16,13 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
-import java.math.BigDecimal;
 
 
 @SuppressWarnings("serial")
 public abstract class OdeRequest extends BaseRequest {
    private OdeRequestType requestType;
    private OdeDataType dataType;
-
-   public OdeRequest() {
-      super();
-   }
-
-   public OdeRequest(BigDecimal nwLat, BigDecimal nwLon, BigDecimal seLat, BigDecimal seLon,
-         OdeRequestType requestType, OdeDataType dataType) {
-      super(nwLat, nwLon, seLat, seLon);
-      this.dataType = dataType;
-      this.requestType = requestType;
-   }
+   private OdePolygon polygon;
 
    public OdeRequestType getRequestType() {
       return requestType;
@@ -53,11 +42,21 @@ public abstract class OdeRequest extends BaseRequest {
       return this;
    }
 
+   public OdePolygon getPolygon() {
+      return polygon;
+   }
+
+   public OdeRequest setPolygon(OdePolygon polygon) {
+      this.polygon = polygon;
+      return this;
+   }
+
    @Override
    public int hashCode() {
       final int prime = 31;
       int result = super.hashCode();
       result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
+      result = prime * result + ((polygon == null) ? 0 : polygon.hashCode());
       result = prime * result
             + ((requestType == null) ? 0 : requestType.hashCode());
       return result;
@@ -73,6 +72,11 @@ public abstract class OdeRequest extends BaseRequest {
          return false;
       OdeRequest other = (OdeRequest) obj;
       if (dataType != other.dataType)
+         return false;
+      if (polygon == null) {
+         if (other.polygon != null)
+            return false;
+      } else if (!polygon.equals(other.polygon))
          return false;
       if (requestType != other.requestType)
          return false;

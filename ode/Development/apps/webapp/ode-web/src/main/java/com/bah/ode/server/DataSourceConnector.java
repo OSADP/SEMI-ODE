@@ -49,6 +49,7 @@ public class DataSourceConnector {
                // By default all data go directly to the output topic
                metadata.setInputTopic(outputTopic);
                metadata.setOutputTopic(outputTopic);
+               metadata.setOdeRequest(odeRequest);
                
                if (!OdeRequestManager.isPassThrough(odeRequest.getDataType())) {
                   int partitions = Integer.parseInt(appContext.getParam(

@@ -55,7 +55,8 @@ public class OdeRequestManager {
       }
       odeRequest.setRequestType(OdeRequestType.getByShortName(rtype));
 
-      if (OdeDataType.getByShortName(dtype) == null) {
+      OdeDataType dataType = OdeDataType.getByShortName(dtype);
+      if (dataType == null) {
          OdeStatus status = new OdeStatus()
             .setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
             .setMessage(
@@ -65,7 +66,7 @@ public class OdeRequestManager {
          logger.error(status.toString());
          throw new WebSocketServerException(status.toString());
       }
-      odeRequest.setDataType(OdeDataType.getByShortName(dtype));
+      odeRequest.setDataType(dataType);
       return odeRequest;
    }
 
