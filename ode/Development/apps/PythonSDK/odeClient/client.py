@@ -159,11 +159,11 @@ class BaseRequest(object):
     def __init__(self, requestType, dataType, geographicRegion):
         self.geographicRegion = geographicRegion
         
-        if supported_types.has_key(requestType) and dataType in supported_types[requestType]:
-            self.requestType = requestType
-            self.dataType = dataType       
-        else:
-            raise exceptions.UnsupportedRequestType("Unsupported request type for {} and {}".format(requestType,dataType))
+        #if supported_types.has_key(requestType) and dataType in supported_types[requestType]:
+        self.requestType = requestType
+        self.dataType = dataType       
+        #else:
+        #    raise exceptions.UnsupportedRequestType("Unsupported request type for {} and {}".format(requestType,dataType))
 
     def toJson(self):
         return self.geographicRegion.toJson()

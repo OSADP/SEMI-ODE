@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeDataMessage;
+import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdePayloadAndMetadata;
 import com.bah.ode.model.OdeStatus;
@@ -39,6 +40,8 @@ import com.bah.ode.model.OdeVehicleDataFlat;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.util.WebSocketUtils;
 import com.bah.ode.wrapper.MQProducer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * gives the relative name for the end point. This will be accessed via
@@ -143,22 +146,43 @@ public class TestWebSocketServer {
                pam.setMetadata(metadata);
                pam.setKey(metadata.getOutputTopic().getName());
                
-               OdeVehicleDataFlat ovdf = 
-                     (OdeVehicleDataFlat) JsonUtils.fromJson(
-                           message, OdeVehicleDataFlat.class);
-               if (producer != null) {
-                  pam.setPayload(ovdf);
-                  producer.send(requestId, requestId, pam.toJson());
-                  WebSocketUtils.send(session, message);
+               ObjectNode dm = OdeDataMessage.jsonStringToObjectNode(message);
+               JsonNode payload = null;
+               if (dm != null && (payload = dm.get("payload")) != null) {
+                  OdeDataType dataType = 
+                        OdeDataType.getByShortName(payload.get("dataType").textValue());
+                  
+                  switch (dataType) {
+                  case VehicleData:
+                     OdeVehicleDataFlat ovdf = 
+                           (OdeVehicleDataFlat) JsonUtils.fromJson(
+                                 payload.toString(), OdeVehicleDataFlat.class);
+                     if (producer != null) {
+                        pam.setPayload(ovdf);
+                        producer.send(requestId, requestId, pam.toJson());
+                        WebSocketUtils.send(session, message);
+                     }
+                     
+                     //FOR TEST ONLY
+                     if (AppContext.loopbackTest()) {
+                        WebSocketUtils.send(testMgr.getClientSession(),
+                              new OdeDataMessage(ovdf).toJson());
+                     }
+                     break;
+                  default:
+                     status.setCode(Code.FAILURE);
+                     status.setMessage("Invalid dataType: " + payload.get("dataType").textValue()); 
+                     logger.error(status.getMessage());
+                     WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
+                     break;
+                  }
+               } else {
+                  status.setCode(Code.FAILURE);
+                  status.setMessage("Invalid message: " + message); 
+                  logger.error(status.getMessage());
+                  WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
                }
                
-               //FOR TEST ONLY
-               if (AppContext.loopbackTest()) {
-                  WebSocketUtils.send(testMgr.getClientSession(),
-                        new OdeDataMessage(
-                              (OdeVehicleDataFlat) 
-                              JsonUtils.fromJson(message, OdeVehicleDataFlat.class)).toJson());
-               }
             } else {
                status.setCode(Code.FAILURE);
                status.setMessage("Test Manager NOT Initialized. "

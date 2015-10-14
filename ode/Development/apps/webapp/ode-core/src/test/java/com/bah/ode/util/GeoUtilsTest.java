@@ -1,11 +1,10 @@
 package com.bah.ode.util;
 
 import java.awt.geom.Point2D;
-import java.math.BigDecimal;
 
 import junit.framework.TestCase;
 
-public class GisUtilTest extends TestCase {
+public class GeoUtilsTest extends TestCase {
 
    public void testNearestPointOnLine() {
    }
@@ -27,14 +26,32 @@ public class GisUtilTest extends TestCase {
       double k = 3d;
       double scale = 1000d;
       
-      Point2D p1 = GisUtils.pointOffset(a , b , k, null);
+      Point2D p1 = GeoUtils.pointOffset(a , b , k, null);
       long p1x = (long) (p1.getX() * scale);
       long p1y = (long) (p1.getY() * scale);
-      double alpha = Math.atan((b.getY()-a.getY())/(b.getX()-a.getX()));
+
+      Point2D pExpected = expectedPoint(a, b, k);
       
-      long p1xExpected = (long) ((a.getX() - k*Math.sin(alpha))*scale);
-      long p1yExpected = (long) ((a.getY() + k*Math.cos(alpha))*scale);
-      assertEquals(p1xExpected, p1x);
-      assertEquals(p1yExpected, p1y);
+      assertEquals((long) (pExpected.getX() * scale), p1x);
+      assertEquals((long) (pExpected.getY() * scale), p1y);
+   }
+   
+   public Point2D expectedPoint(Point2D a, Point2D b, double k) {
+      double tanAlpha = (b.getY()-a.getY())/(b.getX()-a.getX());
+      double alpha = Math.atan(tanAlpha);
+      double sinAlpha = Math.sin(alpha);
+      double cosAlpha = Math.cos(alpha);
+      
+      double p1xExpected;
+      double p1yExpected;
+
+      if (b.getX() < a.getX()) {
+         p1xExpected = (a.getX() + k * sinAlpha);
+         p1yExpected = (a.getY() - k * cosAlpha);
+      } else {
+         p1xExpected = (a.getX() - k * sinAlpha);
+         p1yExpected = (a.getY() + k * cosAlpha);
+      }
+      return new Point2D.Double(p1xExpected, p1yExpected);
    }
 }

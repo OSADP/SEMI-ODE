@@ -195,9 +195,26 @@ $(document ).ready(function() {
       request["nwLon"] = document.getElementById('nwLon').value;
       request["seLat"] = document.getElementById('seLat').value;
       request["seLon"] = document.getElementById('seLon').value;
-	  request["skip"] = $("#skip").val();
-	  request["limit"] = $("#limit").val();
-	  
+      request["skip"] = $("#skip").val();
+      request["limit"] = $("#limit").val();
+      
+      var s1 = {};
+      s1["id"] = "s1";
+      s1["startPoint"] = {"latitude":1.2, "longitude":3.4};
+      s1["endPoint"] = {"latitude":2.3, "longitude":4.5};
+      
+      var s2 = {};
+      s2["id"] = "s2";
+      s2["prevSegment"] = "s1";
+      s2["endPoint"] = {"latitude":3.4, "longitude":5.6};
+      
+      var polyline = {};
+      polyline["s1"] = s1;
+      polyline["s2"] = s2;
+      
+      request["polyline"] = {"polyline":polyline};
+      
+
       var reqStr = JSON.stringify(request); 
           ws.send(reqStr);
                 log('Sent: ' +  reqStr);

@@ -12,7 +12,7 @@
 
    <context-param>
       <param-name>loopback.test</param-name>
-      <param-value>true</param-value>
+      <param-value>false</param-value>
    </context-param>
    
    <context-param>
@@ -21,7 +21,7 @@
    </context-param>
    <context-param>
       <param-name>liferay.ws.serverhost</param-name>
-      <param-value>http://ec2-52-20-100-211.compute-1.amazonaws.com:8080/liferay</param-value>
+      <param-value>http://localhost:8080/liferay</param-value>
    </context-param>
    <context-param>
       <param-name>liferay.ws.companyId</param-name>
