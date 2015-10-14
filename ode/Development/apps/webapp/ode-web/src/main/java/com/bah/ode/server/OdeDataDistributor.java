@@ -1,6 +1,5 @@
 package com.bah.ode.server;
 
-import java.io.IOException;
 import java.util.concurrent.Future;
 
 import javax.websocket.Session;
@@ -11,79 +10,50 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
-import com.bah.ode.model.OdeDataType;
-import com.bah.ode.util.JsonUtils;
+import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.util.WebSocketUtils;
 import com.bah.ode.wrapper.DataProcessor;
 import com.bah.ode.wrapper.MQConsumerGroup;
 import com.bah.ode.wrapper.MQTopic;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class OdeDataDistributor implements Runnable {
 
-   private static Logger logger = LoggerFactory.getLogger(OdeDataDistributor.class);
-   private static AppContext appContext = AppContext.getInstance(); 
-   
+   private static Logger logger = LoggerFactory
+         .getLogger(OdeDataDistributor.class);
+   private static AppContext appContext = AppContext.getInstance();
+
    private Session clientSession;
    private MQTopic clientTopic;
    private String groupId;
    private MQConsumerGroup<String, String, String> consumerGroup;
-   
-   
-   
+
    public OdeDataDistributor(final Session clientSession, MQTopic outboundTopic) {
       super();
       this.clientSession = clientSession;
       this.clientTopic = outboundTopic;
-      this.groupId = clientSession.getId(); 
+      this.groupId = clientSession.getId();
 
       if (!AppContext.loopbackTest()) {
-         this.consumerGroup = new MQConsumerGroup<String, String, String> (
+         this.consumerGroup = new MQConsumerGroup<String, String, String>(
                appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
                this.groupId,
                this.clientTopic,
                new StringDecoder(null),
                new StringDecoder(null),
                new DataProcessor<String, String>() {
-   
+
                   @Override
                   public Future<String> process(String data)
                         throws DataProcessorException {
                      try {
-                        ObjectNode jsonObject = JsonUtils.toObjectNode(data);
-                        OdeDataType odeDataType = getDataType(jsonObject);
-                        if (odeDataType != null) {
-                           ObjectNode dm = JsonUtils.newNode();
-                           dm.putObject("metadata").put("payloadType", odeDataType.getShortName());
-                           dm.putObject("payload").setAll(jsonObject);
-                           WebSocketUtils.send(clientSession, dm.toString());
-                        } else {
-                           JsonNode payload = jsonObject.get("payload");
-                           odeDataType = getDataType(payload);
-                           if (odeDataType != null) {
-                              ObjectNode p = JsonUtils.toObjectNode(payload.toString());
-                              ObjectNode dm = JsonUtils.newNode();
-                              dm.putObject("metadata").put("payloadType", odeDataType.getShortName());
-                              dm.putObject("payload").setAll(p);
-                              WebSocketUtils.send(clientSession, dm.toString());
-                           }
-                        }
+                        ObjectNode dm = OdeDataMessage.jsonStringToObjectNode(data);
+                        WebSocketUtils.send(clientSession, dm.toString());
                      } catch (Exception e) {
-                        throw new DataProcessorException("Error processing data.", e);
+                        throw new DataProcessorException(
+                              "Error processing data.", e);
                      }
                      return null;
-                  }
-
-                  private OdeDataType getDataType(JsonNode data) throws IOException {
-                     OdeDataType odeDataType = null;
-                     if (data != null) {
-                        JsonNode dataType = data.get("dataType");
-                        if (dataType != null) { 
-                           odeDataType = OdeDataType.getByShortName(dataType.textValue());
-                        }
-                     }
-                     return odeDataType;
                   }
                });
       }
@@ -112,7 +82,8 @@ public class OdeDataDistributor implements Runnable {
    @Override
    public void run() {
       try {
-         logger.info("Starting {} consumer threads in group {} for topic {} ...", 
+         logger.info(
+               "Starting {} consumer threads in group {} for topic {} ...",
                clientTopic.getPartitions(), groupId, clientTopic.getName());
          if (!AppContext.loopbackTest())
             consumerGroup.consume();

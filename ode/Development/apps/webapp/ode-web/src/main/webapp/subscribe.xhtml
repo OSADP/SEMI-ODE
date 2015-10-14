@@ -207,11 +207,11 @@ $(document ).ready(function() {
       s2["prevSegment"] = "s1";
       s2["endPoint"] = {"latitude":3.4, "longitude":5.6};
       
-      var segments = {};
-      segments["s1"] = s1;
-      segments["s2"] = s2;
+      var polyline = {};
+      polyline["s1"] = s1;
+      polyline["s2"] = s2;
       
-      request["polygon"] = {"segments":segments};
+      request["polyline"] = {"polyline":polyline};
       
       var reqStr = JSON.stringify(request); 
           ws.send(reqStr);

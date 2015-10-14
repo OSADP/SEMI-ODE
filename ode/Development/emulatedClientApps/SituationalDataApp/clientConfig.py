@@ -21,7 +21,7 @@ def get_parser():
     parser.add_option('-?', action='callback', callback=print_help, help=SUPPRESS_HELP)
 
     req_group = OptionGroup(parser, "Required Parameters")
-    req_group.add_option('-t', '--type', help='Request Type Query - qry, Subscription = sub )',
+    req_group.add_option('-t', '--type', help='Request Type Query - qry, Subscription = sub',
                          metavar='type',
                          dest='REQUEST_TYPE',
                          default='sub')
@@ -44,7 +44,7 @@ def get_parser():
     req_group.add_option('-p', '--password', help='ODE User Password',
                          metavar='password',
                          dest='PASSWORD',
-                         default='test')
+                         default=None)
 
     parser.add_option_group(req_group)
 

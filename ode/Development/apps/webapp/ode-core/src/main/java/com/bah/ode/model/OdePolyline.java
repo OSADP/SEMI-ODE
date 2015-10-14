@@ -2,13 +2,13 @@ package com.bah.ode.model;
 
 import java.util.Map;
 
-public class OdePolygon extends OdeObject {
+public class OdePolyline extends OdeObject {
 
    private static final long serialVersionUID = 5134542729829508388L;
 
    private Map<String, OdeRoadSegment> segments;
    
-   public OdePolygon addSegment(OdeRoadSegment segment) {
+   public OdePolyline addSegment(OdeRoadSegment segment) {
       segments.put(segment.getId(), segment);
       return this;
    }
@@ -17,7 +17,7 @@ public class OdePolygon extends OdeObject {
       return segments;
    }
 
-   public OdePolygon setSegments(Map<String, OdeRoadSegment> segments) {
+   public OdePolyline setSegments(Map<String, OdeRoadSegment> segments) {
       this.segments = segments;
       return this;
    }
@@ -38,7 +38,7 @@ public class OdePolygon extends OdeObject {
          return false;
       if (getClass() != obj.getClass())
          return false;
-      OdePolygon other = (OdePolygon) obj;
+      OdePolyline other = (OdePolyline) obj;
       if (segments == null) {
          if (other.segments != null)
             return false;

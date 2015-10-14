@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2015 US DOT - Joint Program Office
  *
- * The Government has unlimited rights to all documents/material produced under 
- * this task order. All documents and materials, to include the source code of 
- * any software produced under this contract, shall be Government owned and the 
- * property of the Government with all rights and privileges of ownership/copyright 
- * belonging exclusively to the Government. These documents and materials may 
+ * The Government has unlimited rights to all documents/material produced under
+ * this task order. All documents and materials, to include the source code of
+ * any software produced under this contract, shall be Government owned and the
+ * property of the Government with all rights and privileges of ownership/copyright
+ * belonging exclusively to the Government. These documents and materials may
  * not be used or sold by the Contractor without written permission from the CO.
- * All materials supplied to the Government shall be the sole property of the 
- * Government and may not be used for any other purpose. This right does not 
+ * All materials supplied to the Government shall be the sole property of the
+ * Government and may not be used for any other purpose. This right does not
  * abrogate any other Government rights.
  *
  * Contributors:
@@ -40,7 +40,7 @@ public class AppContext {
    public static final String LIFERAY_DB_HOST = "liferay.db.host";
    public static final String LIFERAY_WS_SERVER_HOST = "liferay.ws.serverhost";
    public static final String LIFERAY_WS_COMPANY_ID = "liferay.ws.companyId";
-		  
+
    public static final String MAIL_SMTP_HOST = "mail.smtp.host";
    public static final String MAIL_SMTP_PORT = "mail.smtp.port";
    public static final String MAIL_SMTP_SOCKET_FACTORY_PORT = "mail.smtp.socketFactory.port";
@@ -71,7 +71,7 @@ public class AppContext {
    public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
    public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
    public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
-   
+
    public static final String ODE_VEH_DATA_FLAT_TOPIC = "ode.veh.data.flat.topic";
    public static final String TOKEN_KEY_RSA_PEM = "token.key.rsa.pem";
 
@@ -85,12 +85,12 @@ public class AppContext {
    public static final String YARN_CONF_DIR = HADOOP_YARN_HOME+"/conf";
 
    public static final String AGGREGATES_TOPIC = "AGGREGATES_TOPIC";
-     
-   
+
+
    private static AppContext instance = null;
 
    private ServletContext servletContext;
-   
+
    private String sparkMaster;
    private SparkConf sparkConf;
    private JavaSparkContext sparkContext;
@@ -118,13 +118,16 @@ public class AppContext {
       // without Spark
       //FOR TEST ONLY
       if (!loopbackTest()) {
-         try {        	
-        	 
-            sparkConf = new SparkConf()
-               .setMaster(sparkMaster)
-               .setAppName(context.getServletContextName())
-               .set("spark.shuffle.manager", "SORT");
-            
+         try {
+
+           sparkConf = new SparkConf()
+              .setMaster(sparkMaster)
+              .setAppName(context.getServletContextName())
+              .set("spark.shuffle.manager", "SORT")
+              .set("spark.streaming.microbatch.duration.ms", getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
+              .set("spark.streaming.window.microbatches", getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
+              .set("spark.streaming.slide.microbatches", getParam(SPARK_STREAMING_SLIDE_MICROBATCHES));
+
             if (sparkMaster.startsWith("yarn")) {
                sparkConf.set("spark.yarn.jar", SPARK_HOME+"/lib/"+ getParam(SPARK_ASSEMBLY_JAR))
                   .setExecutorEnv("CLASSPATH", "$CLASSPATH:"+SPARK_HOME+"/lib/*:"
@@ -139,13 +142,13 @@ public class AppContext {
 //               .setExecutorEnv("HADOOP_CONF_DIR", 	HADOOP_CONF_DIR)
 //               .setExecutorEnv("YARN_CONF_DIR",  	YARN_CONF_DIR)
 //               .setExecutorEnv("HADOOP_HOME",		HADOOP_HOME)
-//               .setExecutorEnv("HADOOP_YARN_HOME",	HADOOP_YARN_HOME )             
+//               .setExecutorEnv("HADOOP_YARN_HOME",	HADOOP_YARN_HOME )
 //               .setExecutorEnv("SPARK_YARN_MODE", "true")
 //               .set("spark.yarn.appMasterEnv.SPARK_YARN_MODE","true")
-               
+
 //               .set("spark.yarn.appMasterEnv.SPARK_HOME",SPARK_HOME)
-//               .set("spark.yarn.appMasterEnv.SPARK_YARN_MODE", "false")                             
-//               .set("spark.yarn.appMasterEnv.HADOOP_CONF_DIR", HADOOP_CONF_DIR)              
+//               .set("spark.yarn.appMasterEnv.SPARK_YARN_MODE", "false")
+//               .set("spark.yarn.appMasterEnv.HADOOP_CONF_DIR", HADOOP_CONF_DIR)
 //               .set("spark.yarn.appMasterEnv.YARN_CONF_DIR",  YARN_CONF_DIR)
 //               .set("spark.yarn.appMasterEnv.HADOOP_HOME", HADOOP_HOME)
 //               .set("spark.yarn.appMasterEnv.HADOOP_YARN_HOME",HADOOP_YARN_HOME)
@@ -156,11 +159,11 @@ public class AppContext {
                         + "/usr/hdp/current/hadoop-hdfs-client/lib/*:"
                         + "/usr/hdp/current/hadoop-yarn-client/*:"
                         + "/usr/hdp/current/hadoop-yarn-client/lib/*")
-//            		   				  
+//
 //          .set("spark.yarn.access.namenodes","hdfs://localhost.localdomain:8020")
-//          .set("spark.yarn.am.extraJavaOptions","-Dhdp.version=2.3.0.0-2557") // TODO If required for cluster use, 
+//          .set("spark.yarn.am.extraJavaOptions","-Dhdp.version=2.3.0.0-2557") // TODO If required for cluster use,
 //          .set("spark.driver.extraJavaOptions" ,"-Dhdp.version=2.3.0.0-2557")// TODO  add these variables to web.xml
-             
+
 //           .set("spark.yarn.appMasterEnv.hdp.version","2.3.0.0-2557")
 //            // Use Kryo to speed up serialization, recommended as default setup for Spark Streaming
 //            // http://spark.apache.org/docs/1.1.0/tuning.html#data-serialization
@@ -180,9 +183,9 @@ public class AppContext {
             } else {
                sparkContext = getOrSetSparkContext();
             }
-            
-            logger.info("Creating Spark Context...");            
-            
+
+            logger.info("Creating Spark Context...");
+
 
          } catch (Throwable t) {
             logger.error("Error creating spark contexts.", t);
@@ -190,7 +193,7 @@ public class AppContext {
       } else {
          logger.info("*** SPARK DISABLED FOR DEBUG ***");
       }
-      
+
       Enumeration<String> parmNames = context.getInitParameterNames();
 
       while (parmNames.hasMoreElements()) {
@@ -200,9 +203,12 @@ public class AppContext {
       }
    }
 
-   public static synchronized AppContext getInstance() {
+   public static AppContext getInstance() {
       if (null == instance) {
-         instance = new AppContext();
+         synchronized(AppContext.class) {
+            if (null == instance)
+               instance = new AppContext();
+         }
       }
       return instance;
    }
@@ -243,11 +249,11 @@ public class AppContext {
    public void shutDown() {
       stopSparkOnYarn();
    }
-   
+
    public  ApplicationId getApplicationId(){
 	   return sparkAppId;
    }
-   
+
    public synchronized void startSparkOnYarn() {
       if (!streamingContextStarted && null==yarnManager) {
          try {
@@ -262,9 +268,9 @@ public class AppContext {
                .setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR));
             logger.info("Starting Spark ...");
             sparkAppId = yarnManager.submitSparkJob();
-            logger.info("Spark ApplicationID: {}", sparkAppId.toString());    
-            
-            
+            logger.info("Spark ApplicationID: {}", sparkAppId.toString());
+
+
             logger.info("*** Spark Streaming Context Started ***");
          } catch (Throwable t1) {
             logger.warn("*** Error starting Spark Streaming Context. Stopping... ***", t1);

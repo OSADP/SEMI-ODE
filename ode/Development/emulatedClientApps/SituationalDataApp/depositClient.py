@@ -97,6 +97,7 @@ def parse_config_file(file_path):
     except Exception as e:
         logger.exception('Unable to Open Config File')
         sys.exit(1)
+    logger.info("Reading: %s",file_path)
     if config_file.has_section('ode'):
         config['HOST']=config_file.get('ode','host')
         config['SUB_TYPE']=config_file.get('ode','requestType')

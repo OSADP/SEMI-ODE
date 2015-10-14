@@ -16,7 +16,10 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 public enum OdeDataType {
    Status("status"),
@@ -72,5 +75,16 @@ public enum OdeDataType {
          shortNames = result.toString();
       }
       return shortNames;
+   }
+
+   public static OdeDataType getFromJsonNode(JsonNode data, String name) throws IOException {
+      OdeDataType odeDataType = null;
+      if (data != null) {
+         JsonNode dataType = data.get(name);
+         if (dataType != null) { 
+            odeDataType = OdeDataType.getByShortName(dataType.textValue());
+         }
+      }
+      return odeDataType;
    }
 }

@@ -22,8 +22,12 @@ package com.bah.ode.model;
 public abstract class OdeRequest extends BaseRequest {
    private OdeRequestType requestType;
    private OdeDataType dataType;
-   private OdePolygon polygon;
+   private OdePolyline polyline;
 
+   public OdeRequest addSegment(OdeRoadSegment segment) {
+      polyline.getSegments().put(segment.getId(), segment);
+      return this;
+   }
    public OdeRequestType getRequestType() {
       return requestType;
    }
@@ -42,12 +46,12 @@ public abstract class OdeRequest extends BaseRequest {
       return this;
    }
 
-   public OdePolygon getPolygon() {
-      return polygon;
+   public OdePolyline getPolyline() {
+      return polyline;
    }
 
-   public OdeRequest setPolygon(OdePolygon polygon) {
-      this.polygon = polygon;
+   public OdeRequest setPolyline(OdePolyline polyline) {
+      this.polyline = polyline;
       return this;
    }
 
@@ -56,7 +60,7 @@ public abstract class OdeRequest extends BaseRequest {
       final int prime = 31;
       int result = super.hashCode();
       result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
-      result = prime * result + ((polygon == null) ? 0 : polygon.hashCode());
+      result = prime * result + ((polyline == null) ? 0 : polyline.hashCode());
       result = prime * result
             + ((requestType == null) ? 0 : requestType.hashCode());
       return result;
@@ -73,10 +77,10 @@ public abstract class OdeRequest extends BaseRequest {
       OdeRequest other = (OdeRequest) obj;
       if (dataType != other.dataType)
          return false;
-      if (polygon == null) {
-         if (other.polygon != null)
+      if (polyline == null) {
+         if (other.polyline != null)
             return false;
-      } else if (!polygon.equals(other.polygon))
+      } else if (!polyline.equals(other.polyline))
          return false;
       if (requestType != other.requestType)
          return false;

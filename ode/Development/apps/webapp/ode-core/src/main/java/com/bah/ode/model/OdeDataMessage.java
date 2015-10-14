@@ -1,5 +1,12 @@
 package com.bah.ode.model;
 
+import java.io.IOException;
+
+import com.bah.ode.util.JsonUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 
 public class OdeDataMessage extends OdeMessage {
 
@@ -39,6 +46,37 @@ public class OdeDataMessage extends OdeMessage {
       this.payload = payload;
       return this;
    }
+   
+   public static ObjectNode jsonStringToObjectNode(String data)
+         throws JsonProcessingException, IOException {
+      ObjectNode dm = null;
+      ObjectNode jsonObject = JsonUtils.toObjectNode(data);
+      OdeDataType odeDataType = OdeDataType.getFromJsonNode(jsonObject,
+            "dataType");
+      if (odeDataType != null) {
+         dm = JsonUtils.newNode();
+         dm.putObject("metadata")
+               .put("payloadType", odeDataType.getShortName());
+         dm.putObject("payload").setAll(jsonObject);
+      } else {
+         JsonNode payload = jsonObject.get("payload");
+         if (payload != null) {
+            odeDataType = OdeDataType.getFromJsonNode(payload, "dataType");
+            if (odeDataType != null) {
+               dm = JsonUtils.newNode();
+               ObjectNode p = JsonUtils.toObjectNode(payload.toString());
+               if (p != null) {
+                  dm.putObject("metadata").put("payloadType",
+                        odeDataType.getShortName());
+                  dm.putObject("payload").setAll(p);
+               }
+            }
+         }
+      }
+      return dm;
+   }
+
+
    @Override
    public int hashCode() {
       final int prime = 31;

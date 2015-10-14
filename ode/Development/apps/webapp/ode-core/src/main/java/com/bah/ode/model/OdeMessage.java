@@ -4,27 +4,19 @@ public class OdeMessage extends OdeObject {
 
    private static final long serialVersionUID = 6381260328835278701L;
 
-   private Integer v;
+   private Integer version;
 
    public OdeMessage() {
       super();
-      this.v = 1;
-   }
-
-   public Integer getV() {
-      return v;
-   }
-
-   public void setV(Integer v) {
-      this.v = v;
+      this.version = 1;
    }
 
    public Integer getVersion() {
-      return v;
+      return version;
    }
 
    public OdeMessage setVersion(Integer v) {
-      this.v = v;
+      this.version = v;
       return this;
    }
 
@@ -32,7 +24,7 @@ public class OdeMessage extends OdeObject {
    public int hashCode() {
       final int prime = 31;
       int result = 1;
-      result = prime * result + ((v == null) ? 0 : v.hashCode());
+      result = prime * result + ((version == null) ? 0 : version.hashCode());
       return result;
    }
 
@@ -45,10 +37,10 @@ public class OdeMessage extends OdeObject {
       if (getClass() != obj.getClass())
          return false;
       OdeMessage other = (OdeMessage) obj;
-      if (v == null) {
-         if (other.v != null)
+      if (version == null) {
+         if (other.version != null)
             return false;
-      } else if (!v.equals(other.v))
+      } else if (!version.equals(other.version))
          return false;
       return true;
    }

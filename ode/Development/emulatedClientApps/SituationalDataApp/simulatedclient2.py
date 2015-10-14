@@ -8,16 +8,26 @@ import os
 import logging
 import dateutil.parser
 
-from optparse import OptionParser, SUPPRESS_HELP, OptionGroup
 from collections import defaultdict
 import ConfigParser
+
+import sys
+
+# try:
+#     import odeClient
+# except:
+#     current_file_path = os.path.dirname(os.path.abspath(__file__))
+#     sys.path.insert(1,os.path.join(current_file_path,'..','..','apps','PythonSDK'))
+try:
+    from odeClient import client, timehelpers, dataType
+    from odeClient.response import BaseResponse as OdeResponse
+except:
+    print "Error Importing ODE CLient. Please install the odeClient Package"
+    sys.exit(-1)
 
 import depositClient
 import simulatedClientPresets
 import clientConfig
-
-from odeClient import client, timehelpers, dataType
-from odeClient.response import BaseResponse as OdeResponse
 
 # Logging Setup and Configuration
 #
@@ -30,7 +40,7 @@ current_date_time = datetime.datetime.now().strftime("%Y-%m-%dT%H_%M_%S")
 log_name = 'simpleApp_{}.log'.format(current_date_time)
 logger = logging.getLogger('simpleApp')
 logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler(log_name)
+fh = logging.FileHandler(os.path.join('.',log_name)) # logs
 fh.setLevel(logging_level)
 # create console handler with a higher log level
 ch = logging.StreamHandler(stream=sys.stdout)
@@ -42,7 +52,9 @@ ch.setFormatter(formatter)
 # add the handlers to the logger
 logger.addHandler(fh)
 logger.addHandler(ch)
-
+# logger2 = logging.getLogger('odeClient')
+# logger2.setLevel(logging.DEBUG)
+# logger2.addHandler(ch)
 date_format = '%Y-%m-%dT%H:%M:%S.%f%Z'
 
 # File Name to capture ODE OUTPUT
@@ -74,7 +86,7 @@ un_supported_payloads_codes = [x[1] for x in dataType.all_dataTypes() if x[1] !=
 input_file = None
 
 def append_to_file(entry):
-    with open(ode_output_file_name, "a") as myfile:
+    with open(os.path.join('.',ode_output_file_name), "a") as myfile: # output
         myfile.write(entry + "\n")
 
 
@@ -155,7 +167,9 @@ def _main():
         cp = parse_config_file(config['CONFIG_FILE'])
 
     logger.info("USer Config: %s", config)
-
+    if config['PASSWORD'] is None:
+        logger.exception("Missing Password. ")
+        sys.exit(1)
     _run_main(config, cp)
 
 def parse_config_file(file_path):
@@ -166,11 +180,12 @@ def parse_config_file(file_path):
     except Exception as e:
         logger.exception('Unable to Open Config File')
         sys.exit(1)
+    logger.info("Reading Config File: %s",file_path)
     if config_file.has_section('ode'):
         config['HOST'] = config_file.get('ode', 'host')
         config['REQUEST_TYPE'] = config_file.get('ode', 'requestType')
         config['DATA'] = config_file.get('ode', 'dataType')
-        config['UPLOAD_TEST_DATA'] = config_file.getboolean('ode', 'uploadData')
+        config['UPLOAD_TEST_DATA'] = bool (config_file.getboolean('ode', 'uploadData'))
         config['VALIDATION_FILE'] = config_file.get('ode', 'validationFile')
         if config['UPLOAD_TEST_DATA']:
             config['INPUT_FILE'] = config_file.get('ode', 'inputFile')
@@ -206,6 +221,9 @@ def build_request(config):
 
     if config.get('REQUEST_TYPE',None) and config.get('REQUEST_TYPE') == 'sub':
         request = client.SubscriptionRequest(config.get('DATA'),region)
+    # TEST REQUEST Manager
+    if config.get('UPLOAD_TEST_DATA',False) and config.get('REQUEST_TYPE') == 'sub':
+        request = client.BaseRequest("tst","veh",region)
 
     elif config.get('REQUEST_TYPE',None) and config.get('REQUEST_TYPE') == 'qry':
         request = client.QueryRequest(config.get('DATA'),
@@ -244,7 +262,7 @@ def on_message(ws, message):
 
     # determine message type and act accordingly
     logger.debug("Message Value: %s", message)
-    if (logger.isEnabledFor(logging.DEBUG) or logger.isEnabledFor(logging.INFO)) and log_to_file:
+    if log_to_file:
         append_to_file(message)
     try:
         msg = OdeResponse(message)
