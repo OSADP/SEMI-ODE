@@ -10,17 +10,17 @@ public class GeoUtilsTest extends TestCase {
    }
 
    public void testPointOffset() {
-      pointOffset(5.0, 5.0, 10.0, 5.0);  //0 deg
-      pointOffset(5.0, 5.0, 10.0, 10.0); //45 deg
-      pointOffset(5.0, 5.0, 5.0, 10.0);  //90 deg
-      pointOffset(5.0, 5.0, 0.0, 10.0);  //135 deg
-      pointOffset(5.0, 5.0, 0.0, 5.0);   //180 deg
-      pointOffset(5.0, 5.0, 0.0, 0.0);   //225 deg
-      pointOffset(5.0, 5.0, 5.0, 0.0);   //270 deg
-      pointOffset(5.0, 5.0, 10.0, 0.0);  //315 deg
+      assertOffset(5.0, 5.0, 10.0, 5.0, 5.0, 8.0);  //0 deg
+      assertOffset(5.0, 5.0, 10.0, 10.0, 2.878, 7.121); //45 deg
+      assertOffset(5.0, 5.0, 5.0, 10.0, 2.0, 5.0);  //90 deg
+      assertOffset(5.0, 5.0, 0.0, 10.0, 2.878, 2.878);  //135 deg
+      assertOffset(5.0, 5.0, 0.0, 5.0, 5.0, 2.0);   //180 deg
+      assertOffset(5.0, 5.0, 0.0, 0.0, 7.121, 2.878);   //225 deg
+      assertOffset(5.0, 5.0, 5.0, 0.0, 8.0, 5.0);   //270 deg
+      assertOffset(5.0, 5.0, 10.0, 0.0, 7.121, 7.121);  //315 deg
    }
 
-   public void pointOffset(double ax, double ay, double bx, double by) {
+   public void assertOffset(double ax, double ay, double bx, double by, double ox, double oy) {
       Point2D a = new Point2D.Double(ax, ay);
       Point2D b = new Point2D.Double(bx, by);
       double k = 3d;
@@ -30,28 +30,8 @@ public class GeoUtilsTest extends TestCase {
       long p1x = (long) (p1.getX() * scale);
       long p1y = (long) (p1.getY() * scale);
 
-      Point2D pExpected = expectedPoint(a, b, k);
-      
-      assertEquals((long) (pExpected.getX() * scale), p1x);
-      assertEquals((long) (pExpected.getY() * scale), p1y);
+      assertEquals((long) (ox * scale), p1x);
+      assertEquals((long) (oy * scale), p1y);
    }
    
-   public Point2D expectedPoint(Point2D a, Point2D b, double k) {
-      double tanAlpha = (b.getY()-a.getY())/(b.getX()-a.getX());
-      double alpha = Math.atan(tanAlpha);
-      double sinAlpha = Math.sin(alpha);
-      double cosAlpha = Math.cos(alpha);
-      
-      double p1xExpected;
-      double p1yExpected;
-
-      if (b.getX() < a.getX()) {
-         p1xExpected = (a.getX() + k * sinAlpha);
-         p1yExpected = (a.getY() - k * cosAlpha);
-      } else {
-         p1xExpected = (a.getX() - k * sinAlpha);
-         p1yExpected = (a.getY() + k * cosAlpha);
-      }
-      return new Point2D.Double(p1xExpected, p1yExpected);
-   }
 }
