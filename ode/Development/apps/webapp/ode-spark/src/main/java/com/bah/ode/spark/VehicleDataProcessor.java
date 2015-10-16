@@ -2,9 +2,19 @@ package com.bah.ode.spark;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.broadcast.Broadcast;
+import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
+import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
@@ -22,99 +32,126 @@ import com.bah.ode.wrapper.MQSerialazableProducerPool;
 import com.bah.ode.wrapper.MQTopic;
 
 public class VehicleDataProcessor extends OdeObject {
-   private static final long serialVersionUID = 2480028249180282250L;
-   private static Logger logger = LoggerFactory
-         .getLogger(VehicleDataProcessor.class);
-   //private static AppContext appContext = AppContext.getInstance();
+	private static final long serialVersionUID = 2480028249180282250L;
+	private static Logger logger = LoggerFactory
+			.getLogger(VehicleDataProcessor.class);
+	//private static AppContext appContext = AppContext.getInstance();
 
-   public void setup(final JavaStreamingContext ssc, MQTopic ovdfTopic,
-         String zkConnectionStrings, String brokerList) {
+	public void setup(final JavaStreamingContext ssc, MQTopic ovdfTopic,
+			String zkConnectionStrings, String brokerList) {
 
-      ArrayList<JavaPairDStream<String, String>> dstreams = new ArrayList<JavaPairDStream<String, String>>();
+		ArrayList<JavaPairDStream<String, String>> dstreams = new ArrayList<JavaPairDStream<String, String>>();
 
-      String groupId = VehicleDataProcessor.class.getName();
+		String groupId = VehicleDataProcessor.class.getName();
 
-      try {
-         for (int i = 0; i < ovdfTopic.getPartitions(); i++) {
-            JavaPairDStream<String, String> aStream = KafkaUtils.createStream(
-                  ssc,
-                  zkConnectionStrings,
-                  groupId,
-                  Collections.singletonMap(ovdfTopic.getName(),
-                        ovdfTopic.getPartitions()));
+		if(ssc.sparkContext().getConf().get("spark.static.weather.file.boolean").equals("true")){
+			JavaSparkContext sparkContext = ssc.sparkContext();
 
-            dstreams.add(aStream);
-         }
+			JavaRDD<String> test = sparkContext.textFile(ssc.sparkContext().getConf().get("spark.static.weather.file.location"));
+			List<String> testArr = test.toArray();
 
-         JavaPairDStream<String, String> unifiedStream = ssc.union(
-               dstreams.get(0), dstreams.subList(1, dstreams.size()));
+			List<StructField> fields = new ArrayList<StructField>();
+			String[] header = testArr.get(0).split(",");
+			for(String head : header)
+				fields.add(DataTypes.createStructField(head, DataTypes.StringType, true));
 
-         // System.out.println("unifiedStream");
-         // System.out.println("===============");
-         // unifiedStream.cache().print(10);
+			testArr.remove(0);
+			List<Row> outRows = new ArrayList<Row>();
+			for(String s: testArr){
+				outRows.add(  RowFactory.create((Object[]) s.split(",", -1)) );
+			}
 
-         JavaPairDStream<String, String> payloadStream2 = unifiedStream
-               .mapToPair(pam -> new Tuple2<String, String>(pam._1, JsonUtils
-                     .getJson(pam._2, "payload")));
+			StructType newSchema = DataTypes.createStructType(fields);
 
-         // System.out.println("payloadStream2");
-         // System.out.println("===============");
-         // payloadStream2.cache().print(10);
+			SQLContext sqlContext = SqlContextSingleton.getInstance(ssc.sparkContext().sc());
+			DataFrame staticFrame = sqlContext.createDataFrame(sparkContext.parallelize(outRows), newSchema);
+			staticFrame.registerTempTable("weather"); 
+			// If this does not persist to the individual distributors try calling .saveAsTable()
 
-         // JavaDStream<String> payloadStream =
-         // unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "payload"));
+			logger.info("HEAD ROW = " + sqlContext.sql("SELECT * FROM weather").head().toString());
+		}
 
-         JavaPairDStream<String, String> metadataStream2 = unifiedStream
-               .mapToPair(pam -> new Tuple2<String, String>(pam._1, JsonUtils
-                     .getJson(pam._2, "metadata")));
+		try {
+			for (int i = 0; i < ovdfTopic.getPartitions(); i++) {
+				JavaPairDStream<String, String> aStream = KafkaUtils.createStream(
+						ssc,
+						zkConnectionStrings,
+						groupId,
+						Collections.singletonMap(ovdfTopic.getName(),
+								ovdfTopic.getPartitions()));
 
-         // System.out.println("metadataStream2");
-         // System.out.println("===============");
-         // metadataStream2.cache().print(10);
+				dstreams.add(aStream);
+			}
 
-         // JavaDStream<String> metadataStream =
-         // unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "metadata"));
-         //
-         SparkConf conf = ssc.sparkContext().getConf();
+			JavaPairDStream<String, String> unifiedStream = ssc.union(
+					dstreams.get(0), dstreams.subList(1, dstreams.size()));
 
-         Integer microbatchDuration = Integer.valueOf(conf.get("spark.streaming.microbatch.duration.ms", "1000"));
-         //Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS));
+			// System.out.println("unifiedStream");
+			// System.out.println("===============");
+			// unifiedStream.cache().print(10);
 
-         Integer windowDuration = Integer.valueOf(conf.get("spark.streaming.window.microbatches", "60"));
-        		 //Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_WINDOW_MICROBATCHES));
+			JavaPairDStream<String, String> payloadStream2 = unifiedStream
+					.mapToPair(pam -> new Tuple2<String, String>(pam._1, JsonUtils
+							.getJson(pam._2, "payload")));
 
-         Integer slideDuration = Integer.valueOf(conf.get("spark.streaming.slide.microbatches", "30"));
-        		// Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_SLIDE_MICROBATCHES));
+			// System.out.println("payloadStream2");
+			// System.out.println("===============");
+			// payloadStream2.cache().print(10);
 
-         JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata =
-               payloadStream2.join(metadataStream2);
+			// JavaDStream<String> payloadStream =
+			// unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "payload"));
 
-         JavaPairDStream<String, Tuple2<String, String>> windowedPnM =
-               payloadAndMetadata.window(
-                     Durations.milliseconds(microbatchDuration * windowDuration),
-                     Durations.milliseconds(microbatchDuration * slideDuration));
+			JavaPairDStream<String, String> metadataStream2 = unifiedStream
+					.mapToPair(pam -> new Tuple2<String, String>(pam._1, JsonUtils
+							.getJson(pam._2, "metadata")));
 
-         final Broadcast<MQSerialazableProducerPool> producerPool = ssc
-               .sparkContext().broadcast(
-                     new MQSerialazableProducerPool(brokerList));
+			// System.out.println("metadataStream2");
+			// System.out.println("===============");
+			// metadataStream2.cache().print(10);
 
-         windowedPnM.foreachRDD(new AggregatorDistributor(producerPool));
-         // System.out.println("joinedStream2");
-         // System.out.println("===============");
-         // joinedStream2.cache().print(10);
+			// JavaDStream<String> metadataStream =
+			// unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "metadata"));
+			//
+			SparkConf conf = ssc.sparkContext().getConf();
 
-         // JavaPairDStream<String, String> joinedStream =
-         // joinedStream2.mapToPair(pam->pam._2);
-         // System.out.println("joinedStream");
-         // System.out.println("===============");
-         // joinedStream.cache().print(10);
+			Integer microbatchDuration = Integer.valueOf(conf.get("spark.streaming.microbatch.duration.ms", "1000"));
+			//Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS));
+
+			Integer windowDuration = Integer.valueOf(conf.get("spark.streaming.window.microbatches", "60"));
+			//Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_WINDOW_MICROBATCHES));
+
+			Integer slideDuration = Integer.valueOf(conf.get("spark.streaming.slide.microbatches", "30"));
+			// Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_SLIDE_MICROBATCHES));
+
+			JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata =
+					payloadStream2.join(metadataStream2);
+
+			JavaPairDStream<String, Tuple2<String, String>> windowedPnM =
+					payloadAndMetadata.window(
+							Durations.milliseconds(microbatchDuration * windowDuration),
+							Durations.milliseconds(microbatchDuration * slideDuration));
+
+			final Broadcast<MQSerialazableProducerPool> producerPool = ssc
+					.sparkContext().broadcast(
+							new MQSerialazableProducerPool(brokerList));
+
+			windowedPnM.foreachRDD(new AggregatorDistributor(producerPool));
+			// System.out.println("joinedStream2");
+			// System.out.println("===============");
+			// joinedStream2.cache().print(10);
+
+			// JavaPairDStream<String, String> joinedStream =
+			// joinedStream2.mapToPair(pam->pam._2);
+			// System.out.println("joinedStream");
+			// System.out.println("===============");
+			// joinedStream.cache().print(10);
 
 
-         payloadAndMetadata.foreachRDD(new PayloadDistributor(producerPool));
-      } catch (Exception e) {
-         logger.info("Error in Spark Job {}", e);
-      }
+			payloadAndMetadata.foreachRDD(new PayloadDistributor(producerPool));
+		} catch (Exception e) {
+			logger.info("Error in Spark Job {}", e);
+		}
 
-   }
+	}
 
 }
