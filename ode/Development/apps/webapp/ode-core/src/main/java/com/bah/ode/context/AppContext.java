@@ -16,14 +16,24 @@
  *******************************************************************************/
 package com.bah.ode.context;
 
+//import java.util.ArrayList;
 import java.util.Enumeration;
+//import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.spark.SparkConf;
+//import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+//import org.apache.spark.sql.DataFrame;
+//import org.apache.spark.sql.Row;
+//import org.apache.spark.sql.RowFactory;
+//import org.apache.spark.sql.SQLContext;
+//import org.apache.spark.sql.types.DataTypes;
+//import org.apache.spark.sql.types.StructField;
+//import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +104,7 @@ public class AppContext {
    private String sparkMaster;
    private SparkConf sparkConf;
    private JavaSparkContext sparkContext;
+//   private SQLContext sqlContext;
    private boolean streamingContextStarted = false;
    private  YarnClientManager yarnManager = null;
    private ApplicationId sparkAppId = null;
@@ -190,6 +201,31 @@ public class AppContext {
          } catch (Throwable t) {
             logger.error("Error creating spark contexts.", t);
          }
+         /* Code to initialize SQLContext and Grab static files and create their dataframes.
+	         JavaRDD<String> test = sparkContext.textFile("C:\\Users\\awhipp\\Desktop\\weather.csv").cache();
+	         List<String> testArr = test.toArray();
+	         
+	         List<StructField> fields = new ArrayList<StructField>();
+	         String[] header = testArr.get(0).split(",");
+	         for(String head : header)
+	        	 fields.add(DataTypes.createStructField(head, DataTypes.StringType, true));
+	         
+	         testArr.remove(0);
+	         List<Row> outRows = new ArrayList<Row>();
+	         for(String s: testArr){
+	        	outRows.add(  RowFactory.create((Object[]) s.split(",", -1)) );
+	         }
+				
+	         StructType newSchema = DataTypes.createStructType(fields);
+	
+			sqlContext = new SQLContext(sparkContext);
+			DataFrame staticFrame = sqlContext.createDataFrame(sparkContext.parallelize(outRows), newSchema);
+			staticFrame.persist();
+			staticFrame.registerTempTable("TEMPTABLE");
+			
+			DataFrame select = sqlContext.sql("SELECT * FROM TEMPTABLE");
+			logger.info("HEAD ROW = " + select.head().toString());
+		*/
       } else {
          logger.info("*** SPARK DISABLED FOR DEBUG ***");
       }
@@ -245,6 +281,10 @@ public class AppContext {
    public void setSparkContext(JavaSparkContext sparkContext) {
       this.sparkContext = sparkContext;
    }
+   
+//   public SQLContext getSparkSQLContext() {
+//	   return sqlContext;
+//   }
 
    public void shutDown() {
       stopSparkOnYarn();
@@ -305,6 +345,7 @@ public class AppContext {
    }
 
    public static boolean loopbackTest() {
-      return Boolean.parseBoolean(getInstance().getParam(LOOPBACK_TEST));
+	   return false;
+     // return Boolean.parseBoolean(getInstance().getParam(LOOPBACK_TEST));
    }
 }
