@@ -25,15 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.spark.SparkConf;
-//import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-//import org.apache.spark.sql.DataFrame;
-//import org.apache.spark.sql.Row;
-//import org.apache.spark.sql.RowFactory;
-//import org.apache.spark.sql.SQLContext;
-//import org.apache.spark.sql.types.DataTypes;
-//import org.apache.spark.sql.types.StructField;
-//import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +69,9 @@ public class AppContext {
    public static final String SPARK_ASSEMBLY_JAR = "spark.assembly.jar";
    public static final String SPARK_EXECUTOR_MEMORY = "spark.executor.memory";
    public static final String SPARK_DRIVER_MEMORY = "spark.driver.memory";
+   
+   public static final String SPARK_STATIC_WEATHER_FILE_BOOLEAN = "spark.static.weather.file.boolean";
+   public static final String SPARK_STATIC_WEATHER_FILE_LOCATION = "spark.static.weather.file.location";
 
    public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
    public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
@@ -137,7 +132,9 @@ public class AppContext {
               .set("spark.shuffle.manager", "SORT")
               .set("spark.streaming.microbatch.duration.ms", getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
               .set("spark.streaming.window.microbatches", getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
-              .set("spark.streaming.slide.microbatches", getParam(SPARK_STREAMING_SLIDE_MICROBATCHES));
+              .set("spark.streaming.slide.microbatches", getParam(SPARK_STREAMING_SLIDE_MICROBATCHES))
+              .set("spark.static.weather.file.boolean", getParam(SPARK_STATIC_WEATHER_FILE_BOOLEAN))
+              .set("spark.static.weather.file.location", getParam(SPARK_STATIC_WEATHER_FILE_LOCATION));
 
             if (sparkMaster.startsWith("yarn")) {
                sparkConf.set("spark.yarn.jar", SPARK_HOME+"/lib/"+ getParam(SPARK_ASSEMBLY_JAR))
@@ -201,31 +198,7 @@ public class AppContext {
          } catch (Throwable t) {
             logger.error("Error creating spark contexts.", t);
          }
-         /* Code to initialize SQLContext and Grab static files and create their dataframes.
-	         JavaRDD<String> test = sparkContext.textFile("C:\\Users\\awhipp\\Desktop\\weather.csv").cache();
-	         List<String> testArr = test.toArray();
-	         
-	         List<StructField> fields = new ArrayList<StructField>();
-	         String[] header = testArr.get(0).split(",");
-	         for(String head : header)
-	        	 fields.add(DataTypes.createStructField(head, DataTypes.StringType, true));
-	         
-	         testArr.remove(0);
-	         List<Row> outRows = new ArrayList<Row>();
-	         for(String s: testArr){
-	        	outRows.add(  RowFactory.create((Object[]) s.split(",", -1)) );
-	         }
-				
-	         StructType newSchema = DataTypes.createStructType(fields);
-	
-			sqlContext = new SQLContext(sparkContext);
-			DataFrame staticFrame = sqlContext.createDataFrame(sparkContext.parallelize(outRows), newSchema);
-			staticFrame.persist();
-			staticFrame.registerTempTable("TEMPTABLE");
-			
-			DataFrame select = sqlContext.sql("SELECT * FROM TEMPTABLE");
-			logger.info("HEAD ROW = " + select.head().toString());
-		*/
+         
       } else {
          logger.info("*** SPARK DISABLED FOR DEBUG ***");
       }
