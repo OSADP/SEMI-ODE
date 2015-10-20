@@ -16,7 +16,9 @@
  *******************************************************************************/
 package com.bah.ode.context;
 
+//import java.util.ArrayList;
 import java.util.Enumeration;
+//import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -67,6 +69,9 @@ public class AppContext {
    public static final String SPARK_ASSEMBLY_JAR = "spark.assembly.jar";
    public static final String SPARK_EXECUTOR_MEMORY = "spark.executor.memory";
    public static final String SPARK_DRIVER_MEMORY = "spark.driver.memory";
+   
+   public static final String SPARK_STATIC_WEATHER_FILE_BOOLEAN = "spark.static.weather.file.boolean";
+   public static final String SPARK_STATIC_WEATHER_FILE_LOCATION = "spark.static.weather.file.location";
 
    public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
    public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
@@ -94,6 +99,7 @@ public class AppContext {
    private String sparkMaster;
    private SparkConf sparkConf;
    private JavaSparkContext sparkContext;
+//   private SQLContext sqlContext;
    private boolean streamingContextStarted = false;
    private  YarnClientManager yarnManager = null;
    private ApplicationId sparkAppId = null;
@@ -126,7 +132,9 @@ public class AppContext {
               .set("spark.shuffle.manager", "SORT")
               .set("spark.streaming.microbatch.duration.ms", getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
               .set("spark.streaming.window.microbatches", getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
-              .set("spark.streaming.slide.microbatches", getParam(SPARK_STREAMING_SLIDE_MICROBATCHES));
+              .set("spark.streaming.slide.microbatches", getParam(SPARK_STREAMING_SLIDE_MICROBATCHES))
+              .set("spark.static.weather.file.boolean", getParam(SPARK_STATIC_WEATHER_FILE_BOOLEAN))
+              .set("spark.static.weather.file.location", getParam(SPARK_STATIC_WEATHER_FILE_LOCATION));
 
             if (sparkMaster.startsWith("yarn")) {
                sparkConf.set("spark.yarn.jar", SPARK_HOME+"/lib/"+ getParam(SPARK_ASSEMBLY_JAR))
@@ -190,6 +198,7 @@ public class AppContext {
          } catch (Throwable t) {
             logger.error("Error creating spark contexts.", t);
          }
+         
       } else {
          logger.info("*** SPARK DISABLED FOR DEBUG ***");
       }
@@ -245,6 +254,10 @@ public class AppContext {
    public void setSparkContext(JavaSparkContext sparkContext) {
       this.sparkContext = sparkContext;
    }
+   
+//   public SQLContext getSparkSQLContext() {
+//	   return sqlContext;
+//   }
 
    public void shutDown() {
       stopSparkOnYarn();
@@ -305,6 +318,7 @@ public class AppContext {
    }
 
    public static boolean loopbackTest() {
-      return Boolean.parseBoolean(getInstance().getParam(LOOPBACK_TEST));
+	   return false;
+     // return Boolean.parseBoolean(getInstance().getParam(LOOPBACK_TEST));
    }
 }
