@@ -24,10 +24,6 @@ public abstract class OdeRequest extends BaseRequest {
    private OdeDataType dataType;
    private OdePolyline polyline;
 
-   public OdeRequest addSegment(OdeRoadSegment segment) {
-      polyline.getSegments().put(segment.getId(), segment);
-      return this;
-   }
    public OdeRequestType getRequestType() {
       return requestType;
    }

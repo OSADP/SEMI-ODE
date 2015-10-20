@@ -120,9 +120,7 @@ public final class OdeVehicleDataFlat extends OdeData {
    private Long    wipersStatusRear;
    private Integer wipersRateRear;   
    
-   private BigDecimal minSpeed;
-   private BigDecimal maxSpeed;
-   private BigDecimal avgSpeed;
+   private String roadSeg;
 
    public OdeVehicleDataFlat(String serialId, GroupID groupId, VehSitRecord vsr) {
       super();
@@ -1063,28 +1061,12 @@ public final class OdeVehicleDataFlat extends OdeData {
       this.wipersRateRear = wipersRateRear;
    }
 
-   public BigDecimal getMinSpeed() {
-      return minSpeed;
+   public String getRoadSeg() {
+      return roadSeg;
    }
 
-   public void setMinSpeed(BigDecimal minSpeed) {
-      this.minSpeed = minSpeed;
-   }
-
-   public BigDecimal getMaxSpeed() {
-      return maxSpeed;
-   }
-
-   public void setMaxSpeed(BigDecimal maxSpeed) {
-      this.maxSpeed = maxSpeed;
-   }
-
-   public BigDecimal getAvgSpeed() {
-      return avgSpeed;
-   }
-
-   public void setAvgSpeed(BigDecimal avgSpeed) {
-      this.avgSpeed = avgSpeed;
+   public void setRoadSeg(String roadSeg) {
+      this.roadSeg = roadSeg;
    }
 
    @Override
@@ -1105,7 +1087,6 @@ public final class OdeVehicleDataFlat extends OdeData {
             + ((accelVert == null) ? 0 : accelVert.hashCode());
       result = prime * result
             + ((accellYaw == null) ? 0 : accellYaw.hashCode());
-      result = prime * result + ((avgSpeed == null) ? 0 : avgSpeed.hashCode());
       result = prime * result
             + ((brakesABS == null) ? 0 : brakesABS.hashCode());
       result = prime * result
@@ -1132,10 +1113,9 @@ public final class OdeVehicleDataFlat extends OdeData {
       result = prime * result + ((lights == null) ? 0 : lights.hashCode());
       result = prime * result
             + ((longitude == null) ? 0 : longitude.hashCode());
-      result = prime * result + ((maxSpeed == null) ? 0 : maxSpeed.hashCode());
-      result = prime * result + ((minSpeed == null) ? 0 : minSpeed.hashCode());
       result = prime * result + ((minute == null) ? 0 : minute.hashCode());
       result = prime * result + ((month == null) ? 0 : month.hashCode());
+      result = prime * result + ((roadSeg == null) ? 0 : roadSeg.hashCode());
       result = prime * result + ((second == null) ? 0 : second.hashCode());
       result = prime * result
             + ((sizeLength == null) ? 0 : sizeLength.hashCode());
@@ -1236,11 +1216,6 @@ public final class OdeVehicleDataFlat extends OdeData {
             return false;
       } else if (!accellYaw.equals(other.accellYaw))
          return false;
-      if (avgSpeed == null) {
-         if (other.avgSpeed != null)
-            return false;
-      } else if (!avgSpeed.equals(other.avgSpeed))
-         return false;
       if (brakesABS == null) {
          if (other.brakesABS != null)
             return false;
@@ -1331,16 +1306,6 @@ public final class OdeVehicleDataFlat extends OdeData {
             return false;
       } else if (!longitude.equals(other.longitude))
          return false;
-      if (maxSpeed == null) {
-         if (other.maxSpeed != null)
-            return false;
-      } else if (!maxSpeed.equals(other.maxSpeed))
-         return false;
-      if (minSpeed == null) {
-         if (other.minSpeed != null)
-            return false;
-      } else if (!minSpeed.equals(other.minSpeed))
-         return false;
       if (minute == null) {
          if (other.minute != null)
             return false;
@@ -1350,6 +1315,11 @@ public final class OdeVehicleDataFlat extends OdeData {
          if (other.month != null)
             return false;
       } else if (!month.equals(other.month))
+         return false;
+      if (roadSeg == null) {
+         if (other.roadSeg != null)
+            return false;
+      } else if (!roadSeg.equals(other.roadSeg))
          return false;
       if (second == null) {
          if (other.second != null)

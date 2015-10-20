@@ -1,23 +1,23 @@
 package com.bah.ode.model;
 
-import java.util.Map;
+import java.util.List;
 
 public class OdePolyline extends OdeObject {
 
    private static final long serialVersionUID = 5134542729829508388L;
 
-   private Map<String, OdeRoadSegment> segments;
+   private List<OdeRoadSegment> segments;
    
    public OdePolyline addSegment(OdeRoadSegment segment) {
-      segments.put(segment.getId(), segment);
+      segments.add(segment);
       return this;
    }
 
-   public Map<String, OdeRoadSegment> getSegments() {
+   public List<OdeRoadSegment> getSegments() {
       return segments;
    }
 
-   public OdePolyline setSegments(Map<String, OdeRoadSegment> segments) {
+   public OdePolyline setSegments(List<OdeRoadSegment> segments) {
       this.segments = segments;
       return this;
    }
