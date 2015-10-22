@@ -1,5 +1,6 @@
 package com.bah.ode.util;
 
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
 import junit.framework.TestCase;
@@ -32,6 +33,55 @@ public class GeoUtilsTest extends TestCase {
 
       assertEquals((long) (ox * scale), p1x);
       assertEquals((long) (oy * scale), p1y);
+   }
+   
+   public void testDistanceInMapCoordinates() {
+      double aLat = 43.652969118285434;
+      double aLng = -85.94707489013672;
+      double bLat = 40.96538194577475;
+      double bLng = -81.03858947753906;
+      double pLat = 42.0;
+      double pLng = -83.5;
+      
+      Point2D a = GeoUtils.latLngToMap(aLat, aLng);
+      Point2D b = GeoUtils.latLngToMap(bLat, bLng);
+      Point2D p = GeoUtils.latLngToMap(pLat, pLng);
+      Line2D l = new Line2D.Double(a, b);
+      
+      double distanceInMeters = GeoUtils.distanceLatLng(aLat, aLng, bLat, bLng, 
+            LengthUtils.UnitOfMeasure.M);
+      assertEquals(502073, Math.round(distanceInMeters));
+
+      double distanceInMapCoord = GeoUtils.distance(a, b);
+      assertEquals(679050, Math.round(distanceInMapCoord));
+      
+      double d1 = GeoUtils.distanceToLine(l, p);
+      double d2 = GeoUtils.distanceToLine2(l, p);
+      double d3 = GeoUtils.distanceToLine3(l, p);
+      
+      assertEquals(d1, d2, GeoUtils.ERROR_MARGIN);
+      assertEquals(d1, d3, GeoUtils.ERROR_MARGIN);
+   }
+   
+   public void testDistanceInLatLng() {
+      double aLat = 43.652969118285434;
+      double aLng = -85.94707489013672;
+      double bLat = 40.96538194577475;
+      double bLng = -81.03858947753906;
+      double pLat = 42.0;
+      double pLng = -83.5;
+      
+      Point2D a = new Point2D.Double(aLat, aLng);
+      Point2D b = new Point2D.Double(bLat, bLng);
+      Point2D p = new Point2D.Double(pLat, pLng);
+      Line2D l = new Line2D.Double(a, b);
+      
+      double d1 = GeoUtils.distanceToLine(l, p);
+      double d2 = GeoUtils.distanceToLine2(l, p);
+      double d3 = GeoUtils.distanceToLine3(l, p);
+      
+      assertEquals(d1, d2, GeoUtils.ERROR_MARGIN);
+      assertEquals(d1, d3, GeoUtils.ERROR_MARGIN);
    }
    
 }

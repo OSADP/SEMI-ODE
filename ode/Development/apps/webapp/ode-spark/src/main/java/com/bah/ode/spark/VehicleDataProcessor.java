@@ -147,6 +147,11 @@ public class VehicleDataProcessor extends OdeObject {
 			// joinedStream.cache().print(10);
 
 
+//			JavaPairDStream<String, Tuple2<String, String>> withRoadSegment =
+//				payloadAndMetadata.mapToPair(new RoadSegmentIntegrator());
+//
+//			withRoadSegment.foreachRDD(new PayloadDistributor(producerPool));
+			
 			payloadAndMetadata.foreachRDD(new PayloadDistributor(producerPool));
 		} catch (Exception e) {
 			logger.info("Error in Spark Job {}", e);

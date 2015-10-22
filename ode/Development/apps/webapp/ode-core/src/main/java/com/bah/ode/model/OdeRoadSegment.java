@@ -1,5 +1,10 @@
 package com.bah.ode.model;
 
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+
+import com.bah.ode.util.GeoUtils;
+
 public class OdeRoadSegment extends OdeObject {
 
    private static final long serialVersionUID = 3136451247998393604L;
@@ -8,6 +13,20 @@ public class OdeRoadSegment extends OdeObject {
    private OdePoint startPoint;
    private OdePoint endPoint;
    private String   prevSegment;
+   
+   public Line2D toLine2D(OdeRoadSegment seg) {
+      double dLat = seg.getStartPoint().getLatitude().doubleValue();
+      double dLng = seg.getStartPoint().getLongitude().doubleValue();
+      Point2D a = GeoUtils.latLngToMap(dLat , dLng );
+      
+      dLat = seg.getEndPoint().getLatitude().doubleValue();
+      dLng = seg.getEndPoint().getLongitude().doubleValue();
+      Point2D b = GeoUtils.latLngToMap(dLat , dLng );
+      
+      Line2D l = new Line2D.Double(a, b);
+      return l;
+   }
+   
    public String getId() {
       return id;
    }
