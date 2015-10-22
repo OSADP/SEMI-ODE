@@ -16,6 +16,8 @@
  *******************************************************************************/
 package com.bah.ode.server;
 
+import java.io.IOException;
+
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
@@ -28,10 +30,15 @@ import javax.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.asn.oss.semi.AdvisorySituationData;
+import com.bah.ode.asn.oss.semi.IntersectionSituationData;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
+import com.bah.ode.model.OdeAdvisoryDataRaw;
+import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
+import com.bah.ode.model.OdeIntersectionDataRaw;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdePayloadAndMetadata;
 import com.bah.ode.model.OdeStatus;
@@ -140,35 +147,41 @@ public class TestWebSocketServer {
       OdeStatus status = new OdeStatus();
       try {
          if (message != null && !message.isEmpty()) {
-            OdePayloadAndMetadata pam = new OdePayloadAndMetadata();
+            //feedback to the upload client
+            WebSocketUtils.send(session, message);
             if (testMgr != null) {
-               OdeMetadata metadata = testMgr.getMetadata();
-               pam.setMetadata(metadata);
-               pam.setKey(metadata.getOutputTopic().getName());
                
                ObjectNode dm = OdeDataMessage.jsonStringToObjectNode(message);
                JsonNode payload = null;
                if (dm != null && (payload = dm.get("payload")) != null) {
                   OdeDataType dataType = 
                         OdeDataType.getByShortName(payload.get("dataType").textValue());
-                  
+
                   switch (dataType) {
                   case VehicleData:
                      OdeVehicleDataFlat ovdf = 
                            (OdeVehicleDataFlat) JsonUtils.fromJson(
                                  payload.toString(), OdeVehicleDataFlat.class);
-                     if (producer != null) {
-                        pam.setPayload(ovdf);
-                        producer.send(requestId, requestId, pam.toJson());
-                        WebSocketUtils.send(session, message);
-                     }
-                     
-                     //FOR TEST ONLY
-                     if (AppContext.loopbackTest()) {
-                        WebSocketUtils.send(testMgr.getClientSession(),
-                              new OdeDataMessage(ovdf).toJson());
-                     }
+                     sendThroughOde(payload, ovdf);
                      break;
+
+                  case IntersectionData:
+                     IntersectionSituationData isd = 
+                     (IntersectionSituationData) JsonUtils.fromJson(
+                           payload.toString(), IntersectionSituationData.class);
+                     OdeIntersectionDataRaw oidr = new OdeIntersectionDataRaw(isd);
+                     sendThroughOde(payload, oidr);
+                     break;
+
+                  case AdvisoryData:
+                     AdvisorySituationData asd = 
+                     (AdvisorySituationData) JsonUtils.fromJson(
+                           payload.toString(), AdvisorySituationData.class);
+                      OdeAdvisoryDataRaw oadr = new OdeAdvisoryDataRaw(asd);
+                      sendThroughOde(payload, oadr);
+
+                     break;
+
                   default:
                      status.setCode(Code.FAILURE);
                      status.setMessage("Invalid dataType: " + payload.get("dataType").textValue()); 
@@ -202,6 +215,28 @@ public class TestWebSocketServer {
 //         } catch (IOException e) {
 //            logger.error("Error sending error message back to client", e);
 //         }
+      }
+   }
+
+   public void sendThroughOde(JsonNode payload, OdeData odeData) throws IOException {
+      OdePayloadAndMetadata pam = new OdePayloadAndMetadata();
+      pam.setMetadata(testMgr.getMetadata());
+      
+      if (producer != null) {
+         pam.setKey(odeData.getSerialId());
+         pam.getMetadata().setKey(pam.getKey());
+         pam.setPayload(odeData);
+         pam.setPayloadType(odeData.getDataType());
+         
+         producer.send(
+               testMgr.getMetadata().getInputTopic().getName(), 
+               pam.getKey(), pam.toJson());
+      }
+      
+      //FOR TEST ONLY
+      if (AppContext.loopbackTest()) {
+         WebSocketUtils.send(testMgr.getClientSession(),
+               new OdeDataMessage(odeData).toJson());
       }
    }
 
