@@ -13,16 +13,17 @@ import ConfigParser
 
 import sys
 
-# try:
-#     import odeClient
-# except:
-#     current_file_path = os.path.dirname(os.path.abspath(__file__))
-#     sys.path.insert(1,os.path.join(current_file_path,'..','..','apps','PythonSDK'))
+try:
+    import odeClient
+except:
+    current_file_path = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(1,os.path.join(current_file_path,'..','..','apps','PythonSDK'))
+
 try:
     from odeClient import client, timehelpers, dataType
     from odeClient.response import BaseResponse as OdeResponse
 except:
-    print "Error Importing ODE CLient. Please install the odeClient Package"
+    print "Error Importing ODE Client. Please install the odeClient Package"
     sys.exit(-1)
 
 import depositClient
@@ -36,12 +37,18 @@ import clientConfig
 
 logging_level = logging.DEBUG
 
+if not os.path.exists('logs'):
+    os.makedirs('logs')
+if not os.path.exists('output'):
+    os.makedirs('output')
+
 current_date_time = datetime.datetime.now().strftime("%Y-%m-%dT%H_%M_%S")
-log_name = 'simpleApp_{}.log'.format(current_date_time)
-logger = logging.getLogger('simpleApp')
-logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler(os.path.join('.',log_name)) # logs
-fh.setLevel(logging_level)
+log_name = 'simulated_client2_{}.log'.format(current_date_time)
+logger = logging.getLogger('simulatedClient')
+logger.setLevel(logging_level)
+
+fh = logging.FileHandler(os.path.join('logs',log_name)) # logs
+fh.setLevel(logging.DEBUG)
 # create console handler with a higher log level
 ch = logging.StreamHandler(stream=sys.stdout)
 ch.setLevel(logging_level)
@@ -52,18 +59,23 @@ ch.setFormatter(formatter)
 # add the handlers to the logger
 logger.addHandler(fh)
 logger.addHandler(ch)
-# logger2 = logging.getLogger('odeClient')
-# logger2.setLevel(logging.DEBUG)
-# logger2.addHandler(ch)
+logger2 = logging.getLogger('odeClient')
+logger2.setLevel(logging.INFO)
+logger2.addHandler(ch)
 date_format = '%Y-%m-%dT%H:%M:%S.%f%Z'
 
 # File Name to capture ODE OUTPUT
 # Same date time stamp used for log file
-ode_output_file_name = 'ODE_test_run_{0}.txt'.format(current_date_time)
-log_to_file = True
 
-base_config = {}
+base_config = {'OUTPUT_TO_FILE': True,
+               'OUTPUT_FILE_NAME': 'simulated_client2_output_{0}.txt'.format(current_date_time),
+               }
 config = defaultdict(lambda: None, base_config)
+
+# File Name to capture ODE OUTPUT
+# Same date time stamp used for log file
+log_to_file = config['OUTPUT_TO_FILE']
+ode_output_file_name = config['OUTPUT_FILE_NAME']
 
 json_file_data = []
 
@@ -81,12 +93,13 @@ end_date = simulatedClientPresets.end_date.strftime(timehelpers.date_format)
 skip = simulatedClientPresets.skip
 limit = simulatedClientPresets.limit
 
-un_supported_payloads_codes = [x[1] for x in dataType.all_dataTypes() if x[1] !='veh']
+un_supported_payloads_codes = [x[1] for x in dataType.all_dataTypes()
+                               if x[1] !='veh' and x[1]!='status' and x[1]!='other']
 
 input_file = None
 
 def append_to_file(entry):
-    with open(os.path.join('.',ode_output_file_name), "a") as myfile: # output
+    with open(os.path.join('output',ode_output_file_name), "a") as myfile: # output
         myfile.write(entry + "\n")
 
 
@@ -126,32 +139,34 @@ def extract_json_objects(json_file):
     return result
 
 
-def validate_datetime(input_time):
+def validate_datetime(msg_payload):
     """
     Validates that the dateTime for a query result is within the requested
      start and end time interval.
+    :return: boolean result
+    """
+    # pass
+    #import dateutil.parser
+
+    record_time = dateutil.parser.parse(msg_payload['dateTime'])
+    if dateutil.parser.parse(config.get('END_DATE')) >= record_time >= dateutil.parser.parse(config.get('START_DATE')):
+        return True
+    else:
+        return False
+
+def validate_location(msg_payload):
+    """
+    Validates that the latitude and longitutde values for a query result is within the requested
+    bounding box region. .
     :return:
     """
-    pass
-    # import dateutil.parser
-    # record_time = dateutil.parser.parse(input_time)
-    # if msg.get('endDate') is not None and msg.get('startDate') is not None:
-    #     if dateutil.parser.parse(msg.get('endDate')) >= record_time >= dateutil.parser.parse(msg.get('startDate')):
-    #         return True
-    #     else:
-    #         return False
-    # else:
-    #     return False
+    service_region = config['SERVICE_REGION']
 
-
-def validate_location():
-    """
-    Validates that the latitute and longitutde values for a query result is within the requested
-    bounding  box region. .
-    :return:
-    """
-    pass
-
+    if float(service_region['seLat']) <= float(msg_payload['latitude']) <= float(service_region['nwLat']) and \
+       float(service_region['nwLon']) <= float(msg_payload['longitude']) <= float(service_region['seLon']):
+        return True
+    else:
+        return False
 
 ###
 #
@@ -165,8 +180,16 @@ def _main():
     config.update(vars(options))
     if config.get('CONFIG_FILE'):
         cp = parse_config_file(config['CONFIG_FILE'])
+        parse_options(cp)
 
-    logger.info("USer Config: %s", config)
+    logger.debug("User Config: %s", config)
+    config_info = "User:{}, Host: {}, Request Type: {}, Data Type: {} ".format(
+            config['USERNAME'],
+            config['HOST'],
+            config['REQUEST_TYPE'],
+            config['DATA'])
+
+    logger.info(config_info)
     if config['PASSWORD'] is None:
         logger.exception("Missing Password. ")
         sys.exit(1)
@@ -209,6 +232,13 @@ def parse_config_file(file_path):
 
     return config_file
 
+def parse_options(config_file):
+    if config_file.has_section('options'):
+        if config_file.has_option('options', 'captureOutput'):
+            config['OUTPUT_TO_FILE'] = bool(config_file.get('options', 'captureOutput'))
+        if config_file.has_option('options', 'captureOutputFileName'):
+            config['OUTPUT_FILE_NAME'] = config_file.get('options', 'capturedOutputFileName')
+
 def build_request(config):
     request = None
 
@@ -246,6 +276,7 @@ def _run_main(config,config_file=None):
     ode = client.ODEClient(config['HOST'], config['USERNAME'], config['PASSWORD'])
 
     request = build_request(config)
+    extract_json_objects(config['VALIDATION_FILE'])
 
     logger.info("Subscriptions Params: %s", request.toJson() )
 
@@ -269,23 +300,26 @@ def on_message(ws, message):
 
         # Identify Message and perform action(s)
         # Used for the Test Deposit
-        if msg.get_payload_type()=='status':
+        if msg.get_payload_type() in dataType.Status :
             logger.info("ODE Connection Status: %s Message: %s", msg.get_payload_value('code'), msg.get_payload_value('message'))
             if config['UPLOAD_TEST_DATA'] and msg.get_payload_value('requestId'):
                 config['TEST_REQUEST'] = msg.get_payload_value('requestId')
                 depositClient.update_config(config)
                 thread.start_new_thread(depositClient._run_main, (config,))
 
-        if msg.get_payload_type() == 'other' and 'STOP' in msg.get_payload_value('fullMessage'):
+        if msg.get_payload_type() in dataType.OtherData and 'STOP' in msg.get_payload_value('fullMessage'):
             ws.close()
+        if msg.get_payload_type() in dataType.OtherData and 'STOP' not in  msg.payload.get('fullMessage'):
+            logger.info("Other Message Type: %s",msg.payload.get('fullMessage',""))
 
-        if msg.get_payload_type() == 'veh':
+        if msg.get_payload_type() in dataType.VehicleData and ( config['REQUEST_TYPE'] in ('qry') or  (config['REQUEST_TYPE'] in ('sub') and  config['UPLOAD_TEST_DATA'] )):
+            logger.info("Validating Vehicle Record")
             validate_message(msg.payload)
-        elif  msg.get_payload_type() in un_supported_payloads_codes :
+        elif  msg.get_payload_type() in un_supported_payloads_codes:
             logger.info("No validation function defined for payload type: %s",msg.get_payload_type())
 
-        elif msg.get_payload_value("fullMessage"):
-            logger.info(msg.get("fullMessage"))
+        # elif msg.get_payload_value("fullMessage"):
+        #     logger.info(msg.get("fullMessage"))
 
     except Exception as e:
         logger.exception("Unable to convert message to json dictionary object")
@@ -297,6 +331,12 @@ def validate_message(msg_payload):
     :param msg_payload: ODE  Message in JSON Format
     :return: Result of evaluation in Tuple Form
     """
+
+    #
+    #
+    # TODO Refactor whole method to be less intelligent
+    #
+    #
 
     key = 'dateTime'
 
@@ -311,7 +351,7 @@ def validate_message(msg_payload):
                   u'day', u'minute', u'dateTime']
 
     # Search
-    filtered_message = {k: v for k, v in msg_payload.items() if k in valid_keys}
+    filtered_message = {k:v for k, v in msg_payload.items() if k in valid_keys}
 
     output = [record for record in json_file_data if record[key] == msg_payload[key]]
     if output is None:
@@ -320,7 +360,7 @@ def validate_message(msg_payload):
 
     count = len(output)
     check_counter = 0
-    logger.debug("ODE Record: %s", msg_payload)
+    # logger.debug("ODE Record: %s", msg_payload)
     logger.info('Found %d possible matches', count)
 
     for data in output:
@@ -334,7 +374,7 @@ def validate_message(msg_payload):
         else:
             check_counter += 1
             logger.debug("Record Count: %d, Check Counter: %d", count, check_counter)
-            logger.warn("No matching record found.Found similar record. Iteration: %d, \nExpected: %s,\nActual:   %s",
+            logger.warn("No matching record found.Found similar record. Iteration: %d, \nExpected: %s\nActual:   %s",
                         check_counter, sorted(record_delta), sorted(actual_record_delta))
             logger.warn("Full Record Output:\nValidation Record: %s\nActual Record:  %s", data, msg_payload)
             if check_counter == count:
