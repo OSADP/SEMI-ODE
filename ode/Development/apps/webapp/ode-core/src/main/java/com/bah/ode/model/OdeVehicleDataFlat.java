@@ -16,7 +16,11 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.bah.ode.asn.OdeTransmissionState;
 import com.bah.ode.asn.oss.dsrc.AccelerationSet4Way;
@@ -48,6 +52,7 @@ import com.bah.ode.asn.oss.semi.Weather.Wipers;
 import com.bah.ode.util.ByteUtils;
 import com.bah.ode.util.CodecUtils;
 import com.bah.ode.util.DateTimeUtils;
+import com.bah.ode.util.GeoUtils;
 
 public final class OdeVehicleDataFlat extends OdeData {
    private static final long serialVersionUID = -7170326566884675515L;
@@ -1451,6 +1456,29 @@ public final class OdeVehicleDataFlat extends OdeData {
       // TODO Auto-generated method stub
       
    }
+
+   public void setRoadSegment(List<OdeRoadSegment> roadSegments) {
+      List<OdeRoadSegment> onSeg = new ArrayList<OdeRoadSegment>();
+      double minDist = Double.POSITIVE_INFINITY;
+      OdeRoadSegment minSeg = null;
+      for (OdeRoadSegment seg : roadSegments) {
+         Line2D l = seg.toLine2D(seg);
+         Point2D p = GeoUtils.latLngToMap(latitude.doubleValue(), longitude.doubleValue());
+         if (GeoUtils.isPointInBounds(p, l, GeoUtils.SNAPPING_TOLERANCE)) {
+            double dist = GeoUtils.distanceToLine(l, p);
+            if (dist <= GeoUtils.SNAPPING_TOLERANCE) {
+               if (dist < minDist) {
+                  minDist = dist;
+                  minSeg = seg;
+               }
+            }
+         }
+      }
+      
+      if (minSeg != null)
+         setRoadSeg(minSeg.getId());
+   }
+
 
 
 
