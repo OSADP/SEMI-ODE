@@ -1,0 +1,79 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+#
+Vagrant.configure(2) do |config|
+  	# ambari box will start when no box is specified
+    config.vm.define "ambari", primary: true do |ambari|
+		# Set to true in order to dowloand boxes while on the
+		# BAH Network as the BAH's proxy server messes with the repo's SSL cert
+		ambari.vm.box_download_insecure = true
+		ambari.vm.box = "chef/centos-7.0"
+		ambari.vm.provider "virtualbox" do |vb|
+			# Customize the amount of memory on the VM:
+			vb.memory = "8192"
+			vb.customize ["modifyvm", :id, "--cpus", "2"]
+		end
+		ambari.vm.network "private_network", ip: "192.168.33.10"
+		ambari.vm.hostname = "ambari-server"
+		ambari.vm.synced_folder "../ode-common", "/ode-common"
+		ambari.vm.provision "shell", path: "./server_setup.sh"
+		ambari.vm.provision "shell", path: "./install_ambari-2.1.sh"
+		ambari.vm.provision "shell", path: "../ode-common/update_host_file.sh"
+	end
+	
+	config.vm.define "hdp1", primary: false do |hdp1|
+		# Set to true in order to dowloand boxes while on the
+		# BAH Network as the BAH's proxy server messes with the repo's SSL cert
+		hdp1.vm.box_download_insecure = true
+		hdp1.vm.box = "chef/centos-7.0"
+		hdp1.vm.provider "virtualbox" do |vb|
+			# Customize the amount of memory on the VM:
+			vb.memory = "2048"
+		end
+		hdp1.vm.network "private_network", ip: "192.168.33.11"
+		hdp1.vm.hostname = "hdp1-server.local"
+		hdp1.vm.synced_folder "../ode-common", "/ode-common"
+		hdp1.vm.provision "shell", path: "./server_setup.sh"
+		hdp1.vm.provision "shell", path: "./hadoop_node_setup.sh"
+		hdp1.vm.provision "shell", path: "../ode-common/update_host_file.sh"
+	end
+	
+	config.vm.define "hdp2", primary: false do |hdp2|
+		# Set to true in order to dowloand boxes while on the
+		# BAH Network as the BAH's proxy server messes with the repo's SSL cert
+		hdp2.vm.box_download_insecure = true
+		#hdp2.vm.box = "chef/centos-7.0"
+		hdp2.vm.box = "bento/centos-7.1" 
+
+		hdp2.vm.provider "virtualbox" do |vb|
+			# Customize the amount of memory on the VM:
+			vb.memory = "12288"
+			vb.customize ["modifyvm", :id, "--cpus", "2"]
+		end
+		hdp2.vm.network "private_network", ip: "192.168.33.12"
+		hdp2.vm.hostname = "hdp2-server.local"
+		hdp2.vm.synced_folder "../ode-common", "/ode-common"
+		hdp2.vm.synced_folder "../../Development/AWS/configurations/", "/ode-config"
+		hdp2.vm.synced_folder "../../Development/apps/webapp", "/ode-webapp"
+		hdp2.vm.synced_folder "../../Development", "/ode-dev"
+		hdp2.vm.provision "shell", path: "./server_setup.sh"
+		hdp2.vm.provision "shell", path: "./hadoop_node_setup.sh"
+		hdp2.vm.provision "shell", path: "../ode-common/update_host_file.sh"
+		# Install Ambari Agent, Ambari Server
+		# Create Single Node Hadoop Cluster based on Blue Print
+		# Install and configure Liferay :
+		hdp2.vm.provision "shell", path: "./install_ambari-2.1.sh"
+		hdp2.vm.provision "shell", path: "./install_ambari-2.1_agent.sh"
+		hdp2.vm.provision "shell", path: "./create_cluster_blueprint.sh"
+		hdp2.vm.provision "shell", path: "./install_liferay.sh"
+		hdp2.vm.provision "shell", path: "./update_lifreay_config.sh"
+	end
+
+	config.vm.post_up_message = "Ambari server: http://192.168.33.12:9080 \nUserName: admin \nPassword: admin\nLiferay App server: http://192.168.33.12 or http://192.168.33.12:8080"
+	
+end
