@@ -65,7 +65,7 @@ public class VehicleDataProcessor extends OdeObject {
 
 			SQLContext sqlContext = SqlContextSingleton.getInstance(ssc.sparkContext().sc());
 			DataFrame staticFrame = sqlContext.createDataFrame(sparkContext.parallelize(outRows), newSchema);
-			staticFrame.registerTempTable("weather"); 
+			staticFrame.registerTempTable("weather");
 			// If this does not persist to the individual distributors try calling .saveAsTable()
 
 			logger.info("HEAD ROW = " + sqlContext.sql("SELECT * FROM weather").head().toString());
@@ -147,11 +147,16 @@ public class VehicleDataProcessor extends OdeObject {
 			// joinedStream.cache().print(10);
 
 
-//			JavaPairDStream<String, Tuple2<String, String>> withRoadSegment =
-//				payloadAndMetadata.mapToPair(new RoadSegmentIntegrator());
-//
-//			withRoadSegment.foreachRDD(new PayloadDistributor(producerPool));
-			
+			//			JavaPairDStream<String, Tuple2<String, String>> withWeatherData =
+			//					payloadAndMetadata.mapToPair(new WeatherIntegrator());
+			//
+			//			withWeatherData.foreachRDD(new PayloadDistributor(producerPool));
+
+			//			JavaPairDStream<String, Tuple2<String, String>> withRoadSegment =
+			//					payloadAndMetadata.mapToPair(new RoadSegmentIntegrator());
+			//
+			//			withRoadSegment.foreachRDD(new PayloadDistributor(producerPool));
+
 			payloadAndMetadata.foreachRDD(new PayloadDistributor(producerPool));
 		} catch (Exception e) {
 			logger.info("Error in Spark Job {}", e);
