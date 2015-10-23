@@ -64,11 +64,17 @@ class ValidateDateTime(unittest.TestCase):
         simulatedclient2.config['END_DATE'] = '2015-06-13T19:52:45.500+0000'
         self.assertTrue(simulatedclient2.validate_datetime(msg))
 
-    def test_json_dateTime_invalidates_within_time_interval(self):
+    def test_json_dateTime_validates_false_when_before_start_time(self):
         msg = json.loads(self.date_json)
         simulatedclient2.config['START_DATE'] = '2015-06-14T19:52:45.500+0000'
         simulatedclient2.config['END_DATE'] = '2015-06-15T19:52:45.500+0000'
         self.assertFalse(simulatedclient2.validate_datetime(msg))
+    def test_json_dateTime_validates_false_when_after_end_time(self):
+        msg = json.loads(self.date_json)
+        simulatedclient2.config['START_DATE'] = '2015-06-10T19:52:45.500+0000'
+        simulatedclient2.config['END_DATE'] = '2015-06-12T19:52:45.500+0000'
+        self.assertFalse(simulatedclient2.validate_datetime(msg))
+
 
 
 class ValidateGeographicRegions(unittest.TestCase):
