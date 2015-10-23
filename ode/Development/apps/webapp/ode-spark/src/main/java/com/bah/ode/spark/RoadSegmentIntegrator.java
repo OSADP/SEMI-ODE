@@ -21,8 +21,8 @@ PairFunction<Tuple2<String,Tuple2<String,String>>,String,Tuple2<String,String>> 
          Tuple2<String, Tuple2<String, String>> arg0) throws Exception {
       String key = arg0._1();
       Tuple2<String, String> value = arg0._2();
-      String sMetatdat = value._1();
-      String sPayload = value._2();
+      String sPayload = value._1();
+      String sMetatdat = value._2();
 //      ObjectNode payload = JsonUtils.toObjectNode(sMetatdat);
 //      ObjectNode metadata = JsonUtils.toObjectNode(sPayload);
 
@@ -33,7 +33,9 @@ PairFunction<Tuple2<String,Tuple2<String,String>>,String,Tuple2<String,String>> 
       ovdf.setRoadSegment(roadSegments);
       
       Tuple2<String, Tuple2<String, String>> withRoadSeg = 
-            new Tuple2<String, Tuple2<String,String>>(key, arg0._2);
+            new Tuple2<String, Tuple2<String,String>>(key, 
+                  new Tuple2<String, String>(ovdf.toJson(), sMetatdat));
+      
       return withRoadSeg;
    }
 

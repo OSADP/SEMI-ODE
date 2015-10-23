@@ -39,7 +39,6 @@ import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeIntersectionDataRaw;
-import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdePayloadAndMetadata;
 import com.bah.ode.model.OdeStatus;
 import com.bah.ode.model.OdeStatus.Code;

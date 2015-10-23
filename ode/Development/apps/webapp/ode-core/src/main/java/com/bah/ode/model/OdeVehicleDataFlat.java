@@ -19,7 +19,6 @@ package com.bah.ode.model;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.bah.ode.asn.OdeTransmissionState;
@@ -1458,7 +1457,6 @@ public final class OdeVehicleDataFlat extends OdeData {
    }
 
    public void setRoadSegment(List<OdeRoadSegment> roadSegments) {
-      List<OdeRoadSegment> onSeg = new ArrayList<OdeRoadSegment>();
       double minDist = Double.POSITIVE_INFINITY;
       OdeRoadSegment minSeg = null;
       for (OdeRoadSegment seg : roadSegments) {
