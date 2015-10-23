@@ -28,7 +28,6 @@ import scala.Tuple2;
 //import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeObject;
 import com.bah.ode.util.JsonUtils;
-import com.bah.ode.util.WeatherMapper;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
 import com.bah.ode.wrapper.MQTopic;
 
@@ -144,9 +143,9 @@ public class VehicleDataProcessor extends OdeObject {
 			//
 			//				SQLContext sqlContext = SqlContextSingleton.getInstance(ssc.sparkContext().sc());
 			//				DataFrame weatherFrame = sqlContext.createDataFrame(sparkContext.parallelize(outRows), newSchema);
-			//				
+			//
 			//				List<String> weatherData = weatherFrame.toJavaRDD().map(new WeatherMapper(weatherFrame.columns())).toArray();
-			//				
+			//
 			//
 			//				JavaPairDStream<String, Tuple2<String, String>> withWeatherData =
 			//						payloadAndMetadata.mapToPair(new WeatherIntegrator(weatherData, weatherFrame.columns()));

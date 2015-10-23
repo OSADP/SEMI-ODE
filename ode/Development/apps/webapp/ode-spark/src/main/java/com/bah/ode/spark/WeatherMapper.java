@@ -1,4 +1,4 @@
-package com.bah.ode.util;
+package com.bah.ode.spark;
 
 import java.io.Serializable;
 
