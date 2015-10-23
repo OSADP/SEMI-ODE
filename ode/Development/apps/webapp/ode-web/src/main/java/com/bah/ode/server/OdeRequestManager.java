@@ -67,6 +67,9 @@ public class OdeRequestManager {
          throw new WebSocketServerException(status.toString());
       }
       odeRequest.setDataType(dataType);
+      
+      odeRequest.getPolyline().updateAllStartPoints();
+      
       return odeRequest;
    }
 

@@ -19,7 +19,7 @@ package com.bah.ode.model;
 
 
 @SuppressWarnings("serial")
-public abstract class OdeRequest extends BaseRequest {
+public class OdeRequest extends BaseRequest {
    private OdeRequestType requestType;
    private OdeDataType dataType;
    private OdePolyline polyline;

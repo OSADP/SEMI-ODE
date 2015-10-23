@@ -9,10 +9,38 @@ public class OdePolyline extends OdeObject {
    private List<OdeRoadSegment> segments;
    
    public OdePolyline addSegment(OdeRoadSegment segment) {
+      updateStartPoint(segment);
       segments.add(segment);
       return this;
    }
 
+   public void updateStartPoint(OdeRoadSegment segment) {
+      String prevId = segment.getPrevSegment();
+      if (prevId != null) {
+         OdeRoadSegment prev = findById(prevId);
+         if (prev != null)
+            segment.setStartPoint(prev.getEndPoint());
+      }
+   }
+
+   public OdeRoadSegment findById(String id) {
+      OdeRoadSegment found = null;
+      for (OdeRoadSegment seg : segments) {
+         if (seg.getId().equals(id)) {
+            found = seg;
+            break;
+         }
+      }
+      return found;
+   }
+   
+   public void updateAllStartPoints() {
+      for (OdeRoadSegment segment : segments) {
+         updateStartPoint(segment);
+      }
+      
+   }
+   
    public List<OdeRoadSegment> getSegments() {
       return segments;
    }
