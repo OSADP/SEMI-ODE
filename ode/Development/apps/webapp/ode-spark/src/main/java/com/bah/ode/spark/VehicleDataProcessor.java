@@ -112,6 +112,9 @@ public class VehicleDataProcessor extends OdeObject {
 			// joinedStream.cache().print(10);
 
 
+			/*
+			 * Weather data integration
+			 */
 			//			if(ssc.sparkContext().getConf().get("spark.static.weather.file.boolean").equals("true")){
 			//				JavaSparkContext sparkContext = ssc.sparkContext();
 			//
@@ -143,7 +146,9 @@ public class VehicleDataProcessor extends OdeObject {
 			//				withWeatherData.foreachRDD(new PayloadDistributor(producerPool));
 			//			}
 
-
+			/*
+			 * Road Segment Integration
+			 */
 			JavaPairDStream<String, Tuple2<String, String>> withRoadSegment =
 					payloadAndMetadata.mapToPair(new RoadSegmentIntegrator());
 
@@ -156,8 +161,14 @@ public class VehicleDataProcessor extends OdeObject {
                .sparkContext().broadcast(
                      new MQSerialazableProducerPool(brokerList));
 
+         /*
+          * Vehicle Data Aggregation and Distribution
+          */
          windowedPnM.foreachRDD(new AggregatorDistributor(producerPool));
 
+         /*
+          * Vehicle data Distribution
+          */
          withRoadSegment.foreachRDD(new PayloadDistributor(producerPool));
 		} catch (Exception e) {
 			logger.info("Error in Spark Job {}", e);

@@ -200,7 +200,8 @@ public class WebSocketServer {
 
          String requestId = OdeRequestManager.buildRequestId(odeRequest);
          // Use the request Id to determine if there is an existing request for the same data
-         clientTopic = OdeRequestManager.getTopic(requestId);
+// Commenting out fr now. It seems under certain conditions, it tries to read from a queue that is no longer receiving data
+//         clientTopic = OdeRequestManager.getTopic(requestId);
          if (clientTopic == null) {
             // Note: requestId should not be null. So if we get a NPE, we have an internal error
             logger.info("Creating new request ID: {}", requestId);
@@ -249,7 +250,7 @@ public class WebSocketServer {
                   status.setMessage(String.format("Tapped into existing request %s using existing distributor", requestId));
                   logger.info(status.getMessage());
                } else {
-                  status.setMessage(String.format("Request %s already fulfilled. . Nothing further to do.", requestId));
+                  status.setMessage(String.format("Request %s already fulfilled. Nothing further to do.", requestId));
                   logger.info(status.getMessage());
                }
             } else {

@@ -1475,6 +1475,8 @@ public final class OdeVehicleDataFlat extends OdeData {
       
       if (minSeg != null)
          setRoadSeg(minSeg.getId());
+      else
+         setRoadSeg("");
    }
 
 
