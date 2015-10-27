@@ -111,65 +111,68 @@ public class VehicleDataProcessor extends OdeObject {
 			// System.out.println("===============");
 			// joinedStream.cache().print(10);
 
+			final Broadcast<MQSerialazableProducerPool> producerPool = ssc
+					.sparkContext().broadcast(
+							new MQSerialazableProducerPool(brokerList));
 
 			/*
 			 * Weather data integration
 			 */
-			//			if(ssc.sparkContext().getConf().get("spark.static.weather.file.boolean").equals("true")){
-			//				JavaSparkContext sparkContext = ssc.sparkContext();
-			//
-			//				JavaRDD<String> fileRDD = sparkContext.textFile(ssc.sparkContext().getConf().get("spark.static.weather.file.location"));
-			//				List<String> fileArray = fileRDD.toArray();
-			//
-			//				List<StructField> fields = new ArrayList<StructField>();
-			//				String[] header = fileArray.get(0).split(",");
-			//				for(String head : header)
-			//					fields.add(DataTypes.createStructField(head, DataTypes.StringType, true));
-			//
-			//				fileArray.remove(0);
-			//				List<Row> outRows = new ArrayList<Row>();
-			//				for(String s: fileArray){
-			//					outRows.add(  RowFactory.create((Object[]) s.split(",", -1)) );
-			//				}
-			//
-			//				StructType newSchema = DataTypes.createStructType(fields);
-			//
-			//				SQLContext sqlContext = SqlContextSingleton.getInstance(ssc.sparkContext().sc());
-			//				DataFrame weatherFrame = sqlContext.createDataFrame(sparkContext.parallelize(outRows), newSchema);
-			//
-			//				List<String> weatherData = weatherFrame.toJavaRDD().map(new WeatherMapper(weatherFrame.columns())).toArray();
-			//
-			//
-			//				JavaPairDStream<String, Tuple2<String, String>> withWeatherData =
-			//						payloadAndMetadata.mapToPair(new WeatherIntegrator(weatherData, weatherFrame.columns()));
-			//
-			//				withWeatherData.foreachRDD(new PayloadDistributor(producerPool));
-			//			}
 
-			/*
-			 * Road Segment Integration
-			 */
-			JavaPairDStream<String, Tuple2<String, String>> withRoadSegment =
-					payloadAndMetadata.mapToPair(new RoadSegmentIntegrator());
+			String weatherLocation = ssc.sparkContext().getConf().get("spark.static.weather.file.location", "");
+			if(!weatherLocation.equals("")){
+				JavaSparkContext sparkContext = ssc.sparkContext();
 
-         JavaPairDStream<String, Tuple2<String, String>> windowedPnM =
-               withRoadSegment.window(
-                     Durations.milliseconds(microbatchDuration * windowDuration),
-                     Durations.milliseconds(microbatchDuration * slideDuration));
+				JavaRDD<String> fileRDD = sparkContext.textFile(weatherLocation);
+				List<String> fileArray = fileRDD.toArray();
 
-         final Broadcast<MQSerialazableProducerPool> producerPool = ssc
-               .sparkContext().broadcast(
-                     new MQSerialazableProducerPool(brokerList));
+				List<StructField> fields = new ArrayList<StructField>();
+				String[] header = fileArray.get(0).split(",");
+				for(String head : header)
+					fields.add(DataTypes.createStructField(head, DataTypes.StringType, true));
 
-         /*
-          * Vehicle Data Aggregation and Distribution
-          */
-         windowedPnM.foreachRDD(new AggregatorDistributor(producerPool));
+				fileArray.remove(0);
+				List<Row> outRows = new ArrayList<Row>();
+				for(String s: fileArray){
+					outRows.add(  RowFactory.create((Object[]) s.split(",", -1)) );
+				}
 
-         /*
-          * Vehicle data Distribution
-          */
-         withRoadSegment.foreachRDD(new PayloadDistributor(producerPool));
+				StructType newSchema = DataTypes.createStructType(fields);
+
+				SQLContext sqlContext = SqlContextSingleton.getInstance(ssc.sparkContext().sc());
+				DataFrame weatherFrame = sqlContext.createDataFrame(sparkContext.parallelize(outRows), newSchema);
+				logger.info("Weather Dataframe Created: " + weatherFrame.head().toString());
+
+				List<String> weatherData = weatherFrame.toJavaRDD().map(new WeatherMapper(weatherFrame.columns())).toArray();
+
+
+				JavaPairDStream<String, Tuple2<String, String>> withWeatherData =
+						payloadAndMetadata.mapToPair(new WeatherIntegrator(weatherData));
+
+				withWeatherData.foreachRDD(new PayloadDistributor(producerPool));
+			}else{
+
+				/*
+				 * Road Segment Integration
+				 */
+				JavaPairDStream<String, Tuple2<String, String>> withRoadSegment =
+						payloadAndMetadata.mapToPair(new RoadSegmentIntegrator());
+
+				JavaPairDStream<String, Tuple2<String, String>> windowedPnM =
+						withRoadSegment.window(
+								Durations.milliseconds(microbatchDuration * windowDuration),
+								Durations.milliseconds(microbatchDuration * slideDuration));
+
+				/*
+				 * Vehicle Data Aggregation and Distribution
+				 */
+				windowedPnM.foreachRDD(new AggregatorDistributor(producerPool));
+
+				/*
+				 * Vehicle data Distribution
+				 */
+				withRoadSegment.foreachRDD(new PayloadDistributor(producerPool));
+			}
 		} catch (Exception e) {
 			logger.info("Error in Spark Job {}", e);
 		}

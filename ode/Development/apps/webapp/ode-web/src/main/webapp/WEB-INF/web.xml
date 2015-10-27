@@ -4,7 +4,7 @@
    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
    id="WebApp_ID" version="2.5">
    <display-name>ode</display-name>
-   
+
    <context-param>
       <param-name>contextConfigLocation</param-name>
       <param-value>classpath:spring/application-config.xml</param-value>
@@ -14,7 +14,7 @@
       <param-name>loopback.test</param-name>
       <param-value>false</param-value>
    </context-param>
-   
+
    <context-param>
       <param-name>web.server.root</param-name>
       <param-value></param-value>
@@ -26,8 +26,8 @@
    <context-param>
       <param-name>liferay.ws.companyId</param-name>
       <param-value>10157</param-value> <!-- Will vary based on Destination installation 20155 -->
-      <!-- 	
-      <param-value>10157</param-value> 
+      <!--
+      <param-value>10157</param-value>
       -->
    </context-param>
    <context-param>
@@ -115,23 +115,20 @@
       <param-name>spark.streaming.slide.microbatches</param-name>
       <param-value>30</param-value>
    </context-param>
-   <context-param>
-      <param-name>spark.static.weather.file.boolean</param-name>
-      <param-value>false</param-value>
-   </context-param>
+
    <context-param>
       <param-name>spark.static.weather.file.location</param-name>
-      <param-value>C:\Users\awhipp\Desktop\weather.csv</param-value>
+      <param-value></param-value> <!-- <param-value>hdfs://localhost.localdomain:8020/tmp/weather.csv</param-value>  -->
    </context-param>
    <context-param>
       <param-name>spark.road.segment.snapping.tolerance</param-name>
       <param-value>20</param-value>
    </context-param>
-   
-   
+
+
    <!--	Spark Assembly to be uploaded to Yarn Cluster
    		Assumed to be installed on the Web application Server
-   		This param specifies the name based on HDP naming convention 
+   		This param specifies the name based on HDP naming convention
      -->
    <context-param>
      <param-name>spark.assembly.jar</param-name>
@@ -140,7 +137,7 @@
 
    <context-param>
       <param-name>metadata.broker.list</param-name>
-      <!-- HDP 2.2 Stack --> 
+      <!-- HDP 2.2 Stack -->
       <!--<param-value>ip-10-0-16-12.ec2.internal:6667,ip-10-0-16-91.ec2.internal:6667,ip-10-0-16-97.ec2.internal:6667</param-value> -->
       <!-- HDP 2.3 Stack -->
       <param-value>ip-10-0-16-115.ec2.internal:6667,ip-10-0-16-143.ec2.internal:6667</param-value>
@@ -194,7 +191,7 @@
       <servlet-name>dispatcherServlet</servlet-name>
       <url-pattern>/web/*</url-pattern>
    </servlet-mapping>
-<!-- 
+<!--
    <servlet>
       <description>InitServlet is intended to perform eager initializations for ODE application.</description>
       <display-name>InitServlet</display-name>
