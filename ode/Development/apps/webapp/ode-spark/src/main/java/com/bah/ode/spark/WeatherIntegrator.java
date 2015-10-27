@@ -15,11 +15,9 @@ public class WeatherIntegrator implements  PairFunction<Tuple2<String, Tuple2<St
 
 	private static final long serialVersionUID = 2040465851629473055L;
 	private List<String> weatherData = null;
-	private String[] columns = null;
 
-	public WeatherIntegrator(List<String> weatherData, String[] columns) {
+	public WeatherIntegrator(List<String> weatherData) {
 		this.weatherData = weatherData;
-		this.columns = columns;
 	}
 
 	@Override
@@ -29,28 +27,55 @@ public class WeatherIntegrator implements  PairFunction<Tuple2<String, Tuple2<St
 		ObjectNode vehicledata = JsonUtils.toObjectNode(record._2()._1());
 		Point2D rddLoc = GeoUtils.latLngToMap(vehicledata.get("latitude").asDouble(),vehicledata.get("longitude").asDouble());
 
-		ObjectNode closestNode = null;
-		Double distance = Double.MAX_VALUE;
+		ObjectNode closestAirPressure = null;
+		Double distanceAP = Double.MAX_VALUE;
+
+		ObjectNode closestAirTemperature = null;
+		Double distanceAT = Double.MAX_VALUE;
 
 		for(String s : weatherData){
 			ObjectNode temp = JsonUtils.toObjectNode(s);
-			if(closestNode == null){
-				closestNode = temp;
-				distance = rddLoc.distance(GeoUtils.latLngToMap(temp.get("Latitude").asDouble(), temp.get("Longitude").asDouble()));
-			}else{
-				Point2D tempLoc = GeoUtils.latLngToMap(temp.get("Latitude").asDouble(),temp.get("Longitude").asDouble());
-				double calcDist = rddLoc.distance(tempLoc);
-				if(calcDist < distance){
-					distance = calcDist; 
-					closestNode = temp;
+			switch(temp.get("ObsTypeName").asText()){
+
+			/* Atmospheric Air Pressure Source */
+			case "essAtmosphericPressure":
+				if(closestAirPressure == null){
+					closestAirPressure = temp;
+					distanceAP = rddLoc.distance(GeoUtils.latLngToMap(temp.get("Latitude").asDouble(), temp.get("Longitude").asDouble()));
+				}else{
+					Point2D tempLoc = GeoUtils.latLngToMap(temp.get("Latitude").asDouble(),temp.get("Longitude").asDouble());
+					double calcDist = rddLoc.distance(tempLoc);
+					if(calcDist < distanceAP){
+						distanceAP = calcDist;
+						closestAirPressure = temp;
+					}
 				}
+				break;
+
+			/* Atmospheric Air Temperature Source */
+			case "essAirTemperature":
+				if(closestAirTemperature == null){
+					closestAirTemperature = temp;
+					distanceAT = rddLoc.distance(GeoUtils.latLngToMap(temp.get("Latitude").asDouble(), temp.get("Longitude").asDouble()));
+				}else{
+					Point2D tempLoc = GeoUtils.latLngToMap(temp.get("Latitude").asDouble(),temp.get("Longitude").asDouble());
+					double calcDist = rddLoc.distance(tempLoc);
+					if(calcDist < distanceAT){
+						distanceAT = calcDist;
+						closestAirTemperature = temp;
+					}
+				}
+				break;
+			default:
+				break;
 			}
 		}
 
-		for(String s : columns){
-			vehicledata.put(s, closestNode.get(s).asText());
-		}
-		
+		if(closestAirPressure != null)
+			vehicledata.put("weatherAirPres", closestAirPressure.get("Observation").asText());
+		if(closestAirTemperature != null)
+			vehicledata.put("weatherAirTemp", closestAirTemperature.get("Observation").asText());
+
 		return new Tuple2<String, Tuple2<String, String>>(record._1(), new Tuple2<String,String>(vehicledata.toString(), record._2()._2()));
 
 	}
