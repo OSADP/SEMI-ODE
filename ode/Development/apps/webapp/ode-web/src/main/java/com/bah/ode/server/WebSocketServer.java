@@ -200,8 +200,7 @@ public class WebSocketServer {
 
          String requestId = OdeRequestManager.buildRequestId(odeRequest);
          // Use the request Id to determine if there is an existing request for the same data
-// Commenting out fr now. It seems under certain conditions, it tries to read from a queue that is no longer receiving data
-//         clientTopic = OdeRequestManager.getTopic(requestId);
+         clientTopic = OdeRequestManager.getTopic(requestId);
          if (clientTopic == null) {
             // Note: requestId should not be null. So if we get a NPE, we have an internal error
             logger.info("Creating new request ID: {}", requestId);
