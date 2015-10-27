@@ -1,13 +1,11 @@
 package com.bah.ode.spark;
 
-import java.util.List;
-
 import org.apache.spark.api.java.function.PairFunction;
 
 import scala.Tuple2;
 
 import com.bah.ode.model.OdeMetadata;
-import com.bah.ode.model.OdeRoadSegment;
+import com.bah.ode.model.OdePolyline;
 import com.bah.ode.model.OdeVehicleDataFlat;
 import com.bah.ode.util.JsonUtils;
 
@@ -29,8 +27,11 @@ PairFunction<Tuple2<String,Tuple2<String,String>>,String,Tuple2<String,String>> 
       OdeMetadata metadata = (OdeMetadata) JsonUtils.fromJson(sMetatdat, OdeMetadata.class);
       OdeVehicleDataFlat ovdf = (OdeVehicleDataFlat) JsonUtils.fromJson(sPayload, OdeVehicleDataFlat.class);
       
-      List<OdeRoadSegment> roadSegments = metadata.getOdeRequest().getPolyline().getSegments();
-      ovdf.setRoadSegment(roadSegments);
+      if (metadata.getOdeRequest() != null) {
+         OdePolyline polyline = metadata.getOdeRequest().getPolyline();
+         if (polyline != null)
+            ovdf.setRoadSegment(polyline.getSegments());
+      }
       
       Tuple2<String, Tuple2<String, String>> withRoadSeg = 
             new Tuple2<String, Tuple2<String,String>>(key, 

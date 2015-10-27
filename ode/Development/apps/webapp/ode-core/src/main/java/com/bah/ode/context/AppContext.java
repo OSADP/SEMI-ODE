@@ -90,6 +90,8 @@ public class AppContext {
    public static final String YARN_CONF_DIR = HADOOP_YARN_HOME+"/conf";
 
    public static final String AGGREGATES_TOPIC = "AGGREGATES_TOPIC";
+   
+   public static final String SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE = "spark.road.segment.snapping.tolerance";
 
 
    private static AppContext instance = null;
@@ -134,7 +136,8 @@ public class AppContext {
               .set("spark.streaming.window.microbatches", getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
               .set("spark.streaming.slide.microbatches", getParam(SPARK_STREAMING_SLIDE_MICROBATCHES))
               .set("spark.static.weather.file.boolean", getParam(SPARK_STATIC_WEATHER_FILE_BOOLEAN))
-              .set("spark.static.weather.file.location", getParam(SPARK_STATIC_WEATHER_FILE_LOCATION));
+              .set("spark.static.weather.file.location", getParam(SPARK_STATIC_WEATHER_FILE_LOCATION))
+              .set("spark.road.segment.snapping.tolerance", getParam(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE));
 
             if (sparkMaster.startsWith("yarn")) {
                sparkConf.set("spark.yarn.jar", SPARK_HOME+"/lib/"+ getParam(SPARK_ASSEMBLY_JAR))
