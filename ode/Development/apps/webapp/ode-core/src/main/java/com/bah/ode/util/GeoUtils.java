@@ -45,7 +45,7 @@ public class GeoUtils {
    public static final double EARTH_RADIUS_M = 6370997.0;
    public static final double EARTH_RADIUS_MI = 3963.2263272;
    
-   public static final double SNAPPING_TOLERANCE = 15.0;
+   public static final double SNAPPING_TOLERANCE = 20.0;
 
    public static final PROJ_PARAMS proj = new PROJ_PARAMS(0.0);
 

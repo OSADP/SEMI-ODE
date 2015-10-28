@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeDataType;
+import com.bah.ode.model.OdePolyline;
 import com.bah.ode.model.OdeQryRequest;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
@@ -68,7 +69,10 @@ public class OdeRequestManager {
       }
       odeRequest.setDataType(dataType);
       
-      odeRequest.getPolyline().updateAllStartPoints();
+      OdePolyline polyline = odeRequest.getPolyline();
+      
+      if (polyline != null)
+         polyline.updateAllStartPoints();
       
       return odeRequest;
    }
