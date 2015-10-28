@@ -190,34 +190,34 @@ $(document ).ready(function() {
 
   function send() {
       if (ws != null) {
-      var request = {};
-      request["nwLat"] = document.getElementById('nwLat').value;
-      request["nwLon"] = document.getElementById('nwLon').value;
-      request["seLat"] = document.getElementById('seLat').value;
-      request["seLon"] = document.getElementById('seLon').value;
-      request["skip"] = $("#skip").val();
-      request["limit"] = $("#limit").val();
-      
-      var s1 = {};
-      s1["id"] = "LarnedShelbyGriswold";
-      s1["startPoint"] = {"latitude":42.328468, "longitude":-83.047470};//W. Larned and Shelby
-      s1["endPoint"] = {"latitude":42.329067, "longitude":-83.046086};//W. Larned and Griswold
-      
-      var s2 = {};
-      s2["id"] = "LarnedShelbyRandolph";
-      s2["prevSegment"] = "LarnedShelbyGriswold";
-      s2["endPoint"] = {"latitude":42.330530, "longitude":-83.042701};//Larned and Randolph
-      
-      var polyline = [];
-      polyline.push(s1);
-      polyline.push(s2);
-      
-      request["polyline"] = {"segments":polyline};
-      
-
-      var reqStr = JSON.stringify(request); 
-          ws.send(reqStr);
-                log('Sent: ' +  reqStr);
+         var request = {};
+         request["nwLat"] = document.getElementById('nwLat').value;
+         request["nwLon"] = document.getElementById('nwLon').value;
+         request["seLat"] = document.getElementById('seLat').value;
+         request["seLon"] = document.getElementById('seLon').value;
+         request["skip"] = $("#skip").val();
+         request["limit"] = $("#limit").val();
+         
+         var s1 = {};
+         s1["id"] = "LarnedShelbyGriswold";
+         s1["startPoint"] = {"latitude":42.328468, "longitude":-83.047470};//W. Larned and Shelby
+         s1["endPoint"] = {"latitude":42.329067, "longitude":-83.046086};//W. Larned and Griswold
+         
+         var s2 = {};
+         s2["id"] = "LarnedShelbyRandolph";
+         s2["prevSegment"] = "LarnedShelbyGriswold";
+         s2["endPoint"] = {"latitude":42.330530, "longitude":-83.042701};//Larned and Randolph
+         
+         var polyline = [];
+         polyline.push(s1);
+         polyline.push(s2);
+         
+         request["polyline"] = {"segments":polyline};
+         
+   
+         var reqStr = JSON.stringify(request); 
+         ws.send(reqStr);
+         log('Sent: ' +  reqStr);
       } else {
           alert('WebSocket connection not established, please connect.');
       }
@@ -235,8 +235,8 @@ $(document ).ready(function() {
             var now = new Date();
             var yesterday = new Date();
             yesterday.setDate(now.getDate()-1);
-			$("#startDate").val( yesterday.toISOString());
-			$("#endDate").val(now.toISOString());
+            $("#startDate").val( yesterday.toISOString());
+            $("#endDate").val(now.toISOString());
   }
 
   function log(msgOrData) {

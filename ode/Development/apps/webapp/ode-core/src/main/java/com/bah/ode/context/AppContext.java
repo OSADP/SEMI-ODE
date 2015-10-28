@@ -69,8 +69,7 @@ public class AppContext {
    public static final String SPARK_ASSEMBLY_JAR = "spark.assembly.jar";
    public static final String SPARK_EXECUTOR_MEMORY = "spark.executor.memory";
    public static final String SPARK_DRIVER_MEMORY = "spark.driver.memory";
-   
-   public static final String SPARK_STATIC_WEATHER_FILE_BOOLEAN = "spark.static.weather.file.boolean";
+
    public static final String SPARK_STATIC_WEATHER_FILE_LOCATION = "spark.static.weather.file.location";
 
    public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
@@ -90,6 +89,8 @@ public class AppContext {
    public static final String YARN_CONF_DIR = HADOOP_YARN_HOME+"/conf";
 
    public static final String AGGREGATES_TOPIC = "AGGREGATES_TOPIC";
+
+   public static final String SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE = "spark.road.segment.snapping.tolerance";
 
 
    private static AppContext instance = null;
@@ -133,8 +134,8 @@ public class AppContext {
               .set("spark.streaming.microbatch.duration.ms", getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
               .set("spark.streaming.window.microbatches", getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
               .set("spark.streaming.slide.microbatches", getParam(SPARK_STREAMING_SLIDE_MICROBATCHES))
-              .set("spark.static.weather.file.boolean", getParam(SPARK_STATIC_WEATHER_FILE_BOOLEAN))
-              .set("spark.static.weather.file.location", getParam(SPARK_STATIC_WEATHER_FILE_LOCATION));
+              .set("spark.static.weather.file.location", getParam(SPARK_STATIC_WEATHER_FILE_LOCATION))
+              .set("spark.road.segment.snapping.tolerance", getParam(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE));
 
             if (sparkMaster.startsWith("yarn")) {
                sparkConf.set("spark.yarn.jar", SPARK_HOME+"/lib/"+ getParam(SPARK_ASSEMBLY_JAR))
@@ -198,7 +199,7 @@ public class AppContext {
          } catch (Throwable t) {
             logger.error("Error creating spark contexts.", t);
          }
-         
+
       } else {
          logger.info("*** SPARK DISABLED FOR DEBUG ***");
       }
@@ -254,7 +255,7 @@ public class AppContext {
    public void setSparkContext(JavaSparkContext sparkContext) {
       this.sparkContext = sparkContext;
    }
-   
+
 //   public SQLContext getSparkSQLContext() {
 //	   return sqlContext;
 //   }

@@ -249,7 +249,7 @@ public class WebSocketServer {
                   status.setMessage(String.format("Tapped into existing request %s using existing distributor", requestId));
                   logger.info(status.getMessage());
                } else {
-                  status.setMessage(String.format("Request %s already fulfilled. . Nothing further to do.", requestId));
+                  status.setMessage(String.format("Request %s already fulfilled. Nothing further to do.", requestId));
                   logger.info(status.getMessage());
                }
             } else {
