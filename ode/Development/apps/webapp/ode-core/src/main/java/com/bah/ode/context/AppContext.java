@@ -40,7 +40,7 @@ public class AppContext {
    private static Logger logger = LoggerFactory.getLogger(AppContext.class);
 
    //CONSTANTS
-   public static final String HOSTNAME = "HOSTNAME";
+   public static final String ODE_HOSTNAME = "ODE_HOSTNAME";
    public static final String DATA_PROCESSOR_INPUT_TOPIC = "DPIT";
    public static final String DATA_PROCESSOR_AGGREGATES_TOPIC = "DPAT";
    public static final String DATA_PROCESSOR_OUTPUT_TOPIC = "DPOT";
@@ -128,8 +128,19 @@ public class AppContext {
       this.servletContext = context;
       this.sparkMaster = getParam(SPARK_MASTER);
       String hostname = System.getenv("HOSTNAME");
-      if (hostname == null)
+      /*
+       *  If running on windows host, HOSTNAME environment variable is usually 
+       *  not defined. So we'll assume that the software should be run in 
+       *  loopbackTest mode. 
+       */
+      if (hostname == null) {
+         this.servletContext.setInitParameter(LOOPBACK_TEST, "true");
          hostname = UUID.randomUUID().toString();
+      } else {
+         this.servletContext.setInitParameter(LOOPBACK_TEST, "false");
+      }
+      
+      this.servletContext.setInitParameter(ODE_HOSTNAME, hostname);
       
       this.servletContext.setInitParameter(DATA_PROCESSOR_INPUT_TOPIC, 
             DATA_PROCESSOR_INPUT_TOPIC + hostname);
@@ -137,25 +148,26 @@ public class AppContext {
       this.servletContext.setInitParameter(DATA_PROCESSOR_AGGREGATES_TOPIC, 
             DATA_PROCESSOR_AGGREGATES_TOPIC + hostname);
       
+      sparkConf = new SparkConf()
+      .setMaster(sparkMaster)
+      .setAppName(context.getServletContextName())
+      .set("spark.shuffle.manager", "SORT")
+      .set(ODE_HOSTNAME, getParam(ODE_HOSTNAME))
+      .set(LOOPBACK_TEST, getParam(LOOPBACK_TEST))
+      .set(SPARK_STREAMING_MICROBATCH_DURATION_MS, getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
+      .set(SPARK_STREAMING_WINDOW_MICROBATCHES, getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
+      .set(SPARK_STREAMING_SLIDE_MICROBATCHES, getParam(SPARK_STREAMING_SLIDE_MICROBATCHES))
+      .set(SPARK_STATIC_WEATHER_FILE_LOCATION, getParam(SPARK_STATIC_WEATHER_FILE_LOCATION))
+      .set(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE, getParam(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE))
+      .set(DATA_PROCESSOR_INPUT_TOPIC, getParam(DATA_PROCESSOR_INPUT_TOPIC))
+      .set(DATA_PROCESSOR_AGGREGATES_TOPIC, getParam(DATA_PROCESSOR_AGGREGATES_TOPIC));
+
       // DEBUG ONLY
       // For debugging only and running the app on local machine
       // without Spark
       //FOR TEST ONLY
       if (!loopbackTest()) {
          try {
-
-           sparkConf = new SparkConf()
-              .setMaster(sparkMaster)
-              .setAppName(context.getServletContextName())
-              .set("spark.shuffle.manager", "SORT")
-              .set(SPARK_STREAMING_MICROBATCH_DURATION_MS, getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
-              .set(SPARK_STREAMING_WINDOW_MICROBATCHES, getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
-              .set(SPARK_STREAMING_SLIDE_MICROBATCHES, getParam(SPARK_STREAMING_SLIDE_MICROBATCHES))
-              .set(SPARK_STATIC_WEATHER_FILE_LOCATION, getParam(SPARK_STATIC_WEATHER_FILE_LOCATION))
-              .set(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE, getParam(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE))
-              .set(DATA_PROCESSOR_INPUT_TOPIC, getParam(DATA_PROCESSOR_INPUT_TOPIC))
-              .set(DATA_PROCESSOR_AGGREGATES_TOPIC, getParam(DATA_PROCESSOR_AGGREGATES_TOPIC));
-
             if (sparkMaster.startsWith("yarn")) {
                sparkConf.set("spark.yarn.jar", SPARK_HOME+"/lib/"+ getParam(SPARK_ASSEMBLY_JAR))
                   .setExecutorEnv("CLASSPATH", "$CLASSPATH:"+SPARK_HOME+"/lib/*:"
@@ -338,7 +350,6 @@ public class AppContext {
    }
 
    public static boolean loopbackTest() {
-	   return false;
-     // return Boolean.parseBoolean(getInstance().getParam(LOOPBACK_TEST));
+     return Boolean.parseBoolean(AppContext.getInstance().getSparkConf().get(LOOPBACK_TEST, "false"));
    }
 }

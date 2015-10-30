@@ -20,10 +20,10 @@ package com.bah.ode.model;
 public class DdsRequest extends BaseRequest {
 
    public enum Dialog {
-		VSD (154),
-		ISD (162),
-		ASD (156),
-		ALL (-1);
+      VSD (154),
+      ISD (162),
+      ASD (156),
+      ALL (-1);
 
       private final int id;
 
@@ -47,10 +47,10 @@ public class DdsRequest extends BaseRequest {
       }
    }
 
-	public enum SystemName {
-		SDC ("SDC 2.2"),
-		SDW ("SDW 2.2"),
-		SDPC ("SDPC 2.2");
+   public enum SystemName {
+      SDC ("SDC 2.2"),
+      SDW ("SDW 2.2"),
+      SDPC ("SDPC 2.2");
 
       private final String name;
 
@@ -64,9 +64,9 @@ public class DdsRequest extends BaseRequest {
    }
 
    public enum ResultEncoding {
-		BASE_64 ("base64"),
-		HEX ("hex"),
-		FULL ("full");
+      BASE_64 ("base64"),
+      HEX ("hex"),
+      FULL ("full");
 
       private final String enc;
 

@@ -12,16 +12,18 @@ import com.bah.ode.dds.client.ws.VsdDecoder;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.DdsQryRequest;
 import com.bah.ode.model.DdsRequest;
+import com.bah.ode.model.DdsRequest.SystemName;
 import com.bah.ode.model.DdsSubRequest;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeQryRequest;
 import com.bah.ode.model.OdeRequest;
+import com.bah.ode.model.OdeRequest.DataSource;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.model.OdeStatus;
 import com.bah.ode.wrapper.WebSocketClient;
-import com.bah.ode.wrapper.WebSocketMessageDecoder;
 import com.bah.ode.wrapper.WebSocketClient.WebSocketException;
+import com.bah.ode.wrapper.WebSocketMessageDecoder;
 
 public class DdsRequestManager extends DataRequestManager {
    private static Logger logger = 
@@ -77,10 +79,11 @@ public class DdsRequestManager extends DataRequestManager {
       OdeRequestType requestType = odeRequest.getRequestType();
       if (requestType == OdeRequestType.Subscription) {
          ddsRequest = new DdsSubRequest()
-               .setSystemSubName(DdsRequest.SystemName.SDC.getName());
+               .setSystemSubName(systemName(odeRequest).getName());
       } else if (requestType == OdeRequestType.Query) {
          DdsQryRequest qryRequest = new DdsQryRequest()
-               .setSystemQueryName(DdsRequest.SystemName.SDPC.getName());
+            .setSystemQueryName(systemName(odeRequest).getName());
+         
          if (odeRequest instanceof OdeQryRequest) {
             OdeQryRequest odeQuery = (OdeQryRequest) odeRequest;
             qryRequest.setStartDate(odeQuery.getStartDate());
@@ -125,6 +128,43 @@ public class DdsRequestManager extends DataRequestManager {
 
       return ddsRequest;
    }
+
+   private static SystemName systemName(OdeRequest odeRequest) {
+      SystemName sysName;
+      
+      OdeRequest.DataSource dataSource = odeRequest.getDataSource();
+      if (dataSource == null)
+         dataSource = defaultDataSource(odeRequest);
+      
+      switch (dataSource) {
+         case SDC: sysName = SystemName.SDC; break;
+         case SDW: sysName = SystemName.SDW; break;
+         case SDPC: sysName = SystemName.SDPC; break;
+         default: sysName = defaultSystemName(odeRequest);
+      }
+      
+      return sysName;
+   }
+
+
+   public static DataSource defaultDataSource(OdeRequest odeRequest) {
+      DataSource dataSource;
+      if (odeRequest.getRequestType() == OdeRequestType.Subscription)
+         dataSource = DataSource.SDC;
+      else
+         dataSource = DataSource.SDPC;
+      return dataSource;
+   }
+   
+   public static SystemName defaultSystemName(OdeRequest odeRequest) {
+      SystemName sysName;
+      if (odeRequest.getRequestType() == OdeRequestType.Subscription)
+         sysName = SystemName.SDC;
+      else
+         sysName = SystemName.SDPC;
+      return sysName;
+   }
+
 
    public void sendDdsDataRequest() throws DdsRequestManagerException {
       try {
