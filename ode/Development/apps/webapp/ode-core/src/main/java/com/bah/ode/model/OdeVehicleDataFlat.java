@@ -1456,15 +1456,15 @@ public final class OdeVehicleDataFlat extends OdeData {
       
    }
 
-   public void setRoadSegment(List<OdeRoadSegment> roadSegments) {
+   public void setRoadSegment(List<OdeRoadSegment> roadSegments, double tolerance) {
       double minDist = Double.POSITIVE_INFINITY;
       OdeRoadSegment minSeg = null;
       for (OdeRoadSegment seg : roadSegments) {
          Line2D l = seg.toLine2D(seg);
          Point2D p = GeoUtils.latLngToMap(latitude.doubleValue(), longitude.doubleValue());
-         if (GeoUtils.isPointInBounds(p, l, GeoUtils.SNAPPING_TOLERANCE)) {
+         if (GeoUtils.isPointInBounds(p, l, tolerance)) {
             double dist = GeoUtils.distanceToLine(l, p);
-            if (dist <= GeoUtils.SNAPPING_TOLERANCE) {
+            if (dist <= tolerance) {
                if (dist < minDist) {
                   minDist = dist;
                   minSeg = seg;

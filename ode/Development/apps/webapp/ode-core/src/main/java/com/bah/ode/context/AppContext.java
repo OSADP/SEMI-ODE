@@ -20,6 +20,9 @@ package com.bah.ode.context;
 import java.util.Enumeration;
 //import java.util.List;
 
+
+import java.util.UUID;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,6 +39,22 @@ import com.bah.ode.yarn.YarnClientManager;
 public class AppContext {
    private static Logger logger = LoggerFactory.getLogger(AppContext.class);
 
+   //CONSTANTS
+   public static final String HOSTNAME = "HOSTNAME";
+   public static final String DATA_PROCESSOR_INPUT_TOPIC = "DPIT";
+   public static final String DATA_PROCESSOR_AGGREGATES_TOPIC = "DPAT";
+   public static final String DATA_PROCESSOR_OUTPUT_TOPIC = "DPOT";
+   
+   // SparkConf related Constants
+   public static final String ODE_SPARK_JAR = "ode.spark.jar";
+   public static final String DEPLOY_HOME = "/opt/bitnami/apache-tomcat/webapps/ode/WEB-INF/lib"; //TODO Same as Web Server root?
+   public static final String SPARK_HOME = "/usr/hdp/current/spark-client";
+   public static final String HADOOP_HOME = "/usr/hdp/current/hadoop-client";
+   public static final String HADOOP_CONF_DIR = HADOOP_HOME+"/conf";
+   public static final String HADOOP_YARN_HOME = "/usr/hdp/current/hadoop-yarn-client";
+   public static final String YARN_CONF_DIR = HADOOP_YARN_HOME+"/conf";
+
+   //web.xml config parameter keys
    public static final String WEB_SERVER_ROOT = "web.server.root";
    public static final String LOOPBACK_TEST = "loopback.test";
    public static final String LIFERAY_DB_NAME = "liferay.db.name";
@@ -76,21 +95,10 @@ public class AppContext {
    public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
    public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
 
-   public static final String ODE_VEH_DATA_FLAT_TOPIC = "ode.veh.data.flat.topic";
    public static final String TOKEN_KEY_RSA_PEM = "token.key.rsa.pem";
 
-   // SParkConf related Constants
-   public static final String ODE_SPARK_JAR = "ode.spark.jar";
-   public static final String DEPLOY_HOME = "/opt/bitnami/apache-tomcat/webapps/ode/WEB-INF/lib"; //TODO Same as Web Server root?
-   public static final String SPARK_HOME = "/usr/hdp/current/spark-client";
-   public static final String HADOOP_HOME = "/usr/hdp/current/hadoop-client";
-   public static final String HADOOP_CONF_DIR = HADOOP_HOME+"/conf";
-   public static final String HADOOP_YARN_HOME = "/usr/hdp/current/hadoop-yarn-client";
-   public static final String YARN_CONF_DIR = HADOOP_YARN_HOME+"/conf";
-
-   public static final String AGGREGATES_TOPIC = "AGGREGATES_TOPIC";
-
    public static final String SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE = "spark.road.segment.snapping.tolerance";
+
 
 
    private static AppContext instance = null;
@@ -118,8 +126,17 @@ public class AppContext {
 
    public void init(ServletContext context) {
       this.servletContext = context;
-      sparkMaster = getParam(SPARK_MASTER);
-
+      this.sparkMaster = getParam(SPARK_MASTER);
+      String hostname = System.getenv("HOSTNAME");
+      if (hostname == null)
+         hostname = UUID.randomUUID().toString();
+      
+      this.servletContext.setInitParameter(DATA_PROCESSOR_INPUT_TOPIC, 
+            DATA_PROCESSOR_INPUT_TOPIC + hostname);
+      
+      this.servletContext.setInitParameter(DATA_PROCESSOR_AGGREGATES_TOPIC, 
+            DATA_PROCESSOR_AGGREGATES_TOPIC + hostname);
+      
       // DEBUG ONLY
       // For debugging only and running the app on local machine
       // without Spark
@@ -131,11 +148,13 @@ public class AppContext {
               .setMaster(sparkMaster)
               .setAppName(context.getServletContextName())
               .set("spark.shuffle.manager", "SORT")
-              .set("spark.streaming.microbatch.duration.ms", getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
-              .set("spark.streaming.window.microbatches", getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
-              .set("spark.streaming.slide.microbatches", getParam(SPARK_STREAMING_SLIDE_MICROBATCHES))
-              .set("spark.static.weather.file.location", getParam(SPARK_STATIC_WEATHER_FILE_LOCATION))
-              .set("spark.road.segment.snapping.tolerance", getParam(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE));
+              .set(SPARK_STREAMING_MICROBATCH_DURATION_MS, getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
+              .set(SPARK_STREAMING_WINDOW_MICROBATCHES, getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
+              .set(SPARK_STREAMING_SLIDE_MICROBATCHES, getParam(SPARK_STREAMING_SLIDE_MICROBATCHES))
+              .set(SPARK_STATIC_WEATHER_FILE_LOCATION, getParam(SPARK_STATIC_WEATHER_FILE_LOCATION))
+              .set(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE, getParam(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE))
+              .set(DATA_PROCESSOR_INPUT_TOPIC, getParam(DATA_PROCESSOR_INPUT_TOPIC))
+              .set(DATA_PROCESSOR_AGGREGATES_TOPIC, getParam(DATA_PROCESSOR_AGGREGATES_TOPIC));
 
             if (sparkMaster.startsWith("yarn")) {
                sparkConf.set("spark.yarn.jar", SPARK_HOME+"/lib/"+ getParam(SPARK_ASSEMBLY_JAR))
@@ -276,7 +295,7 @@ public class AppContext {
             yarnManager.setKafkaMetaDataBrokerList(getParam(KAFKA_METADATA_BROKER_LIST))
                .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
                .setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
-               .setOdeVehDataFlatTopic(getParam(ODE_VEH_DATA_FLAT_TOPIC))
+               .setDataProcessorInputTopic(getParam(DATA_PROCESSOR_INPUT_TOPIC))
                .setSparkStreamingMicrobatchDuration(getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
                .setClass("com.bah.ode.spark.VehicleDataProcessorWrapper")
                .setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR));

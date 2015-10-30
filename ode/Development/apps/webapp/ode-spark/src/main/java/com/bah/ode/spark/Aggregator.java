@@ -10,12 +10,16 @@ import scala.Tuple2;
 
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
 
-public class AggregatorDistributor extends BaseDistributor
+public class Aggregator extends BaseDistributor
    implements Function<JavaPairRDD<String, Tuple2<String, String>>, Void> {
 
    private static final long serialVersionUID = 34991323740854373L;
-   public AggregatorDistributor(Broadcast<MQSerialazableProducerPool> producerPool) {
+   private String outputTopic;
+   
+   public Aggregator(Broadcast<MQSerialazableProducerPool> producerPool,
+         String outputTopic) {
       super(producerPool);
+      this.outputTopic = outputTopic;
    }
 
    @Override
@@ -41,7 +45,8 @@ public class AggregatorDistributor extends BaseDistributor
 
 //      ovdfAggsDataFrame.show(10);
 
-      ovdfAggsDataFrame.toJavaRDD().foreachPartition(new DataFrameDistributor(producerPool));
+      ovdfAggsDataFrame.toJavaRDD().foreachPartition(new AggregateDataDistributor(producerPool,
+            outputTopic));
       return null;
    }
 

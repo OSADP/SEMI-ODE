@@ -160,10 +160,6 @@
     -->
    </context-param>
    <context-param>
-      <param-name>ode.veh.data.flat.topic</param-name>
-      <param-value>ode.veh.data.flat.topic</param-value>
-   </context-param>
-   <context-param>
    <param-name>ode.spark.jar</param-name>
    <param-value>ode-spark-0.0.1-SNAPSHOT.jar</param-value>
    </context-param>

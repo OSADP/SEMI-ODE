@@ -19,6 +19,7 @@ package com.bah.ode.server;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
@@ -186,21 +187,29 @@ public class WebSocketServer {
       OdeStatus status = new OdeStatus();
       MQTopic clientTopic = null;
       try {
-         // Is there a request already for this data?
-         if (odeRequest == null) {
-            if (dataTypeRequested == OdeDataType.AggregateData) {
-               odeRequest = OdeRequestManager.buildOdeRequest(rtype, 
-                     OdeDataType.VehicleData.getShortName(), message);
-            }
-            else {
-               odeRequest = OdeRequestManager.buildOdeRequest(rtype, dtype, message);
-            }
-            
+         if (dataTypeRequested == OdeDataType.AggregateData) {
+            odeRequest = OdeRequestManager.buildOdeRequest(rtype, 
+                  OdeDataType.VehicleData.getShortName(), message);
+         }
+         else {
+            odeRequest = OdeRequestManager.buildOdeRequest(rtype, dtype, message);
          }
 
-         String requestId = OdeRequestManager.buildRequestId(odeRequest);
-         // Use the request Id to determine if there is an existing request for the same data
-         clientTopic = OdeRequestManager.getTopic(requestId);
+         String requestId;
+         /*
+          * Since queries are finite streams, each query should be treated as
+          * unique. QUeries cannot share the same data process and the same
+          * output topic.
+          */
+         if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
+            requestId = OdeRequestManager.buildRequestId(odeRequest);
+            // Use the request Id to determine if there is an existing request for the same data
+            clientTopic = OdeRequestManager.getTopic(requestId);
+         }
+         else {
+            requestId = UUID.randomUUID().toString();
+         }
+         
          if (clientTopic == null) {
             // Note: requestId should not be null. So if we get a NPE, we have an internal error
             logger.info("Creating new request ID: {}", requestId);
@@ -220,14 +229,27 @@ public class WebSocketServer {
             
             connector.sendDataRequest(odeRequest);
             
-            
             if (dataTypeRequested == OdeDataType.AggregateData) {
                launchNewDistributor(session, MQTopic.create(
-                     AppContext.AGGREGATES_TOPIC, MQTopic.defaultPartitions()));
+                     AppContext.getInstance().getParam(
+                           AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC), 
+                           MQTopic.defaultPartitions()));
             } else {
                launchNewDistributor(session, clientTopic);
             }
-            OdeRequestManager.addSubscriber(requestId, odeRequest.getDataType());
+            
+            if (!OdeRequestManager.isPassThrough(odeRequest.getDataType())) {
+               if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
+                  int numSubscribers = OdeRequestManager.addSubscriber(
+                        requestId, odeRequest.getDataType());
+                  if (numSubscribers > 0)
+                     LocalSparkProcessor.startStreamingContext();
+               } else {
+                  LocalSparkProcessor.startStreamingContext();
+               }
+            }
+            
+
             logger.info("DDS Connection Established for request ID {}.", requestId);
             status.setMessage("DDS Connection Established");
          } else {

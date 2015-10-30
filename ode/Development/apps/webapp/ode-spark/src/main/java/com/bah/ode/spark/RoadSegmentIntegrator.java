@@ -13,6 +13,12 @@ public class RoadSegmentIntegrator implements
 PairFunction<Tuple2<String,Tuple2<String,String>>,String,Tuple2<String,String>> {
 
    private static final long serialVersionUID = -6411271453863200897L;
+   
+   private double snappingTolerance;
+   
+   public RoadSegmentIntegrator(double snappingTolerance) {
+      this.snappingTolerance = snappingTolerance;
+   }
 
    @Override
    public Tuple2<String, Tuple2<String, String>> call(
@@ -30,7 +36,7 @@ PairFunction<Tuple2<String,Tuple2<String,String>>,String,Tuple2<String,String>> 
       if (metadata.getOdeRequest() != null) {
          OdePolyline polyline = metadata.getOdeRequest().getPolyline();
          if (polyline != null)
-            ovdf.setRoadSegment(polyline.getSegments());
+            ovdf.setRoadSegment(polyline.getSegments(), snappingTolerance);
       }
       
       Tuple2<String, Tuple2<String, String>> withRoadSeg = 
