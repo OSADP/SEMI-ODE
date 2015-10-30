@@ -16,15 +16,27 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
-
-
 @SuppressWarnings("serial")
 public class OdeRequest extends BaseRequest {
+   public enum DataSource {
+      SDC, SDW, SDPC
+   }
+
+   private DataSource dataSource;
    private OdeRequestType requestType;
    private OdeDataType dataType;
    private OdePolyline polyline;
 
-   public OdeRequestType getRequestType() {
+  public DataSource getDataSource() {
+      return dataSource;
+   }
+
+   public OdeRequest setDataSource(DataSource dataSource) {
+      this.dataSource = dataSource;
+      return this;
+   }
+
+public OdeRequestType getRequestType() {
       return requestType;
    }
 
@@ -55,6 +67,8 @@ public class OdeRequest extends BaseRequest {
    public int hashCode() {
       final int prime = 31;
       int result = super.hashCode();
+      result = prime * result
+            + ((dataSource == null) ? 0 : dataSource.hashCode());
       result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
       result = prime * result + ((polyline == null) ? 0 : polyline.hashCode());
       result = prime * result
@@ -71,6 +85,8 @@ public class OdeRequest extends BaseRequest {
       if (getClass() != obj.getClass())
          return false;
       OdeRequest other = (OdeRequest) obj;
+      if (dataSource != other.dataSource)
+         return false;
       if (dataType != other.dataType)
          return false;
       if (polyline == null) {

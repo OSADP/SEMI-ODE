@@ -14,7 +14,7 @@ public class BaseTopicManager {
          new ConcurrentHashMap<String, AtomicInteger>();
 
    protected String buildTopicName(Object o) {
-      return AppContext.getInstance().getParam(AppContext.HOSTNAME) +
+      return AppContext.getInstance().getParam(AppContext.ODE_HOSTNAME) +
             o.getClass().getSimpleName() + 
             String.valueOf(o.hashCode());
    }

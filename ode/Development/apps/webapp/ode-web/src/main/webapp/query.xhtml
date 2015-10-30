@@ -65,7 +65,7 @@ h2 {
    border: 1px solid #CCCCCC;
    border-right-color: #999999;
    border-bottom-color: #999999;
-   height: 200px;
+   height: 300px;
    overflow-y: scroll;
    padding: 5px;
    width: 100%;
@@ -255,7 +255,7 @@ $(document ).ready(function() {
       p.style.wordWrap = 'break-word';
       p.appendChild(document.createTextNode(msgOrData));
       console.appendChild(p);
-      while (console.childNodes.length > 25) {
+      while (console.childNodes.length > 10000) {
           console.removeChild(console.firstChild);
       }
       console.scrollTop = console.scrollHeight;
@@ -489,9 +489,9 @@ $(document ).ready(function() {
   <form>
     <fieldset>
       <label for="email">Email</label>
-      <input type="text" name="email" id="email" value="jane@smith.com" class="text ui-widget-content ui-corner-all"></input>
+      <input type="text" name="email" id="email" value="sampleUser@liferay.com" class="text ui-widget-content ui-corner-all"></input>
       <label for="password">Password</label>
-      <input type="password" name="password" id="password" value="xxxxxxx" class="text ui-widget-content ui-corner-all"></input>
+      <input type="password" name="password" id="password" value="ComplexPassword" class="text ui-widget-content ui-corner-all"></input>
  
       <!-- Allow form submission with keyboard without duplicating the dialog button -->
       <input type="submit" tabindex="-1" style="position:absolute; top:-1000px"> </input>

@@ -67,7 +67,7 @@ h2 {
    border: 1px solid #CCCCCC;
    border-right-color: #999999;
    border-bottom-color: #999999;
-   height: 200px;
+   height: 300px;
    overflow-y: scroll;
    padding: 5px;
    width: 100%;
@@ -242,12 +242,12 @@ $(document ).ready(function() {
 
   function log(msgOrData) {
       // TODO convert to JQuery Syntax
-	  var console = document.getElementById('console');
+      var console = document.getElementById('console');
       var p = document.createElement('p');
       p.style.wordWrap = 'break-word';
       p.appendChild(document.createTextNode(msgOrData));
       console.appendChild(p);
-      while (console.childNodes.length > 25) {
+      while (console.childNodes.length > 10000) {
           console.removeChild(console.firstChild);
       }
       console.scrollTop = console.scrollHeight;
@@ -431,7 +431,7 @@ $(document ).ready(function() {
                value="36.4765153148293" size="40" style="width: 350px" /><br />
             <label>SE Longitude</label> <input id="seLon" type="text"
                value="-74.53468322753906" size="40" style="width: 350px" /><br />
-            <h3>Road Segment  Nodes</h3>
+            <h3>Road Segment Nodes</h3>
             <input id="n1" type="text" value = "LarnedShelby" size="10"/><input id="n1Lat" type="text" value = "42.328468" size="10"/><input id="n1Lng" type="text" value = "-83.04747" size="10"/><br />
             <input id="n2" type="text" value = "LarnedGriswold" size="10"/><input id="n2Lat" type="text" value = "42.329067" size="10"/><input id="n2Lng" type="text" value = "-83.046086" size="10"/><br />
             <input id="n3" type="text" value = "LarnedRandolph" size="10"/><input id="n3Lat" type="text" value = "42.33053" size="10"/><input id="n3Lng" type="text" value = "-83.042701" size="10"/><br />
@@ -488,9 +488,9 @@ $(document ).ready(function() {
   <form>
     <fieldset>
       <label for="email">Email</label>
-      <input type="text" name="email" id="email" value="jane@smith.com" class="text ui-widget-content ui-corner-all"></input>
+      <input type="text" name="email" id="email" value="sampleUser@liferay.com" class="text ui-widget-content ui-corner-all"></input>
       <label for="password">Password</label>
-      <input type="password" name="password" id="password" value="xxxxxxx" class="text ui-widget-content ui-corner-all"></input>
+      <input type="password" name="password" id="password" value="ComplexPassword" class="text ui-widget-content ui-corner-all"></input>
  
       <!-- Allow form submission with keyboard without duplicating the dialog button -->
       <input type="submit" tabindex="-1" style="position:absolute; top:-1000px"> </input>
