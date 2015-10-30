@@ -1,6 +1,6 @@
-192.168.33.10 ambari-server.local ambari-server
-192.168.33.11 hdp1-server.local hdp1-server
-192.168.33.12 hdp2-server.local hdp2-server
-192.168.33.20 liferay-server.local liferay-server
-192.168.33.30 elk1-server.local elk1-server
-192.168.33.31 elk2-server.local elk2-server
+192.168.22.10 ambari-server.local ambari-server
+192.168.22.11 hdp1-server.local hdp1-server
+192.168.22.12 hdp2-server.local hdp2-server
+192.168.22.20 liferay-server.local liferay-server
+192.168.22.30 elk1-server.local elk1-server
+192.168.22.31 elk2-server.local elk2-server
