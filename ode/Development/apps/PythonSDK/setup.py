@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='OdeClient',
-    version='0.2',
+    version='0.3',
     packages=['odeClient'],
     url='',
     license='',

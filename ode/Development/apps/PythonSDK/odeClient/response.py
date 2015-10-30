@@ -21,8 +21,8 @@ class BaseResponse(object):
     def get_data_type(self):
         return self.payload.get(_DATA_TYPE,None)
          
-    def get_payload_value(self, key):
-        return self.payload.get(key,None)
+    def get_payload_value(self, key,default=None):
+        return self.payload.get(key,default)
     
     def get_metadata_value(self, key):
         return self.metaData.get(key,None)

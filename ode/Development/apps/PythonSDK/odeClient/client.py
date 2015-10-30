@@ -17,13 +17,14 @@ websocket.enableTrace(enableWebSocketTrace)
 
 supported_types = {
 		"sub":["int","veh","agg"],
-		"qry":["int","veh","adv"]
+		"qry":["int","veh","adv"],
+        "tst":["veh"]
 	}
 
 class ODEClient(object):
 
 
-    def __init__(self,host, userName=None,password=None):
+    def __init__(self,host, userName=None,password=None,**kwargs):
         self.host = host
         if userName is not None and password is not None:
             self.get_token(userName,password)
@@ -32,6 +33,7 @@ class ODEClient(object):
         self.ws = None
         self.request = None
         self.queue = Queue.Queue()
+        self.on_open = kwargs.get('on_open',self._on_open)
 
     def get_token(self,username,password):
         self.token= restApi.login(self.host,username,password)
@@ -43,7 +45,7 @@ class ODEClient(object):
         self.token= restApi.login(self.host,username,password)
 
     def destroy_token(self):
-        restApi.logout(self.host,self.host)
+        return restApi.logout(self.host,self.token)
 
     def setRequest(self,request):
         self.request = request
@@ -69,17 +71,21 @@ class ODEClient(object):
         uri = "{0}/{1}".format(self.request.requestType, self.request.dataType)
 
         socket_url = "ws://{0}/api/ws/{1}?token={2}".format(self.host, uri, self.token)
-        self.ws = websocket.WebSocketApp(socket_url, header=kwargs.get("header", []), 
+        logger.info("Connecting to: %s", socket_url)
+        self.ws = websocket.WebSocketApp(socket_url, header=kwargs.get("header", []),
                                 cookie=kwargs.get("cookie", None),
                                 on_message=on_message,
                                 on_error=kwargs.get("on_error", on_error),
                                 on_close=kwargs.get("on_close", on_close),
                                 )
-
-        if on_open is None:
-            self.ws.on_open = self._on_open
-        else:
+        if on_open is not None:
             self.ws.on_open = on_open
+        else:
+            self.ws.on_close = self.on_open
+        # if on_open is None:
+        #     self.ws.on_open = self._on_open
+        # else:
+        #     self.ws.on_open =on_open
 
         self.ws.run_forever()
 
@@ -106,10 +112,14 @@ class AsyncODEClient(threading.Thread):
             self.client = kwargs.get("odeClient")
         else:
             self.client = ODEClient(*args,**kwargs)
-        
+        threading.Thread.__init__(self)
         self.queue = Queue.Queue()
-        threading.Thread.__init__ (self)
-    
+        self._stop = threading.Event()
+        self.daemon = True
+
+    def setRequest(self,request):
+        self.client.setRequest(request)
+
     def is_buffer_empty(self):
         return self.queue.empty()
     
@@ -137,7 +147,15 @@ class AsyncODEClient(threading.Thread):
         self.queue.put_nowait(response.BaseResponse(message))
 
     def run(self,*args,**kwargs):
-         self.client.connect(on_message=self.on_messageQueue, *args,**kwargs) 
+        self.client.connect(on_message=self.on_messageQueue, *args,**kwargs)
+
+    def stop(self):
+        self._stop.set()
+        self.client.ws.close()
+
+    def stopped(self):
+        return self._stop.isSet()
+
 
 class GeographicRegion(object):
     def __init__(self,northWestLat,northWestLon,southEastLat,southEastLon):
