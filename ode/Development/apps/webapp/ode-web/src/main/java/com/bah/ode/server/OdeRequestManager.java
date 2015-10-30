@@ -85,12 +85,8 @@ public class OdeRequestManager {
       return otms.getOrCreateTopic(RequestId);
    }
 
-   public static void addSubscriber(String RequestId, OdeDataType dataType) {
-      int numSubscribers = otms.addSubscriber(RequestId);
-      if (numSubscribers > 0 && !isPassThrough(dataType) &&
-            appContext.getParam(AppContext.SPARK_MASTER).startsWith("local")) {
-         LocalSparkProcessor.startStreamingContext();
-      }
+   public static int addSubscriber(String RequestId, OdeDataType dataType) {
+      return (otms.addSubscriber(RequestId));
    }
 
    public static void removeSubscriber(String RequestId, OdeDataType dataType) {

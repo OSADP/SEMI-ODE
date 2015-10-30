@@ -56,7 +56,7 @@ public class DataSourceConnector {
                         AppContext.KAFKA_DEFAULT_CONSUMER_THREADS));
                   
                   MQTopic ovdfTopic = MQTopic.create(appContext.getParam(
-                        AppContext.ODE_VEH_DATA_FLAT_TOPIC), partitions);
+                        AppContext.DATA_PROCESSOR_INPUT_TOPIC), partitions);
                   
                   metadata.setInputTopic(ovdfTopic);
                   if (odeRequest.getRequestType() == OdeRequestType.Test) {

@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import scala.Tuple2;
 
-
+import com.bah.ode.context.AppContext;
 //import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeObject;
 import com.bah.ode.util.JsonUtils;
@@ -32,151 +32,162 @@ import com.bah.ode.wrapper.MQSerialazableProducerPool;
 import com.bah.ode.wrapper.MQTopic;
 
 public class VehicleDataProcessor extends OdeObject {
-	private static final long serialVersionUID = 2480028249180282250L;
-	private static Logger logger = LoggerFactory
-			.getLogger(VehicleDataProcessor.class);
-	//private static AppContext appContext = AppContext.getInstance();
+   private static final long serialVersionUID = 2480028249180282250L;
+   private static Logger logger = LoggerFactory
+         .getLogger(VehicleDataProcessor.class);
 
-	public void setup(final JavaStreamingContext ssc, MQTopic ovdfTopic,
-			String zkConnectionStrings, String brokerList) {
+   // private static AppContext appContext = AppContext.getInstance();
 
-		ArrayList<JavaPairDStream<String, String>> dstreams = new ArrayList<JavaPairDStream<String, String>>();
+   public void setup(final JavaStreamingContext ssc, MQTopic ovdfTopic,
+         String zkConnectionStrings, String brokerList) {
 
-		String groupId = VehicleDataProcessor.class.getName();
+      ArrayList<JavaPairDStream<String, String>> dstreams = new ArrayList<JavaPairDStream<String, String>>();
 
+      String groupId = VehicleDataProcessor.class.getName();
 
+      try {
+         for (int i = 0; i < ovdfTopic.getPartitions(); i++) {
+            JavaPairDStream<String, String> aStream = KafkaUtils.createStream(
+                  ssc,
+                  zkConnectionStrings,
+                  groupId,
+                  Collections.singletonMap(ovdfTopic.getName(),
+                        ovdfTopic.getPartitions()));
 
-		try {
-			for (int i = 0; i < ovdfTopic.getPartitions(); i++) {
-				JavaPairDStream<String, String> aStream = KafkaUtils.createStream(
-						ssc,
-						zkConnectionStrings,
-						groupId,
-						Collections.singletonMap(ovdfTopic.getName(),
-								ovdfTopic.getPartitions()));
+            dstreams.add(aStream);
+         }
 
-				dstreams.add(aStream);
-			}
+         JavaPairDStream<String, String> unifiedStream = ssc.union(
+               dstreams.get(0), dstreams.subList(1, dstreams.size()));
 
-			JavaPairDStream<String, String> unifiedStream = ssc.union(
-					dstreams.get(0), dstreams.subList(1, dstreams.size()));
+         // System.out.println("unifiedStream");
+         // System.out.println("===============");
+         // unifiedStream.cache().print(10);
 
-			// System.out.println("unifiedStream");
-			// System.out.println("===============");
-			// unifiedStream.cache().print(10);
+         JavaPairDStream<String, String> payloadStream2 = unifiedStream
+               .mapToPair(pam -> new Tuple2<String, String>(pam._1, JsonUtils
+                     .getJson(pam._2, "payload")));
 
-			JavaPairDStream<String, String> payloadStream2 = unifiedStream
-					.mapToPair(pam -> new Tuple2<String, String>(pam._1, JsonUtils
-							.getJson(pam._2, "payload")));
+         // System.out.println("payloadStream2");
+         // System.out.println("===============");
+         // payloadStream2.cache().print(10);
 
-			// System.out.println("payloadStream2");
-			// System.out.println("===============");
-			// payloadStream2.cache().print(10);
+         // JavaDStream<String> payloadStream =
+         // unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "payload"));
 
-			// JavaDStream<String> payloadStream =
-			// unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "payload"));
+         JavaPairDStream<String, String> metadataStream2 = unifiedStream
+               .mapToPair(pam -> new Tuple2<String, String>(pam._1, JsonUtils
+                     .getJson(pam._2, "metadata")));
 
-			JavaPairDStream<String, String> metadataStream2 = unifiedStream
-					.mapToPair(pam -> new Tuple2<String, String>(pam._1, JsonUtils
-							.getJson(pam._2, "metadata")));
+         // System.out.println("metadataStream2");
+         // System.out.println("===============");
+         // metadataStream2.cache().print(10);
 
-			// System.out.println("metadataStream2");
-			// System.out.println("===============");
-			// metadataStream2.cache().print(10);
+         // JavaDStream<String> metadataStream =
+         // unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "metadata"));
+         //
+         SparkConf conf = ssc.sparkContext().getConf();
 
-			// JavaDStream<String> metadataStream =
-			// unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "metadata"));
-			//
-			SparkConf conf = ssc.sparkContext().getConf();
+         Integer microbatchDuration = Integer.valueOf(conf.get(
+               AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS, "1000"));
+         // Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS));
 
-			Integer microbatchDuration = Integer.valueOf(conf.get("spark.streaming.microbatch.duration.ms", "1000"));
-			//Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS));
+         Integer windowDuration = Integer.valueOf(conf.get(
+               AppContext.SPARK_STREAMING_WINDOW_MICROBATCHES, "60"));
+         // Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_WINDOW_MICROBATCHES));
 
-			Integer windowDuration = Integer.valueOf(conf.get("spark.streaming.window.microbatches", "60"));
-			//Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_WINDOW_MICROBATCHES));
+         Integer slideDuration = Integer.valueOf(conf.get(
+               AppContext.SPARK_STREAMING_SLIDE_MICROBATCHES, "30"));
+         // Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_SLIDE_MICROBATCHES));
 
-			Integer slideDuration = Integer.valueOf(conf.get("spark.streaming.slide.microbatches", "30"));
-			// Integer.valueOf(appContext.getParam(AppContext.SPARK_STREAMING_SLIDE_MICROBATCHES));
+         JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata = payloadStream2
+               .join(metadataStream2);
 
-			JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata =
-					payloadStream2.join(metadataStream2);
+         // System.out.println("joinedStream2");
+         // System.out.println("===============");
+         // joinedStream2.cache().print(10);
 
-			// System.out.println("joinedStream2");
-			// System.out.println("===============");
-			// joinedStream2.cache().print(10);
+         // JavaPairDStream<String, String> joinedStream =
+         // joinedStream2.mapToPair(pam->pam._2);
+         // System.out.println("joinedStream");
+         // System.out.println("===============");
+         // joinedStream.cache().print(10);
 
-			// JavaPairDStream<String, String> joinedStream =
-			// joinedStream2.mapToPair(pam->pam._2);
-			// System.out.println("joinedStream");
-			// System.out.println("===============");
-			// joinedStream.cache().print(10);
+         final Broadcast<MQSerialazableProducerPool> producerPool = ssc
+               .sparkContext().broadcast(
+                     new MQSerialazableProducerPool(brokerList));
 
-			final Broadcast<MQSerialazableProducerPool> producerPool = ssc
-					.sparkContext().broadcast(
-							new MQSerialazableProducerPool(brokerList));
+         /*
+          * Road Segment Integration
+          */
+         JavaPairDStream<String, Tuple2<String, String>> withRoadSegment = 
+               payloadAndMetadata.mapToPair(new RoadSegmentIntegrator(
+                     Double.valueOf(conf.get(AppContext.SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE, "20.0"))));
 
-			/*
-			 * Weather data integration
-			 */
+         JavaPairDStream<String, Tuple2<String, String>> windowedPnM = 
+               withRoadSegment.window(
+                     Durations.milliseconds(microbatchDuration
+                           * windowDuration),
+                     Durations.milliseconds(microbatchDuration
+                           * slideDuration));
 
-			String weatherLocation = ssc.sparkContext().getConf().get("spark.static.weather.file.location", "");
-			if(!weatherLocation.equals("")){
-				JavaSparkContext sparkContext = ssc.sparkContext();
+         /*
+          * Vehicle Data Aggregation and Distribution
+          */
+         windowedPnM.foreachRDD(new Aggregator(producerPool, ssc
+               .sparkContext().getConf()
+               .get(AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC)));
 
-				JavaRDD<String> fileRDD = sparkContext.textFile(weatherLocation);
-				List<String> fileArray = fileRDD.toArray();
+         /*
+          * Vehicle data Distribution
+          */
+         withRoadSegment.foreachRDD(new PayloadDistributor(producerPool));
+            
+         /*
+          * Weather data integration
+          */
 
-				List<StructField> fields = new ArrayList<StructField>();
-				String[] header = fileArray.get(0).split(",");
-				for(String head : header)
-					fields.add(DataTypes.createStructField(head, DataTypes.StringType, true));
+         String weatherLocation = ssc.sparkContext().getConf()
+               .get(AppContext.SPARK_STATIC_WEATHER_FILE_LOCATION, "");
+         if (!weatherLocation.equals("")) {
+            JavaSparkContext sparkContext = ssc.sparkContext();
 
-				fileArray.remove(0);
-				List<Row> outRows = new ArrayList<Row>();
-				for(String s: fileArray){
-					outRows.add(  RowFactory.create((Object[]) s.split(",", -1)) );
-				}
+            JavaRDD<String> fileRDD = sparkContext.textFile(weatherLocation);
+            List<String> fileArray = fileRDD.toArray();
 
-				StructType newSchema = DataTypes.createStructType(fields);
+            List<StructField> fields = new ArrayList<StructField>();
+            String[] header = fileArray.get(0).split(",");
+            for (String head : header)
+               fields.add(DataTypes.createStructField(head,
+                     DataTypes.StringType, true));
 
-				SQLContext sqlContext = SqlContextSingleton.getInstance(ssc.sparkContext().sc());
-				DataFrame weatherFrame = sqlContext.createDataFrame(sparkContext.parallelize(outRows), newSchema);
-				logger.info("Weather Dataframe Created: " + weatherFrame.head().toString());
+            fileArray.remove(0);
+            List<Row> outRows = new ArrayList<Row>();
+            for (String s : fileArray) {
+               outRows.add(RowFactory.create((Object[]) s.split(",", -1)));
+            }
 
-				List<String> weatherData = weatherFrame.toJavaRDD().map(new WeatherMapper(weatherFrame.columns())).toArray();
+            StructType newSchema = DataTypes.createStructType(fields);
 
+            SQLContext sqlContext = SqlContextSingleton.getInstance(ssc
+                  .sparkContext().sc());
+            DataFrame weatherFrame = sqlContext.createDataFrame(
+                  sparkContext.parallelize(outRows), newSchema);
+            logger.info("Weather Dataframe Created: "
+                  + weatherFrame.head().toString());
 
-				JavaPairDStream<String, Tuple2<String, String>> withWeatherData =
-						payloadAndMetadata.mapToPair(new WeatherIntegrator(weatherData));
+            List<String> weatherData = weatherFrame.toJavaRDD()
+                  .map(new WeatherMapper(weatherFrame.columns())).toArray();
 
-				withWeatherData.foreachRDD(new PayloadDistributor(producerPool));
-			}else{
+            JavaPairDStream<String, Tuple2<String, String>> withWeatherData = 
+                  withRoadSegment.mapToPair(new WeatherIntegrator(weatherData));
 
-				/*
-				 * Road Segment Integration
-				 */
-				JavaPairDStream<String, Tuple2<String, String>> withRoadSegment =
-						payloadAndMetadata.mapToPair(new RoadSegmentIntegrator());
+            withWeatherData.foreachRDD(new PayloadDistributor(producerPool));
+         }
+      } catch (Exception e) {
+         logger.info("Error in Spark Job {}", e);
+      }
 
-				JavaPairDStream<String, Tuple2<String, String>> windowedPnM =
-						withRoadSegment.window(
-								Durations.milliseconds(microbatchDuration * windowDuration),
-								Durations.milliseconds(microbatchDuration * slideDuration));
-
-				/*
-				 * Vehicle Data Aggregation and Distribution
-				 */
-				windowedPnM.foreachRDD(new AggregatorDistributor(producerPool));
-
-				/*
-				 * Vehicle data Distribution
-				 */
-				withRoadSegment.foreachRDD(new PayloadDistributor(producerPool));
-			}
-		} catch (Exception e) {
-			logger.info("Error in Spark Job {}", e);
-		}
-
-	}
+   }
 
 }

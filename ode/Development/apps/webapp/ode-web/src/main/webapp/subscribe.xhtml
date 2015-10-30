@@ -199,13 +199,22 @@ $(document ).ready(function() {
          
          var s1 = {};
          s1["id"] = "LarnedShelbyGriswold";
-         s1["startPoint"] = {"latitude":42.328468, "longitude":-83.047470};//W. Larned and Shelby
-         s1["endPoint"] = {"latitude":42.329067, "longitude":-83.046086};//W. Larned and Griswold
+         s1["startPoint"] = {
+               "latitude":document.getElementById('n1Lat').value, 
+               "longitude":document.getElementById('n1Lng').value
+         };//W. Larned and Shelby
+         s1["endPoint"] = {
+               "latitude":document.getElementById('n2Lat').value, 
+               "longitude":document.getElementById('n2Lng').value
+         };//W. Larned and Griswold
          
          var s2 = {};
-         s2["id"] = "LarnedShelbyRandolph";
+         s2["id"] = "LarnedGriswoldRandolph";
          s2["prevSegment"] = "LarnedShelbyGriswold";
-         s2["endPoint"] = {"latitude":42.330530, "longitude":-83.042701};//Larned and Randolph
+         s2["endPoint"] = {
+               "latitude":document.getElementById('n3Lat').value, 
+               "longitude":document.getElementById('n3Lng').value
+         };//Larned and Randolph
          
          var polyline = [];
          polyline.push(s1);
@@ -422,6 +431,10 @@ $(document ).ready(function() {
                value="36.4765153148293" size="40" style="width: 350px" /><br />
             <label>SE Longitude</label> <input id="seLon" type="text"
                value="-74.53468322753906" size="40" style="width: 350px" /><br />
+            <h3>Road Segment  Nodes</h3>
+            <input id="n1" type="text" value = "LarnedShelby" size="10"/><input id="n1Lat" type="text" value = "42.328468" size="10"/><input id="n1Lng" type="text" value = "-83.04747" size="10"/><br />
+            <input id="n2" type="text" value = "LarnedGriswold" size="10"/><input id="n2Lat" type="text" value = "42.329067" size="10"/><input id="n2Lng" type="text" value = "-83.046086" size="10"/><br />
+            <input id="n3" type="text" value = "LarnedRandolph" size="10"/><input id="n3Lat" type="text" value = "42.33053" size="10"/><input id="n3Lng" type="text" value = "-83.042701" size="10"/><br />
          </div>
       </div>
       <div id="right-container">

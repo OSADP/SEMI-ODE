@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.bah.ode.context.AppContext;
 import com.bah.ode.wrapper.MQTopic;
 
 public class BaseTopicManager {
@@ -13,7 +14,8 @@ public class BaseTopicManager {
          new ConcurrentHashMap<String, AtomicInteger>();
 
    protected String buildTopicName(Object o) {
-      return o.getClass().getSimpleName() + 
+      return AppContext.getInstance().getParam(AppContext.HOSTNAME) +
+            o.getClass().getSimpleName() + 
             String.valueOf(o.hashCode());
    }
    

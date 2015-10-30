@@ -7,20 +7,23 @@ import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.Row;
 
-import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeAggregateData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.wrapper.MQProducer;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
 
-public class DataFrameDistributor extends BaseDistributor 
+public class AggregateDataDistributor extends BaseDistributor 
    implements VoidFunction<Iterator<Row>> {
 
    private static final long serialVersionUID = -4182433155035620976L;
    
-   public DataFrameDistributor(
-         Broadcast<MQSerialazableProducerPool> producerPool) {
+   private String outputTopic;
+   
+   public AggregateDataDistributor(
+         Broadcast<MQSerialazableProducerPool> producerPool,
+         String outputTopic) {
       super(producerPool);
+      this.outputTopic = outputTopic;
    }
 
    @Override
@@ -29,7 +32,6 @@ public class DataFrameDistributor extends BaseDistributor
       
       while (partitionOfRecords.hasNext()) {
          Row record = partitionOfRecords.next();
-         String outputTopic = AppContext.AGGREGATES_TOPIC;
          String tempId = record.getString(0);
 
          OdeAggregateData payload = new OdeAggregateData();

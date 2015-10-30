@@ -21,7 +21,8 @@ public class LocalSparkProcessor {
    private static AppContext appContext = AppContext.getInstance();
 
    public static synchronized void startStreamingContext() {
-      if (!streamingContextStarted) {
+      if (appContext.getParam(AppContext.SPARK_MASTER).startsWith("local") &&
+          !streamingContextStarted) {
          int numParitions = 
          Integer.parseInt(appContext.getParam(AppContext.KAFKA_DEFAULT_CONSUMER_THREADS));
 
@@ -38,7 +39,8 @@ public class LocalSparkProcessor {
             logger.info("Creating OVDF Process Flow...");
             ovdfProcessor = new VehicleDataProcessor();
             ovdfProcessor.setup(ssc,
-                  MQTopic.create(appContext.getParam(AppContext.ODE_VEH_DATA_FLAT_TOPIC), numParitions),
+                  MQTopic.create(appContext.getParam(
+                        AppContext.DATA_PROCESSOR_INPUT_TOPIC), numParitions),
                   appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
                   appContext.getParam(AppContext.KAFKA_METADATA_BROKER_LIST));
          }
