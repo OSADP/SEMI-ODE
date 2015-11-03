@@ -44,6 +44,7 @@ public class AppContext {
    public static final String DATA_PROCESSOR_INPUT_TOPIC = "DPIT";
    public static final String DATA_PROCESSOR_AGGREGATES_TOPIC = "DPAT";
    public static final String DATA_PROCESSOR_OUTPUT_TOPIC = "DPOT";
+   public static final String LOOPBACK_TEST = "loopback.test";
    
    // SparkConf related Constants
    public static final String ODE_SPARK_JAR = "ode.spark.jar";
@@ -56,7 +57,6 @@ public class AppContext {
 
    //web.xml config parameter keys
    public static final String WEB_SERVER_ROOT = "web.server.root";
-   public static final String LOOPBACK_TEST = "loopback.test";
    public static final String LIFERAY_DB_NAME = "liferay.db.name";
    public static final String LIFERAY_DB_HOST = "liferay.db.host";
    public static final String LIFERAY_WS_SERVER_HOST = "liferay.ws.serverhost";
