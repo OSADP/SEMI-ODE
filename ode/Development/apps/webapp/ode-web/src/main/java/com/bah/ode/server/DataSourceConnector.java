@@ -42,6 +42,7 @@ public class DataSourceConnector {
          switch (dataType) {
             case VehicleData:
             case IntersectionData:
+            case AdvisoryData:
             case MAPData:
             case SPaTData:
             case AggregateData:

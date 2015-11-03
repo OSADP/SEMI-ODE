@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
+import com.bah.ode.dds.client.ws.AsdDecoder;
 import com.bah.ode.dds.client.ws.DdsClientFactory;
 import com.bah.ode.dds.client.ws.IsdDecoder;
 import com.bah.ode.dds.client.ws.MapDecoder;
@@ -49,16 +50,18 @@ public class DdsRequestManager extends DataRequestManager {
          ddsRequest = buildDdsRequest(odeRequest);
          
          Class<?> decoder = null;
-         if (odeRequest.getDataType() == OdeDataType.IntersectionData) {
-            decoder = IsdDecoder.class;
-         } else if (odeRequest.getDataType() == OdeDataType.VehicleData) {
+         if (odeRequest.getDataType() == OdeDataType.VehicleData) {
             decoder = VsdDecoder.class;
+         } else if (odeRequest.getDataType() == OdeDataType.AggregateData) {
+            decoder = VsdDecoder.class;
+         } else if (odeRequest.getDataType() == OdeDataType.IntersectionData) {
+            decoder = IsdDecoder.class;
+         } else if (odeRequest.getDataType() == OdeDataType.AdvisoryData) {
+            decoder = AsdDecoder.class;
          } else if (odeRequest.getDataType() == OdeDataType.MAPData) {
             decoder = MapDecoder.class;
          } else if (odeRequest.getDataType() == OdeDataType.SPaTData) {
             decoder = SpatDecoder.class;
-         } else if (odeRequest.getDataType() == OdeDataType.AggregateData) {
-            decoder = VsdDecoder.class;
          }
    
          ddsClient = DdsClientFactory.create(appContext, metadata, 
@@ -116,6 +119,8 @@ public class DdsRequestManager extends DataRequestManager {
       } else if (dataType == OdeDataType.VehicleData || 
             dataType == OdeDataType.AggregateData) {
          ddsRequest.setDialogID(DdsRequest.Dialog.VSD.getId());
+      } else if (dataType == OdeDataType.AdvisoryData) {
+         ddsRequest.setDialogID(DdsRequest.Dialog.ASD.getId());
       } else {
          status.setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
                .setMessage(

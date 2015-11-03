@@ -191,6 +191,7 @@ $(document ).ready(function() {
   function send() {
       if (ws != null) {
          var request = {};
+         request["dataSource"] = $("#dataSource input:radio").filter(":checked").val();
          request["nwLat"] = document.getElementById('nwLat').value;
          request["nwLon"] = document.getElementById('nwLon').value;
          request["seLat"] = document.getElementById('seLat').value;
@@ -456,6 +457,15 @@ $(document ).ready(function() {
             <h2>Options:</h2><br />
             <label>skip</label> <input id="skip" type="text" value = "0" size="10" style="width: 100px" /><br />
             <label>Limit</label> <input id="limit" type="text" value = "100" size="10" style="width: 100px" /><br />
+            <hr />
+            <h2>Data Source:</h2>
+            <div id="dataSource">
+               <input id="sdpc" type="radio" name="group2" value="SDPC" checked="checked"/>
+               <label for="sdpc">SDPC</label> <br />
+               
+               <input id="sdw" type="radio" name="group2" value="SDW"/>
+               <label for="sdw">SDW</label><br />
+            </div>
 <!--               
             <input id="screen" type="checkbox" checked="checked" value="screen" />
               <label for="screen">On Screen</label><br />
