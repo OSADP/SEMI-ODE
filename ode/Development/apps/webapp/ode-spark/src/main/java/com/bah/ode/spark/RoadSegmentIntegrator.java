@@ -5,7 +5,6 @@ import org.apache.spark.api.java.function.PairFunction;
 import scala.Tuple2;
 
 import com.bah.ode.model.OdeMetadata;
-import com.bah.ode.model.OdePolyline;
 import com.bah.ode.model.OdeVehicleDataFlat;
 import com.bah.ode.util.JsonUtils;
 
@@ -33,10 +32,13 @@ PairFunction<Tuple2<String,Tuple2<String,String>>,String,Tuple2<String,String>> 
       OdeMetadata metadata = (OdeMetadata) JsonUtils.fromJson(sMetatdat, OdeMetadata.class);
       OdeVehicleDataFlat ovdf = (OdeVehicleDataFlat) JsonUtils.fromJson(sPayload, OdeVehicleDataFlat.class);
       
-      if (metadata.getOdeRequest() != null) {
-         OdePolyline polyline = metadata.getOdeRequest().getPolyline();
-         if (polyline != null)
-            ovdf.setRoadSegment(polyline.getSegments(), snappingTolerance);
+      if (metadata.getOdeRequest() != null &&
+          metadata.getOdeRequest().getPolyline() != null ) {
+             ovdf.setRoadSegment(
+                   metadata.getOdeRequest().getPolyline().getSegments(), 
+                   snappingTolerance);
+      } else {
+         ovdf.setRoadSeg("");
       }
       
       Tuple2<String, Tuple2<String, String>> withRoadSeg = 

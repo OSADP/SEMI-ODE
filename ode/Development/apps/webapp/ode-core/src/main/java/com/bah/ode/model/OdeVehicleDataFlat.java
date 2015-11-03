@@ -124,7 +124,7 @@ public final class OdeVehicleDataFlat extends OdeData {
    private Long    wipersStatusRear;
    private Integer wipersRateRear;   
    
-   private String roadSeg;
+   private String roadSeg = ""; // Required for Aggregator, hence initialized so it appears in JSON
 
    public OdeVehicleDataFlat(String serialId, GroupID groupId, VehSitRecord vsr) {
       super();
@@ -1475,8 +1475,6 @@ public final class OdeVehicleDataFlat extends OdeData {
       
       if (minSeg != null)
          setRoadSeg(minSeg.getId());
-      else
-         setRoadSeg("");
    }
 
 
