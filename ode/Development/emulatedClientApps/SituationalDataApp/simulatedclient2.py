@@ -35,7 +35,7 @@ import clientConfig
 # Set TIME to UTC
 # logging.Formatter.converter = time.gmtime
 
-logging_level = logging.DEBUG
+logging_level = logging.INFO
 
 if not os.path.exists('logs'):
     os.makedirs('logs')
@@ -130,7 +130,7 @@ def extract_json_objects(json_file):
             try:
                 if line is None or line == "\n":
                     break
-                json_file_data.append(json.loads(line, encoding='utf-8'))
+                json_file_data.append(json.loads(line, encoding='utf-8')['payload'])
             except:
                 logger.debug("LINE: %s", line)
                 logger.exception("Error Reading JSON FIle: %s", json_file)
@@ -154,13 +154,16 @@ def validate_datetime(msg_payload):
     else:
         return False
 
-def validate_location(msg_payload):
+def validate_location(msg_payload,region=None):
     """
-    Validates that the latitude and longitutde values for a query result is within the requested
+    Validates that the latitude and longitude values for a query result is within the requested
     bounding box region. .
     :return:
     """
-    service_region = config['SERVICE_REGION']
+    if region:
+        service_region = region
+    else:
+        service_region =config['SERVICE_REGION']
 
     if float(service_region['seLat']) <= float(msg_payload['latitude']) <= float(service_region['nwLat']) and \
        float(service_region['nwLon']) <= float(msg_payload['longitude']) <= float(service_region['seLon']):
@@ -265,7 +268,10 @@ def build_request(config):
     return request
 
 def build_region(regionValues):
+    """
 
+    :rtype : odeClient.client.GeographicRegion
+    """
     return client.GeographicRegion(regionValues["nwLat"],
                                    regionValues["nwLon"],
                                    regionValues["seLat"],
@@ -293,8 +299,8 @@ def on_message(ws, message):
 
     # determine message type and act accordingly
     logger.debug("Message Value: %s", message)
-    if log_to_file:
-        append_to_file(message)
+    # if log_to_file:
+    append_to_file(message)
     try:
         msg = OdeResponse(message)
 
@@ -315,6 +321,7 @@ def on_message(ws, message):
         if msg.get_payload_type() in dataType.VehicleData and ( config['REQUEST_TYPE'] in ('qry') or  (config['REQUEST_TYPE'] in ('sub') and  config['UPLOAD_TEST_DATA'] )):
             logger.info("Validating Vehicle Record")
             validate_message(msg.payload)
+
         elif  msg.get_payload_type() in un_supported_payloads_codes:
             logger.info("No validation function defined for payload type: %s",msg.get_payload_type())
 
@@ -332,6 +339,8 @@ def validate_message(msg_payload):
     :return: Result of evaluation in Tuple Form
     """
 
+    location_result = validate_location(msg_payload)
+    logger.info("Validate Location Result: %s", str(location_result))
     #
     #
     # TODO Refactor whole method to be less intelligent
