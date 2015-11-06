@@ -33,13 +33,15 @@ class ODEClient(object):
         self.ws = None
         self.request = None
         self.queue = Queue.Queue()
-        self.on_open = kwargs.get('on_open',self._on_open)
+        if kwargs:
+            self.on_open = kwargs.get('on_open',self._on_open)
+        else:
+            self.on_open = self._on_open
 
     def get_token(self,username,password):
         self.token= restApi.login(self.host,username,password)
         if self.token is None:
-            print("Unable to get Access Token from Web Service")
-
+            logger.warn("Unable to get Access Token from Web Service")
 
     def get_new_token(self,username,password):
         self.token= restApi.login(self.host,username,password)
@@ -81,7 +83,7 @@ class ODEClient(object):
         if on_open is not None:
             self.ws.on_open = on_open
         else:
-            self.ws.on_close = self.on_open
+            self.ws.on_open= self.on_open
         # if on_open is None:
         #     self.ws.on_open = self._on_open
         # else:
@@ -95,7 +97,7 @@ class ODEClient(object):
  
         :return: list of up to number_of_message, may return less if queue contains less messages
         """
-        results = []
+        result = []
         for n in range(number_of_message):
             if not self.queue.notempty():
                 result.append(self.queue.get_nowait())
@@ -176,7 +178,8 @@ class GeographicRegion(object):
 class BaseRequest(object):
     def __init__(self, requestType, dataType, geographicRegion):
         self.geographicRegion = geographicRegion
-        
+
+
         #if supported_types.has_key(requestType) and dataType in supported_types[requestType]:
         self.requestType = requestType
         self.dataType = dataType       
@@ -205,7 +208,7 @@ class QueryRequest(BaseRequest):
 
 
 class SubscriptionRequest(BaseRequest):
-    def __init__(self, type, geographicRegion  ):
+    def __init__(self, type, geographicRegion):
         BaseRequest.__init__(self, "sub", type, geographicRegion)
 
 
@@ -224,7 +227,7 @@ def on_error(ws, error):
 
 def on_close(ws):
     ws.close()
-    logger.info('Closing Web Socket via "OnCLose" Function')
+    logger.debug('Closing Web Socket via "OnCLose" Function')
     sys.exit()
 
 def on_message(ws,message):
