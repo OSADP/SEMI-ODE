@@ -26,9 +26,16 @@ class BaseResponse(object):
     
     def get_metadata_value(self, key):
         return self.metaData.get(key,None)
-    
+
+    def toJson(self):
+        ode_msg = {
+            "metadata": self.metaData,
+            "payload": self.payload
+            }
+        return json.dumps(ode_msg)
+
     def __str__(self):
         s = "Response Payload Type: "+ self.get_payload_type()
         s = s + "\nPayload: "+ json.dumps(self.payload)
         return s
-		
+
