@@ -19,7 +19,7 @@ public final class OdeAdvisoryDataRaw extends OdeData {
 
    @Override
    protected void setDataType() {
-      setDataType(OdeDataType.AdvisoryData);
+      setDataType(OdeDataType.AdvisorySituationData);
    }
 
    @Override
