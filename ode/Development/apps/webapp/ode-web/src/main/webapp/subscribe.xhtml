@@ -198,23 +198,25 @@ $(document ).ready(function() {
          request["seLon"] = document.getElementById('seLon').value;
          
          var s1 = {};
-         s1["id"] = "LarnedShelbyGriswold";
+         s1["id"] = document.getElementById('n1').value + '-' +
+                    document.getElementById('n2').value;
          s1["startPoint"] = {
                "latitude":document.getElementById('n1Lat').value, 
                "longitude":document.getElementById('n1Lng').value
-         };//W. Larned and Shelby
+         };
          s1["endPoint"] = {
                "latitude":document.getElementById('n2Lat').value, 
                "longitude":document.getElementById('n2Lng').value
-         };//W. Larned and Griswold
+         };
          
          var s2 = {};
-         s2["id"] = "LarnedGriswoldRandolph";
-         s2["prevSegment"] = "LarnedShelbyGriswold";
+         s2["id"] = document.getElementById('n2').value + '-' +
+                    document.getElementById('n3').value;
+         s2["prevSegment"] = s1["id"];
          s2["endPoint"] = {
                "latitude":document.getElementById('n3Lat').value, 
                "longitude":document.getElementById('n3Lng').value
-         };//Larned and Randolph
+         };
          
          var polyline = [];
          polyline.push(s1);
