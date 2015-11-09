@@ -35,7 +35,7 @@ import clientConfig
 # Set TIME to UTC
 # logging.Formatter.converter = time.gmtime
 
-logging_level = logging.INFO
+logging_level = logging.DEBUG
 
 if not os.path.exists('logs'):
     os.makedirs('logs')
@@ -97,6 +97,7 @@ un_supported_payloads_codes = [x[1] for x in dataType.all_dataTypes()
                                if x[1] !='veh' and x[1]!='status' and x[1]!='other']
 
 input_file = None
+record_count = 0.0
 
 def append_to_file(entry):
     with open(os.path.join('output',ode_output_file_name), "a") as myfile: # output
@@ -196,6 +197,8 @@ def _main():
     if config['PASSWORD'] is None:
         logger.exception("Missing Password. ")
         sys.exit(1)
+    global record_count
+    record_count = 0.0
     _run_main(config, cp)
 
 def parse_config_file(file_path):
@@ -233,6 +236,19 @@ def parse_config_file(file_path):
 
     config['SERVICE_REGION'] = area
 
+    segments = [x for x in config_file.sections() if 'segment' in x]
+
+    if segments is not None:
+        road_segments = []
+        for segment in segments:
+            rs ={}
+            for key, value in config_file.items(segment):
+                rs[key]=value
+            road_segments.append(rs)
+        config['ROAD_SEGMENTS'] = road_segments
+    else:
+       config['ROAD_SEGMENTS'] = None
+
     return config_file
 
 def parse_options(config_file):
@@ -263,8 +279,21 @@ def build_request(config):
                                       region,
                                       config.get('START_DATE', start_date),
                                       config.get('END_DATE', end_date),
-                                      config.get('LIMIT', limit),
-                                      config.get('SKIP', skip))
+                                      config.get('SKIP', skip),
+                                      config.get('LIMIT', limit))
+    if config.get('ROAD_SEGMENTS',False):
+        for segment in config['ROAD_SEGMENTS']:
+            if segment.get('startPoint'):
+                startPoint = client.OdePoint(*tuple(segment['startPoint'].split(',')))
+            else:
+                startPoint=None
+
+            endpoint = client.OdePoint(*tuple(segment['endPoint'].split(',')))
+            rs = client.RoadSegment(segment['id'],
+                                    startPoint=startPoint,
+                                    endPoint=endpoint,
+                                    previousSegmentId=segment.get('previousSegmentId',None))
+            request.add_road_segments(rs)
     return request
 
 def build_region(regionValues):

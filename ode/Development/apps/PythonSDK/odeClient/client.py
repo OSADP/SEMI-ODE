@@ -176,18 +176,30 @@ class GeographicRegion(object):
 
 
 class BaseRequest(object):
-    def __init__(self, requestType, dataType, geographicRegion):
+    def __init__(self, requestType, dataType, geographicRegion, **kwargs):
         self.geographicRegion = geographicRegion
-
 
         #if supported_types.has_key(requestType) and dataType in supported_types[requestType]:
         self.requestType = requestType
-        self.dataType = dataType       
+        self.dataType = dataType
+
+        if kwargs is None:
+            kwargs = {}
+        self.polyline = kwargs.get('roadSegments', [])
+
         #else:
         #    raise exceptions.UnsupportedRequestType("Unsupported request type for {} and {}".format(requestType,dataType))
 
+    def add_road_segments(self,segment):
+        self.polyline.append(segment)
+
     def toJson(self):
-        return self.geographicRegion.toJson()
+        msg = json.loads(self.geographicRegion.toJson())
+        if self.polyline:
+            segment = {'segments': [json.loads(segment.toJson()) for segment in self.polyline]}
+            msg['polyline'] = segment
+        return json.dumps(msg)
+
 
 class QueryRequest(BaseRequest):
     def __init__(self, type, geographicRegion, startDate,endDate, skip, limit):
@@ -211,6 +223,52 @@ class SubscriptionRequest(BaseRequest):
     def __init__(self, type, geographicRegion):
         BaseRequest.__init__(self, "sub", type, geographicRegion)
 
+
+class RoadSegment(object):
+    def __init__(self, id, startPoint=None, endPoint=None, previousSegmentId=None):
+        """
+            :param id: User defined Road Segment Identifier
+            :param startPoint: Road Segment Start Point, Not Required if PreviousSegmentID is Provided
+            :param endPoint: Road Segment End Point
+            :param previousSegmentId: Only required if startPoint is not Provided
+
+        """
+
+        self._id = id
+        self.endPoint = endPoint
+
+        if startPoint is None and previousSegmentId is not None:
+            self.startPoint = None
+            self.previousSegment = previousSegmentId
+        elif startPoint is not None and previousSegmentId is None:
+            self.startPoint = startPoint
+            self.previousSegment = None
+        else:
+            raise Exception("Invalid RoadSegment Configuration")
+
+    def toJson(self):
+        msg = {}
+        msg["id"] = self._id
+        msg["endPoint"]= json.loads(self.endPoint.toJson())
+
+        if self.previousSegment is not None:
+            msg['prevSegment'] = self.previousSegment
+        else:
+            msg['startPoint']= json.loads(self.startPoint.toJson())
+        return json.dumps(msg)
+
+class OdePoint(object):
+
+    def __init__(self, latitude, longitude):
+        self.latitude = latitude
+        self.longitude = longitude
+
+    def toJson(self):
+        msg = {
+           "latitude": self.latitude,
+            "longitude": self.longitude
+        }
+        return json.dumps(msg)
 
 # web Socket Helper Methods
 def on_error(ws, error):
