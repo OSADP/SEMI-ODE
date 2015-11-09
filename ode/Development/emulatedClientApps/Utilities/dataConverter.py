@@ -77,12 +77,11 @@ def print_help(option, opt_str, value, parser, *args, **kwargs):
     """
     usage(parser)
 
-### Main Part of PRogram
+
 
 def append_to_file(entry, config, **kwargs):
     with open(os.path.join(config['OUTPUT_FILE']), "a") as myfile:
         myfile.write(entry + "\n")
-
 
 def convert_file(config, **kwargs):
     count = 0
@@ -107,12 +106,13 @@ def convert_csv(config,**kwargs):
         try:
             for _row in reader:
                 row = transform_row(config, _row)
-                ode_msg =create_ode_msg(row, config["DATA"])
+                ode_msg = create_ode_msg(row, config["DATA"])
                 append_to_file(json.dumps(ode_msg),config)
-                count +=1
-        except:
+                count += 1
+        except Exception as e:
+                print e
                 print "LINE: {}".format(_row)
-                print "Error Reading JSON FIle: {}".format(config['INPUT_FILE'])
+                print "Error Reading CSV FIle: {}".format(config['INPUT_FILE'])
     print "Converted {} Records to new format".format(count)
 
 def create_ode_msg(payload, dataType):
@@ -128,15 +128,17 @@ def transform_row(config,row,**kwargs):
 
     if kwargs is None:
         kwargs = {}
-    updated_row=None
+    updated_row= None
 
-    if config.get("DROP",None):
-       updated_row =drop_records(config,row)
+    if config.get("DROP",None) is not None:
+       updated_row = drop_records(config,row)
 
-    if config.get('MAP',None) and updated_row is not None:
-        updated_row = update_row_keys(config,updated_row)
-    elif config.get('MAP',None)  and updated_row is None:
-        updated_row = update_row_keys(config,row)
+    if config.get('MAP',None) is not None and updated_row is not None:
+        updated_row = update_row_keys(config, updated_row)
+    elif config.get('MAP',None) is not None  and updated_row is None:
+        updated_row = update_row_keys(config, row)
+    else:
+        updated_row = row
 
     return updated_row
 
@@ -145,15 +147,15 @@ def update_row_keys(config,row,**kwargs):
     if kwargs is None:
         kwargs = {}
 
-     new_row = {}
-     map_dict = config['MAP']
-     for k, v in row.items():
-         if k in map_dict.keys():
-             new_key = map_dict[k]
-             new_row[new_key] = v
-         else:
-             new_row[k] = v
-     return new_row
+    new_row = {}
+    map_dict = config['MAP']
+    for k, v in row.items():
+        if k in map_dict.keys():
+            new_key = map_dict[k]
+            new_row[new_key] = v
+        else:
+            new_row[k] = v
+    return new_row
 
 def drop_records(config,row,**kwargs):
     if kwargs is None:
@@ -219,7 +221,7 @@ def _main():
     config = get_empty_config()
     config.update(vars(options))
     if config['CONFIG'] is not None:
-        config.update(parse_config_file(config['CONFIG']))
+        parse_config_file(config['CONFIG'],config)
 
     if config['INPUT_FILE'] is None:
         print "--input is missing"
@@ -251,13 +253,14 @@ def _run_main(config):
         sorted_keys = sorted(config['MAP'].keys(),  reverse=False)
         for k  in  sorted_keys:
             renamed_key = renamed_key + "\n\t * {0} to {1}".format(k,config['MAP'].get(k))
-        print "The follow keys will be renamed in the output:%s" % renamed_key
+        print "The following keyxs will be renamed in the output:%s" % renamed_key
 
     if config['DROP'] is not None:
         dropped_items = ""
         for entry in config['DROP']:
             dropped_items = dropped_items + "\t * "+ entry+"\n"
-        print "The Following Entries will not appear in the output:\n%s" % dropped_items
+        print "The following Entries will not appear in the output:\n%s" % dropped_items
+
 
     if config['FORMAT_TYPE'].upper()=='JSON':
         convert_file(config)
