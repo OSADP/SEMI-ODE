@@ -158,174 +158,186 @@ public final class OdeVehicleDataFlat extends OdeData {
    }
 
    private void setWeather(Weather weather) {
-      //    Weather ::= SEQUENCE {
-      //    wipers SEQUENCE {
-      //       statFrnt DSRC.WiperStatusFront,
-      //       rateFrnt DSRC.WiperRate    OPTIONAL,
-      //       statRear DSRC.WiperStatusRear OPTIONAL,
-      //       rateRear DSRC.WiperRate       OPTIONAL
-      //    } OPTIONAL,
-      //    airTemp     DSRC.AmbientAirTemperature OPTIONAL,
-      //    airPres     DSRC.AmbientAirPressure    OPTIONAL,
-      //    weatherReport SEQUENCE {    
-      //       isRaining        NTCIP.EssPrecipYesNo,
-      //       rainRate         NTCIP.EssPrecipRate       OPTIONAL,
-      //       precipSituation  NTCIP.EssPrecipSituation  OPTIONAL,
-      //       solarRadiation   NTCIP.EssSolarRadiation   OPTIONAL,
-      //       friction         NTCIP.EssMobileFriction   OPTIONAL
-      //    } OPTIONAL,
-      //    ...   -- # Additional Data Elements
-      // }
-      
-      // AmbientAirPressure ::= INTEGER (0..255) 
-      //       -- 8 Bits in hPa starting at 580 with a resolution of 
-      //       -- 2 hPa resulting in a range of 580 to 1090
-      setWeatherAirPres(weather.airPres != null ? 580 + (weather.airPres.intValue() * 2) : null);
-      
-      // AmbientAirTemperature ::= INTEGER (0..191) -- in deg C with a -40 offset
-      setWeatherAirTemp(weather.airTemp != null ? weather.airTemp.intValue() - 40 : null);
-      
-      setWeatherReport(weather.weatherReport);
-      setWipers(weather.wipers);
+      if (weather != null) {
+         //    Weather ::= SEQUENCE {
+         //    wipers SEQUENCE {
+         //       statFrnt DSRC.WiperStatusFront,
+         //       rateFrnt DSRC.WiperRate    OPTIONAL,
+         //       statRear DSRC.WiperStatusRear OPTIONAL,
+         //       rateRear DSRC.WiperRate       OPTIONAL
+         //    } OPTIONAL,
+         //    airTemp     DSRC.AmbientAirTemperature OPTIONAL,
+         //    airPres     DSRC.AmbientAirPressure    OPTIONAL,
+         //    weatherReport SEQUENCE {    
+         //       isRaining        NTCIP.EssPrecipYesNo,
+         //       rainRate         NTCIP.EssPrecipRate       OPTIONAL,
+         //       precipSituation  NTCIP.EssPrecipSituation  OPTIONAL,
+         //       solarRadiation   NTCIP.EssSolarRadiation   OPTIONAL,
+         //       friction         NTCIP.EssMobileFriction   OPTIONAL
+         //    } OPTIONAL,
+         //    ...   -- # Additional Data Elements
+         // }
+         
+         // AmbientAirPressure ::= INTEGER (0..255) 
+         //       -- 8 Bits in hPa starting at 580 with a resolution of 
+         //       -- 2 hPa resulting in a range of 580 to 1090
+         setWeatherAirPres(weather.airPres != null ? 580 + (weather.airPres.intValue() * 2) : null);
+         
+         // AmbientAirTemperature ::= INTEGER (0..191) -- in deg C with a -40 offset
+         setWeatherAirTemp(weather.airTemp != null ? weather.airTemp.intValue() - 40 : null);
+         
+         setWeatherReport(weather.weatherReport);
+         setWipers(weather.wipers);
+      }
    }
 
    private void setWeatherReport(WeatherReport weatherReport) {
-      //    weatherReport SEQUENCE {    
-      //       isRaining        NTCIP.EssPrecipYesNo,
-      //       rainRate         NTCIP.EssPrecipRate       OPTIONAL,
-      //       precipSituation  NTCIP.EssPrecipSituation  OPTIONAL,
-      //       solarRadiation   NTCIP.EssSolarRadiation   OPTIONAL,
-      //       friction         NTCIP.EssMobileFriction   OPTIONAL
-      //    } OPTIONAL,
-      
-      // EssMobileFriction ::= INTEGER (0..101)
-      setWeatherFriction(weatherReport.friction != null ? weatherReport.friction.intValue() : null);
-
-      // EssPrecipYesNo ::= ENUMERATED {precip (1), noPrecip (2), error (3)} 
-      setWeatherIsRaining(weatherReport.isRaining != null ? weatherReport.isRaining.longValue() : null);
-
-      // EssPrecipSituation ::= ENUMERATED {
-      //    other (1), 
-      //    unknown (2), 
-      //    noPrecipitation (3), 
-      //    unidentifiedSlight (4), 
-      //    unidentifiedModerate (5), 
-      //    unidentifiedHeavy (6), 
-      //    snowSlight (7), 
-      //    snowModerate (8), 
-      //    snowHeavy (9), 
-      //    rainSlight (10), 
-      //    rainModerate (11), 
-      //    rainHeavy (12), 
-      //    frozenPrecipitationSlight (13), 
-      //    frozenPrecipitationModerate (14), 
-      //    frozenPrecipitationHeavy (15)
-      //    }
-      setWeatherPrecipSituation(weatherReport.precipSituation != null ? weatherReport.precipSituation.longValue() : null);
-
-      // EssPrecipRate ::= INTEGER (0..65535) 
-      setWeatherRainRate(weatherReport.rainRate != null ? weatherReport.rainRate.intValue() : null);
-
-      // EssSolarRadiation ::= INTEGER (0..65535) 
-      setWeatherSolarRadiation(weatherReport.solarRadiation != null ? weatherReport.solarRadiation.intValue() : null);
+      if (weatherReport != null) {
+         //    weatherReport SEQUENCE {    
+         //       isRaining        NTCIP.EssPrecipYesNo,
+         //       rainRate         NTCIP.EssPrecipRate       OPTIONAL,
+         //       precipSituation  NTCIP.EssPrecipSituation  OPTIONAL,
+         //       solarRadiation   NTCIP.EssSolarRadiation   OPTIONAL,
+         //       friction         NTCIP.EssMobileFriction   OPTIONAL
+         //    } OPTIONAL,
+         
+         // EssMobileFriction ::= INTEGER (0..101)
+         setWeatherFriction(weatherReport.friction != null ? weatherReport.friction.intValue() : null);
+   
+         // EssPrecipYesNo ::= ENUMERATED {precip (1), noPrecip (2), error (3)} 
+         setWeatherIsRaining(weatherReport.isRaining != null ? weatherReport.isRaining.longValue() : null);
+   
+         // EssPrecipSituation ::= ENUMERATED {
+         //    other (1), 
+         //    unknown (2), 
+         //    noPrecipitation (3), 
+         //    unidentifiedSlight (4), 
+         //    unidentifiedModerate (5), 
+         //    unidentifiedHeavy (6), 
+         //    snowSlight (7), 
+         //    snowModerate (8), 
+         //    snowHeavy (9), 
+         //    rainSlight (10), 
+         //    rainModerate (11), 
+         //    rainHeavy (12), 
+         //    frozenPrecipitationSlight (13), 
+         //    frozenPrecipitationModerate (14), 
+         //    frozenPrecipitationHeavy (15)
+         //    }
+         setWeatherPrecipSituation(weatherReport.precipSituation != null ? weatherReport.precipSituation.longValue() : null);
+   
+         // EssPrecipRate ::= INTEGER (0..65535) 
+         setWeatherRainRate(weatherReport.rainRate != null ? weatherReport.rainRate.intValue() : null);
+   
+         // EssSolarRadiation ::= INTEGER (0..65535) 
+         setWeatherSolarRadiation(weatherReport.solarRadiation != null ? weatherReport.solarRadiation.intValue() : null);
+      }
    }
 
    private void setWipers(Wipers wipers) {
-      //    wipers SEQUENCE {
-      //       statFrnt DSRC.WiperStatusFront,
-      //       rateFrnt DSRC.WiperRate    OPTIONAL,
-      //       statRear DSRC.WiperStatusRear OPTIONAL,
-      //       rateRear DSRC.WiperRate       OPTIONAL
-      //    } OPTIONAL,
-      
-      // WiperStatusFront ::= ENUMERATED {
-      //    unavailable         (0), -- Not Equipped with wiper status
-      //                             -- or wiper status is unavailable
-      //    off                 (1),  
-      //    intermittent        (2), 
-      //    low                 (3),
-      //    high                (4),
-      //    washerInUse       (126), -- washing solution being used
-      //    automaticPresent  (127), -- Auto wiper equipped
-      //    ... -- # LOCAL_CONTENT
-      //    }
-      // WiperStatusRear ::= ENUMERATED {
-      //    unavailable         (0), -- Not Equipped with wiper status
-      //                             -- or wiper status is unavailable
-      //    off                 (1),  
-      //    intermittent        (2), 
-      //    low                 (3),
-      //    high                (4),
-      //    washerInUse       (126), -- washing solution being used
-      //    automaticPresent  (127), -- Auto wipper equipped
-      //    ... -- # LOCAL_CONTENT
-      //    }
-      // WiperRate ::= INTEGER (0..127) -- units of sweeps per minute
-      setWipersRateFrnt(wipers.rateFrnt != null ? wipers.rateFrnt.intValue() : null);
-      setWipersRateRear(wipers.rateRear != null ? wipers.rateRear.intValue() : null);
-      setWipersStatusFrnt(wipers.statFrnt != null ? wipers.statFrnt.longValue() : null);
-      setWipersStatusRear(wipers.statRear != null ? wipers.statRear.longValue() : null);
-      
+      if (wipers != null) {
+         //    wipers SEQUENCE {
+         //       statFrnt DSRC.WiperStatusFront,
+         //       rateFrnt DSRC.WiperRate    OPTIONAL,
+         //       statRear DSRC.WiperStatusRear OPTIONAL,
+         //       rateRear DSRC.WiperRate       OPTIONAL
+         //    } OPTIONAL,
+         
+         // WiperStatusFront ::= ENUMERATED {
+         //    unavailable         (0), -- Not Equipped with wiper status
+         //                             -- or wiper status is unavailable
+         //    off                 (1),  
+         //    intermittent        (2), 
+         //    low                 (3),
+         //    high                (4),
+         //    washerInUse       (126), -- washing solution being used
+         //    automaticPresent  (127), -- Auto wiper equipped
+         //    ... -- # LOCAL_CONTENT
+         //    }
+         // WiperStatusRear ::= ENUMERATED {
+         //    unavailable         (0), -- Not Equipped with wiper status
+         //                             -- or wiper status is unavailable
+         //    off                 (1),  
+         //    intermittent        (2), 
+         //    low                 (3),
+         //    high                (4),
+         //    washerInUse       (126), -- washing solution being used
+         //    automaticPresent  (127), -- Auto wipper equipped
+         //    ... -- # LOCAL_CONTENT
+         //    }
+         // WiperRate ::= INTEGER (0..127) -- units of sweeps per minute
+         setWipersRateFrnt(wipers.rateFrnt != null ? wipers.rateFrnt.intValue() : null);
+         setWipersRateRear(wipers.rateRear != null ? wipers.rateRear.intValue() : null);
+         setWipersStatusFrnt(wipers.statFrnt != null ? wipers.statFrnt.longValue() : null);
+         setWipersStatusRear(wipers.statRear != null ? wipers.statRear.longValue() : null);
+      }
    }
 
    private void setVehicleStatus(VehicleSituationStatus vehstat) {
-      //    VehicleSituationStatus ::=  SEQUENCE {
-      //    lights         DSRC.ExteriorLights,
-      //    throttlePos    DSRC.ThrottlePosition      OPTIONAL,
-      //    tirePressure   SEQUENCE {
-      //       leftFront   DSRC.TirePressure,
-      //       leftRear DSRC.TirePressure,
-      //       rightFront  DSRC.TirePressure,
-      //       rightRear   DSRC.TirePressure
-      //    }  OPTIONAL,
-      //    ... -- # Additional Data Elements
-      // }
-       
-      // ExteriorLights ::= INTEGER (0..256) 
-      //       -- With bits as defined:
-      //          allLightsOff              ExteriorLights ::= 0  
-      //                                    -- B'0000-0000  
-      //          lowBeamHeadlightsOn       ExteriorLights ::= 1  
-      //                                    -- B'0000-0001
-      //          highBeamHeadlightsOn      ExteriorLights ::= 2 
-      //                                    -- B'0000-0010
-      //          leftTurnSignalOn          ExteriorLights ::= 4  
-      //                                    -- B'0000-0100
-      //          rightTurnSignalOn         ExteriorLights ::= 8  
-      //                                    -- B'0000-1000
-      //          hazardSignalOn            ExteriorLights ::= 12  
-      //                                    -- B'0000-1100
-      //          automaticLightControlOn   ExteriorLights ::= 16  
-      //                                    -- B'0001-0000
-      //          daytimeRunningLightsOn    ExteriorLights ::= 32  
-      //                                    -- B'0010-0000
-      //          fogLightOn                ExteriorLights ::= 64 
-      //                                    -- B'0100-0000
-      //          parkingLightsOn           ExteriorLights ::= 128  
-      //                                    -- B'1000-0000
-      setLights(vehstat.lights != null ? vehstat.lights.intValue() : null);
-      
-      // ThrottlePosition ::= INTEGER (0..200) -- LSB units are 0.5 percent
-      if (vehstat.throttlePos != null)
-         setThrottlePos(BigDecimal.valueOf(vehstat.throttlePos.intValue() * 5, 1));
-      
-      setTirePressure(vehstat.tirePressure);
+      if (vehstat != null) {
+         //    VehicleSituationStatus ::=  SEQUENCE {
+         //    lights         DSRC.ExteriorLights,
+         //    throttlePos    DSRC.ThrottlePosition      OPTIONAL,
+         //    tirePressure   SEQUENCE {
+         //       leftFront   DSRC.TirePressure,
+         //       leftRear DSRC.TirePressure,
+         //       rightFront  DSRC.TirePressure,
+         //       rightRear   DSRC.TirePressure
+         //    }  OPTIONAL,
+         //    ... -- # Additional Data Elements
+         // }
+          
+         // ExteriorLights ::= INTEGER (0..256) 
+         //       -- With bits as defined:
+         //          allLightsOff              ExteriorLights ::= 0  
+         //                                    -- B'0000-0000  
+         //          lowBeamHeadlightsOn       ExteriorLights ::= 1  
+         //                                    -- B'0000-0001
+         //          highBeamHeadlightsOn      ExteriorLights ::= 2 
+         //                                    -- B'0000-0010
+         //          leftTurnSignalOn          ExteriorLights ::= 4  
+         //                                    -- B'0000-0100
+         //          rightTurnSignalOn         ExteriorLights ::= 8  
+         //                                    -- B'0000-1000
+         //          hazardSignalOn            ExteriorLights ::= 12  
+         //                                    -- B'0000-1100
+         //          automaticLightControlOn   ExteriorLights ::= 16  
+         //                                    -- B'0001-0000
+         //          daytimeRunningLightsOn    ExteriorLights ::= 32  
+         //                                    -- B'0010-0000
+         //          fogLightOn                ExteriorLights ::= 64 
+         //                                    -- B'0100-0000
+         //          parkingLightsOn           ExteriorLights ::= 128  
+         //                                    -- B'1000-0000
+         setLights(vehstat.lights != null ? vehstat.lights.intValue() : null);
+         // ThrottlePosition ::= INTEGER (0..200) -- LSB units are 0.5 percent
+         if (vehstat.throttlePos != null)
+            setThrottlePos(BigDecimal.valueOf(
+                  vehstat.throttlePos.intValue() * 5, 1));
+         setTirePressure(vehstat.tirePressure);
+      }
    }
 
    private void setTirePressure(TirePressure tirePressure) {
-      //    tirePressure   SEQUENCE {
-      //       leftFront   DSRC.TirePressure,
-      //       leftRear DSRC.TirePressure,
-      //       rightFront  DSRC.TirePressure,
-      //       rightRear   DSRC.TirePressure
-      //    }  OPTIONAL,
-      //    ... -- # Additional Data Elements
-      // }
-      // TirePressure ::= INTEGER (0..1000)
-      setTirePressureLF(tirePressure.leftFront != null ? tirePressure.leftFront.intValue() : null);
-      setTirePressureLR(tirePressure.leftRear != null ? tirePressure.leftRear.intValue() : null);
-      setTirePressureRF(tirePressure.rightFront != null ? tirePressure.rightFront.intValue() : null);
-      setTirePressureRR(tirePressure.rightRear != null ? tirePressure.rightRear.intValue() : null);
+      if (tirePressure != null) {
+         //    tirePressure   SEQUENCE {
+         //       leftFront   DSRC.TirePressure,
+         //       leftRear DSRC.TirePressure,
+         //       rightFront  DSRC.TirePressure,
+         //       rightRear   DSRC.TirePressure
+         //    }  OPTIONAL,
+         //    ... -- # Additional Data Elements
+         // }
+         // TirePressure ::= INTEGER (0..1000)
+         setTirePressureLF(tirePressure.leftFront != null ? tirePressure.leftFront
+               .intValue() : null);
+         setTirePressureLR(tirePressure.leftRear != null ? tirePressure.leftRear
+               .intValue() : null);
+         setTirePressureRF(tirePressure.rightFront != null ? tirePressure.rightFront
+               .intValue() : null);
+         setTirePressureRR(tirePressure.rightRear != null ? tirePressure.rightRear
+               .intValue() : null);
+      }
    }
 
    private void setTempId(TemporaryID tempID) {
@@ -355,30 +367,37 @@ public final class OdeVehicleDataFlat extends OdeData {
       // -- i.e. below the reference ellipsoid, as 0xF001 to 0xFFFF
       // -- unknown as 0xF000
       
-      setLatitude(pos.lat != null ? BigDecimal.valueOf(pos.lat.longValue(), 7) : null);
-      setLongitude(pos._long != null ? BigDecimal.valueOf(pos._long.longValue(), 7) : null);
-      if (pos.elevation != null) {
-         int elev = ByteUtils.unsignedByteArrayToInt(pos.elevation.byteArrayValue());
-         if (elev == 0xF000) {
-            setElevation(null);
-         } else if (elev >= 0x0000 && elev <= 0xEFFF) {
-            setElevation(BigDecimal.valueOf(elev, 1));
+      if (pos != null) {
+         setLatitude(pos.lat != null ? BigDecimal.valueOf(pos.lat.longValue(),
+               7) : null);
+         setLongitude(pos._long != null ? BigDecimal.valueOf(
+               pos._long.longValue(), 7) : null);
+         if (pos.elevation != null) {
+            int elev = ByteUtils.unsignedByteArrayToInt(pos.elevation
+                  .byteArrayValue());
+            if (elev == 0xF000) {
+               setElevation(null);
+            } else if (elev >= 0x0000 && elev <= 0xEFFF) {
+               setElevation(BigDecimal.valueOf(elev, 1));
+            } else {
+               setElevation(BigDecimal.valueOf(-elev, 1));
+            }
          } else {
-            setElevation(BigDecimal.valueOf(-elev, 1));
+            setElevation(null);
          }
-      } else {
-         setElevation(null);
       }
    }
 
    private void setFundamental(FundamentalSituationalStatus fundamental) {
-      setAccelSet(fundamental.accelSet);
-      setBreakes(fundamental.brakes);
-      setHeading(fundamental.heading);
-      setTransmissionAndSpeed(fundamental.speed);
-      setSteeringAngle(fundamental.steeringAngle);
-      setVehSize(fundamental.vehSize);
-      setVsmEventFlag(fundamental.vsmEventFlag);
+      if (fundamental != null) {
+         setAccelSet(fundamental.accelSet);
+         setBreakes(fundamental.brakes);
+         setHeading(fundamental.heading);
+         setTransmissionAndSpeed(fundamental.speed);
+         setSteeringAngle(fundamental.steeringAngle);
+         setVehSize(fundamental.vehSize);
+         setVsmEventFlag(fundamental.vsmEventFlag);
+      }
    }
 
    private void setVsmEventFlag(VsmEventFlag vsmEventFlag) {
@@ -386,8 +405,11 @@ public final class OdeVehicleDataFlat extends OdeData {
    }
 
    private void setVehSize(VehicleSize vehSize) {
-      setSizeLength(vehSize.length != null ? vehSize.length.intValue() : null);
-      setSizeWidth(vehSize.width != null ? vehSize.width.intValue() : null);
+      if (vehSize != null) {
+         setSizeLength(vehSize.length != null ? vehSize.length.intValue()
+               : null);
+         setSizeWidth(vehSize.width != null ? vehSize.width.intValue() : null);
+      }
    }
 
    private void setSteeringAngle(SteeringWheelAngle steeringWhealAngle) {
@@ -408,10 +430,12 @@ public final class OdeVehicleDataFlat extends OdeData {
    }
 
    private void setHeading(Heading heading2) {
-      //    Heading ::= INTEGER (0..28800) 
-      //    -- LSB of 0.0125 degrees
-      //    -- A range of 0 to 359.9875 degrees
-      setHeading(BigDecimal.valueOf(heading2.intValue() * 125, 4));
+      if (heading2 != null) {
+         //    Heading ::= INTEGER (0..28800) 
+         //    -- LSB of 0.0125 degrees
+         //    -- A range of 0 to 359.9875 degrees
+         setHeading(BigDecimal.valueOf(heading2.intValue() * 125, 4));
+      }
    }
 
    private void setBreakes(BrakeSystemStatus brakes) {
@@ -562,52 +586,70 @@ public final class OdeVehicleDataFlat extends OdeData {
    }
 
    private void setEnv(Environmental env) {
-      setEnvEmiss(env.emiss);
-      setEnvFuelCond(env.fuelCon);
-      setEnvFuelEcon(env.fuelEcon);
+      if (env != null) {
+         setEnvEmiss(env.emiss);
+         setEnvFuelCond(env.fuelCon);
+         setEnvFuelEcon(env.fuelEcon);
+      }
    }
 
    private void setEnvEmiss(Emissions emiss) {
-      setEnvEmiss(emiss.intValue());
+      if (emiss != null) {
+         setEnvEmiss(emiss.intValue());
+      }
    }
 
    private void setEnvFuelCond(FuelConsumption fuelCon) {
-      setEnvFuelCond(fuelCon.intValue());
+      if (fuelCon != null) {
+         setEnvFuelCond(fuelCon.intValue());
+      }
    }
 
    private void setEnvFuelEcon(FuelEconomy fuelEcon) {
-      setEnvFuelEcon(fuelEcon.intValue()); 
+      if (fuelEcon != null) {
+         setEnvFuelEcon(fuelEcon.intValue());
+      } 
    }
 
    private void setElectricVehicle(ElectricVeh elveh) {
-      setEvCap(elveh.cap);
-      setEvRange(elveh.range);
-      setEvSOC(elveh.soc);
+      if (elveh != null) {
+         setEvCap(elveh.cap);
+         setEvRange(elveh.range);
+         setEvSOC(elveh.soc);
+      }
    }
 
    private void setEvSOC(StateOfCharge soc) {
-      setEvSOC(soc.intValue());
+      if (soc != null) {
+         setEvSOC(soc.intValue());
+      }
    }
 
    private void setEvRange(Range range) {
-      setEvRange(range.intValue());
+      if (range != null) {
+         setEvRange(range.intValue());
+      }
    }
 
    private void setEvCap(Capacity cap) {
-      setEvCap(cap.intValue());
+      if (cap != null) {
+         setEvCap(cap.intValue());
+      }
    }
 
    public synchronized void setDateTime(DDateTime dDateTime) {
-      setYear(dDateTime.getYear().intValue());
-      setMonth(dDateTime.getMonth().intValue());
-      setDay(dDateTime.getDay().intValue());
-      setHour(dDateTime.getHour().intValue());
-      setMinute(dDateTime.getMinute().intValue());
-      setSecond(BigDecimal.valueOf(dDateTime.getSecond().intValue(), 3));
-      this.dateTime = DateTimeUtils.isoDateTime(
-            getYear(), getMonth(), getDay(), getHour(), getMinute(), 
-            dDateTime.getSecond().intValue()/1000, 
-            dDateTime.getSecond().intValue()%1000);
+      if (dDateTime != null) {
+         setYear(dDateTime.getYear().intValue());
+         setMonth(dDateTime.getMonth().intValue());
+         setDay(dDateTime.getDay().intValue());
+         setHour(dDateTime.getHour().intValue());
+         setMinute(dDateTime.getMinute().intValue());
+         setSecond(BigDecimal.valueOf(dDateTime.getSecond().intValue(), 3));
+         this.dateTime = DateTimeUtils.isoDateTime(getYear(), getMonth(),
+               getDay(), getHour(), getMinute(), dDateTime.getSecond()
+                     .intValue() / 1000,
+               dDateTime.getSecond().intValue() % 1000);
+      }
    }
 
 //   TransmissionAndSpeed ::= OCTET STRING (SIZE(2)) 
@@ -632,7 +674,7 @@ public final class OdeVehicleDataFlat extends OdeData {
 //      ... -- # LOCAL_CONTENT
 //      }
    public void setTransmissionAndSpeed(TransmissionAndSpeed tm) {
-      if (tm.getSize() >= 2) {
+      if (tm != null && tm.getSize() >= 2) {
          int i = ByteUtils.unsignedByteArrayToInt(tm.byteArrayValue());
          int t = i >> 13;
          if (t != OdeTransmissionState.unavailable.ordinal())

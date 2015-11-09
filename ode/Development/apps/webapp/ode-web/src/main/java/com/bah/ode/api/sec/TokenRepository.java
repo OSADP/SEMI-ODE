@@ -32,7 +32,7 @@ public class TokenRepository {
 
    public boolean validateToken(AccessToken token) throws GeneralJwtException {
       boolean valid = tokenStore.containsKey(token.getId());
-      logger.info("Token vlidation result: {} for token {}", valid, token);
+      logger.info("Token validation result: {} for token {}", valid, token);
       return valid;
    }
 
