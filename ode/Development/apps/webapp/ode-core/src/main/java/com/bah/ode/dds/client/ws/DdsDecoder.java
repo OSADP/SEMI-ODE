@@ -25,15 +25,17 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.dds.client.ws.ControlMessage.Tag;
 import com.bah.ode.model.DdsData;
 import com.bah.ode.model.DdsRequest;
+import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.WebSocketMessageDecoder;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
 
    private static final Logger logger = LoggerFactory
          .getLogger(DdsDecoder.class);
-   private ObjectMapper mapper = new ObjectMapper();
+   private static final int MSG_COMPONENT_TAG_INDEX = 0;
+   private static final int MSG_COMPONENT_VALUE_INDEX = 1;
+   private static final int RECORD_COUNT_VALUE_INDEX = 1;
 
    @Override
    public void init(EndpointConfig endpointConfig) {
@@ -43,11 +45,11 @@ public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
    public void destroy() {
    }
 
-   protected static Tag getResponseTag(String message) {
+   protected static Tag getResponseTag(String tagName) {
       Tag[] tags = ControlMessage.Tag.values();
 
       for (Tag tag : tags) {
-         if (message.startsWith(tag.name())) {
+         if (tagName.equals(tag.name())) {
             return tag;
          }
       }
@@ -61,23 +63,51 @@ public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
 
       try {
          ddsData.setFullMessage(message);
-         
-         Tag tag = getResponseTag(message);
+         String[] msgComponents = parseFullMsg(message);
+         Tag tag = getResponseTag(msgComponents[MSG_COMPONENT_TAG_INDEX]);
          if (tag != null) {
-            ddsData.setControlMessage(new ControlMessage().setTag(tag));
-            if (tag == Tag.START) {
-               String jsonMessage = message.substring(tag.name().length() + 1);
+            ControlMessage controlMsg = new ControlMessage().setTag(tag);
+            ddsData.setControlMessage(controlMsg);
+            switch(tag) {
+            case CONNECTED: {
+               String connectionDetails = msgComponents[MSG_COMPONENT_VALUE_INDEX];
+               controlMsg.setConnectionDetails(connectionDetails);
+            }
+            break;
+            case START: {
+               String jsonMessage = msgComponents[MSG_COMPONENT_VALUE_INDEX];
                try {
-                  JsonNode rootNode = mapper.readTree(jsonMessage);
-                  ddsData
-                        .getControlMessage()
-                        .setDialog(
-                              DdsRequest.Dialog.getById(rootNode.get("dialogID")
-                                    .asInt()))
-                        .setEncoding(rootNode.get("resultEncoding").textValue());
+                  ObjectNode rootNode = JsonUtils.toObjectNode(jsonMessage);
+                  
+                  controlMsg
+                     .setDialog(DdsRequest.Dialog.getById(rootNode.get("dialogID").asInt()))
+                     .setEncoding(rootNode.get("resultEncoding").textValue());
+                        
                } catch (Exception e) {
                   logger.error("Error processing Start Tag", e);
                }
+            }
+            break;
+            case STOP: {
+               String recordCount = msgComponents[MSG_COMPONENT_VALUE_INDEX];
+               String[] rcArray = patseRecordCount(recordCount);
+               if (rcArray.length == 2) {
+                  try {
+                     if (controlMsg != null) {
+                        controlMsg.setRecordCount(Integer.valueOf(rcArray[RECORD_COUNT_VALUE_INDEX]));
+                     }
+                  } catch (Exception e) {
+                     logger.error("Error processing Stop Tag", e);
+                  }
+               } else {
+                  logger.error("Invalid format for recordCount. "
+                        + "Expecting \"recordCount=n\" but received \"{}\"", 
+                        recordCount);
+               }
+            }
+            break;
+            default:
+               logger.info("Received {} message", tag);
             }
          }
       } catch (Exception e) {
@@ -88,8 +118,16 @@ public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
       return ddsData;
    }
 
+   public String[] patseRecordCount(String recordCount) {
+      return recordCount.split("\\s*=\\s*");
+   }
+
+   public String[] parseFullMsg(String message) {
+      return message.split("\\s*:\\s*", 2);
+   }
+
    @Override
    public boolean willDecode(String message) {
-      return getResponseTag(message) == Tag.START;
+      return getResponseTag(parseFullMsg(message)[MSG_COMPONENT_TAG_INDEX]) == Tag.START;
    }
 }

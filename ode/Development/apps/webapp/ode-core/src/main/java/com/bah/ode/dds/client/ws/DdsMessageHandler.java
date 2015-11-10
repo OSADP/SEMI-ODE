@@ -32,6 +32,7 @@ import com.bah.ode.asn.oss.semi.VehSitRecord;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.DdsData;
 import com.bah.ode.model.OdeAdvisoryDataRaw;
+import com.bah.ode.model.OdeControlData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeFullMessage;
@@ -117,6 +118,9 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                } else if (ddsData.getAsd() != null) {
                   topicName = metadata.getInputTopic().getName();
                   pam.setPayload(new OdeAdvisoryDataRaw(ddsData.getAsd()));
+               } else if (ddsData.getControlMessage() != null) {
+                  topicName = metadata.getInputTopic().getName();
+                  pam.setPayload(new OdeControlData(ddsData.getControlMessage()));
                } else {
                   topicName = metadata.getOutputTopic().getName();
                   pam.setPayload(new OdeFullMessage(ddsData.getFullMessage()));

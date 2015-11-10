@@ -19,54 +19,70 @@ package com.bah.ode.dds.client.ws;
 import com.bah.ode.model.DdsRequest.Dialog;
 
 public class ControlMessage {
-	public enum Tag {
-		CONNECTED,
-		START,
-		STOP,
-		ERROR
-	}
-
-	private Tag tag;
-	private String encoding;
-	private Dialog dialog;
-	
-	public ControlMessage() {
-	   super();
+   public enum Tag {
+      CONNECTED, START, STOP, ERROR
    }
 
-	public ControlMessage(Tag tag, String encoding, Dialog dialog) {
-	   super();
-	   this.tag = tag;
-	   this.encoding = encoding;
-	   this.dialog = dialog;
+   private Tag tag;
+   private String encoding;
+   private Dialog dialog;
+   private Integer recordCount;
+   private String connectionDetails;
+
+   public ControlMessage() {
+      super();
    }
 
-	public Tag getTag() {
-		return tag;
-	}
+   public ControlMessage(Tag tag, String encoding, Dialog dialog) {
+      super();
+      this.tag = tag;
+      this.encoding = encoding;
+      this.dialog = dialog;
+   }
 
-	public ControlMessage setTag(Tag tag) {
-		this.tag = tag;
-		return this;
-	}
+   public Tag getTag() {
+      return tag;
+   }
 
-	public String getEncoding() {
-		return encoding;
-	}
+   public ControlMessage setTag(Tag tag) {
+      this.tag = tag;
+      return this;
+   }
 
-	public ControlMessage setEncoding(String encoding) {
-		this.encoding = encoding;
-		return this;
-	}
+   public String getEncoding() {
+      return encoding;
+   }
 
-	public Dialog getDialog() {
-		return dialog;
-	}
+   public ControlMessage setEncoding(String encoding) {
+      this.encoding = encoding;
+      return this;
+   }
 
-	public ControlMessage setDialog(Dialog dialog) {
-		this.dialog = dialog;
-		return this;
-	}
-	
-	
+   public Dialog getDialog() {
+      return dialog;
+   }
+
+   public ControlMessage setDialog(Dialog dialog) {
+      this.dialog = dialog;
+      return this;
+   }
+
+   public Integer getRecordCount() {
+      return recordCount;
+   }
+
+   public ControlMessage setRecordCount(Integer recordCount) {
+      this.recordCount = recordCount;
+      return this;
+   }
+
+   public String getConnectionDetails() {
+      return connectionDetails;
+   }
+
+   public ControlMessage setConnectionDetails(String connectionDetails) {
+      this.connectionDetails = connectionDetails;
+      return this;
+   }
+
 }
