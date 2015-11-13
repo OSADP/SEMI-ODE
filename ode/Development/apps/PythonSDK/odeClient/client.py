@@ -138,7 +138,7 @@ class AsyncODEClient(threading.Thread):
         :return: list of up to number_of_message, may return less if queue contains less messages
         """
         result = []
-        for n in range(number_of_message):
+        for n in range(int(number_of_message)):
             if not self.is_buffer_empty():
                 result.append(self.queue.get_nowait())
             else:
