@@ -314,7 +314,7 @@
           "kafka.ganglia.metrics.port" : "8671",
           "num.io.threads" : "8",
           "offsets.commit.required.acks" : "-1",
-          "delete.topic.enable" : "false",
+          "delete.topic.enable" : "true",
           "log.index.interval.bytes" : "4096",
           "offsets.commit.timeout.ms" : "5000",
           "log.segment.bytes" : "1073741824",
