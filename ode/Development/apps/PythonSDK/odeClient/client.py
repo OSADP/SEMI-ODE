@@ -186,7 +186,7 @@ class BaseRequest(object):
         if kwargs is None:
             kwargs = {}
         self.polyline = kwargs.get('roadSegments', [])
-
+        self.dataSource = kwargs.get('dataSource', None )
         #else:
         #    raise exceptions.UnsupportedRequestType("Unsupported request type for {} and {}".format(requestType,dataType))
 
@@ -198,16 +198,18 @@ class BaseRequest(object):
         if self.polyline:
             segment = {'segments': [json.loads(segment.toJson()) for segment in self.polyline]}
             msg['polyline'] = segment
+        if self.dataSource:
+            msg['dataSource']=self.dataSource
         return json.dumps(msg)
 
 
 class QueryRequest(BaseRequest):
-    def __init__(self, type, geographicRegion, startDate,endDate, skip, limit):
+    def __init__(self, type, geographicRegion, startDate,endDate, skip, limit,**kwargs):
         self.startDate = startDate
         self.endDate = endDate
         self.skip = skip
         self.limit = limit
-        BaseRequest.__init__(self,"qry", type, geographicRegion)
+        BaseRequest.__init__(self,"qry", type, geographicRegion,**kwargs)
     
 
     def toJson(self):
@@ -220,8 +222,8 @@ class QueryRequest(BaseRequest):
 
 
 class SubscriptionRequest(BaseRequest):
-    def __init__(self, type, geographicRegion):
-        BaseRequest.__init__(self, "sub", type, geographicRegion)
+    def __init__(self, type, geographicRegion,**kwargs):
+        BaseRequest.__init__(self, "sub", type, geographicRegion, **kwargs)
 
 
 class RoadSegment(object):
