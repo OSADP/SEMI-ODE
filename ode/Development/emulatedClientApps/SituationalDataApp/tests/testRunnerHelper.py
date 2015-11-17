@@ -26,13 +26,14 @@ def build_region(regionValues):
                                    regionValues["seLat"],
                                    regionValues["seLon"])
 
-def build_query_request(config):
+def build_query_request(config,**kwargs):
     return client.QueryRequest(config['DATA'],
                                 build_region(config['SERVICE_REGION']),
                                 config['START_DATE'],
                                 config['END_DATE'],
                                 config['SKIP'],
-                                config['LIMIT'])
+                                config['LIMIT'],
+                                **kwargs)
 
 def build_subscription_request(config):
     return client.SubscriptionRequest(config.get('DATA'),
