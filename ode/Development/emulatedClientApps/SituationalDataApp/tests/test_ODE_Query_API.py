@@ -49,14 +49,25 @@ class ODE_Query_Downloads_Tests(unittest.TestCase):
     def test_Connection_to_Vehicle_Query_API(self):
         self.config['DATA'] = 'veh'
         request = testRunnerHelper.build_query_request(self.config)
-        self.run_query_test(request,min_queue=25,min_records=5)
+        self.run_query_test(request,min_queue=25,min_records=5,limit=250)
+
+    def test_Connection_to_Vehicle_Query_API_SWD(self):
+        self.config['DATA'] = 'veh'
+        request = testRunnerHelper.build_query_request(self.config,dataSource="SDW")
+        self.run_query_test(request,min_queue=25,min_records=5,limit=250)
 
      # TODO Change DataType to int
 
     def test_Connection_to_Intersection_Query_API(self):
         self.config['DATA'] = 'int'
         request = testRunnerHelper.build_query_request(self.config)
-        self.run_query_test(request,dataType='isd',min_queue=25,min_records=25)
+        self.run_query_test(request,dataType='isd',min_queue=25,min_records=20)
+
+    def test_Connection_to_Intersection_Query_API_SDW(self):
+        self.config['DATA'] = 'int'
+        request = testRunnerHelper.build_query_request(self.config,dataSource="SDW")
+        self.run_query_test(request,dataType='isd',min_queue=25,min_records=20)
+
 
     @unittest.skip("Aggregate Query Test Not Implemented Yet")
     def test_Connection_to_Aggregate_Query_API(self):
@@ -66,14 +77,50 @@ class ODE_Query_Downloads_Tests(unittest.TestCase):
         testRunnerHelper.build_road_Segment(request,self.config)
         self.run_query_test(request,min_queue=4,min_records=3,limit=self.config['LIMIT'])
 
+    @unittest.skip("Aggregate Query Test SDW Not Implemented Yet")
+    def test_Connection_to_Aggregate_Query_API_SDW(self):
+        self.config['DATA'] = 'agg'
+        self.config['LIMIT'] = 25
+        request = testRunnerHelper.build_query_request(self.config,dataSource="SDW")
+        testRunnerHelper.build_road_Segment(request,self.config)
+        self.run_query_test(request,min_queue=4,min_records=3,limit=self.config['LIMIT'])
+
     @unittest.skip("SPAT Query Test Not Implemented Yet")
     def test_Connection_to_SPAT_Query_API(self):
-        pass
+        self.config['DATA'] = 'spat'
+        request = testRunnerHelper.build_query_request(self.config)
+        self.run_query_test(request,dataType='isd',min_queue=25,min_records=25)
 
+    @unittest.skip("SPAT Query Test SWD Not Implemented Yet")
+    def test_Connection_to_SPAT_Query_API_SWD(self):
+        self.config['DATA'] = 'spat'
+        request = testRunnerHelper.build_query_request(self.config,dataSource="SDW")
+        self.run_query_test(request,dataType='isd',min_queue=25,min_records=25)
 
     @unittest.skip("MAP Query Test Not Implemented Yet")
     def test_Connection_to_MAP_Query_API(self):
-        pass
+        self.config['DATA'] = 'map'
+        request = testRunnerHelper.build_query_request(self.config)
+        self.run_query_test(request,dataType='isd',min_queue=25,min_records=25)
+
+    @unittest.skip("MAP Query SDW Test Not Implemented Yet")
+    def test_Connection_to_MAP_Query_API(self):
+        self.config['DATA'] = 'map'
+        request = testRunnerHelper.build_query_request(self.config,dataSource="SDW")
+        self.run_query_test(request,dataType='isd',min_queue=25,min_records=25)
+
+    @unittest.skip("Advisory Query Test Not Implemented Yet")
+    def test_Connection_to_ADV_Query_API(self):
+        self.config['DATA'] = 'adv'
+        request = testRunnerHelper.build_query_request(self.config)
+        self.run_query_test(request,dataType='isd',min_queue=25,min_records=25)
+
+    # @unittest.skip("MAP Query SDW Test Not Implemented Yet")
+    def test_Connection_to_ADV_Query_SDW_API(self):
+        self.config['DATA'] = 'adv'
+        request = testRunnerHelper.build_query_request(self.config,dataSource="SDW")
+        self.run_query_test(request,min_queue=15,min_records=15)
+
 
     def run_query_test(self, request,**kwargs):
         self.client.client.setRequest(request)
@@ -85,10 +132,16 @@ class ODE_Query_Downloads_Tests(unittest.TestCase):
 
         self.logger.info(request.toJson())
 
+        start_time = datetime.datetime.utcnow()
         while self.client.queue.qsize() <= kwargs.get('min_queue', 10):
-            time.sleep(3)
+            current_time = datetime.datetime.utcnow()
+            time_delta = current_time - start_time
+            if time_delta.total_seconds() >= kwargs.get('timeOut',60):
+                break
+            else:
+                time.sleep(3)
 
-        self.logger.info('validating all returned records to ensure spatial and/or temporal consistency- outliers will be displayed on the screen' \
+        self.logger.info('validating all returned records to ensure spatial and/or temporal consistency - outliers will be displayed on the screen' \
             + 'exception processing same thing with expected result')
 
         responses = self.client.get_messages(kwargs.get('limit', 100))
@@ -100,7 +153,7 @@ class ODE_Query_Downloads_Tests(unittest.TestCase):
 
         # TODO Change assertion as more data types support Lat / Long Keys
         # TODO Change assertion as more data types have their created date
-            if msg.get_payload_type() in ('veh',):
+            elif msg.get_payload_type() in ('veh',):
                 self.assertEqual(msg.get_payload_value('dataType', None), 'veh')
                 record_count += 1
                 try:
@@ -114,7 +167,7 @@ class ODE_Query_Downloads_Tests(unittest.TestCase):
                 # self.assertTrue(testRunnerHelper.validate_location(msg.payload,self.config), "Location Validation Issue")
                 # self.assertTrue(testRunnerHelper.validate_datetime(msg.payload,self.config), "Temporal Validation Issue")
 
-        self.logger.info('Received %s results', record_count)
+        self.logger.info('Received %d results', record_count)
         self.assertGreaterEqual(record_count,kwargs.get('min_records', 5),
                                 "Did Not receive at least {} records from the ODE".format(kwargs.get('min_records', 5)))
         self.assertLessEqual(record_count,kwargs.get('limit', 100),

@@ -67,15 +67,17 @@ class ODE_Subscription_Connectivity_Tests(unittest.TestCase):
         self.build_road_Segment(request, self.config)
         self.run_subscription_test(request, min_records=3, min_queue=6)
 
-    @unittest.skip("SPAT Subscription Test Not Implemented Yet")
+    # @unittest.skip("SPAT Subscription Test Not Implemented Yet")
     def test_Connection_to_SPAT_Sub_API(self):
         self.config['DATA'] = 'spat'
         request = testRunnerHelper.build_subscription_request(self.config)
+        self.run_subscription_test(request,dataType='isd')
 
-    @unittest.skip("Map Subscription Test Not Implemented Yet")
+    # @unittest.skip("Map Subscription Test Not Implemented Yet")
     def test_Connection_to_MAP_Sub_API(self):
         self.config['DATA'] = 'map'
         request = testRunnerHelper.build_subscription_request(self.config)
+        self.run_subscription_test(request,dataType='isd',timeOut=90)
 
     def run_subscription_test(self, request, **kwargs):
         self.client.client.setRequest(request)
@@ -87,22 +89,30 @@ class ODE_Subscription_Connectivity_Tests(unittest.TestCase):
         time.sleep(5)
         break_loop = False
         self.logger.info(request.toJson())
+        start_time = datetime.datetime.utcnow()
+
         while self.client.queue.qsize() <= kwargs.get('min_queue', 10):
-            time.sleep(2)
+            current_time = datetime.datetime.utcnow()
+            time_delta = current_time - start_time
+            if time_delta.total_seconds() >= kwargs.get('timeOut',60):
+                break
+            else:
+                time.sleep(2)
+
 
         responses = self.client.get_messages(25)
         self.logger.info(
-            'validating all returned records to ensure spatial and/or temporal consistency- outliers will be displayed on the screen' \
+            'validating all returned records to ensure spatial consistency- outliers will be displayed on the screen' \
             + 'exception processing same thing with expected result')
         for msg in responses:
-
-            # self.logger.info("\nResponse: {}".format(msg.payload))
-            if msg.get_payload_type() in kwargs.get('dataType', request.dataType):
+            # Ignore Status and other payload message types
+            if msg.get_payload_type() not in ('status','other'):
                 self.assertEquals(msg.get_payload_type(), kwargs.get('dataType', request.dataType))
             if msg.get_payload_type() in ('veh',):
                 self.assertTrue(testRunnerHelper.validate_location(msg.payload, self.config))
 
             record_count += 1
+        self.logger.info("Total Records Received: %d", record_count)
         self.assertGreaterEqual(record_count, kwargs.get('min_records', 5),
                                 "Did Not receive at least {}  records from the ODE".format(
                                     kwargs.get('min_records', 5)))
