@@ -19,8 +19,6 @@ package com.bah.ode.context;
 //import java.util.ArrayList;
 import java.util.Enumeration;
 //import java.util.List;
-
-
 import java.util.UUID;
 
 import javax.servlet.ServletContext;
@@ -41,9 +39,15 @@ public class AppContext {
 
    //CONSTANTS
    public static final String ODE_HOSTNAME = "ODE_HOSTNAME";
+
+   /////////////////////////////////////////////////////////////////////////////
+   //Topics used by the Data Processor (Spark) 
    public static final String DATA_PROCESSOR_INPUT_TOPIC = "DPIT";
    public static final String DATA_PROCESSOR_AGGREGATES_TOPIC = "DPAT";
-   public static final String DATA_PROCESSOR_OUTPUT_TOPIC = "DPOT";
+   // If you are adding a new DP topic, you must also add code set the host 
+   // specific config parameter in the init method 
+   /////////////////////////////////////////////////////////////////////////////
+   
    public static final String LOOPBACK_TEST = "loopback.test";
    
    // SparkConf related Constants
@@ -100,7 +104,6 @@ public class AppContext {
    public static final String SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE = "spark.road.segment.snapping.tolerance";
 
 
-
    private static AppContext instance = null;
 
    private ServletContext servletContext;
@@ -141,13 +144,15 @@ public class AppContext {
       }
       
       this.servletContext.setInitParameter(ODE_HOSTNAME, hostname);
-      
+      // Create host-specific topic names and add to init parameters
+      //////////////////////////////////////////////////////////////////////////
       this.servletContext.setInitParameter(DATA_PROCESSOR_INPUT_TOPIC, 
             DATA_PROCESSOR_INPUT_TOPIC + hostname);
       
       this.servletContext.setInitParameter(DATA_PROCESSOR_AGGREGATES_TOPIC, 
             DATA_PROCESSOR_AGGREGATES_TOPIC + hostname);
-      
+      //////////////////////////////////////////////////////////////////////////
+
       sparkConf = new SparkConf()
       .setMaster(sparkMaster)
       .setAppName(context.getServletContextName())

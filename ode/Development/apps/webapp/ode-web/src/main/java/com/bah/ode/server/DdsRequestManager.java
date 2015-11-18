@@ -41,10 +41,10 @@ public class DdsRequestManager extends DataRequestManager {
    private WebSocketClient<?> ddsClient;
    
    @SuppressWarnings("unchecked")
-   public DdsRequestManager(OdeRequest odeRequest, OdeMetadata metadata) 
+   public DdsRequestManager(OdeMetadata metadata) 
          throws DdsRequestManagerException {
-      super(odeRequest.getDataType(), metadata, itms, otms);
-      
+      super(metadata, itms, otms);
+      OdeRequest odeRequest = metadata.getOdeRequest();
       try {
          // get a data manager to start the data flow
          ddsRequest = buildDdsRequest(odeRequest);
@@ -179,11 +179,7 @@ public class DdsRequestManager extends DataRequestManager {
          String sDdsRequest = ddsRequest.toString();
          logger.info("Sending request: {}", sDdsRequest);
    
-         /*
-          * We do not add the subscriber here because it may have already been
-          * added by the ODE Request manager if the data is pass-through.
-          */
-         //topicManager.addSubscriber(topic.getName());
+         addSubscriber();
          
          if (ddsClient.getWsSession() != null)
             ddsClient.send(sDdsRequest);

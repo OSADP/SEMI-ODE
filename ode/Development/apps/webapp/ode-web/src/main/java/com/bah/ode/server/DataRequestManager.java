@@ -5,7 +5,6 @@ import javax.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
 
 public abstract class DataRequestManager {
@@ -26,9 +25,9 @@ public abstract class DataRequestManager {
    // FOR LOOPBACK TEST ONLY
 
 
-   public DataRequestManager(OdeDataType dataType, OdeMetadata metadata,
+   public DataRequestManager(OdeMetadata metadata,
          BaseTopicManager itms, BaseTopicManager otms) {
-      if (OdeRequestManager.isPassThrough(dataType))
+      if (OdeRequestManager.isPassThrough(metadata.getOdeRequest().getDataType()))
          this.topicManager = otms;
       else
          this.topicManager = itms;

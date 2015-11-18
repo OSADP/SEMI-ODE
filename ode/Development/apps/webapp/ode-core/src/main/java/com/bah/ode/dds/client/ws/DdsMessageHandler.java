@@ -119,7 +119,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                   topicName = metadata.getInputTopic().getName();
                   pam.setPayload(new OdeAdvisoryDataRaw(ddsData.getAsd()));
                } else if (ddsData.getControlMessage() != null) {
-                  topicName = metadata.getInputTopic().getName();
+                  topicName = metadata.getOutputTopic().getName();
                   pam.setPayload(new OdeControlData(ddsData.getControlMessage()));
                } else {
                   topicName = metadata.getOutputTopic().getName();

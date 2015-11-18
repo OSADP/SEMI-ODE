@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeDataMessage;
+import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.util.WebSocketUtils;
 import com.bah.ode.wrapper.DataProcessor;
 import com.bah.ode.wrapper.MQConsumerGroup;
@@ -24,21 +25,21 @@ public class OdeDataDistributor implements Runnable {
    private static AppContext appContext = AppContext.getInstance();
 
    private Session clientSession;
-   private MQTopic clientTopic;
+   private OdeMetadata metadata;
    private String groupId;
    private MQConsumerGroup<String, String, String> consumerGroup;
 
-   public OdeDataDistributor(final Session clientSession, MQTopic outboundTopic) {
+   public OdeDataDistributor(final Session clientSession, OdeMetadata metadata) {
       super();
       this.clientSession = clientSession;
-      this.clientTopic = outboundTopic;
+      this.metadata = metadata;
       this.groupId = clientSession.getId();
 
       if (!AppContext.loopbackTest()) {
          this.consumerGroup = new MQConsumerGroup<String, String, String>(
                appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
                this.groupId,
-               this.clientTopic,
+               this.metadata,
                new StringDecoder(null),
                new StringDecoder(null),
                new DataProcessor<String, String>() {
@@ -68,23 +69,26 @@ public class OdeDataDistributor implements Runnable {
       return this;
    }
 
-   public MQTopic getClientTopic() {
-      return clientTopic;
+   public OdeMetadata getMetadata() {
+      return metadata;
    }
 
-   public OdeDataDistributor setClientTopic(MQTopic aTopic) {
-      this.clientTopic = aTopic;
+   public OdeDataDistributor setMetadata(OdeMetadata metadata) {
+      this.metadata = metadata;
       if (!AppContext.loopbackTest())
-         consumerGroup.setTopic(this.clientTopic);
+         consumerGroup.setMetadata(this.metadata);
       return this;
    }
 
    @Override
    public void run() {
       try {
-         logger.info(
-               "Starting {} consumer threads in group {} for topic {} ...",
-               clientTopic.getPartitions(), groupId, clientTopic.getName());
+         MQTopic outputTopic = metadata.getOutputTopic();
+         if (outputTopic != null) {
+            logger.info(
+                  "Starting {} consumer threads in group {} for topic {} ...",
+                  outputTopic.getPartitions(), groupId, outputTopic.getName());
+         }
          if (!AppContext.loopbackTest())
             consumerGroup.consume();
       } catch (Exception e) {

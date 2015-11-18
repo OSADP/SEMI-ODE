@@ -19,26 +19,28 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.model.OdeMetadata;
+
 public class MQConsumerGroup<K, V, R> {
    private static Logger logger = LoggerFactory
          .getLogger(MQConsumerGroup.class);
 
    private ConsumerConnector consumerConnector;
-   private MQTopic topic;
+   private OdeMetadata metadata;
    private ExecutorService executor;
    private DataProcessor<V, R> processor;
    private Decoder<K> keyDecoder;
    private Decoder<V> valueDecoder;
 
    public MQConsumerGroup(String zookeepers, String a_groupId, 
-         MQTopic a_topic, Decoder<K> keyDecoder,
+         OdeMetadata metadata, Decoder<K> keyDecoder,
          Decoder<V> valueDecoder,
          DataProcessor<V, R> a_processor) {
       
       consumerConnector = Consumer.createJavaConsumerConnector(
             createConsumerConfig(zookeepers, a_groupId));
       
-      this.topic = a_topic;
+      this.metadata = metadata;
       this.keyDecoder = keyDecoder;
       this.valueDecoder = valueDecoder;
       this.processor = a_processor;
@@ -60,28 +62,26 @@ public class MQConsumerGroup<K, V, R> {
 
    public void consume() throws InterruptedException, ExecutionException {
       Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
-      topicCountMap.put(topic.getName(), topic.getPartitions());
-      Map<String, List<KafkaStream<K, V>>> consumerMap = 
-            consumerConnector.createMessageStreams(topicCountMap, 
-                  keyDecoder, valueDecoder);
-      List<KafkaStream<K, V>> streams = 
-            consumerMap.get(topic.getName());
-
-      // now launch all the threads
-      //
-      executor = Executors.newFixedThreadPool(topic.getPartitions());
-
-      // now create an object to consume the messages
-      //
-      int threadNumber = 0;
-      for (final KafkaStream<K, V> stream : streams) {
-         @SuppressWarnings("unused")
-         Future<Object> future = 
-               executor.submit(
-                     new MQConsumer<K, V, R>(stream, threadNumber, processor));
-//         String result = future.get().toString();
-//         logger.info(result);
-         threadNumber++;
+      MQTopic outputTopic = metadata.getOutputTopic();
+      if (outputTopic != null) {
+         topicCountMap.put(outputTopic.getName(), outputTopic.getPartitions());
+         Map<String, List<KafkaStream<K, V>>> consumerMap = consumerConnector
+               .createMessageStreams(topicCountMap, keyDecoder, valueDecoder);
+         List<KafkaStream<K, V>> streams = consumerMap.get(outputTopic.getName());
+         // now launch all the threads
+         //
+         executor = Executors.newFixedThreadPool(outputTopic.getPartitions());
+         // now create an object to consume the messages
+         //
+         int threadNumber = 0;
+         for (final KafkaStream<K, V> stream : streams) {
+            @SuppressWarnings("unused")
+            Future<Object> future = executor.submit(new MQConsumer<K, V, R>(
+                  stream, threadNumber, processor));
+            //         String result = future.get().toString();
+            //         logger.info(result);
+            threadNumber++;
+         }
       }
    }
 
@@ -97,13 +97,12 @@ public class MQConsumerGroup<K, V, R> {
       return new ConsumerConfig(props);
    }
 
-   public MQTopic getTopic() {
-      return topic;
+   public OdeMetadata getMetadata() {
+      return metadata;
    }
 
-   public void setTopic(MQTopic topic) {
-      this.topic = topic;
+   public void setMetadata(OdeMetadata metadata) {
+      this.metadata = metadata;
    }
-   
-   
+
 }
