@@ -38,6 +38,7 @@ import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
+import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.model.OdeStatus;
@@ -185,7 +186,7 @@ public class WebSocketServer {
       OdeDataType dataTypeRequested = OdeDataType.getByShortName(dtype);
       
       OdeStatus status = new OdeStatus();
-      MQTopic clientTopic = null;
+      MQTopic outputTopic = null;
       try {
          if (dataTypeRequested == OdeDataType.AggregateData) {
             odeRequest = OdeRequestManager.buildOdeRequest(rtype, 
@@ -204,39 +205,38 @@ public class WebSocketServer {
          if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
             requestId = OdeRequestManager.buildRequestId(odeRequest);
             // Use the request Id to determine if there is an existing request for the same data
-            clientTopic = OdeRequestManager.getTopic(requestId);
+            outputTopic = OdeRequestManager.getTopic(requestId);
          }
          else {
             requestId = UUID.randomUUID().toString();
          }
          
-         if (clientTopic == null) {
+         if (outputTopic == null) {
             // Note: requestId should not be null. So if we get a NPE, we have an internal error
             logger.info("Creating new request ID: {}", requestId);
             // No client topic exists, create a new one
-            clientTopic = OdeRequestManager.getOrCreateTopic(requestId);
+            
+            outputTopic = OdeRequestManager.getOrCreateTopic(requestId);
+            
+            OdeMetadata metadata = createMetadata(dataTypeRequested,
+                  outputTopic, requestId);
+            
             
             if (connector == null) {
-               connector = new DataSourceConnector(clientTopic);
+               connector = new DataSourceConnector(metadata);
                connectors.put(requestId, connector);
                
                //FOR TEST ONLY
                if (AppContext.loopbackTest()) {
                   connector.setClientSession(session);
                }
-
-            }
-            
-            connector.sendDataRequest(odeRequest);
-            
-            if (dataTypeRequested == OdeDataType.AggregateData) {
-               launchNewDistributor(session, MQTopic.create(
-                     AppContext.getInstance().getParam(
-                           AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC), 
-                           MQTopic.defaultPartitions()));
             } else {
-               launchNewDistributor(session, clientTopic);
+               connector.setMetadata(metadata);
             }
+            
+            connector.connectToSource();
+            
+            launchNewDistributor(session, metadata);
             
             if (!OdeRequestManager.isPassThrough(odeRequest.getDataType())) {
                if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
@@ -248,26 +248,25 @@ public class WebSocketServer {
                   LocalSparkProcessor.startStreamingContext();
                }
             }
-            
 
             logger.info("DDS Connection Established for request ID {}.", requestId);
             status.setMessage("DDS Connection Established");
          } else {
             // Topic already exists by this or another subscriber
             if (distributor != null) {
-               if (!distributor.getClientTopic().getName().equals(clientTopic.getName())) {
+               if (!distributor.getMetadata().getOutputTopic().getName().equals(outputTopic.getName())) {
                   /* 
                    * This subscriber is subscribing to a new topic. Remove the old
                    * topic and add the new one. 
                    */
                   
                   OdeRequestManager.removeSubscriber(
-                        distributor.getClientTopic().getName(), 
+                        distributor.getMetadata().getOutputTopic().getName(), 
                         odeRequest.getDataType());
                   
                   OdeRequestManager.addSubscriber(requestId, 
                         odeRequest.getDataType());
-                  distributor.setClientTopic(clientTopic);
+                  distributor.getMetadata().setOutputTopic(outputTopic);
                   status.setMessage(String.format("Tapped into existing request %s using existing distributor", requestId));
                   logger.info(status.getMessage());
                } else {
@@ -275,7 +274,9 @@ public class WebSocketServer {
                   logger.info(status.getMessage());
                }
             } else {
-               launchNewDistributor(session, clientTopic);
+               OdeMetadata metadata = createMetadata(dataTypeRequested,
+                     outputTopic, requestId);
+               launchNewDistributor(session, metadata);
                OdeRequestManager.addSubscriber(requestId, odeRequest.getDataType());
                status.setMessage(String.format("Tapped into existing request %s using a new distributor", requestId));
                logger.info(status.getMessage());
@@ -284,9 +285,9 @@ public class WebSocketServer {
          status.setCode(OdeStatus.Code.SUCCESS);
          status.setRequestId(requestId);
       } catch (Exception ex) {
-         if (clientTopic != null && odeRequest != null) {
+         if (outputTopic != null && odeRequest != null) {
             OdeRequestManager.removeSubscriber(
-                  clientTopic.getName(), 
+                  outputTopic.getName(), 
                   odeRequest.getDataType());
          }
          status.setCode(OdeStatus.Code.FAILURE)
@@ -300,6 +301,27 @@ public class WebSocketServer {
             logger.error("Error sending error message back to client", e);
          }
       }
+   }
+   public OdeMetadata createMetadata(OdeDataType dataTypeRequested,
+         MQTopic outputTopic, String requestId) {
+      OdeMetadata metadata;
+      if (dataTypeRequested == OdeDataType.AggregateData) {
+         MQTopic inputTopic = MQTopic.create(
+               AppContext.getInstance().getParam(
+               AppContext.DATA_PROCESSOR_INPUT_TOPIC), 
+               MQTopic.defaultPartitions());
+         MQTopic aggregatesTopic = MQTopic.create(
+               AppContext.getInstance().getParam(
+                     AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC), 
+                     MQTopic.defaultPartitions());
+         
+         metadata = new OdeMetadata(requestId, inputTopic, 
+               aggregatesTopic, odeRequest);
+      } else {
+         metadata = new OdeMetadata(requestId, outputTopic, 
+               outputTopic, odeRequest);
+      }
+      return metadata;
    }
 
    /**
@@ -315,14 +337,14 @@ public class WebSocketServer {
    }
    
    private void launchNewDistributor(
-         Session session, MQTopic clientTopic) {
+         Session session, OdeMetadata metadata) {
       
       logger.info("Launching new Distributor for client session {} client topic {}",
-            session.getId(), clientTopic);
+            session.getId(), metadata.getOutputTopic());
       
       // Start the processor to receive data from the client topic and 
       // send it to client session
-      distributor = new OdeDataDistributor(session, clientTopic);
+      distributor = new OdeDataDistributor(session, metadata);
       Thread respThread = new Thread(distributor);
       respThread.start();
    }
@@ -348,14 +370,14 @@ public class WebSocketServer {
          // Do this after rqstMgr.requesterDisconnected()
          if (connector != null) {
             connector.cancelDataRequest();
-            connectors.remove(connector.getOutputTopic().getName());
+            connectors.remove(connector.getMetadata().getOutputTopic().getName());
          }
          
          if (distributor != null) {
             distributor.shutDown();
             if (odeRequest != null) {
                OdeRequestManager.removeSubscriber(
-                     distributor.getClientTopic().getName(),
+                     distributor.getMetadata().getOutputTopic().getName(),
                      odeRequest.getDataType());
             }
             

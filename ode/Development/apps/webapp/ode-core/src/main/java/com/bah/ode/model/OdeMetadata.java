@@ -10,6 +10,19 @@ public class OdeMetadata extends OdeObject {
    private MQTopic outputTopic;
    private OdeRequest odeRequest;
    
+   public OdeMetadata() {
+      super();
+   }
+
+   public OdeMetadata(String key, MQTopic inputTopic, MQTopic outputTopic,
+         OdeRequest odeRequest) {
+      super();
+      this.key = key;
+      this.inputTopic = inputTopic;
+      this.outputTopic = outputTopic;
+      this.odeRequest = odeRequest;
+   }
+
    public String getKey() {
       return key;
    }

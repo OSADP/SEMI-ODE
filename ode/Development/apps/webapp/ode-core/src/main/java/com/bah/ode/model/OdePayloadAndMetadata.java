@@ -21,7 +21,7 @@ public class OdePayloadAndMetadata extends OdeObject {
    }
    public OdePayloadAndMetadata setPayload(OdeMsgPayload payload) {
       this.payload = payload;
-      this.payloadType = payload.getClass().getName();
+      this.payloadType = payload.getDataType();
       return this;
    }
    public String getKey() {
