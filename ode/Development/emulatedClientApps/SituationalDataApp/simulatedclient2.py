@@ -35,7 +35,7 @@ import clientConfig
 # Set TIME to UTC
 # logging.Formatter.converter = time.gmtime
 
-logging_level = logging.INFO
+logging_level = logging.DEBUG
 
 if not os.path.exists('logs'):
     os.makedirs('logs')
@@ -94,9 +94,10 @@ skip = simulatedClientPresets.skip
 limit = simulatedClientPresets.limit
 
 un_supported_payloads_codes = [x[1] for x in dataType.all_dataTypes()
-                               if x[1] !='veh' and x[1]!='status' and x[1]!='other']
+                               if x[1] !='veh' and x[1]!='status' and x[1]!='other' and x[1] !='agg']
 
 input_file = None
+record_count = 0.0
 
 def append_to_file(entry):
     with open(os.path.join('output',ode_output_file_name), "a") as myfile: # output
@@ -163,7 +164,7 @@ def validate_location(msg_payload,region=None):
     if region:
         service_region = region
     else:
-        service_region =config['SERVICE_REGION']
+        service_region = config['SERVICE_REGION']
 
     if float(service_region['seLat']) <= float(msg_payload['latitude']) <= float(service_region['nwLat']) and \
        float(service_region['nwLon']) <= float(msg_payload['longitude']) <= float(service_region['seLon']):
@@ -196,6 +197,8 @@ def _main():
     if config['PASSWORD'] is None:
         logger.exception("Missing Password. ")
         sys.exit(1)
+    global record_count
+    record_count = 0.0
     _run_main(config, cp)
 
 def parse_config_file(file_path):
@@ -233,6 +236,19 @@ def parse_config_file(file_path):
 
     config['SERVICE_REGION'] = area
 
+    segments = [x for x in config_file.sections() if 'segment' in x]
+
+    if segments is not None:
+        road_segments = []
+        for segment in segments:
+            rs ={}
+            for key, value in config_file.items(segment):
+                rs[key]=value
+            road_segments.append(rs)
+        config['ROAD_SEGMENTS'] = road_segments
+    else:
+       config['ROAD_SEGMENTS'] = None
+
     return config_file
 
 def parse_options(config_file):
@@ -263,13 +279,25 @@ def build_request(config):
                                       region,
                                       config.get('START_DATE', start_date),
                                       config.get('END_DATE', end_date),
-                                      config.get('LIMIT', limit),
-                                      config.get('SKIP', skip))
+                                      config.get('SKIP', skip),
+                                      config.get('LIMIT', limit))
+    if config.get('ROAD_SEGMENTS',False):
+        for segment in config['ROAD_SEGMENTS']:
+            if segment.get('startPoint'):
+                startPoint = client.OdePoint(*tuple(segment['startPoint'].split(',')))
+            else:
+                startPoint=None
+
+            endpoint = client.OdePoint(*tuple(segment['endPoint'].split(',')))
+            rs = client.RoadSegment(segment['id'],
+                                    startPoint=startPoint,
+                                    endPoint=endpoint,
+                                    previousSegmentId=segment.get('previousSegmentId',None))
+            request.add_road_segments(rs)
     return request
 
 def build_region(regionValues):
     """
-
     :rtype : odeClient.client.GeographicRegion
     """
     return client.GeographicRegion(regionValues["nwLat"],
@@ -282,6 +310,7 @@ def _run_main(config,config_file=None):
     ode = client.ODEClient(config['HOST'], config['USERNAME'], config['PASSWORD'])
 
     request = build_request(config)
+
     extract_json_objects(config['VALIDATION_FILE'])
 
     logger.info("Subscriptions Params: %s", request.toJson() )
@@ -298,7 +327,7 @@ def on_message(ws, message):
     """
 
     # determine message type and act accordingly
-    logger.debug("Message Value: %s", message)
+    logger.info("Message Value: %s", message)
     # if log_to_file:
     append_to_file(message)
     try:
@@ -318,7 +347,7 @@ def on_message(ws, message):
         if msg.get_payload_type() in dataType.OtherData and 'STOP' not in  msg.payload.get('fullMessage'):
             logger.info("Other Message Type: %s",msg.payload.get('fullMessage',""))
 
-        if msg.get_payload_type() in dataType.VehicleData and ( config['REQUEST_TYPE'] in ('qry') or  (config['REQUEST_TYPE'] in ('sub') and  config['UPLOAD_TEST_DATA'] )):
+        if msg.get_payload_type() in dataType.VehicleData and ( config['REQUEST_TYPE'] in ('qry') or  (config['REQUEST_TYPE'] in ('sub'))): # and  config['UPLOAD_TEST_DATA'] )):
             logger.info("Validating Vehicle Record")
             validate_message(msg.payload)
 
@@ -341,14 +370,22 @@ def validate_message(msg_payload):
 
     location_result = validate_location(msg_payload)
     logger.info("Validate Location Result: %s", str(location_result))
+
+    if config['REQUEST_TYPE'] in ('qry',):
+        date_result = validate_datetime(msg_payload)
+        logger.info("Validate DateTime Result: %s", str(date_result))
+
+    if not config['UPLOAD_TEST_DATA']:
+        #logger.info("Unable to validate records against validation file")
+        return False,None
     #
     #
     # TODO Refactor whole method to be less intelligent
     #
     #
 
-    key = 'dateTime'
-
+    # key = 'dateTime'
+    key = 'serialId'
     # if not validate_datetime(message['dateTime']) and config['REQUEST_TYPE'] == 'qry':
     #     logger.warn("Invalid DateTime in Message Record")
     #     logger.warn("Start Time: %s,  Actual: %s   End Time: %s", msg['startDate'], message['dateTime'], \
