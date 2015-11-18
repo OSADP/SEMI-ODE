@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='OdeClient',
-    version='0.3',
+    version='0.4',
     packages=['odeClient'],
     url='',
     license='',
@@ -19,7 +19,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
