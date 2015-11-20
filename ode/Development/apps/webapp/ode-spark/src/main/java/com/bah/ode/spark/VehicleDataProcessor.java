@@ -136,7 +136,7 @@ public class VehicleDataProcessor extends OdeObject {
           */
          windowedPnM.foreachRDD(new Aggregator(producerPool, ssc
                .sparkContext().getConf()
-               .get(AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC)));
+               .get("spark.topics."+AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC)));
 
          /*
           * Vehicle data Distribution
