@@ -37,9 +37,8 @@ class ODE_Basic_Subscription_Multiple_Clients_Tests(unittest.TestCase):
         os.path.join('.', 'test_config_files', 'test_Basic_Multiple_Clients_config_2.ini'))
 
     client1 = client2 = None
-    #
     def create_asyncClient_and_request(self,the_config,**kwargs):
-        
+
         ode = client.ODEClient(the_config['HOST'])
         ode.get_token(the_config['USERNAME'], the_config['PASSWORD'])
 
@@ -67,11 +66,11 @@ class ODE_Basic_Subscription_Multiple_Clients_Tests(unittest.TestCase):
             pass
         time.sleep(3)
 
-    def test_Connection_to_Vehicle_Sub_API(self):
+    def test_Connection_to_Vehicle_Query_API(self):
         dataType = 'veh'
         requestType = 'qry'
         self.config1['DATA'] = dataType
-        self.config2['DATA']  = dataType
+        self.config2['DATA'] = dataType
 
         self.config1['REQUEST_TYPE'] = requestType
         self.config2['REQUEST_TYPE'] = requestType
@@ -79,73 +78,91 @@ class ODE_Basic_Subscription_Multiple_Clients_Tests(unittest.TestCase):
         self.client1 = self.create_asyncClient_and_request(self.config1)
         self.client2 = self.create_asyncClient_and_request(self.config2)
 
+        start_time = datetime.datetime.utcnow()
+
         self.client1.start()
         self.client2.start()
-        time.sleep(60)
 
-        self.stop_client(self.client1)
-        self.stop_client(self.client2)
+        time_out = 180
+
+        time.sleep(time_out)
 
         # TODO Assert Something
-        msg1 = self.client1.get_messages(50)
+        # Assert Location and Date time is correct
+        # assert
+        msg1 = self.client1.get_all_messages()
+        self.logger.info("Processing Client 1 Messages")
         for m in msg1:
-            print m.toJson()
+            # self.logger.info( m.toJson() )
             if m.get_payload_type() in ('veh',):
                 self.assertTrue(testRunnerHelper.validate_datetime(m.payload, self.config1))
                 self.assertTrue(testRunnerHelper.validate_location(m.payload, self.config1))
 
-        msg2 = self.client2.get_messages(50)
+        msg2 = self.client2.get_all_messages()
+
+        self.logger.info("Processing Client 2 Messages")
         for m in msg2:
-            print m.toJson()
+            # self.logger.info( m.toJson())
             if m.get_payload_type() in ('veh',):
-                self.assertTrue(testRunnerHelper.validate_datetime(m.payload, self.config1))
-                self.assertTrue(testRunnerHelper.validate_location(m.payload, self.config1))
-
+                self.assertTrue(testRunnerHelper.validate_datetime(m.payload, self.config2))
+                self.assertTrue(testRunnerHelper.validate_location(m.payload, self.config2))
 
         self.logger.info('Records Received: %d', len(msg1))
         self.logger.info('Records Received: %d', len(msg2))
-        self.assertGreaterEqual(len(msg1), 10)
 
-        self.assertLessEqual(len(msg2), 10)
+        self.assertGreaterEqual(len(msg1), 100)
+        self.assertGreaterEqual(len(msg2), 100)
+        self.logger.info("All Records Validated against spatial and temporal parameters")
 
 
-    def run_subscription_test(self, clients, **kwargs):
+    def test_Connection_to_Vehicle_Subscription_API(self ):
 
-        for client in clients:
-            client.start()
+        dataType = 'veh'
+        requestType = 'sub'
+        self.config1['DATA'] = dataType
+        self.config2['DATA'] = dataType
 
-        if kwargs is None:
-            kwargs = {}
-        record_count = 0
-        time.sleep(5)
+        self.config1['REQUEST_TYPE'] = requestType
+        self.config2['REQUEST_TYPE'] = requestType
+
+        self.client1 = self.create_asyncClient_and_request(self.config1)
+        self.client2 = self.create_asyncClient_and_request(self.config2)
 
         start_time = datetime.datetime.utcnow()
 
-        while self.client.queue.qsize() <= kwargs.get('min_queue', 10):
-            current_time = datetime.datetime.utcnow()
-            time_delta = current_time - start_time
-            if time_delta.total_seconds() >= kwargs.get('timeOut',60):
-                break
-            else:
-                time.sleep(2)
+        self.client1.start()
+        self.client2.start()
 
-        responses = self.client.get_messages(25)
-        self.logger.info(
-            'validating all returned records to ensure spatial consistency- outliers will be displayed on the screen' \
-            + 'exception processing same thing with expected result')
-        for msg in responses:
-            # Ignore Status and other payload message types
-            if msg.get_payload_type() not in ('status','other'):
-                self.assertEquals(msg.get_payload_type(), kwargs.get('dataType', request.dataType))
-            if msg.get_payload_type() in ('veh',):
-                self.assertTrue(testRunnerHelper.validate_location(msg.payload, self.config))
+        time_out = 180
 
-            record_count += 1
-        self.logger.info("Total Records Received: %d", record_count)
-        self.assertGreaterEqual(record_count, kwargs.get('min_records', 5),
-                                "Did Not receive at least {}  records from the ODE".format(
-                                    kwargs.get('min_records', 5)))
-        self.logger.info("Validated all records")
+        time.sleep(time_out)
+
+        # TODO Assert Something
+        # Assert Location and Date time is correct
+        # assert
+        msg1 = self.client1.get_all_messages()
+        self.logger.info("Processing Client 1 Messages")
+        for m in msg1:
+            self.logger.info( m.toJson() )
+            if m.get_payload_type() in ('veh',):
+                self.assertTrue(testRunnerHelper.validate_location(m.payload, self.config1))
+
+        msg2 = self.client2.get_all_messages()
+
+        self.logger.info("Processing Client 2 Messages")
+        for m in msg2:
+            self.logger.info( m.toJson())
+            if m.get_payload_type() in ('veh',):
+                self.assertTrue(testRunnerHelper.validate_location(m.payload, self.config2))
+
+        self.logger.info('Records Received: %d', len(msg1))
+        self.logger.info('Records Received: %d', len(msg2))
+
+        # self.assertGreaterEqual(len(msg1), 50)
+        # self.assertGreaterEqual(len(msg2), 50)
+        self.logger.info("All Records Validated against temporal parameters")
+
+
 
 if __name__ == "__main__":
     unittest.main()  # run all Test
