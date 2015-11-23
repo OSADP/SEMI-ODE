@@ -25,6 +25,12 @@ except:
 
 
 class ODE_Subscription_Connectivity_Tests(unittest.TestCase):
+    """
+    Test 1 - Subscribe to EVSD data ODE-152
+    Test 3 - Subscribe to ISD Data ODE-154
+
+    """
+
     __metaclass__ = LogThisTestCase
     logger = logging.getLogger("ODE_Subscription_Downloads_Connectivity_Tests")
     logger.propagate = False
@@ -52,7 +58,7 @@ class ODE_Subscription_Connectivity_Tests(unittest.TestCase):
     def test_Connection_to_Intersection_Sub_API(self):
         self.config['DATA'] = 'int'
         request = testRunnerHelper.build_subscription_request(self.config)
-        self.run_subscription_test(request, dataType='isd')  # TODO change to 'int'
+        self.run_subscription_test(request, dataType=u'isd')  # TODO change to 'int'
 
     def test_Connection_to_Vehicle_Sub_API(self):
         self.config['DATA'] = 'veh'
@@ -71,13 +77,13 @@ class ODE_Subscription_Connectivity_Tests(unittest.TestCase):
     def test_Connection_to_SPAT_Sub_API(self):
         self.config['DATA'] = 'spat'
         request = testRunnerHelper.build_subscription_request(self.config)
-        self.run_subscription_test(request,dataType='isd')
+        self.run_subscription_test(request,dataType=u'isd')
 
     # @unittest.skip("Map Subscription Test Not Implemented Yet")
     def test_Connection_to_MAP_Sub_API(self):
         self.config['DATA'] = 'map'
         request = testRunnerHelper.build_subscription_request(self.config)
-        self.run_subscription_test(request,dataType='isd',timeOut=90)
+        self.run_subscription_test(request,dataType=u'isd',timeOut=90)
 
     def run_subscription_test(self, request, **kwargs):
         self.client.client.setRequest(request)
@@ -106,10 +112,18 @@ class ODE_Subscription_Connectivity_Tests(unittest.TestCase):
             + 'exception processing same thing with expected result')
         for msg in responses:
             # Ignore Status and other payload message types
+            if msg.get_payload_type() in ('status', ) and msg.payload.get('code',"") in (u"FAILURE", ):
+                raise self.failureException(msg="ODE Failed to process the request. ODE Status code is FAILURE")
+
             if msg.get_payload_type() not in ('status','other'):
                 self.assertEquals(msg.get_payload_type(), kwargs.get('dataType', request.dataType))
+
             if msg.get_payload_type() in ('veh',):
                 self.assertTrue(testRunnerHelper.validate_location(msg.payload, self.config))
+                self.assertIsNotNone(msg.get_payload_value('latitude',None))
+                self.assertIsNotNone(msg.get_payload_value('longitude',None))
+                self.assertIsNotNone(msg.get_payload_value('dateTime',None))
+                self.assertIsNotNone(msg.get_payload_value('serialId',None))
 
             record_count += 1
         self.logger.info("Total Records Received: %d", record_count)
