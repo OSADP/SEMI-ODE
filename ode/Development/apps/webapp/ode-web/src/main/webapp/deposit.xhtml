@@ -8,15 +8,17 @@ body {
 	background-color: #FFFFCC
    color: #808080
    */
-   font-family: Sans-serif;
-}
+   	background-color: #1e3871;
+   	font-family: Sans-serif;
+    color: white;
+  }
 
 h1 {
-   color: #3366FF
+   color: white;
 }
 
 h2 {
-   color: #6699FF
+   color: white;
 }
 
 #controls-container {
@@ -65,6 +67,8 @@ h2 {
    border: 1px solid #CCCCCC;
    border-right-color: #999999;
    border-bottom-color: #999999;
+   background-color: white;
+   color: black;
    height: 200px;
    overflow-y: scroll;
    padding: 5px;
@@ -81,7 +85,7 @@ h2 {
     border: 1px solid #000;
     margin: 10px 5px 0 0;
   }
-  
+
 </style>
 <script type="application/javascript">
 <![CDATA[
@@ -94,7 +98,7 @@ h2 {
   function setConnectionState(c, s) {
      connected = c;
      started = s;
-     
+
      if (!connected)
          started = false;
 
@@ -166,7 +170,7 @@ h2 {
       }
             setConnectionState(false, false);
   }
-   
+
   function log(msgOrData) {
       var console = document.getElementById('console');
       var p = document.createElement('p');
@@ -195,7 +199,7 @@ h2 {
      }
      document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
   }
-  
+
   function showThumbnail(file) {
      var reader = new FileReader();
 
@@ -212,9 +216,9 @@ h2 {
 
      // Read in the image file as a data URL.
      reader.readAsDataURL(file);
-     
+
   }
-  
+
   function sendFiles() {
      var reader = new FileReader();
      reader.onloadend = function(evt) {
@@ -231,15 +235,15 @@ h2 {
         reader.readAsBinaryString(file);
      }
   }
-  
+
   function getToken()  {
      var url = window.location.protocol+'//'+ window.location.host + '/ode/api/auth/login';
 
 	  var client = new XMLHttpRequest();
 	  client.open("GET", url, true);
-	  client.setRequestHeader('Authorization','Basic '+hash)	  
+	  client.setRequestHeader('Authorization','Basic '+hash)
 	  client.send();
-	 
+
 	  client.onreadystatechange=function()
 	  {
 		  if (client.readyState==4 && client.status==200)
@@ -257,8 +261,12 @@ h2 {
       for (var i = 0; i < noscripts.length; i++) {
           noscripts[i].parentNode.removeChild(noscripts[i]);
       }
+      if(window.location.hash){
+        document.getElementById('requestId').value = window.location.hash.replace("#","");
+      }
+
   }, false);
-  
+
 ]]>
 
 
@@ -267,8 +275,6 @@ h2 {
 </head>
 <body>
    <h1>ODE Deposit</h1>
-   <p><a href="subscribe.xhtml">ODE Subscribe</a></p>
-   <p><a href="query.xhtml">ODE Query</a></p>
    <div class="noscript">
       <h2 style="color: #ff0000">Seems your browser doesn't support
          Javascript! Websockets rely on Javascript being enabled. Please
@@ -277,30 +283,30 @@ h2 {
    <div id="controls-container">
       <div id="left-container">
          <div id="selectData">
-            <hr />
             <h2>Select Data:</h2>
-            <br /><input id="vsd" type="radio" name="group1" 
-                     value="/ode/tst/ws/veh/" 
+            <br /><input id="vsd" type="radio" name="group1"
+                     value="/ode/tst/ws/veh/"
                      onclick="updateRequestUri(this.value);" />
                      <label for="vsd">Vehicles</label>
             <br /> <input id="isd" type="radio" name="group1"
                      value="/ode/tst/ws/int/"
                      onclick="updateRequestUri(this.value);" />
                      <label for="isd">Intersections</label>
-            <br /> <input id="agg" type="radio" name="group1" 
+            <br /> <input id="agg" type="radio" name="group1"
                      value="/ode/tst/ws/agg/"
                      onclick="updateRequestUri(this.value);" />
                      <label for="agg">Aggregates</label>
-            <br /> <input id="requestUri" type="text" size="40" style="width: 350px" />
-            <br /> <label for="requestId">Request ID: </label>
+            <br /> <br /> <input id="requestUri" type="text" size="40" style="width: 350px" />
+            <br /> <br /> <label for="requestId">Request ID: </label>
             <br /> <input id="requestId" type="text" size="40" style="width: 350px" />
          </div>
       </div>
+    </div>
+      <!--
       <div id="middle-container">
          <div id="geoRegion">
             <hr />
             <h2>Enter Geographic Region</h2>
-            <!-- 
             <br /> <label>NW Latitude</label> <input id="nwLat"
                type="text" value="43.652969118285434" size="40"
                style="width: 350px" /><br /> <label>NW
@@ -310,11 +316,9 @@ h2 {
                value="36.4765153148293" size="40" style="width: 350px" /><br />
             <label>SE Longitude</label> <input id="seLon" type="text"
                value="-74.53468322753906" size="40" style="width: 350px" /><br />
-            -->
          </div>
       </div>
       <div id="right-container">
-         <!-- 
             <div id="selectFormat">
                <hr/>
                <h2>Select Format:</h2><br/>
@@ -326,34 +330,32 @@ h2 {
                <label for="vsd">Base 64</label>
                <br/>
             </div>
-         -->
          <div id="destination">
             <hr />
             <h2>Options:</h2>
-            <!--
             <br /> <input id="screen" type="checkbox" checked="checked"
                value="screen" /> <label for="screen">On Screen</label><br />
             <input id="file" type="checkbox" value="file" /> <label
                for="file">Server File Path</label><br /> <a
                href="https://ode/download/">https://ode/download/</a><br />
             <br />
-            -->
          </div>
       </div>
-   </div>
-   <div id="console-container">
+    -->
+
+   <div id="console-container"><br />
       <div id="io">
          <input type="file" id="files" name="files[]" multiple="multiple" onchange="handleFileSelect(this.files)"/><br/>
-         <output id="list">Inner HTML</output>
+         <output id="list"></output>
       </div>
-      <hr />
       <div>
+        <br />
          <hr />
          <button id="connect" disabled="disabled" onclick="connect();">Connect</button>
          <button id="send" disabled="disabled" onclick="send();">Send Request</button>
          <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
       </div>
-      <hr />
+      <hr /><br /> <br />
       <div id="console" />
    </div>
 </body>
