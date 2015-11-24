@@ -86,17 +86,19 @@ def append_to_file(entry, config, **kwargs):
 def convert_file(config, **kwargs):
     count = 0
     with open(config['INPUT_FILE']) as json_file:
-        for line in json_file:
+        for _line in json_file:
             try:
-                if line is None or line == "\n":
+                if _line is None or _line == "\n":
                     break
+                line = json.loads(_line)
                 row = transform_row(config, line)
                 ode_msg =create_ode_msg(row, config["DATA"])
                 append_to_file(json.dumps(ode_msg),config)
                 count =+1
-            except:
+            except Exception as e:
                 print "LINE: {}".format( line)
                 print "Error Reading JSON FIle: {}".format(config['INPUT_FILE'])
+                print "Exception: \n %s" % e
     print "Converted {} Records to new format".format(count)
 
 def convert_csv(config,**kwargs):
@@ -128,10 +130,10 @@ def transform_row(config,row,**kwargs):
 
     if kwargs is None:
         kwargs = {}
-    updated_row= None
+    updated_row = None
 
     if config.get("DROP",None) is not None:
-       updated_row = drop_records(config,row)
+        updated_row = drop_records(config,row)
 
     if config.get('MAP',None) is not None and updated_row is not None:
         updated_row = update_row_keys(config, updated_row)
