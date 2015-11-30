@@ -585,6 +585,8 @@ $( document ).ready(function() {
         request["nwLon"] = document.getElementById('nwLonSub').value;
         request["seLat"] = document.getElementById('seLatSub').value;
         request["seLon"] = document.getElementById('seLonSub').value;
+        request["startDate"] = document.getElementById('startDate').value;
+        request["endDate"] = document.getElementById('endDate').value;
 
         var s1 = {};
         s1["id"] = "LarnedShelbyGriswold";
