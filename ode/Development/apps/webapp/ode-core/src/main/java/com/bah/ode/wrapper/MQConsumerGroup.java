@@ -78,8 +78,6 @@ public class MQConsumerGroup<K, V, R> {
             @SuppressWarnings("unused")
             Future<Object> future = executor.submit(new MQConsumer<K, V, R>(
                   stream, threadNumber, processor));
-            //         String result = future.get().toString();
-            //         logger.info(result);
             threadNumber++;
          }
       }
