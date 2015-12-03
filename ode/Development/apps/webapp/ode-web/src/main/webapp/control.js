@@ -313,7 +313,7 @@ $( document ).ready(function() {
         requestIdChangeFunc = setInterval(function(){
           if(currentRequestId != $('#requestId').val()){
             clearInterval(requestIdChangeFunc);
-            window.open("deposit.xhtml#"+$('#requestId').val(),'_blank');
+            window.open("deposit.xhtml#"+$('#requestId').val()+"#"+dataType,'_blank');
           }
         }, 500);
         sourceController(".subscription");
