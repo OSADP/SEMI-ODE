@@ -1,6 +1,7 @@
 package com.bah.ode.wrapper;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -20,6 +21,8 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 	private KafkaStream<K, V> m_stream;
 	private int m_threadNumber;
 	private DataProcessor<V, R> processor;
+	private boolean hasSent = false;
+	private String lastSerialId = null;
 
 	public MQConsumer(KafkaStream<K, V> a_stream, int a_threadNumber,
 			DataProcessor<V, R> a_processor) {
@@ -33,26 +36,51 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 		ConsumerIterator<K, V> it = m_stream.iterator();
 
 		ArrayList<V> vList = new ArrayList<V>();
-		String lastSerialId = null;
 		while (it.hasNext()) {
 			V msg = it.next().message();
 			ObjectNode bundleObject = JsonUtils.toObjectNode(msg.toString());
 			String tempSerialId = bundleObject.get("serialId").asText();
-			tempSerialId = tempSerialId.substring(0, tempSerialId.length()-2);
-
-			if(lastSerialId == null)
-				lastSerialId = tempSerialId;
-
-			if(tempSerialId.equals(lastSerialId)){
-				vList.add(msg);
+			if(tempSerialId == null || tempSerialId.equals("")){
+				logger.info("No Serial ID");
+				processor.process(msg);
 			}else{
-				BatchSend batchSender = new BatchSend(vList);
-				Thread t = new Thread(batchSender);
-				t.start();
-				vList.clear();
-				lastSerialId = tempSerialId;
-				vList.add(msg);
+				String[] test = tempSerialId.split("[^\\w-]+"); /* Non-alphanumerics and hyphen */
+				tempSerialId = test[0] + "." + test[1];
+				
+				if(lastSerialId == null)
+					lastSerialId = tempSerialId;
+	
+				if(tempSerialId.equals(lastSerialId)){
+					hasSent = false;
+					vList.add(msg);
+					new java.util.Timer().schedule( 
+							new java.util.TimerTask() {
+								@Override
+								public void run() {
+									if(!hasSent){
+										/* Sends the batch after 5 seconds without waiting for the next bundle if it hasn't arrived yet. */
+										if(vList.size() != 0){
+											BatchSend batchSender = new BatchSend(vList);
+											Thread t = new Thread(batchSender);
+											t.start();
+											vList.clear();
+											lastSerialId = null;
+										}
+									}
+								}
+							},5000);
+				}else{
+					/* If it receives the next bundle send */
+					hasSent = true;
+					BatchSend batchSender = new BatchSend(vList);
+					Thread t = new Thread(batchSender);
+					t.start();
+					vList.clear();
+					lastSerialId = tempSerialId;
+					vList.add(msg);
+				}
 			}
+
 		}
 
 		logger.info("Shutting down Thread: " + m_threadNumber);
