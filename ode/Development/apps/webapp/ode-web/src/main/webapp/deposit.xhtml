@@ -2,6 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>ODE Test Deposit</title>
+  <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
   <style type="text/css">
   body {
     /*
@@ -231,24 +233,31 @@ var recordLoc = 0;
     reader.onloadend = function(evt) {
       var fileData = new String(reader.result);
       records = fileData.split('\n');
+      if(isNaN(recordsPerBatch) || isNaN(milisecondsBetween)){
+	      for (var i = 0, numRecords = records.length; i < numRecords; i++) {
+	          ws.send(records[i]);
+	      }
+      }
     };
 
     var files = document.getElementById('files').files;
     for (var i = 0, numFiles = files.length; i < numFiles; i++) {
       var file = files[i];
       reader.readAsBinaryString(file);
-
-      var sendInt = window.setInterval( function() {
-        if(records != undefined){
-          for (var subj = recordLoc + recordsPerBatch; recordLoc < records.length && recordLoc < subj; recordLoc ++ ){
-            ws.send(records[recordLoc]);
-            //console.log("sent " + recordLoc);
-          }
-        }
-        if(recordLoc >= records.length){
-          clearInterval(sendInt);
-        }
-      }, milisecondsBetween);
+      
+      if(!isNaN(recordsPerBatch) && !isNaN(milisecondsBetween)){
+	      var sendInt = window.setInterval( function() {
+	        if(records != undefined){
+	          for (var subj = recordLoc + recordsPerBatch; recordLoc < records.length && recordLoc < subj; recordLoc ++ ){
+	            ws.send(records[recordLoc]);
+	            //console.log("sent " + recordLoc);
+	          }
+	        }
+	        if(recordLoc >= records.length){
+	          clearInterval(sendInt);
+	        }
+	      }, milisecondsBetween);
+      }
     }
   }
 
@@ -278,7 +287,18 @@ var recordLoc = 0;
       noscripts[i].parentNode.removeChild(noscripts[i]);
     }
     if(window.location.hash){
-      document.getElementById('requestId').value = window.location.hash.replace("#","");
+      document.getElementById('requestId').value = window.location.hash.split("#")[1];
+      var dtype = parseInt(window.location.hash.split("#")[2]);
+      if(dtype == 6){
+    	  $("#vsd").attr('checked', true);
+    	  updateRequestUri("/ode/tst/ws/veh/");
+      }else if(dtype == 7){
+    	  $("#isd").attr('checked', true);
+          updateRequestUri("/ode/tst/ws/int/");
+      }else if(dtype == 8){
+    	  $("#agg").attr('checked', true);
+          updateRequestUri("/ode/tst/ws/agg/");
+      }
     }
 
   }, false);
@@ -315,9 +335,9 @@ var recordLoc = 0;
           <br /> <br /> <input id="requestUri" type="text" size="40" style="width: 350px" />
           <br /> <br /> <label for="requestId">Request ID: </label>
           <br /> <input id="requestId" type="text" size="40" style="width: 350px" />
-          <br /> <br /> <label for="timeBuffer">Miliseconds between sending each batch: </label>
+          <br /> <br /> <label for="timeBuffer">Miliseconds between sending each batch (optional): </label>
           <br /> <input id="timeBuffer" type="text" size="40" style="width: 350px" />
-          <br /> <br /> <label for="recordsPerBatch">Number of records per batch: </label>
+          <br /> <br /> <label for="recordsPerBatch">Number of records per batch (optional): </label>
           <br /> <input id="recordsPerBatch" type="text" size="40" style="width: 350px" />
         </div>
       </div>
