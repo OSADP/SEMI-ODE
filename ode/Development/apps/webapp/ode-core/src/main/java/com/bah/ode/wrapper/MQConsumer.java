@@ -1,9 +1,7 @@
 package com.bah.ode.wrapper;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
 import kafka.consumer.ConsumerIterator;
 import kafka.consumer.KafkaStream;
@@ -41,7 +39,6 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 			ObjectNode bundleObject = JsonUtils.toObjectNode(msg.toString());
 			String tempSerialId = bundleObject.get("serialId").asText();
 			if(tempSerialId == null || tempSerialId.equals("")){
-				logger.info("No Serial ID");
 				processor.process(msg);
 			}else{
 				String[] test = tempSerialId.split("[^\\w-]+"); /* Non-alphanumerics and hyphen */
