@@ -116,6 +116,10 @@
       <param-value></param-value> <!-- <param-value>hdfs://localhost.localdomain:8020/tmp/weather.csv</param-value>  -->
    </context-param>
    <context-param>
+      <param-name>spark.static.sanitization.file.location</param-name>
+      <param-value></param-value> <!-- <param-value>hdfs://localhost.localdomain:8020/tmp/sanitization.csv</param-value>  -->
+   </context-param>
+   <context-param>
       <param-name>spark.road.segment.snapping.tolerance</param-name>
       <param-value>20</param-value>
    </context-param>
