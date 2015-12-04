@@ -1,7 +1,5 @@
 package com.bah.ode.server;
 
-import javax.websocket.Session;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +10,7 @@ import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.server.DdsRequestManager.DdsRequestManagerException;
+import com.bah.ode.wrapper.BaseDataDistributor;
 import com.bah.ode.wrapper.MQTopic;
 
 public class DataSourceConnector {
@@ -23,13 +22,15 @@ public class DataSourceConnector {
    private TestRequestManager testMgr;
    
    // FOR LOOPBACK TEST ONLY
-   private Session clientSession;
-   public Session getClientSession() {
-      return clientSession;
+   private BaseDataDistributor distributor;
+   
+   public BaseDataDistributor getDistributor() {
+      return distributor;
    }
-   public void setClientSession(Session clientSession) {
-      this.clientSession = clientSession;
+   public void setDistributor(BaseDataDistributor distributor) {
+      this.distributor = distributor;
    }
+   // FOR LOOPBACK TEST ONLY
 
    
    public DataSourceConnector(OdeMetadata metadata) {
@@ -76,7 +77,7 @@ public class DataSourceConnector {
                break;
             case IntersectionData:
             case AdvisoryData:
-            case MAPData:
+            case MapData:
             case SPaTData:
                if (odeRequest.getRequestType() == OdeRequestType.Test) {
                   connectToTestDataSource(metadata);
@@ -102,17 +103,17 @@ public class DataSourceConnector {
       testMgr = new TestRequestManager(metadata);
       //FOR TEST ONLY
       if (AppContext.loopbackTest())
-         testMgr.setClientSession(clientSession);
+         testMgr.setDistributor(distributor);
    }
    private void connectToDDS(OdeMetadata metadata)
          throws DdsRequestManagerException {
       ddsMgr = new DdsRequestManager(metadata);
       //FOR TEST ONLY
       if (AppContext.loopbackTest()) {
-         ddsMgr.setClientSession(clientSession);
+         ddsMgr.setDistributor(distributor);
          DdsMessageHandler handler = (DdsMessageHandler) 
                ddsMgr.getDdsClient().getHandler();
-         handler.setClientSession(clientSession);
+         handler.setDistributor(distributor);
       }
       
       logger.info("Connecting to DDS");

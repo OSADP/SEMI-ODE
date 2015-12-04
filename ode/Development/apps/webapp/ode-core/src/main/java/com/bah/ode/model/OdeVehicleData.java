@@ -238,15 +238,4 @@ public final class OdeVehicleData extends OdeData {
 		return odeDataBundle;		
 	}
 
-   @Override
-   protected void setDataType() {
-      setDataType(OdeDataType.VehicleSituationData);
-   }
-
-   @Override
-   protected void initDefault() {
-      // TODO Auto-generated method stub
-      
-   }
-	
 }

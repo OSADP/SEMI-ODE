@@ -114,15 +114,4 @@ public final class OdeIntersectionData extends OdeData {
 		return intData;		
 	}
 
-   @Override
-   protected void setDataType() {
-      setDataType(OdeDataType.IntersectionData);
-   }
-
-   @Override
-   protected void initDefault() {
-      // TODO Auto-generated method stub
-      
-   }
-	
 }

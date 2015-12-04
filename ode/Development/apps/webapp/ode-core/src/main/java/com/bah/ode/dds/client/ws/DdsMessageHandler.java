@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.websocket.Session;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +29,7 @@ import com.bah.ode.asn.oss.semi.VehSitDataMessage.Bundle;
 import com.bah.ode.asn.oss.semi.VehSitRecord;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.DdsData;
+import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeAdvisoryDataRaw;
 import com.bah.ode.model.OdeControlData;
 import com.bah.ode.model.OdeDataMessage;
@@ -38,9 +37,10 @@ import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeFullMessage;
 import com.bah.ode.model.OdeIntersectionDataRaw;
 import com.bah.ode.model.OdeMetadata;
-import com.bah.ode.model.OdePayloadAndMetadata;
+import com.bah.ode.model.OdeQryRequest;
+import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.model.OdeVehicleDataFlat;
-import com.bah.ode.util.WebSocketUtils;
+import com.bah.ode.wrapper.BaseDataDistributor;
 import com.bah.ode.wrapper.MQProducer;
 import com.bah.ode.wrapper.WebSocketMessageHandler;
 
@@ -51,18 +51,21 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    
    private UUID uuid;  
    private Long seqNum;
+   private Integer limit;
+   private long recordCount = 0;
 
    private MQProducer<String, String> producer;
    private OdeMetadata metadata;
    private static AppContext appContext = AppContext.getInstance(); 
    
    // FOR LOOPBACK TEST ONLY
-   private Session clientSession;
-   public Session getClientSession() {
-      return clientSession;
+   private BaseDataDistributor distributor;
+   
+   public BaseDataDistributor getDistributor() {
+      return distributor;
    }
-   public void setClientSession(Session clientSession) {
-      this.clientSession = clientSession;
+   public void setDistributor(BaseDataDistributor distributor) {
+      this.distributor = distributor;
    }
    // FOR LOOPBACK TEST ONLY
 
@@ -75,14 +78,18 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
       this.metadata = metadata;
       this.uuid = UUID.randomUUID();
       this.seqNum = new Long(0);
+      if (this.metadata.getOdeRequest().getRequestType() == OdeRequestType.Query) {
+         OdeQryRequest queryReq = (OdeQryRequest) this.metadata.getOdeRequest();
+         limit = queryReq.getLimit();
+      }
    }
 
    @Override
    public void onMessage(DdsData ddsData) {
       try {
          if (ddsData.haveData()) {
-            OdePayloadAndMetadata pam = new OdePayloadAndMetadata();
-            pam.setMetadata(metadata);
+            InternalDataMessage idm = new InternalDataMessage();
+            idm.setMetadata(metadata);
             
             String topicName;
             if (ddsData.getVsd() != null) {
@@ -101,34 +108,44 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                }
                
                for (OdeVehicleDataFlat ovdf : ovdfList) {
-                  pam.setKey(ovdf.getSerialId());
-                  pam.getMetadata().setKey(pam.getKey());
-                  pam.setPayload(ovdf);
-                  pam.setPayloadType(OdeDataType.VehicleData.name());
-                  if (!AppContext.loopbackTest()) {
-                     producer.send(topicName, pam.getKey(), pam.toJson());
-                  } else {
-                     WebSocketUtils.send(clientSession, new OdeDataMessage(ovdf).toJson());
+                  if (limit == null || recordCount < limit.intValue()) {
+                     // Only count when limit is specified
+                     if (limit != null)
+                        recordCount++;
+                     
+                     idm.setKey(ovdf.getSerialId());
+                     idm.getMetadata().setKey(idm.getKey());
+                     idm.setPayload(ovdf);
+                     idm.setPayloadType(OdeDataType.VehicleData.getShortName());
+                     if (!AppContext.loopbackTest()) {
+                        producer.send(topicName, idm.getKey(), idm.toJson());
+                     } else {
+                        distributor.process(new OdeDataMessage(ovdf).toJson());
+                     }
                   }
                }
             } else { 
                if (ddsData.getIsd() != null) {
                   topicName = metadata.getInputTopic().getName();
-                  pam.setPayload(new OdeIntersectionDataRaw(ddsData.getIsd()));
+                  idm.setPayload(new OdeIntersectionDataRaw(ddsData.getIsd()));
                } else if (ddsData.getAsd() != null) {
                   topicName = metadata.getInputTopic().getName();
-                  pam.setPayload(new OdeAdvisoryDataRaw(ddsData.getAsd()));
+                  idm.setPayload(new OdeAdvisoryDataRaw(ddsData.getAsd()));
                } else if (ddsData.getControlMessage() != null) {
                   topicName = metadata.getOutputTopic().getName();
-                  pam.setPayload(new OdeControlData(ddsData.getControlMessage()));
+                  OdeControlData controlData = new OdeControlData(ddsData.getControlMessage());
+                  if (controlData.getTag() == OdeControlData.Tag.STOP)
+                     controlData.setReceivedRecordCount(recordCount);
+                  
+                  idm.setPayload(controlData);
                } else {
                   topicName = metadata.getOutputTopic().getName();
-                  pam.setPayload(new OdeFullMessage(ddsData.getFullMessage()));
+                  idm.setPayload(new OdeFullMessage(ddsData.getFullMessage()));
                }
                if (!AppContext.loopbackTest()) {
-                  producer.send(topicName, pam.getKey(), pam.toJson());
+                  producer.send(topicName, idm.getKey(), idm.toJson());
                } else {
-                  WebSocketUtils.send(clientSession, new OdeDataMessage(pam.getPayload()).toJson());
+                  distributor.process(new OdeDataMessage(idm.getPayload()).toJson());
                }
             }
          }

@@ -1,11 +1,10 @@
 package com.bah.ode.server;
 
-import javax.websocket.Session;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.model.OdeMetadata;
+import com.bah.ode.wrapper.BaseDataDistributor;
 
 public abstract class DataRequestManager {
    private static Logger logger = 
@@ -15,12 +14,13 @@ public abstract class DataRequestManager {
    protected OdeMetadata metadata;
    
    // FOR LOOPBACK TEST ONLY
-   private Session clientSession;
-   public Session getClientSession() {
-      return clientSession;
+   private BaseDataDistributor distributor;
+   
+   public BaseDataDistributor getDistributor() {
+      return distributor;
    }
-   public void setClientSession(Session clientSession) {
-      this.clientSession = clientSession;
+   public void setDistributor(BaseDataDistributor distributor) {
+      this.distributor = distributor;
    }
    // FOR LOOPBACK TEST ONLY
 

@@ -16,32 +16,30 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
-public abstract class OdeMsgPayload extends OdeMessage {
-   private static final long serialVersionUID = -7711340868799607662L;
-   private String  dataType;
 
-   
+public class OdeMsgPayload extends OdeMessage {
+   private static final long serialVersionUID = -7711340868799607662L;
+   private String  className;
+
    public OdeMsgPayload() {
       super();
-      setDataType();
+      this.className = this.getClass().getName();
    }
 
-   protected abstract void setDataType();
-   
-   public String getDataType() {
-      return dataType;
+   public String getClassName() {
+      return className;
    }
 
-   public OdeMsgPayload setDataType(OdeDataType dataType) {
-      this.dataType = dataType.getShortName();
-      return this;
+   public void setClassName(String className) {
+      this.className = className;
    }
 
    @Override
    public int hashCode() {
       final int prime = 31;
-      int result = 1;
-      result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
+      int result = super.hashCode();
+      result = prime * result
+            + ((className == null) ? 0 : className.hashCode());
       return result;
    }
 
@@ -49,15 +47,15 @@ public abstract class OdeMsgPayload extends OdeMessage {
    public boolean equals(Object obj) {
       if (this == obj)
          return true;
-      if (obj == null)
+      if (!super.equals(obj))
          return false;
       if (getClass() != obj.getClass())
          return false;
       OdeMsgPayload other = (OdeMsgPayload) obj;
-      if (dataType == null) {
-         if (other.dataType != null)
+      if (className == null) {
+         if (other.className != null)
             return false;
-      } else if (!dataType.equals(other.dataType))
+      } else if (!className.equals(other.className))
          return false;
       return true;
    }

@@ -14,15 +14,6 @@ public final class OdeAdvisoryDataRaw extends OdeData {
    }
 
    @Override
-   protected void initDefault() {
-   }
-
-   @Override
-   protected void setDataType() {
-      setDataType(OdeDataType.AdvisorySituationData);
-   }
-
-   @Override
    public int hashCode() {
       final int prime = 31;
       int result = super.hashCode();

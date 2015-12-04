@@ -34,6 +34,8 @@ import javax.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.api.sec.SecurityService;
+import com.bah.ode.api.sec.filters.WebSocketAuthenticationConfiguration;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeDataMessage;
@@ -43,9 +45,10 @@ import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.model.OdeStatus;
 import com.bah.ode.util.WebSocketUtils;
+import com.bah.ode.wrapper.BaseDataDistributor;
 import com.bah.ode.wrapper.MQTopic;
-import com.bah.ode.api.sec.SecurityService;
-import com.bah.ode.api.sec.filters.WebSocketAuthenticationConfiguration;
+import com.bah.ode.wrapper.QueryDataDistributor;
+import com.bah.ode.wrapper.SubscriptionDataDistributor;
 
 /**
  * gives the relative name for the end point. This will be accessed via
@@ -196,24 +199,23 @@ public class WebSocketServer {
             odeRequest = OdeRequestManager.buildOdeRequest(rtype, dtype, message);
          }
 
-         String requestId;
          /*
           * Since queries are finite streams, each query should be treated as
           * unique. QUeries cannot share the same data process and the same
           * output topic.
           */
          if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
-            requestId = OdeRequestManager.buildRequestId(odeRequest);
             // Use the request Id to determine if there is an existing request for the same data
-            outputTopic = OdeRequestManager.getTopic(requestId);
+            outputTopic = OdeRequestManager.getTopic(odeRequest.getId());
          }
          else {
-            requestId = UUID.randomUUID().toString();
+            odeRequest.setId(UUID.randomUUID().toString());
          }
          
+         String requestId = odeRequest.getId();
          if (outputTopic == null) {
             // Note: requestId should not be null. So if we get a NPE, we have an internal error
-            logger.info("Creating new request ID: {}", requestId);
+            logger.info("Creating new request ID: {}", requestId );
             // No client topic exists, create a new one
             
             outputTopic = OdeRequestManager.getOrCreateTopic(requestId);
@@ -221,22 +223,21 @@ public class WebSocketServer {
             OdeMetadata metadata = createMetadata(dataTypeRequested,
                   outputTopic, requestId);
             
+            BaseDataDistributor processor = launchNewDistributor(session, metadata);
             
             if (connector == null) {
                connector = new DataSourceConnector(metadata);
                connectors.put(requestId, connector);
-               
-               //FOR TEST ONLY
-               if (AppContext.loopbackTest()) {
-                  connector.setClientSession(session);
-               }
             } else {
                connector.setMetadata(metadata);
             }
             
+            //FOR TEST ONLY
+            if (AppContext.loopbackTest()) {
+               connector.setDistributor(processor);
+            }
+
             connector.connectToSource();
-            
-            launchNewDistributor(session, metadata);
             
             if (!OdeRequestManager.isPassThrough(odeRequest.getDataType())) {
                if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
@@ -249,8 +250,8 @@ public class WebSocketServer {
                }
             }
 
-            logger.info("DDS Connection Established for request ID {}.", requestId);
-            status.setMessage("DDS Connection Established");
+            logger.info("Data Source Connection Established for request ID {}.", requestId);
+            status.setMessage("Data Source Connection Established");
          } else {
             // Topic already exists by this or another subscriber
             if (distributor != null) {
@@ -332,21 +333,29 @@ public class WebSocketServer {
    @OnError
    public void onError(Session session, Throwable throwable)
    {
-	   // TODO implement error handler
-	   logger.error("Error encountered",throwable);
+      logger.error("Error encountered",throwable);
    }
    
-   private void launchNewDistributor(
+   private BaseDataDistributor launchNewDistributor(
          Session session, OdeMetadata metadata) {
       
       logger.info("Launching new Distributor for client session {} client topic {}",
             session.getId(), metadata.getOutputTopic());
       
+      BaseDataDistributor processor;
+      if (metadata.getOdeRequest().getRequestType() == OdeRequestType.Query) {
+         processor = new QueryDataDistributor(session, metadata);
+      } else {
+         processor = new SubscriptionDataDistributor(session, metadata);
+      }
+      
       // Start the processor to receive data from the client topic and 
       // send it to client session
-      distributor = new OdeDataDistributor(session, metadata);
+      distributor = new OdeDataDistributor(session, metadata, processor );
       Thread respThread = new Thread(distributor);
       respThread.start();
+      
+      return processor;
    }
 
    /**
@@ -375,12 +384,12 @@ public class WebSocketServer {
          
          if (distributor != null) {
             distributor.shutDown();
-            if (odeRequest != null) {
-               OdeRequestManager.removeSubscriber(
-                     distributor.getMetadata().getOutputTopic().getName(),
-                     odeRequest.getDataType());
-            }
-            
+         }
+
+         if (odeRequest != null) {
+            OdeRequestManager.removeSubscriber(
+                  odeRequest.getId(),
+                  odeRequest.getDataType());
          }
       } catch (Exception e) {
          logger.error("Error closing session " + sessionId, e);

@@ -39,12 +39,13 @@ import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeIntersectionDataRaw;
-import com.bah.ode.model.OdePayloadAndMetadata;
+import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeStatus;
 import com.bah.ode.model.OdeStatus.Code;
 import com.bah.ode.model.OdeVehicleDataFlat;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.util.WebSocketUtils;
+import com.bah.ode.wrapper.DataProcessor.DataProcessorException;
 import com.bah.ode.wrapper.MQProducer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -150,13 +151,16 @@ public class TestWebSocketServer {
             WebSocketUtils.send(session, message);
             if (testMgr != null) {
                
-               ObjectNode dm = OdeDataMessage.jsonStringToObjectNode(message);
+               ObjectNode dm = InternalDataMessage.jsonStringToObjectNode(message);
                JsonNode payload = null;
-               if (dm != null && (payload = dm.get("payload")) != null) {
-                  OdeDataType dataType = 
-                        OdeDataType.getByShortName(payload.get("dataType").textValue());
+               JsonNode jsonPayloadType = null;
+               if (dm != null && 
+                     (payload = dm.get("payload")) != null &&
+                     (jsonPayloadType = dm.get("payloadType")) != null) {
+                  OdeDataType payloadType = 
+                        OdeDataType.getByShortName(jsonPayloadType.textValue());
 
-                  switch (dataType) {
+                  switch (payloadType) {
                   case VehicleData:
                      OdeVehicleDataFlat ovdf = 
                            (OdeVehicleDataFlat) JsonUtils.fromJson(
@@ -183,14 +187,15 @@ public class TestWebSocketServer {
 
                   default:
                      status.setCode(Code.FAILURE);
-                     status.setMessage("Invalid dataType: " + payload.get("dataType").textValue()); 
+                     status.setMessage("Invalid payloadType: " + jsonPayloadType.textValue()); 
                      logger.error(status.getMessage());
                      WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
                      break;
                   }
                } else {
                   status.setCode(Code.FAILURE);
-                  status.setMessage("Invalid message: " + message); 
+                  status.setMessage("Invalid message: " + message +
+                        "\npayload and metadata required."); 
                   logger.error(status.getMessage());
                   WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
                }
@@ -217,25 +222,23 @@ public class TestWebSocketServer {
       }
    }
 
-   public void sendThroughOde(JsonNode payload, OdeData odeData) throws IOException {
-      OdePayloadAndMetadata pam = new OdePayloadAndMetadata();
-      pam.setMetadata(testMgr.getMetadata());
+   public void sendThroughOde(JsonNode payload, OdeData odeData) throws IOException, ClassNotFoundException, DataProcessorException {
+      InternalDataMessage idm = new InternalDataMessage();
+      idm.setMetadata(testMgr.getMetadata());
       
       if (producer != null) {
-         pam.setKey(odeData.getSerialId());
-         pam.getMetadata().setKey(pam.getKey());
-         pam.setPayload(odeData);
-         pam.setPayloadType(odeData.getDataType());
+         idm.setKey(odeData.getSerialId());
+         idm.getMetadata().setKey(idm.getKey());
+         idm.setPayload(odeData);
          
          producer.send(
                testMgr.getMetadata().getInputTopic().getName(), 
-               pam.getKey(), pam.toJson());
+               idm.getKey(), idm.toJson());
       }
       
       //FOR TEST ONLY
       if (AppContext.loopbackTest()) {
-         WebSocketUtils.send(testMgr.getClientSession(),
-               new OdeDataMessage(odeData).toJson());
+         testMgr.getDistributor().process(new OdeDataMessage(odeData).toJson());
       }
    }
 

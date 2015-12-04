@@ -19,39 +19,46 @@ package com.bah.ode.model;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.bah.ode.asn.OdeMapData;
+import com.bah.ode.asn.OdeSpatData;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public enum OdeDataType {
-   Status("status"),
-   Control("control"),
-   Authorization("auth"),
-   VehicleData("veh"),
-   VehicleSituationData("vsd"),
-   VehicleSituationDataAsnBase64("vsdasn64"),
-   IntersectionData("int"),
-   IntersectionSituationData("isd"),
-   IntersectionSituationDataAsnBase64("isdasn64"),
-   AdvisoryData("adv"),
-   AdvisorySituationData("asd"),
-   AdvisorySituationDataAsnBase64("asdasn64"),
-   MAPData("map"), 
-   SPaTData("spat"), 
-   AggregateData("agg"),
-   WeatherData("weather"),
-   OtherData("other");
+   Status("status", OdeStatus.class),
+   Control("control", OdeControlData.class),
+   Authorization("auth", OdeAuthorization.class),
+   VehicleData("veh", OdeVehicleDataFlat.class),
+   VehicleSituationData("vsd", OdeVehicleData.class),
+   IntersectionData("int", OdeIntersectionData.class),
+   IntersectionSituationData("isd", OdeIntersectionDataRaw.class),
+   AdvisoryData("adv", OdeAdvisoryData.class),
+   AdvisorySituationData("asd", OdeAdvisoryDataRaw.class),
+   MapData("map", OdeMapData.class), 
+   SPaTData("spat", OdeSpatData.class), 
+   AggregateData("agg", OdeAggregateData.class),
+   WeatherData("weather", OdeWeatherData.class),
+   OtherData("other", OdeMsgPayload.class), 
+   Unknown("unknown", OdeMsgPayload.class);
    
    private static String shortNames = shortNames();
 
    private final String shortName;
+   
+   private final Class<?> clazz;
 
-   private OdeDataType(String shortName) {
+   private OdeDataType(String shortName, Class<?> clazz) {
       this.shortName = shortName;
+      this.clazz = clazz;
    }
 
    public String getShortName() {
       return shortName;
    }
    
+   public Class<?> getClazz() {
+      return clazz;
+   }
+
    public static OdeDataType getByShortName(String shortName) {
       OdeDataType result = null;
       
@@ -64,6 +71,22 @@ public enum OdeDataType {
       return result;
    }
    
+   public static OdeDataType getByClazz(Class<?> clazz) {
+      OdeDataType result = null;
+      
+      for (OdeDataType value : OdeDataType.values()) {
+         if (clazz == value.getClazz()) {
+            result = value;
+            break;
+         }
+      }
+      return result;
+   }
+
+   public static OdeDataType getByClassName(String className) throws ClassNotFoundException {
+      return getByClazz(Class.forName(className));
+   }
+
    public static String shortNames() {
       if (shortNames == null) {
          ArrayList<String> result = new ArrayList<String>();
@@ -87,4 +110,5 @@ public enum OdeDataType {
       }
       return odeDataType;
    }
+
 }

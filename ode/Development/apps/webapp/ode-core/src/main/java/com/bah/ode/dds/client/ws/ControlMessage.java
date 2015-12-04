@@ -26,7 +26,7 @@ public class ControlMessage {
    private Tag tag;
    private String encoding;
    private Dialog dialog;
-   private Integer recordCount;
+   private long recordCount;
    private String connectionDetails;
 
    public ControlMessage() {
@@ -67,11 +67,11 @@ public class ControlMessage {
       return this;
    }
 
-   public Integer getRecordCount() {
+   public long getRecordCount() {
       return recordCount;
    }
 
-   public ControlMessage setRecordCount(Integer recordCount) {
+   public ControlMessage setRecordCount(long recordCount) {
       this.recordCount = recordCount;
       return this;
    }

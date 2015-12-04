@@ -26,17 +26,21 @@ public class VsdReaderOvdfWriter {
    public static void main(String args[]) {
       String filename = new String("message.dat");
       boolean allVSRs = true;
+      char encoding = 'h';
       // Process command line arguments
       if (args.length > 0) {
          for (int i = 0; i < args.length; i++) {
-            if (args[i].equals("-i"))
+            if (args[i].equals("-i")) {
                filename = new String(args[++i]);
-            else if (args[i].equals("-latest")) {
+            } else if (args[i].equals("-latest")) {
                allVSRs = false; 
+            } else if (args[i].equals("-encoding")) {
+               encoding = new String(args[++i]).charAt(0);
             } else {
-               System.out.println("usage: Reader [ -i <filename>");
+               System.out.println("usage: VsdReaderOvdfWriter [ -i <filename>");
                System.out.println("   -i <filename>  ");
                System.out.println("   -latest  ");
+               System.out.println("   -encoding <hex|base64>  ");
                System.exit(1);
             }
          }
@@ -53,7 +57,7 @@ public class VsdReaderOvdfWriter {
          long decodeTime = System.currentTimeMillis();
          Scanner scanner = new Scanner(new File(filename));
          PrintWriter ovdfOut = new PrintWriter(new PrintStream(filename
-               + ".ovdf"));
+               + ".ovdf.json"));
 
          int numVSDs = 0;
          int numVSRs = 0;
@@ -62,7 +66,12 @@ public class VsdReaderOvdfWriter {
 
          while (scanner.hasNext()) {
             try {
-               byte[] pdu = CodecUtils.fromHex(scanner.nextLine());
+               byte[] pdu;
+               if (encoding == 'h')
+                  pdu = CodecUtils.fromHex(scanner.nextLine());
+               else
+                  pdu = CodecUtils.fromBase64(scanner.nextLine());
+               
                InputStream ins = new ByteArrayInputStream(pdu);
                VehSitDataMessage vsd = (VehSitDataMessage) coder.decode(ins,
                      new VehSitDataMessage());
@@ -79,15 +88,16 @@ public class VsdReaderOvdfWriter {
                }
                
                for (OdeVehicleDataFlat ovdf : ovdfList) {
+                  numOVDFs++;
                   numVSRs++;
                   ovdfOut.println(JsonUtils.toJson(ovdf));
                }
 
-               numOVDFs++;
                numVSDs++;
             } catch (Exception e) {
-               System.out.println("Decode complete.\n" + e.getMessage());
-               break;
+               int errRec = numVSDs + 1;
+               System.out.println("Decode Error on VSD # " + errRec + "\n" + e.getMessage());
+               e.printStackTrace();
             }
          }
          scanner.close();

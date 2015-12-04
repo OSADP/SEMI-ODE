@@ -107,7 +107,7 @@ public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
             }
             break;
             default:
-               logger.info("Received {} message", tag);
+               logger.error("Received {} message {}", tag, message);
             }
          }
       } catch (Exception e) {

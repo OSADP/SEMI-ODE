@@ -38,6 +38,7 @@
                            <include>com.google.code.gson:*</include>
                            <include>com.yammer.metrics:metrics-core:*</include>
                            <include>org.apache.hadoop:*</include>
+                           <include>asn.1:*</include>
                            <!--<include>org.apache.hadoop:hadoop-yarn*:*</include> -->
                         </includes>
                         <excludes>

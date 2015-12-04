@@ -9,6 +9,8 @@ public interface DataProcessor<D, R> {
    
    public static class DataProcessorException extends OdeException {
 
+      private static final long serialVersionUID = -3319078097438578006L;
+
       public DataProcessorException(Exception e) {
          super(e);
       }
@@ -17,8 +19,10 @@ public interface DataProcessor<D, R> {
          super(message, cause);
       }
 
-      private static final long serialVersionUID = 1L;
-      
+      public DataProcessorException(String message) {
+         super(message);
+      }
+
    }
 
 }

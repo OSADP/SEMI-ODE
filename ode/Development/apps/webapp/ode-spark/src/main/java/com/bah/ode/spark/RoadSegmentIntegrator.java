@@ -4,7 +4,6 @@ import org.apache.spark.api.java.function.PairFunction;
 
 import scala.Tuple2;
 
-import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeVehicleDataFlat;
 import com.bah.ode.util.JsonUtils;
@@ -27,26 +26,29 @@ PairFunction<Tuple2<String,Tuple2<String,String>>,String,Tuple2<String,String>> 
       Tuple2<String, String> value = arg0._2();
       String sPayload = value._1();
       String sMetatdat = value._2();
-//      ObjectNode payload = JsonUtils.toObjectNode(sMetatdat);
-//      ObjectNode metadata = JsonUtils.toObjectNode(sPayload);
 
-      OdeMetadata metadata = (OdeMetadata) JsonUtils.fromJson(sMetatdat, OdeMetadata.class);
-      OdeVehicleDataFlat ovdf = (OdeVehicleDataFlat) JsonUtils.fromJson(sPayload, OdeVehicleDataFlat.class);
-      
-      if (metadata.getOdeRequest() != null &&
-          metadata.getOdeRequest().getPolyline() != null && 
-          ovdf.getDataType().equals(OdeDataType.VehicleData.getShortName())) {
-             ovdf.setRoadSegment(
-                   metadata.getOdeRequest().getPolyline().getSegments(), 
-                   snappingTolerance);
+      Tuple2<String, Tuple2<String, String>> withRoadSeg;
+      if (sPayload != null && sMetatdat != null) {
+         OdeMetadata metadata = (OdeMetadata) JsonUtils.fromJson(sMetatdat, OdeMetadata.class);
+         OdeVehicleDataFlat ovdf = (OdeVehicleDataFlat) JsonUtils.fromJson(sPayload, OdeVehicleDataFlat.class);
+         
+         if (metadata != null &&
+               metadata.getOdeRequest() != null &&
+               metadata.getOdeRequest().getPolyline() != null &&
+               ovdf != null) {
+                  ovdf.setRoadSegment(
+                      metadata.getOdeRequest().getPolyline().getSegments(), 
+                      snappingTolerance);
+         } else {
+            ovdf.setRoadSeg("");
+         }
+         
+         withRoadSeg = new Tuple2<String, Tuple2<String,String>>(key, 
+                     new Tuple2<String, String>(ovdf.toJson(), sMetatdat));
       } else {
-         ovdf.setRoadSeg("");
+         withRoadSeg = new Tuple2<String, Tuple2<String,String>>(key, 
+               new Tuple2<String, String>(sPayload, sMetatdat));
       }
-      
-      Tuple2<String, Tuple2<String, String>> withRoadSeg = 
-            new Tuple2<String, Tuple2<String,String>>(key, 
-                  new Tuple2<String, String>(ovdf.toJson(), sMetatdat));
-      
       return withRoadSeg;
    }
 

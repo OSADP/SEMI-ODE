@@ -50,10 +50,10 @@ public class BaseTopicManager {
       int subscribers = 0;
       if (atomicSubscribers != null && atomicSubscribers.get() > 0) {
          subscribers = atomicSubscribers.decrementAndGet();
-         if (subscribers <= 0) {
-            removeTopic(topicName);
-            subscribers = 0;
-         }
+      }
+      if (subscribers <= 0) {
+         removeTopic(topicName);
+         subscribers = 0;
       }
       return subscribers; 
    }
