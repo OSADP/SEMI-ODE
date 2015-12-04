@@ -48,31 +48,29 @@ public class OdeDataMessage extends OdeMessage {
    }
    
    public static ObjectNode jsonStringToObjectNode(String data)
-         throws JsonProcessingException, IOException {
+         throws JsonProcessingException, IOException, ClassNotFoundException {
       ObjectNode dm = null;
       ObjectNode jsonObject = JsonUtils.toObjectNode(data);
-      OdeDataType odeDataType = OdeDataType.getFromJsonNode(jsonObject,
-            "dataType");
-      if (odeDataType != null) {
-         dm = JsonUtils.newNode();
-         dm.putObject("metadata")
-               .put("payloadType", odeDataType.getShortName());
-         dm.putObject("payload").setAll(jsonObject);
+      JsonNode className = jsonObject.get("className");
+      if (className != null) {
+         dm = buildJsonObjectNode(jsonObject, className);
       } else {
          JsonNode payload = jsonObject.get("payload");
          if (payload != null) {
-            odeDataType = OdeDataType.getFromJsonNode(payload, "dataType");
-            if (odeDataType != null) {
-               dm = JsonUtils.newNode();
-               ObjectNode p = JsonUtils.toObjectNode(payload.toString());
-               if (p != null) {
-                  dm.putObject("metadata").put("payloadType",
-                        odeDataType.getShortName());
-                  dm.putObject("payload").setAll(p);
-               }
-            }
+            ObjectNode p = JsonUtils.toObjectNode(payload.toString());
+            dm = buildJsonObjectNode(p, p.get("className"));
          }
       }
+      return dm;
+   }
+
+   private static ObjectNode buildJsonObjectNode(ObjectNode jsonObject, JsonNode className)
+         throws ClassNotFoundException {
+      ObjectNode dm;
+      dm = JsonUtils.newNode();
+      dm.putObject("metadata")
+            .put("payloadType", OdeDataType.getByClassName(className.textValue()).getShortName());
+      dm.putObject("payload").setAll(jsonObject);
       return dm;
    }
 

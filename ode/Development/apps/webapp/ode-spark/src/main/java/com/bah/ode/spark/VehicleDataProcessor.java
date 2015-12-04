@@ -65,8 +65,8 @@ public class VehicleDataProcessor extends OdeObject {
          // unifiedStream.cache().print(10);
 
          JavaPairDStream<String, String> payloadStream2 = unifiedStream
-               .mapToPair(pam -> new Tuple2<String, String>(pam._1, JsonUtils
-                     .getJson(pam._2, "payload")));
+               .mapToPair(pam -> new Tuple2<String, String>(pam._1, 
+                     JsonUtils.getJsonNode(pam._2, "payload").toString()));
 
          // System.out.println("payloadStream2");
          // System.out.println("===============");
@@ -76,8 +76,8 @@ public class VehicleDataProcessor extends OdeObject {
          // unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "payload"));
 
          JavaPairDStream<String, String> metadataStream2 = unifiedStream
-               .mapToPair(pam -> new Tuple2<String, String>(pam._1, JsonUtils
-                     .getJson(pam._2, "metadata")));
+               .mapToPair(pam -> new Tuple2<String, String>(pam._1, 
+                     JsonUtils.getJsonNode(pam._2, "metadata").toString()));
 
          // System.out.println("metadataStream2");
          // System.out.println("===============");

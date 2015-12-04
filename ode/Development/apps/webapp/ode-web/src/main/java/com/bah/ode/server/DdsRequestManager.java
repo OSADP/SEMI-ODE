@@ -58,7 +58,7 @@ public class DdsRequestManager extends DataRequestManager {
             decoder = IsdDecoder.class;
          } else if (odeRequest.getDataType() == OdeDataType.AdvisoryData) {
             decoder = AsdDecoder.class;
-         } else if (odeRequest.getDataType() == OdeDataType.MAPData) {
+         } else if (odeRequest.getDataType() == OdeDataType.MapData) {
             decoder = MapDecoder.class;
          } else if (odeRequest.getDataType() == OdeDataType.SPaTData) {
             decoder = SpatDecoder.class;
@@ -113,7 +113,7 @@ public class DdsRequestManager extends DataRequestManager {
 
       OdeDataType dataType = odeRequest.getDataType();
       if (dataType == OdeDataType.IntersectionData || 
-            dataType == OdeDataType.MAPData        ||
+            dataType == OdeDataType.MapData        ||
             dataType == OdeDataType.SPaTData) {
          ddsRequest.setDialogID(DdsRequest.Dialog.ISD.getId());
       } else if (dataType == OdeDataType.VehicleData || 

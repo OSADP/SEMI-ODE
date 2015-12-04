@@ -19,6 +19,8 @@ package com.bah.ode.model;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.bah.ode.asn.OdeTransmissionState;
@@ -53,7 +55,7 @@ import com.bah.ode.util.CodecUtils;
 import com.bah.ode.util.DateTimeUtils;
 import com.bah.ode.util.GeoUtils;
 
-public final class OdeVehicleDataFlat extends OdeData {
+public final class OdeVehicleDataFlat extends OdeData implements HasPosition, HasTimestamp{
    private static final long serialVersionUID = -7170326566884675515L;
 
    private String groupId;
@@ -637,19 +639,36 @@ public final class OdeVehicleDataFlat extends OdeData {
       }
    }
 
-   public synchronized void setDateTime(DDateTime dDateTime) {
+   private synchronized void setDateTime(DDateTime dDateTime) {
       if (dDateTime != null) {
          setYear(dDateTime.getYear().intValue());
          setMonth(dDateTime.getMonth().intValue());
          setDay(dDateTime.getDay().intValue());
          setHour(dDateTime.getHour().intValue());
          setMinute(dDateTime.getMinute().intValue());
-         setSecond(BigDecimal.valueOf(dDateTime.getSecond().intValue(), 3));
-         this.dateTime = DateTimeUtils.isoDateTime(getYear(), getMonth(),
-               getDay(), getHour(), getMinute(), dDateTime.getSecond()
-                     .intValue() / 1000,
-               dDateTime.getSecond().intValue() % 1000);
+         
+         /*
+          * 7.36 Data Element: DE_DSecond Use: The DSRC style second is a simple
+          * value consisting of integer values from zero to 61000 representing
+          * the milliseconds within a minute. A leap second is represented by
+          * the value range 60001 to 61000. The value of 65535 SHALL represent
+          * an unknown value in the range of the minute, other values from 61001
+          * to 65534 are reserved.
+          */
+         int millisecs = dDateTime.getSecond().intValue();
+         if (millisecs <= 61000) {
+            setSecond(BigDecimal.valueOf(dDateTime.getSecond().intValue(), 3));
+         }
+         
+         this.dateTime = getISODateTime(dDateTime);
       }
+   }
+
+   protected String getISODateTime(DDateTime dDateTime) {
+      int millisecs = dDateTime.getSecond().intValue() >= 60000 ? 0 : dDateTime.getSecond().intValue();
+      return DateTimeUtils.isoDateTime(getYear(), getMonth(),
+            getDay(), getHour(), getMinute(), millisecs / 1000,
+            millisecs % 1000).format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
    }
 
 //   TransmissionAndSpeed ::= OCTET STRING (SIZE(2)) 
@@ -673,7 +692,7 @@ public final class OdeVehicleDataFlat extends OdeData {
 //
 //      ... -- # LOCAL_CONTENT
 //      }
-   public void setTransmissionAndSpeed(TransmissionAndSpeed tm) {
+   private void setTransmissionAndSpeed(TransmissionAndSpeed tm) {
       if (tm != null && tm.getSize() >= 2) {
          int i = ByteUtils.unsignedByteArrayToInt(tm.byteArrayValue());
          int t = i >> 13;
@@ -686,7 +705,7 @@ public final class OdeVehicleDataFlat extends OdeData {
       }
    }
 
-   public void setGroupId(GroupID groupId) {
+   private void setGroupId(GroupID groupId) {
       this.groupId = CodecUtils.toHex(groupId != null ? groupId
             .byteArrayValue() : "".getBytes());
    }
@@ -1487,17 +1506,6 @@ public final class OdeVehicleDataFlat extends OdeData {
       return true;
    }
 
-   @Override
-   protected void setDataType() {
-      setDataType(OdeDataType.VehicleData);
-   }
-
-   @Override
-   protected void initDefault() {
-      // TODO Auto-generated method stub
-      
-   }
-
    public void setRoadSegment(List<OdeRoadSegment> roadSegments, double tolerance) {
       double minDist = Double.POSITIVE_INFINITY;
       OdeRoadSegment minSeg = null;
@@ -1517,6 +1525,14 @@ public final class OdeVehicleDataFlat extends OdeData {
       
       if (minSeg != null)
          setRoadSeg(minSeg.getId());
+   }
+
+   @Override
+   public ZonedDateTime getTimestamp() {
+      int sec = second.intValue();
+      int milli = second.remainder(BigDecimal.ONE).multiply(BigDecimal.valueOf(1000)).intValue();
+      
+      return DateTimeUtils.isoDateTime(year, month, day, hour, minute, sec, milli);
    }
 
 

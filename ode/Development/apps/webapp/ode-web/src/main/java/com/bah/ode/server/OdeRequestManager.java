@@ -25,7 +25,7 @@ public class OdeRequestManager {
    private static OutboundTopicManagerSingleton otms = 
          OutboundTopicManagerSingleton.getInstance();
    
-   public static String buildRequestId(OdeRequest odeRequest) {
+   private static String buildRequestId(OdeRequest odeRequest) {
       String baseName = otms.buildTopicName(odeRequest);
       return odeRequest.getRequestType().getShortName() +
             odeRequest.getDataType().getShortName() + baseName;
@@ -74,6 +74,7 @@ public class OdeRequestManager {
       if (polyline != null)
          polyline.updateAllStartPoints();
       
+      odeRequest.setId(buildRequestId(odeRequest));
       return odeRequest;
    }
 

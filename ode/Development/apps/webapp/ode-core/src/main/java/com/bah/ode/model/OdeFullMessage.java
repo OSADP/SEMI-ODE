@@ -11,11 +11,6 @@ public final class OdeFullMessage extends OdeMsgPayload {
    }
 
    @Override
-   protected void setDataType() {
-      setDataType(OdeDataType.OtherData);
-   }
-
-   @Override
    public int hashCode() {
       final int prime = 31;
       int result = super.hashCode();

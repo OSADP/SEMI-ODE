@@ -7,8 +7,8 @@ import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.Row;
 
+import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeAggregateData;
-import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.wrapper.MQProducer;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
 
@@ -41,13 +41,10 @@ public class AggregateDataDistributor extends BaseDistributor
          payload.setAvgSpeed(BigDecimal.valueOf(record.getDouble(3)));
          payload.setMaxSpeed(BigDecimal.valueOf(record.getDouble(4)));
 
-         OdeDataMessage dm = new OdeDataMessage(payload);
-         
-//         ObjectNode aggregates = JsonUtils.newNode()
-//               .put("tempId", tempId)
-//               .put("minSpeed", record.getDouble(1))
-//               .put("avgSpeed", record.getDouble(2))
-//               .put("maxSpeed", record.getDouble(3));
+         InternalDataMessage dm = new InternalDataMessage(
+               record.getString(0),
+               payload,
+               null);
          
          producer.send(outputTopic, tempId, dm.toJson());
       }

@@ -38,7 +38,6 @@ public class JsonUtils {
 //      try {
 //         json = mapper.writeValueAsString(o);
 //      } catch (JsonProcessingException e) {
-//         // TODO Auto-generated catch block
 //         e.printStackTrace();
 //      }
 //      return json;
@@ -50,10 +49,24 @@ public class JsonUtils {
 //      try {
 //         o = mapper.readValue(s, clazz);
 //      } catch (IOException e) {
-//         // TODO Auto-generated catch block
 //         e.printStackTrace();
 //      }
 //      return o;
+   }
+   
+   public static Object fromJson(String s, String className) throws ClassNotFoundException {
+      Class<?> clazz = Class.forName(className);
+      return gson.fromJson(s, clazz);
+   }
+   
+   public static Object fromObjectNode(JsonNode s, Class<?> clazz) {
+      Object o = null;
+      try {
+         o = mapper.treeToValue(s, clazz);
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+      return o;
    }
    
    public static String newJson(String key, Object value) {
@@ -76,14 +89,13 @@ public class JsonUtils {
       return tree;
    }
    
-   public static String getJson(String tree, String fieldName) {
-      String node = null;
+   public static JsonNode getJsonNode(String tree, String fieldName) {
+      JsonNode node = null;
       try {
          JsonNode jsonNode = mapper.readTree(tree);
-         node = jsonNode.get(fieldName).toString();
+         node = jsonNode.get(fieldName);
          
       } catch (IOException e) {
-         // TODO Auto-generated catch block
          e.printStackTrace();
       }
       return node;

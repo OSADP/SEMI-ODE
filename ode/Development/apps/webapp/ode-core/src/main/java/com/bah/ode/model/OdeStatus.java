@@ -100,10 +100,4 @@ public class OdeStatus extends OdeMsgPayload {
       return true;
    }
 
-   @Override
-   protected void setDataType() {
-      setDataType(OdeDataType.Status);
-   }
-
-   
 }

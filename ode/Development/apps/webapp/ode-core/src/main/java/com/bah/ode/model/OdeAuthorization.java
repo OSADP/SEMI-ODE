@@ -6,11 +6,6 @@ public class OdeAuthorization extends OdeMsgPayload{
 
    private String token;
    
-   @Override
-   protected void setDataType() {
-      setDataType(OdeDataType.Authorization);
-   }
-
    public String getToken() {
       return token;
    }

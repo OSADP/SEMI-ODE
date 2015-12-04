@@ -22,12 +22,22 @@ public class OdeRequest extends BaseRequest {
       SDC, SDW, SDPC
    }
 
+   private String id;
    private DataSource dataSource;
    private OdeRequestType requestType;
    private OdeDataType dataType;
    private OdePolyline polyline;
 
-  public DataSource getDataSource() {
+  public String getId() {
+      return id;
+   }
+
+   public OdeRequest setId(String id) {
+      this.id = id;
+      return this;
+   }
+
+public DataSource getDataSource() {
       return dataSource;
    }
 

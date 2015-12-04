@@ -13,10 +13,6 @@ public final class OdeIntersectionDataRaw extends OdeData {
    }
 
    @Override
-   protected void initDefault() {
-   }
-
-   @Override
    public int hashCode() {
       final int prime = 31;
       int result = super.hashCode();
@@ -39,11 +35,6 @@ public final class OdeIntersectionDataRaw extends OdeData {
       } else if (!isd.equals(other.isd))
          return false;
       return true;
-   }
-
-   @Override
-   protected void setDataType() {
-      setDataType(OdeDataType.IntersectionSituationData);
    }
 
 }

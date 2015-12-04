@@ -16,22 +16,20 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
-import java.util.Date;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import com.bah.ode.util.DateTimeUtils;
 
-public abstract class OdeData extends OdeMsgPayload{
+public class OdeData extends OdeMsgPayload implements OdeFilterable{
    private static final long serialVersionUID = -7711340868799607662L;
    private String serialId;
    private String receivedAt;
 
    
-   protected abstract void initDefault();
-
    public OdeData() {
       super();
-      initDefault();
-      this.receivedAt = DateTimeUtils.isoDateTime(new Date());
+      this.receivedAt = DateTimeUtils.isoDateTime(ZonedDateTime.now(ZoneOffset.UTC));
    }
 
    public String getSerialId() {
