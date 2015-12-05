@@ -137,7 +137,15 @@ public class VehicleDataProcessor extends OdeObject {
          String sanitizationLocation = ssc.sparkContext().getConf()
         		 .get(AppContext.SPARK_STATIC_SANITIZATION_FILE_LOCATION, "");
          if(!sanitizationLocation.equals("")){
-        	 // Transformation goes here
+             SQLContext sqlContext = SqlContextSingleton.getInstance(ssc
+                     .sparkContext().sc());
+
+        	 // A JSON dataset is pointed to by path.
+        	 // The path can be either a single text file or a directory storing text files.
+        	 DataFrame sanitization = sqlContext.jsonFile(sanitizationLocation);
+
+             logger.info("Sanitization Dataframe Created: " + sanitization.head().toString());
+
          }
          
          /*

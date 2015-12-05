@@ -36,11 +36,13 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 		ArrayList<V> vList = new ArrayList<V>();
 		while (it.hasNext()) {
 			V msg = it.next().message();
+			logger.info(" RECEIVED MSG = " +  msg.toString());
 			ObjectNode bundleObject = JsonUtils.toObjectNode(msg.toString());
-			String tempSerialId = bundleObject.get("serialId").asText();
-			if(tempSerialId == null || tempSerialId.equals("")){
+			if(!bundleObject.has("serialId")){
 				processor.process(msg);
 			}else{
+				logger.info("SENT TO ORDERING");
+				String tempSerialId = bundleObject.get("serialId").asText();
 				String[] test = tempSerialId.split("[^\\w-]+"); /* Non-alphanumerics and hyphen */
 				tempSerialId = test[0] + "." + test[1];
 				
