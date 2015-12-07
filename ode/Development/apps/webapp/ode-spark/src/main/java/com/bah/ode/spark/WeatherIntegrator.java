@@ -22,7 +22,7 @@ public class WeatherIntegrator implements  PairFunction<Tuple2<String, Tuple2<St
 
 	@Override
 	public Tuple2<String, Tuple2<String, String>> call(Tuple2<String, Tuple2<String, String>> record)
-			throws Exception {
+	throws Exception {
 
 		ObjectNode vehicledata = JsonUtils.toObjectNode(record._2()._1());
 		Point2D rddLoc = GeoUtils.latLngToMap(vehicledata.get("latitude").asDouble(),vehicledata.get("longitude").asDouble());
@@ -37,8 +37,8 @@ public class WeatherIntegrator implements  PairFunction<Tuple2<String, Tuple2<St
 			ObjectNode temp = JsonUtils.toObjectNode(s);
 			switch(temp.get("ObsTypeName").asText()){
 
-			/* Atmospheric Air Pressure Source */
-			case "essAtmosphericPressure":
+				/* Atmospheric Air Pressure Source */
+				case "essAtmosphericPressure":
 				if(closestAirPressure == null){
 					closestAirPressure = temp;
 					distanceAP = rddLoc.distance(GeoUtils.latLngToMap(temp.get("Latitude").asDouble(), temp.get("Longitude").asDouble()));
@@ -52,8 +52,8 @@ public class WeatherIntegrator implements  PairFunction<Tuple2<String, Tuple2<St
 				}
 				break;
 
-			/* Atmospheric Air Temperature Source */
-			case "essAirTemperature":
+				/* Atmospheric Air Temperature Source */
+				case "essAirTemperature":
 				if(closestAirTemperature == null){
 					closestAirTemperature = temp;
 					distanceAT = rddLoc.distance(GeoUtils.latLngToMap(temp.get("Latitude").asDouble(), temp.get("Longitude").asDouble()));
@@ -66,15 +66,18 @@ public class WeatherIntegrator implements  PairFunction<Tuple2<String, Tuple2<St
 					}
 				}
 				break;
-			default:
+				default:
 				break;
 			}
 		}
 
-		if(closestAirPressure != null)
+		if(closestAirPressure != null && !vehicledata.has("weatherAirPres")){
 			vehicledata.put("weatherAirPres", closestAirPressure.get("Observation").asText());
-		if(closestAirTemperature != null)
+		}
+		
+		if(closestAirTemperature != null && !vehicledata.has("weatherAirTemp")){
 			vehicledata.put("weatherAirTemp", closestAirTemperature.get("Observation").asText());
+		}
 
 		return new Tuple2<String, Tuple2<String, String>>(record._1(), new Tuple2<String,String>(vehicledata.toString(), record._2()._2()));
 
