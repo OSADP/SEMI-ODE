@@ -1,5 +1,6 @@
 __author__ = '562474'
 
+import json
 import sys
 import os
 import ConfigParser
@@ -151,3 +152,18 @@ def validate_datetime(msg_payload,config):
     else:
         return False
 
+def extract_payload_expected_records(json_file):
+
+    json_file_data = []
+
+    with open(json_file, ) as f:
+        for line in f:
+            try:
+                if line is None or line == "\n":
+                    break
+                json_file_data.append(json.loads(line, encoding='utf-8')['payload'])
+            except Exception as e:
+                print e.message
+                sys.exit(-1)
+
+    return json_file_data

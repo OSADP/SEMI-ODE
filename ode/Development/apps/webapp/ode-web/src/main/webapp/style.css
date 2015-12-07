@@ -1,0 +1,138 @@
+body {
+	background-color: #1e3871;
+	font-family: Sans-serif;
+}
+
+h1 {
+	font-size: 1.5em;
+  text-indent: 4%;
+}
+
+hr {
+	margin-top: 5%;
+		margin-bottom: 5%;
+}
+
+/* LEFT SECTION */
+
+#title {
+	background-color: #1e3871;
+	height: 7.5%;
+	font-size: 1.75em;
+	color: white;
+	font-weight: bolder;
+}
+
+.column-left{
+	float: left;
+	width: 21.4%;
+	margin: 1%;
+	overflow-y: auto;
+}
+
+.leftsection {
+	background-color: white;
+	height: 95%;
+}
+
+
+input[type="radio"] {
+	margin-bottom: 5%;
+	margin-left: 10%;
+}
+
+.radioText1 {
+	font-size: 1.2em;
+}
+
+.radioText2 {
+	font-size: 1.2em;
+}
+
+#requestUri, #requestId {
+	width: 95%;
+}
+
+/* CENTER SECTION */
+
+.column-center{
+	display: inline-block;
+	background-color: white;
+	width: 21.2%;
+	margin: 1%;
+	height: 95%;
+	overflow-y: auto;
+}
+
+.georegion {
+	text-align: center;
+}
+
+.georegion-text {
+	width: 95%;
+}
+
+/* RIGHT SECTION */
+
+.column-right{
+	float: right;
+	width: 51.3%;
+	margin: 1%;
+	overflow-y: auto;
+}
+
+#map {
+	height: 40%;
+}
+
+#button-container {
+	margin-top: 2.5%;
+	height: 7.5%;
+
+}
+
+.input-button {
+		background-color: grey;
+		color: white;
+		float: left;
+		width: 24%;
+		margin: .5%;
+		height: 73%;
+		font-size: 1.0vw;
+    border: 2px solid;
+    border-radius: 25px;
+}
+
+.clear-container{
+		height: 4%;
+}
+
+.clear-button {
+		background-color: grey;
+		color: white;
+		float: right;
+		width: 24%;
+		margin: 1%;
+		height: 80%;
+		font-size: 1.0vw;
+    border: 2px solid;
+    border-radius: 25px;
+}
+
+#sent-console {
+	background-color: white;
+	height: 10%;
+	overflow-y: scroll;
+	white-space: pre;
+	font-family: monospace;
+
+}
+
+#received-console {
+	width: 100%;
+	background-color: white;
+	height: 26.5%;
+	overflow-y: scroll;
+	white-space: pre;
+	font-family: monospace;
+}
