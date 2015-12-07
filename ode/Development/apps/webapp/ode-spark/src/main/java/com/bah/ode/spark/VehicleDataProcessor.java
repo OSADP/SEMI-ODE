@@ -132,11 +132,20 @@ public class VehicleDataProcessor extends OdeObject {
                            * slideDuration));
 
          /*
+          * Bounding Box Sanitization ODE-38
+          */
+         String sanitizationLocation = ssc.sparkContext().getConf()
+        		 .get(AppContext.SPARK_STATIC_SANITIZATION_FILE_LOCATION, "");
+         if(!sanitizationLocation.equals("")){
+        	 // Transformation goes here
+         }
+         
+         /*
           * Vehicle Data Aggregation and Distribution
           */
          windowedPnM.foreachRDD(new Aggregator(producerPool, ssc
                .sparkContext().getConf()
-               .get(AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC)));
+               .get("spark.topics."+AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC)));
 
          /*
           * Vehicle data Distribution

@@ -25,6 +25,11 @@ except:
 
 
 class ODE_Query_Downloads_Tests(unittest.TestCase):
+    """
+    Test 2 - Query VSD Data ODE-153
+    Test 4 - Query ISD Data ODE-155
+    Test 5 - Query ASD Data ODE-154
+    """
     __metaclass__ = LogThisTestCase
     logger = logging.getLogger("QueryTests")
     logger.setLevel(logging.INFO)
@@ -38,6 +43,8 @@ class ODE_Query_Downloads_Tests(unittest.TestCase):
         self.client = client.AsyncODEClient(odeClient=ode)
 
     def tearDown(self):
+
+
         try:
             self.client.stop()
             self.client.client.destroy_token()
@@ -157,10 +164,15 @@ class ODE_Query_Downloads_Tests(unittest.TestCase):
                 self.assertEqual(msg.get_payload_value('dataType', None), 'veh')
                 record_count += 1
                 try:
+                    self.assertIsNotNone(msg.get_payload_value('serialId',None))
+                    self.assertTrue(testRunnerHelper.validate_datetime(msg.payload, self.config),
+                                    msg="Error Date Time of SerialID: {1}  Lat: {0} Long: {1}".format(
+                                         msg.get_payload_value("dateTime"),msg.get_payload_value("serialId")))
+
                     self.assertTrue(testRunnerHelper.validate_location(msg.payload, self.config),
                                     msg="Error Validating Spatial Region Record SerialID: {2}  Lat: {0} Long: {1}".format(
                                         msg.get_payload_value("latitude"), msg.get_payload_value("longitude"),msg.get_payload_value("serialId")))
-
+                    self.assertIsNotNone(msg.get_payload_value('serialId',None), msg="Vehicle Record Serial ID is Missing")
                 except AssertionError as e:
                     self.logger.warn(e.message)
                     exception_list.append(e)

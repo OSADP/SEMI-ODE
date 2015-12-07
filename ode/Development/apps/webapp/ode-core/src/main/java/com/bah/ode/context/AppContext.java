@@ -94,6 +94,7 @@ public class AppContext {
    public static final String SPARK_DRIVER_MEMORY = "spark.driver.memory";
 
    public static final String SPARK_STATIC_WEATHER_FILE_LOCATION = "spark.static.weather.file.location";
+   public static final String SPARK_STATIC_SANITIZATION_FILE_LOCATION = "spark.static.sanitization.file.location";
 
    public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
    public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
@@ -163,9 +164,10 @@ public class AppContext {
       .set(SPARK_STREAMING_WINDOW_MICROBATCHES, getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
       .set(SPARK_STREAMING_SLIDE_MICROBATCHES, getParam(SPARK_STREAMING_SLIDE_MICROBATCHES))
       .set(SPARK_STATIC_WEATHER_FILE_LOCATION, getParam(SPARK_STATIC_WEATHER_FILE_LOCATION))
+      .set(SPARK_STATIC_SANITIZATION_FILE_LOCATION, getParam(SPARK_STATIC_SANITIZATION_FILE_LOCATION))
       .set(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE, getParam(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE))
-      .set(DATA_PROCESSOR_INPUT_TOPIC, getParam(DATA_PROCESSOR_INPUT_TOPIC))
-      .set(DATA_PROCESSOR_AGGREGATES_TOPIC, getParam(DATA_PROCESSOR_AGGREGATES_TOPIC));
+      .set("spark.topics."+ DATA_PROCESSOR_INPUT_TOPIC, getParam(DATA_PROCESSOR_INPUT_TOPIC))
+      .set("spark.topics."+ DATA_PROCESSOR_AGGREGATES_TOPIC, getParam(DATA_PROCESSOR_AGGREGATES_TOPIC));
 
       // DEBUG ONLY
       // For debugging only and running the app on local machine
