@@ -106,27 +106,27 @@
 						<h2>Enter Geographic Region</h2>
 						<label>NW Latitude</label>
 						<input id="nwLatSub"
-						type="text" value="43.652969118285434" size="40" class="georegion-text" />
+						type="text" value="42.87792458483193" size="40" class="georegion-text" />
 						<br />
 						<label>NW
 							Longitude</label>
 						<input id="nwLonSub" type="text"
-						value="-85.94707489013672" size="40"  class="georegion-text" />
+						value="-83.74443415820313" size="40"  class="georegion-text" />
 						<br />
 						<label>SE Latitude</label>
 						<input id="seLatSub" type="text"
-						value="36.4765153148293" size="40"  class="georegion-text" />
+						value="42.04312080548567" size="40"  class="georegion-text" />
 						<br />
 						<label>SE Longitude</label>
 						<input id="seLonSub" type="text"
-						value="-74.53468322753906" size="40" class="georegion-text" />
+						value="-82.47825984179688" size="40" class="georegion-text" />
 						<br />
 
 						<hr />
 
 						<h3>Road Segment Nodes</h3>
 						<p>
-							Segment One
+							Node One
 						</p>
 						<button id="s1set" onclick="setSegment('s1set', 'n1LatSub', 'n1LngSub')">
 							Set Coordinates
@@ -138,7 +138,7 @@
 						<input id="n1LngSub" type="text" value = "-83.04747" size="10" class="georegion-text"/>
 						<br />
 						<p>
-							Segment Two
+							Node Two
 						</p>
 						<button id="s2set" onclick="setSegment('s2set', 'n2LatSub', 'n2LngSub')">
 							Set Coordinates
@@ -150,7 +150,7 @@
 						<input id="n2LngSub" type="text" value = "-83.046086" size="10" class="georegion-text"/>
 						<br />
 						<p>
-							Segment Three
+							Node Three
 						</p>
 						<button id="s3set" onclick="setSegment('s3set', 'n3LatSub', 'n3LngSub')">
 							Set Coordinates
@@ -160,7 +160,11 @@
 						<input id="n3LatSub" type="text" value = "42.33053" size="10" class="georegion-text"/>
 						<br />
 						<input id="n3LngSub" type="text" value = "-83.042701" size="10" class="georegion-text"/>
-						<br />
+
+						<hr />
+
+						<h3>Maximum Unique Record Locations</h3>
+						<input id="maxFeatures" type="text" value = "10" size="10" style="width: 100px" class="georegion-text"/><br /><br />
 					</div>
 				</div>
 
@@ -169,21 +173,21 @@
 					<div class="geoRegion">
 						<h2>Enter Geographic Region</h2>
 						<label>NW Latitude</label>
-						<input id="nwLatQuery" type="text" value = "43.652969118285434" size="40"  class="georegion-text"/>
+						<input id="nwLatQuery" type="text" value = "42.87792458483193" size="40"  class="georegion-text"/>
 						<br />
 						<label>NW Longitude</label>
-						<input id="nwLonQuery" type="text" value = "-85.94707489013672" size="40"  class="georegion-text" />
+						<input id="nwLonQuery" type="text" value = "-83.74443415820313" size="40"  class="georegion-text" />
 						<br />
 						<label>SE Latitude</label>
-						<input id="seLatQuery" type="text" value = "36.4765153148293" size="40"  class="georegion-text" />
+						<input id="seLatQuery" type="text" value = "42.04312080548567" size="40"  class="georegion-text" />
 						<br />
 						<label>SE Longitude</label>
-						<input id="seLonQuery" type="text" value = "-74.53468322753906" size="40"  class="georegion-text" />
+						<input id="seLonQuery" type="text" value = "-82.47825984179688" size="40"  class="georegion-text" />
 						<br />
 
 						<h3>Road Segment Nodes</h3>
 						<p>
-							Segment One
+							Node One
 						</p>
 
 						<button id="q1set" onclick="setSegment('q1set', 'n1LatQuery', 'n1LngQuery')">
@@ -196,7 +200,7 @@
 						<input id="n1LngQuery" type="text" value = "-83.04747" size="10" class="georegion-text"/>
 						<br />
 						<p>
-							Segment Two
+							Node Two
 						</p>
 						<button id="q2set" onclick="setSegment('q2set', 'n2LatQuery', 'n2LngQuery')">
 							Set Coordinates
@@ -208,7 +212,7 @@
 						<input id="n2LngQuery" type="text" value = "-83.046086" size="10" class="georegion-text"/>
 						<br />
 						<p>
-							Segment Three
+							Node Three
 						</p>
 						<button id="q3set" onclick="setSegment('q3set', 'n3LatQuery', 'n3LngQuery')">
 							Set Coordinates
@@ -224,6 +228,7 @@
 						<h2>Options:</h2>
 						<label>Skip</label><br />
 						<input id="skip" type="text" value = "0" size="10" style="width: 100px" class="georegion-text"/><br />
+						<label>Limit:</label><br />
 						<input id="limit" type="text" value = "100" size="10" style="width: 100px" class="georegion-text"/><br /><br />
             <label>Start Date-Time</label> <input id="startDate" type="text" value = "yyyy-MM-ddTHH:mm:ss" size="40" style="width: 350px" /><br />
             <label>End Date-Time</label> <input id="endDate" type="text" value = "yyyy-MM-ddTHH:mm:ss" size="40" style="width: 350px" /><br />
