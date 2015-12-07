@@ -32,6 +32,7 @@ import com.bah.ode.model.DdsData;
 import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeAdvisoryDataRaw;
 import com.bah.ode.model.OdeControlData;
+import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeFullMessage;
@@ -124,13 +125,18 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                      }
                   }
                }
-            } else { 
+            } else {
+               OdeData odeData;
                if (ddsData.getIsd() != null) {
                   topicName = metadata.getInputTopic().getName();
-                  idm.setPayload(new OdeIntersectionDataRaw(ddsData.getIsd()));
+                  odeData = new OdeIntersectionDataRaw(ddsData.getIsd());
+                  idm.setKey(odeData.getSerialId());
+                  idm.setPayload(odeData);
                } else if (ddsData.getAsd() != null) {
                   topicName = metadata.getInputTopic().getName();
-                  idm.setPayload(new OdeAdvisoryDataRaw(ddsData.getAsd()));
+                  odeData = new OdeAdvisoryDataRaw(ddsData.getAsd());
+                  idm.setKey(odeData.getSerialId());
+                  idm.setPayload(odeData);
                } else if (ddsData.getControlMessage() != null) {
                   topicName = metadata.getOutputTopic().getName();
                   OdeControlData controlData = new OdeControlData(ddsData.getControlMessage());
