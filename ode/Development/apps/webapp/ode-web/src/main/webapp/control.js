@@ -10,6 +10,8 @@ var partOneURI = "";
 var partTwoURI = "";
 var clear = "clear";
 var features = [];
+var featureCount = 0;
+var maxFeatures = 10;
 var clusters;
 var map;
 var intervalFunc;
@@ -163,6 +165,20 @@ $( document ).ready(function() {
       }
     });
 
+
+    $('#maxFeatures').change(function(){
+      var newMax = parseInt($(this).val());
+      if(maxFeatures > newMax){
+        features = features.splice(0,newMax);
+      }
+      
+      if(featureCount > newMax)
+        featureCount = 0;
+
+      if(isNumeric($(this).val())){
+        maxFeatures = newMax;
+      }
+    });
     $('#n1LatSub').change(function(){
       if(isNumeric($(this).val()))
       createRoads(0);
@@ -554,7 +570,7 @@ $( document ).ready(function() {
       log(1, event.data);
       updateClusters(event.data);
       if(isTest)
-        openTestUpload(event.data);
+      openTestUpload(event.data);
     };
     ws.onclose = function (event) {
       setConnectionState(false, false);
@@ -669,409 +685,418 @@ $( document ).ready(function() {
 
     /*
     else if(dataSource == 3){ // upload
-      if (ws != null) {
-        sendFiles()
-      } else {
-        alert('WebSocket connection not established, please connect.');
-      }
-    }
-    */
+    if (ws != null) {
+    sendFiles()
+  } else {
+  alert('WebSocket connection not established, please connect.');
+}
+}
+*/
+}
+
+function log(consoleid, msgOrData) {
+
+  var console;
+  if(consoleid == 0){
+    console = document.getElementById('sent-console');
+  }else {
+    console = document.getElementById('received-console');
   }
 
-  function log(consoleid, msgOrData) {
-
-    var console;
-    if(consoleid == 0){
-      console = document.getElementById('sent-console');
-    }else {
-      console = document.getElementById('received-console');
-    }
-
-    var p = document.createElement('p');
-    p.style.wordWrap = 'break-word';
-    p.appendChild(document.createTextNode(msgOrData));
-    console.appendChild(p);
-    while (console.childNodes.length > 10000) {
-      console.removeChild(console.firstChild);
-    }
-    console.scrollTop = console.scrollHeight;
+  var p = document.createElement('p');
+  p.style.wordWrap = 'break-word';
+  p.appendChild(document.createTextNode(msgOrData));
+  console.appendChild(p);
+  while (console.childNodes.length > 10000) {
+    console.removeChild(console.firstChild);
   }
+  console.scrollTop = console.scrollHeight;
+}
 
-  function handleFileSelect(files) {
-    showFileList(files);
+function handleFileSelect(files) {
+  showFileList(files);
+}
+
+function showFileList(files) {
+  // files is a FileList of File objects. List some properties.
+  var output = [];
+  for (var i = 0, numFiles = files.length; i < numFiles; i++) {
+    var file = files[i];
+    output.push('<li><strong>', escape(file.name), '</strong> (', file.type || 'n/a', ') - ',
+    file.size, ' bytes, last modified: ',
+    file.lastModifiedDate ? file.lastModifiedDate.toLocaleDateString() : 'n/a',
+    '</li>');
   }
+  document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+}
 
-  function showFileList(files) {
-    // files is a FileList of File objects. List some properties.
-    var output = [];
-    for (var i = 0, numFiles = files.length; i < numFiles; i++) {
-      var file = files[i];
-      output.push('<li><strong>', escape(file.name), '</strong> (', file.type || 'n/a', ') - ',
-      file.size, ' bytes, last modified: ',
-      file.lastModifiedDate ? file.lastModifiedDate.toLocaleDateString() : 'n/a',
-      '</li>');
-    }
-    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-  }
+function showThumbnail(file) {
+  var reader = new FileReader();
 
-  function showThumbnail(file) {
-    var reader = new FileReader();
-
-    // Closure to capture the file information.
-    reader.onload = (function(theFile) {
-      return function(e) {
-        // Render thumbnail.
-        var span = document.createElement('span');
-        span.innerHTML = ['<img class="thumb" src="', e.target.result,
-        '" title="', escape(theFile.name), '"/>'].join('');
-        document.getElementById('list').insertBefore(span, null);
-      };
-    })(file);
-
-    // Read in the image file as a data URL.
-    reader.readAsDataURL(file);
-
-  }
-
-  function sendFiles() {
-    var reader = new FileReader();
-    reader.onloadend = function(evt) {
-      var fileData = new String(reader.result);
-      var records = fileData.split('\n');
-      for (var i = 0, numRecords = records.length; i < numRecords; i++) {
-        ws.send(records[i]);
-      }
+  // Closure to capture the file information.
+  reader.onload = (function(theFile) {
+    return function(e) {
+      // Render thumbnail.
+      var span = document.createElement('span');
+      span.innerHTML = ['<img class="thumb" src="', e.target.result,
+      '" title="', escape(theFile.name), '"/>'].join('');
+      document.getElementById('list').insertBefore(span, null);
     };
+  })(file);
 
-    var files = document.getElementById('files').files;
-    for (var i = 0, numFiles = files.length; i < numFiles; i++) {
-      var file = files[i];
-      reader.readAsBinaryString(file);
+  // Read in the image file as a data URL.
+  reader.readAsDataURL(file);
+
+}
+
+function sendFiles() {
+  var reader = new FileReader();
+  reader.onloadend = function(evt) {
+    var fileData = new String(reader.result);
+    var records = fileData.split('\n');
+    for (var i = 0, numRecords = records.length; i < numRecords; i++) {
+      ws.send(records[i]);
     }
+  };
+
+  var files = document.getElementById('files').files;
+  for (var i = 0, numFiles = files.length; i < numFiles; i++) {
+    var file = files[i];
+    reader.readAsBinaryString(file);
   }
+}
 
-  function getToken()  {
-    var url = window.location.protocol+'//'+ window.location.host + '/ode/api/auth/login';
+function getToken()  {
+  var url = window.location.protocol+'//'+ window.location.host + '/ode/api/auth/login';
 
-    var client = new XMLHttpRequest();
-    client.open("GET", url, true);
-    client.setRequestHeader('Authorization','Basic '+hash)
-    client.send();
+  var client = new XMLHttpRequest();
+  client.open("GET", url, true);
+  client.setRequestHeader('Authorization','Basic '+hash)
+  client.send();
 
-    client.onreadystatechange=function()
+  client.onreadystatechange=function()
+  {
+    if (client.readyState==4 && client.status==200)
     {
-      if (client.readyState==4 && client.status==200)
-      {
-        var message = JSON.parse(client.responseText);
-        token = message["message"];
-      }
+      var message = JSON.parse(client.responseText);
+      token = message["message"];
     }
   }
+}
 
-  function getToken(email, password)  {
-    var url = window.location.protocol+'//'+ window.location.host + '/ode/api/auth/login';
-    $.ajax({
-      type: "GET",
-      dataType:'json',
-      url: url,
-      async: false,
-      headers: {
-        "Authorization": "Basic " + btoa(email + ":" + password)
-      },
-      success: function (data) {
-        log(1, "Login Response: " + JSON.stringify(data));
-        var payload = data["payload"];
-        if (payload != null) {
-          token = payload["token"];
-          if (token != null) {
-            setConnectionState(true,false)
-            if ( $("#selectData input:radio").is(":checked"))
-            updateRequestUri( $("#selectData input:radio").filter(":checked").val());
-          }
+function getToken(email, password)  {
+  var url = window.location.protocol+'//'+ window.location.host + '/ode/api/auth/login';
+  $.ajax({
+    type: "GET",
+    dataType:'json',
+    url: url,
+    async: false,
+    headers: {
+      "Authorization": "Basic " + btoa(email + ":" + password)
+    },
+    success: function (data) {
+      log(1, "Login Response: " + JSON.stringify(data));
+      var payload = data["payload"];
+      if (payload != null) {
+        token = payload["token"];
+        if (token != null) {
+          setConnectionState(true,false)
+          if ( $("#selectData input:radio").is(":checked"))
+          updateRequestUri( $("#selectData input:radio").filter(":checked").val());
         }
-      },
-      error: function (jqXHR, textStatus, errorThrown ) {
-        log(0, "Status: " + textStatus);
-        log(0, "Error Thrown: " + errorThrown);
-        log(0, "Details: " + JSON.stringify(jqXHR));
       }
-    });
-  }
-
-  function clearLog(logNum){
-    if(logNum == 0){
-      $('#sent-console').text("");
-    }else{
-      $('#received-console').text("");
+    },
+    error: function (jqXHR, textStatus, errorThrown ) {
+      log(0, "Status: " + textStatus);
+      log(0, "Error Thrown: " + errorThrown);
+      log(0, "Details: " + JSON.stringify(jqXHR));
     }
+  });
+}
+
+function clearLog(logNum){
+  if(logNum == 0){
+    $('#sent-console').text("");
+  }else{
+    $('#received-console').text("");
+  }
+}
+
+/** MAP FUNCTIONS **/
+
+/**
+* Returns the center coordinates
+* Also, sets the bounds and zoom of the map
+* As close as possible to the given NW, SE corners
+* given the aspect ratio
+*/
+function getLonLat(){
+  var nwLat;
+  var nwLon;
+  var seLat;
+  var seLon;
+
+  if(dataSource == 0){
+    nwLat = parseFloat($('#nwLatSub').val());
+    nwLon = parseFloat($('#nwLonSub').val());
+    seLat = parseFloat($('#seLatSub').val());
+    seLon = parseFloat($('#seLonSub').val());
+  }else{
+    nwLat = parseFloat($('#nwLatQuery').val());
+    nwLon = parseFloat($('#nwLonQuery').val());
+    seLat = parseFloat($('#seLatQuery').val());
+    seLon = parseFloat($('#seLonQuery').val());
   }
 
-  /** MAP FUNCTIONS **/
+  var centerLat = (nwLat + seLat) / 2;
+  var centerLon = (nwLon + seLon) / 2;
+  var temp = ol.proj.fromLonLat([centerLon, centerLat]);
 
-  /**
-  * Returns the center coordinates
-  * Also, sets the bounds and zoom of the map
-  * As close as possible to the given NW, SE corners
-  * given the aspect ratio
-  */
-  function getLonLat(){
-    var nwLat;
-    var nwLon;
-    var seLat;
-    var seLon;
+  var NWcorner = new ol.Feature({
+    geometry: new ol.geom.Point(ol.proj.fromLonLat([nwLon, nwLat]))
+  });
 
-    if(dataSource == 0){
-      nwLat = parseFloat($('#nwLatSub').val());
-      nwLon = parseFloat($('#nwLonSub').val());
-      seLat = parseFloat($('#seLatSub').val());
-      seLon = parseFloat($('#seLonSub').val());
-    }else{
-      nwLat = parseFloat($('#nwLatQuery').val());
-      nwLon = parseFloat($('#nwLonQuery').val());
-      seLat = parseFloat($('#seLatQuery').val());
-      seLon = parseFloat($('#seLonQuery').val());
-    }
+  var SEcorner = new ol.Feature({
+    geometry: new ol.geom.Point(ol.proj.fromLonLat([seLon, seLat]))
+  });
 
-    var centerLat = (nwLat + seLat) / 2;
-    var centerLon = (nwLon + seLon) / 2;
-    var temp = ol.proj.fromLonLat([centerLon, centerLat]);
+  var bounds = [];
+  bounds.push(NWcorner);
+  bounds.push(SEcorner);
 
-    var NWcorner = new ol.Feature({
-      geometry: new ol.geom.Point(ol.proj.fromLonLat([nwLon, nwLat]))
-    });
+  var source = new ol.source.Vector({
+    features: bounds
+  });
 
-    var SEcorner = new ol.Feature({
-      geometry: new ol.geom.Point(ol.proj.fromLonLat([seLon, seLat]))
-    });
+  map.getView().fit(source.getExtent(), map.getSize());
+  setLonLat();
+  return temp;
+}
 
-    var bounds = [];
-    bounds.push(NWcorner);
-    bounds.push(SEcorner);
+function setLonLat() {
+  var extent = map.getView().calculateExtent(map.getSize());
 
-    var source = new ol.source.Vector({
-      features: bounds
-    });
+  var nw = new ol.proj.transform([extent[0],extent[3]],'EPSG:3857','EPSG:4326');
+  var se = new ol.proj.transform([extent[2],extent[1]],'EPSG:3857','EPSG:4326');
 
-    map.getView().fit(source.getExtent(), map.getSize());
-    setLonLat();
-    return temp;
+  if(dataSource == 0){
+    $('#nwLatSub').val(nw[1]);
+    $('#nwLonSub').val(nw[0]);
+    $('#seLatSub').val(se[1]);
+    $('#seLonSub').val(se[0]);
+  }else{
+    $('#nwLatQuery').val(nw[1]);
+    $('#nwLonQuery').val(nw[0]);
+    $('#seLatQuery').val(se[1]);
+    $('#seLonQuery').val(se[0]);
+  }
+}
+
+function getPayload(str) {
+  try {
+    return JSON.parse(str).payload;
+  } catch (e) {
+    return false;
+  }
+}
+
+function openTestUpload(str){
+  var pl = getPayload(str);
+  if(pl !== undefined && pl !== false && pl !== null && pl.requestId !== undefined){
+    $('#requestId').val(pl.requestId);
   }
 
-  function setLonLat() {
-    var extent = map.getView().calculateExtent(map.getSize());
 
-    var nw = new ol.proj.transform([extent[0],extent[3]],'EPSG:3857','EPSG:4326');
-    var se = new ol.proj.transform([extent[2],extent[1]],'EPSG:3857','EPSG:4326');
+}
 
-    if(dataSource == 0){
-      $('#nwLatSub').val(nw[1]);
-      $('#nwLonSub').val(nw[0]);
-      $('#seLatSub').val(se[1]);
-      $('#seLonSub').val(se[0]);
-    }else{
-      $('#nwLatQuery').val(nw[1]);
-      $('#nwLonQuery').val(nw[0]);
-      $('#seLatQuery').val(se[1]);
-      $('#seLonQuery').val(se[0]);
-    }
-  }
+function updateClusters(str){
+  var pl = getPayload(str);
 
-  function getPayload(str) {
-    try {
-      return JSON.parse(str).payload;
-    } catch (e) {
-      return false;
-    }
-  }
+  if(pl !== undefined && pl !== false && pl !== null && pl.longitude !== undefined && pl.latitude !== undefined){
 
-  function openTestUpload(str){
-    var pl = getPayload(str);
-    if(pl !== undefined && pl !== false && pl !== null && pl.requestId !== undefined){
-      $('#requestId').val(pl.requestId);
-    }
-
-
-  }
-
-  function updateClusters(str){
-    var pl = getPayload(str);
-
-    if(pl !== undefined && pl !== false && pl !== null && pl.longitude !== undefined && pl.latitude !== undefined){
-
-      var lon = parseFloat(pl.longitude);
-      var lat = parseFloat(pl.latitude);
-      var temp = ol.proj.fromLonLat([lon, lat]);
-      if(!isNaN(temp[0]) && !isNaN(temp[1])){
-        var titleHtml = "<center>";
-        var key;
-        for (key in pl) {
-          if (pl.hasOwnProperty(key)) {
-            titleHtml += "<strong>" + key + "</strong><br/>" + pl[key] + "<br/>";
-          }
+    var lon = parseFloat(pl.longitude);
+    var lat = parseFloat(pl.latitude);
+    var temp = ol.proj.fromLonLat([lon, lat]);
+    if(!isNaN(temp[0]) && !isNaN(temp[1])){
+      var titleHtml = "<center>";
+      var key;
+      for (key in pl) {
+        if (pl.hasOwnProperty(key)) {
+          titleHtml += "<strong>" + key + "</strong><br/>" + pl[key] + "<br/>";
         }
-        titleHtml += "</center>";
+      }
+      titleHtml += "</center>";
 
-        var vFeature = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat([lon, lat])));
-        if(coordinateMappings[vFeature.getGeometry().getCoordinates()] === undefined || coordinateMappings[vFeature.getGeometry().getCoordinates()] === null){
-          features.push(vFeature);
+      var vFeature = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat([lon, lat])));
+      if(coordinateMappings[vFeature.getGeometry().getCoordinates()] === undefined || coordinateMappings[vFeature.getGeometry().getCoordinates()] === null){
+        if((dataSource == 0 || dataSource == 3) && features.length >= maxFeatures){
+          featureCount = 0;
+          features[featureCount] = (vFeature);
+          featureCount ++;
           coordinateMappings[vFeature.getGeometry().getCoordinates()] = [titleHtml];
         }else{
-          var arr = coordinateMappings[vFeature.getGeometry().getCoordinates()];
-          coordinateMappings[vFeature.getGeometry().getCoordinates()] = arr.concat(titleHtml);
+          features[featureCount] = (vFeature);
+          featureCount ++;
+          coordinateMappings[vFeature.getGeometry().getCoordinates()] = [titleHtml];
         }
+      }else{
+        var arr = coordinateMappings[vFeature.getGeometry().getCoordinates()];
+        coordinateMappings[vFeature.getGeometry().getCoordinates()] = arr.concat(titleHtml);
       }
     }
   }
+}
 
-  function updateClustersOnMap(){
+function updateClustersOnMap(){
 
-    var source = new ol.source.Vector({
-      features: features
-    });
 
-    var clusterSource = new ol.source.Cluster({
-      distance: 5,
-      source: source
-    });
+  var source = new ol.source.Vector({
+    features: features
+  });
 
-    /*
-    * Style elements to allow for the blue circles
-    * and text overlays for the number of elements inside
-    * each node
-    */
-    map.removeLayer(clusters);
-    var styleCache = {};
-    clusters = new ol.layer.Vector({
-      source: clusterSource,
-      style: function(feature, resolution) {
-        var size = feature.get('features').length;
-        var style = styleCache[size];
-        if (!style) {
-          style = [new ol.style.Style({
-            image: new ol.style.Circle({
-              radius: 10,
-              stroke: new ol.style.Stroke({
-                color: '#fff'
-              }),
-              fill: new ol.style.Fill({
-                color: '#ce0000'
-              })
-            }),
-            text: new ol.style.Text({
-              text: size.toString(),
-              fill: new ol.style.Fill({
-                color: '#fff'
-              })
-            })
-          })];
-          styleCache[size] = style;
-        }
-        return style;
-      }
-    });
+  var clusterSource = new ol.source.Cluster({
+    distance: 5,
+    source: source
+  });
 
-    map.addLayer(clusters);
-  }
-
-  function createRoads(type){
-    map.removeLayer(layerMarkers);
-    map.removeLayer(layerLines);
-
-    roadSegments = [];
-    if(type === 0){
-      roadSegments.push([
-        $('#n1LatSub').val(), $('#n1LngSub').val()
-      ]);
-
-      roadSegments.push([
-        $('#n2LatSub').val(),$('#n2LngSub').val()
-      ]);
-
-      roadSegments.push([
-        $('#n3LatSub').val(), $('#n3LngSub').val()
-      ]);
-    }else{
-      roadSegments.push([
-        $('#n1LatQuery').val(), $('#n1LngQuery').val()
-      ]);
-
-      roadSegments.push([
-        $('#n2LatQuery').val(),$('#n2LngQuery').val()
-      ]);
-
-      roadSegments.push([
-        $('#n3LatQuery').val(), $('#n3LngQuery').val()
-      ]);
-    }
-
-    layerMarkers = AddMarkers();
-    layerLines = new ol.layer.Vector({
-      source: new ol.source.Vector({
-        features: [new ol.Feature({
-          geometry: new ol.geom.LineString(markers, 'XY'),
-          name: 'Line'
-        })]
-      })
-    });
-
-    map.addLayer(layerMarkers);
-    map.addLayer(layerLines);
-  }
-
-  function AddMarkers() {
-    //create a bunch of icons and add to source vector
-    var vectorSource = new ol.source.Vector({});
-    for (var i=0;i<roadSegments.length;i++){
-      var x= parseFloat(roadSegments[i][1]); // lon
-      var y= parseFloat(roadSegments[i][0]); // lat
-
-      var iconFeature = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat([x, y])),
-        name: 'Marker ' + i
-      });
-      markers[i]= ol.proj.fromLonLat([x, y]);
-      vectorSource.addFeature(iconFeature);
-    }
-
-    //add the feature vector to the layer vector, and apply a style to whole layer
-    var style;
-    var vectorLayer = new ol.layer.Vector({
-      source: vectorSource,
-      style: function(feature, resolution) {
+  /*
+  * Style elements to allow for the blue circles
+  * and text overlays for the number of elements inside
+  * each node
+  */
+  map.removeLayer(clusters);
+  var styleCache = {};
+  clusters = new ol.layer.Vector({
+    source: clusterSource,
+    style: function(feature, resolution) {
+      var size = feature.get('features').length;
+      var style = styleCache[size];
+      if (!style) {
         style = [new ol.style.Style({
           image: new ol.style.Circle({
-            radius: 6,
+            radius: 10,
             stroke: new ol.style.Stroke({
               color: '#fff'
             }),
             fill: new ol.style.Fill({
-              color: '#3399CC'
+              color: '#ce0000'
+            })
+          }),
+          text: new ol.style.Text({
+            text: size.toString(),
+            fill: new ol.style.Fill({
+              color: '#fff'
             })
           })
         })];
-        return style;
+        styleCache[size] = style;
       }
-    });
-    return vectorLayer;
+      return style;
+    }
+  });
+
+  map.addLayer(clusters);
+}
+
+function createRoads(type){
+  map.removeLayer(layerMarkers);
+  map.removeLayer(layerLines);
+
+  roadSegments = [];
+  if(type === 0){
+    roadSegments.push([
+      $('#n1LatSub').val(), $('#n1LngSub').val()
+    ]);
+
+    roadSegments.push([
+      $('#n2LatSub').val(),$('#n2LngSub').val()
+    ]);
+
+    roadSegments.push([
+      $('#n3LatSub').val(), $('#n3LngSub').val()
+    ]);
+  }else{
+    roadSegments.push([
+      $('#n1LatQuery').val(), $('#n1LngQuery').val()
+    ]);
+
+    roadSegments.push([
+      $('#n2LatQuery').val(),$('#n2LngQuery').val()
+    ]);
+
+    roadSegments.push([
+      $('#n3LatQuery').val(), $('#n3LngQuery').val()
+    ]);
   }
 
-  function setSegment(buttonID, latID, lngID){
-    if(segmentDocId !== buttonID){
-      if(segmentDocId === null){
-        segmentClickActive = true;
-        segmentDocId = buttonID;
-        $('#'+segmentDocId).text('Click Map Location');
-        segmentLat = latID;
-        segmentLng = lngID;
-      }else{
-        segmentClickActive = false;
-        $('#'+segmentDocId).text('Set Coordinates');
-        segmentDocId = null;
-        setSegment(buttonID, latID, lngID);
-      }
+  layerMarkers = AddMarkers();
+  layerLines = new ol.layer.Vector({
+    source: new ol.source.Vector({
+      features: [new ol.Feature({
+        geometry: new ol.geom.LineString(markers, 'XY'),
+        name: 'Line'
+      })]
+    })
+  });
+
+  map.addLayer(layerMarkers);
+  map.addLayer(layerLines);
+}
+
+function AddMarkers() {
+  //create a bunch of icons and add to source vector
+  var vectorSource = new ol.source.Vector({});
+  for (var i=0;i<roadSegments.length;i++){
+    var x= parseFloat(roadSegments[i][1]); // lon
+    var y= parseFloat(roadSegments[i][0]); // lat
+
+    var iconFeature = new ol.Feature({
+      geometry: new ol.geom.Point(ol.proj.fromLonLat([x, y])),
+      name: 'Marker ' + i
+    });
+    markers[i]= ol.proj.fromLonLat([x, y]);
+    vectorSource.addFeature(iconFeature);
+  }
+
+  //add the feature vector to the layer vector, and apply a style to whole layer
+  var style;
+  var vectorLayer = new ol.layer.Vector({
+    source: vectorSource,
+    style: function(feature, resolution) {
+      style = [new ol.style.Style({
+        image: new ol.style.Circle({
+          radius: 6,
+          stroke: new ol.style.Stroke({
+            color: '#fff'
+          }),
+          fill: new ol.style.Fill({
+            color: '#3399CC'
+          })
+        })
+      })];
+      return style;
+    }
+  });
+  return vectorLayer;
+}
+
+function setSegment(buttonID, latID, lngID){
+  if(segmentDocId !== buttonID){
+    if(segmentDocId === null){
+      segmentClickActive = true;
+      segmentDocId = buttonID;
+      $('#'+segmentDocId).text('Click Map Location');
+      segmentLat = latID;
+      segmentLng = lngID;
+    }else{
+      segmentClickActive = false;
+      $('#'+segmentDocId).text('Set Coordinates');
+      segmentDocId = null;
+      setSegment(buttonID, latID, lngID);
     }
   }
+}
 
-  function isNumeric(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-  }
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
