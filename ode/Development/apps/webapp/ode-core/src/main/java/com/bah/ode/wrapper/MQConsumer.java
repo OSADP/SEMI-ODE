@@ -89,11 +89,11 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
                      lastSerialId = tempSerialId;
                      vList.add(msg);
                   }
-               }
-            }
-         }
+               }// End of serial ID is not blank
+            }// End of 'has serialId' bock
+         }// End of 'has payload' block
 
-      }
+      }//End of while loop
 
       logger.info("Shutting down Thread: " + m_threadNumber);
       return null;
@@ -116,9 +116,11 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
                   String sId = vObject.get("payload").get("serialId").asText();
                   int placing = Integer
                         .parseInt(sId.substring(sId.length() - 1));
-                  if (placing == i) {
+//TODO: MQConsumer does not send all the records to the processor.
+//Commenting out the if statement for now until it is fixed.
+//                  if (placing == i) {
                      processor.process(msg);
-                  }
+//                  }
 
                }
             }

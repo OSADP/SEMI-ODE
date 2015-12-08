@@ -42,6 +42,7 @@ import com.bah.ode.model.OdeQryRequest;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.model.OdeVehicleDataFlat;
 import com.bah.ode.wrapper.BaseDataDistributor;
+import com.bah.ode.wrapper.DataProcessor.DataProcessorException;
 import com.bah.ode.wrapper.MQProducer;
 import com.bah.ode.wrapper.WebSocketMessageHandler;
 
@@ -53,7 +54,10 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    private UUID uuid;  
    private Long seqNum;
    private Integer limit;
+   private Integer skip;
+   private long skipCount = 0;
    private long recordCount = 0;
+   private long receivedRecordCount = 0;
 
    private MQProducer<String, String> producer;
    private OdeMetadata metadata;
@@ -81,6 +85,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
       this.seqNum = new Long(0);
       if (this.metadata.getOdeRequest().getRequestType() == OdeRequestType.Query) {
          OdeQryRequest queryReq = (OdeQryRequest) this.metadata.getOdeRequest();
+         skip = queryReq.getSkip();
          limit = queryReq.getLimit();
       }
    }
@@ -109,24 +114,12 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                }
                
                for (OdeVehicleDataFlat ovdf : ovdfList) {
-                  if (limit == null || recordCount < limit.intValue()) {
-                     // Only count when limit is specified
-                     if (limit != null)
-                        recordCount++;
-                     
-                     idm.setKey(ovdf.getSerialId());
-                     idm.getMetadata().setKey(idm.getKey());
-                     idm.setPayload(ovdf);
-                     idm.setPayloadType(OdeDataType.VehicleData.getShortName());
-                     if (!AppContext.loopbackTest()) {
-                        producer.send(topicName, idm.getKey(), idm.toJson());
-                     } else {
-                        distributor.process(new OdeDataMessage(ovdf).toJson());
-                     }
-                  }
+                  if (checkSkipAndLimit())
+                     sendVehicleData(idm, topicName, ovdf);
                }
             } else {
                OdeData odeData;
+               boolean sendRecord = checkSkipAndLimit();
                if (ddsData.getIsd() != null) {
                   topicName = metadata.getInputTopic().getName();
                   odeData = new OdeIntersectionDataRaw(ddsData.getIsd());
@@ -141,23 +134,60 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                   topicName = metadata.getOutputTopic().getName();
                   OdeControlData controlData = new OdeControlData(ddsData.getControlMessage());
                   if (controlData.getTag() == OdeControlData.Tag.STOP)
-                     controlData.setReceivedRecordCount(recordCount);
+                     controlData.setReceivedRecordCount(receivedRecordCount);
                   
                   idm.setPayload(controlData);
+                  // Always send control data
+                  sendRecord = true;
                } else {
                   topicName = metadata.getOutputTopic().getName();
                   idm.setPayload(new OdeFullMessage(ddsData.getFullMessage()));
+                  //Always send unknown data
+                  sendRecord = true;
                }
-               if (!AppContext.loopbackTest()) {
-                  producer.send(topicName, idm.getKey(), idm.toJson());
-               } else {
-                  distributor.process(new OdeDataMessage(idm.getPayload()).toJson());
+               
+               if (sendRecord) {
+                  if (!AppContext.loopbackTest()) {
+                     producer.send(topicName, idm.getKey(), idm.toJson());
+                  } else {
+                     distributor.process(new OdeDataMessage(idm.getPayload()).toJson());
+                  }
                }
             }
          }
       } catch (Exception e) {
          logger.error("Error handling DDS message. ", e);
       } finally {
+      }
+   }
+   
+   private boolean checkSkipAndLimit() {
+      receivedRecordCount++;
+      if (skip != null && skipCount < skip.intValue()) {
+         skipCount++;
+         return false;
+      }
+      
+      if (limit == null || recordCount < limit.intValue()) {
+         // Only count when limit is specified
+         if (limit != null)
+            recordCount++;
+         return true;
+      }
+      return false;
+   }
+   
+   private void sendVehicleData(InternalDataMessage idm, String topicName,
+         OdeVehicleDataFlat ovdf)
+               throws ClassNotFoundException, DataProcessorException {
+      idm.setKey(ovdf.getSerialId());
+      idm.getMetadata().setKey(idm.getKey());
+      idm.setPayload(ovdf);
+      idm.setPayloadType(OdeDataType.VehicleData.getShortName());
+      if (!AppContext.loopbackTest()) {
+         producer.send(topicName, idm.getKey(), idm.toJson());
+      } else {
+         distributor.process(new OdeDataMessage(ovdf).toJson());
       }
    }
 
