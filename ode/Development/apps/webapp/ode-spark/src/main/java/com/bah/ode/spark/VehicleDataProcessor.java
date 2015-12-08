@@ -140,11 +140,12 @@ public class VehicleDataProcessor extends OdeObject {
              SQLContext sqlContext = SqlContextSingleton.getInstance(ssc
                      .sparkContext().sc());
 
-        	 // A JSON dataset is pointed to by path.
-        	 // The path can be either a single text file or a directory storing text files.
-        	 DataFrame sanitization = sqlContext.jsonFile(sanitizationLocation);
+        	 DataFrame sanitizationFrame = sqlContext.jsonFile(sanitizationLocation);
 
-             logger.info("Sanitization Dataframe Created: " + sanitization.head().toString());
+             List<String> sanitizationData = sanitizationFrame.toJavaRDD()
+                   .map(new DataFrameMapper(sanitizationFrame.columns())).toArray();
+
+             withRoadSegment =  withRoadSegment.mapToPair(new RecordSanitizer(sanitizationData));
 
          }
          
@@ -194,7 +195,7 @@ public class VehicleDataProcessor extends OdeObject {
                   + weatherFrame.head().toString());
 
             List<String> weatherData = weatherFrame.toJavaRDD()
-                  .map(new WeatherMapper(weatherFrame.columns())).toArray();
+                  .map(new DataFrameMapper(weatherFrame.columns())).toArray();
 
             JavaPairDStream<String, Tuple2<String, String>> withWeatherData = 
                   withRoadSegment.mapToPair(new WeatherIntegrator(weatherData));

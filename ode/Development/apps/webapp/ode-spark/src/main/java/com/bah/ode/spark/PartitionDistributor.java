@@ -28,12 +28,14 @@ public class PartitionDistributor extends BaseDistributor implements
       
       while (partitionOfRecords.hasNext()) {
          Tuple2<String, Tuple2<String, String>> record = partitionOfRecords.next();
-         String key = record._1();
-         String payload = record._2()._1();
-         ObjectNode metadata = JsonUtils.toObjectNode(record._2()._2());
-         
-         producer.send(metadata.get("outputTopic").get("name").textValue(),
-               key, payload);
+         if(record != null){ /* result of ODE-38 records that are removed are now null */
+	         String key = record._1();
+	         String payload = record._2()._1();
+	         ObjectNode metadata = JsonUtils.toObjectNode(record._2()._2());
+	         
+	         producer.send(metadata.get("outputTopic").get("name").textValue(),
+	               key, payload);
+         }
          
       }
       
