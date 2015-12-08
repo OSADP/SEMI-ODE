@@ -8,13 +8,13 @@ import org.apache.spark.sql.Row;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class WeatherMapper implements Function<Row, String>, Serializable {
+public class DataFrameMapper implements Function<Row, String>, Serializable {
 
 	private static final long serialVersionUID = 4620485681770070995L;
-	private String[] weatherHeader;
+	private String[] dataframeHeader;
 
-	public WeatherMapper(String[] columns) {
-		weatherHeader = columns;
+	public DataFrameMapper(String[] columns) {
+		dataframeHeader = columns;
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class WeatherMapper implements Function<Row, String>, Serializable {
 		ObjectNode node = JsonNodeFactory.instance.objectNode();
 		
 		for (int i = 0; i < row.length(); i ++ ){
-			node.put(weatherHeader[i], row.getString(i));
+			node.put(dataframeHeader[i], row.getString(i));
 		}
 		
 		return node.toString();
