@@ -1,17 +1,23 @@
 package com.bah.ode.util;
 
 import java.io.IOException;
-
-import junit.framework.TestCase;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import com.bah.ode.model.OdeVehicleDataFlat;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import junit.framework.TestCase;
 
 public class JsonUtilsTest extends TestCase {
    private static final String OVDF = 
          "{\"className\":\"com.bah.ode.model.OdeVehicleDataFlat\",\"serialId\":\"10817812-036b-4d7b-867b-ae0bc62a2b3e.0\",\"receivedAt\":\"2015-07-22T19:21:16.413+0000\",\"groupId\":\"4130008F\",\"accelLong\":0.34,\"accelVert\":0.00,\"accellYaw\":8.42,\"heading\":65.9500,\"speed\":8.12,\"sizeLength\":500,\"sizeWidth\":200,\"latitude\":42.3296667,\"longitude\":-83.0445390,\"elevation\":156.9,\"tempId\":\"C4290123\",\"year\":2015,\"month\":5,\"day\":13,\"hour\":15,\"minute\":52,\"second\":45.500,\"dateTime\":\"2015-06-13T19:52:45.500+0000\"}";
-
+   private static final String ODM =
+         "{\"metadata\":{\"payloadType\":\"veh\",\"version\":1},\"payload\":" + OVDF + "}";
+   
    public void testFromToJson() {
 //      OdeVehicleDataFlat ovdf = 
 //            (OdeVehicleDataFlat) JsonUtils.fromJson(OVDF, OdeVehicleDataFlat.class);
@@ -62,4 +68,24 @@ public class JsonUtilsTest extends TestCase {
       OdeVehicleDataFlat ovdf = (OdeVehicleDataFlat) JsonUtils.fromJson(expectedOvdf, "com.bah.ode.model.OdeVehicleDataFlat");
       assertNotNull(ovdf);
    }
+   
+   public void testJsonNodeToHashMap() throws ClassNotFoundException {
+      JsonNode jsonNode = JsonUtils.getJsonNode(ODM, "payload");
+      HashMap<String, JsonNode> hashMap = JsonUtils.jsonNodeToHashMap(jsonNode);
+      Iterator<Entry<String, JsonNode>> fieldsIter = jsonNode.fields();
+      
+      while (fieldsIter.hasNext()) {
+         Entry<String, JsonNode> field = fieldsIter.next();
+         JsonNode node = hashMap.get(field.getKey());
+         assertNotNull(node);
+         assertEquals(node.asText(), field.getValue().asText());
+      }
+      
+      for (Entry<String, JsonNode> entry : hashMap.entrySet()) {
+         JsonNode node = jsonNode.get(entry.getKey());
+         assertNotNull(node);
+         assertEquals(node.asText(), entry.getValue().asText());
+      }
+   }
+   
 }

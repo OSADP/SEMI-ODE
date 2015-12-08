@@ -47,6 +47,13 @@ public class OdeDataMessage extends OdeMessage {
       return this;
    }
    
+   /**
+    * @param data - json string representation of an OdeDataMessage object
+    * @return ObjectNode representation of the given OdeDataMessage object
+    * @throws JsonProcessingException
+    * @throws IOException
+    * @throws ClassNotFoundException
+    */
    public static ObjectNode jsonStringToObjectNode(String data)
          throws JsonProcessingException, IOException, ClassNotFoundException {
       ObjectNode dm = null;

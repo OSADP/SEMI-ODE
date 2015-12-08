@@ -15,6 +15,7 @@ import java.util.logging.SimpleFormatter;
 import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.semi.VehSitDataMessage;
 import com.bah.ode.dds.client.ws.DdsMessageHandler;
+import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeVehicleDataFlat;
 import com.oss.asn1.Coder;
 
@@ -26,7 +27,8 @@ public class VsdReaderOvdfWriter {
    public static void main(String args[]) {
       String filename = new String("message.dat");
       boolean allVSRs = true;
-      char encoding = 'h';
+      char encoding = 'b';
+      char content = 'd';
       // Process command line arguments
       if (args.length > 0) {
          for (int i = 0; i < args.length; i++) {
@@ -36,6 +38,8 @@ public class VsdReaderOvdfWriter {
                allVSRs = false; 
             } else if (args[i].equals("-encoding")) {
                encoding = new String(args[++i]).charAt(0);
+            } else if (args[i].equals("-content")) {
+               content = new String(args[++i]).charAt(0);
             } else {
                System.out.println("usage: VsdReaderOvdfWriter [ -i <filename>");
                System.out.println("   -i <filename>  ");
@@ -56,9 +60,16 @@ public class VsdReaderOvdfWriter {
          logger.info("\n*** BER DECODING BEGIN ***\n");
          long decodeTime = System.currentTimeMillis();
          Scanner scanner = new Scanner(new File(filename));
-         PrintWriter ovdfOut = new PrintWriter(new PrintStream(filename
-               + ".ovdf.json"));
-
+         
+         PrintWriter ovdfOut;
+         if (content == 'd') {
+         ovdfOut = new PrintWriter(new PrintStream(filename
+               + ".dm.ovsd.json"));
+         } else {
+            ovdfOut = new PrintWriter(new PrintStream(filename
+                  + ".ovsd.json"));
+         }
+         
          int numVSDs = 0;
          int numVSRs = 0;
          int numOVDFs = 0;
@@ -90,7 +101,10 @@ public class VsdReaderOvdfWriter {
                for (OdeVehicleDataFlat ovdf : ovdfList) {
                   numOVDFs++;
                   numVSRs++;
-                  ovdfOut.println(JsonUtils.toJson(ovdf));
+                  if (content == 'd')
+                     ovdfOut.println(JsonUtils.toJson(new OdeDataMessage(ovdf)));
+                  else
+                     ovdfOut.println(JsonUtils.toJson(ovdf));
                }
 
                numVSDs++;
