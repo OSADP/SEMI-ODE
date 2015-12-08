@@ -37,61 +37,67 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
       ArrayList<V> vList = new ArrayList<V>();
       while (it.hasNext()) {
          V msg = it.next().message();
-         ObjectNode bundleObject = JsonUtils.toObjectNode(msg.toString());
-
-         JsonNode payloadNode = bundleObject.get("payload");
-         if (payloadNode == null) {
-            processor.process(msg);
-         } else {
-            JsonNode serialIdNode = payloadNode.get("serialId");
-            if (serialIdNode == null) {
-               processor.process(msg);
-            } else {
-               String tempSerialId = serialIdNode.asText();
-               if (tempSerialId == null || tempSerialId.equals("")) {
-                  processor.process(msg);
-               } else {
-                  String[] test = tempSerialId
-                        .split("[^\\w-]+"); /* Non-alphanumerics and hyphen */
-                  tempSerialId = test[0] + "." + test[1];
-
-                  if (lastSerialId == null)
-                     lastSerialId = tempSerialId;
-
-                  if (tempSerialId.equals(lastSerialId)) {
-                     hasSent = false;
-                     vList.add(msg);
-                     new java.util.Timer().schedule(new java.util.TimerTask() {
-                        @Override
-                        public void run() {
-                           if (!hasSent) {
-                              /*
-                               * Sends the batch after 5 seconds without waiting for
-                               * the next bundle if it hasn't arrived yet.
-                               */
-                              if (vList.size() != 0) {
-                                 BatchSend batchSender = new BatchSend(vList);
-                                 Thread t = new Thread(batchSender);
-                                 t.start();
-                                 vList.clear();
-                                 lastSerialId = null;
-                              }
-                           }
-                        }
-                     }, 5000);
-                  } else {
-                     /* If it receives the next bundle send */
-                     hasSent = true;
-                     BatchSend batchSender = new BatchSend(vList);
-                     Thread t = new Thread(batchSender);
-                     t.start();
-                     vList.clear();
-                     lastSerialId = tempSerialId;
-                     vList.add(msg);
-                  }
-               }// End of serial ID is not blank
-            }// End of 'has serialId' bock
-         }// End of 'has payload' block
+         //TODO: MQConsumer does not send all the records to the processor.
+         //Commenting out the code below and calling processor.process.
+         // If you uncomment the code, make sure to remove the line below.
+           processor.process(msg);
+///////////////////////////////////////////////////////////////////////////////
+//         ObjectNode bundleObject = JsonUtils.toObjectNode(msg.toString());
+//
+//         JsonNode payloadNode = bundleObject.get("payload");
+//         if (payloadNode == null) {
+//            processor.process(msg);
+//         } else {
+//            JsonNode serialIdNode = payloadNode.get("serialId");
+//            if (serialIdNode == null) {
+//               processor.process(msg);
+//            } else {
+//               String tempSerialId = serialIdNode.asText();
+//               if (tempSerialId == null || tempSerialId.equals("")) {
+//                  processor.process(msg);
+//               } else {
+//                  String[] test = tempSerialId
+//                        .split("[^\\w-]+"); /* Non-alphanumerics and hyphen */
+//                  tempSerialId = test[0] + "." + test[1];
+//
+//                  if (lastSerialId == null)
+//                     lastSerialId = tempSerialId;
+//
+//                  if (tempSerialId.equals(lastSerialId)) {
+//                     hasSent = false;
+//                     vList.add(msg);
+//                     new java.util.Timer().schedule(new java.util.TimerTask() {
+//                        @Override
+//                        public void run() {
+//                           if (!hasSent) {
+//                              /*
+//                               * Sends the batch after 5 seconds without waiting for
+//                               * the next bundle if it hasn't arrived yet.
+//                               */
+//                              if (vList.size() != 0) {
+//                                 BatchSend batchSender = new BatchSend(vList);
+//                                 Thread t = new Thread(batchSender);
+//                                 t.start();
+//                                 vList.clear();
+//                                 lastSerialId = null;
+//                              }
+//                           }
+//                        }
+//                     }, 5000);
+//                  } else {
+//                     /* If it receives the next bundle send */
+//                     hasSent = true;
+//                     BatchSend batchSender = new BatchSend(vList);
+//                     Thread t = new Thread(batchSender);
+//                     t.start();
+//                     vList.clear();
+//                     lastSerialId = tempSerialId;
+//                     vList.add(msg);
+//                  }
+//               }// End of serial ID is not blank
+//            }// End of 'has serialId' bock
+//         }// End of 'has payload' block
+////////////////////////////////////////////////////////////////////////////////
 
       }//End of while loop
 
@@ -116,16 +122,14 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
                   String sId = vObject.get("payload").get("serialId").asText();
                   int placing = Integer
                         .parseInt(sId.substring(sId.length() - 1));
-//TODO: MQConsumer does not send all the records to the processor.
-//Commenting out the if statement for now until it is fixed.
-//                  if (placing == i) {
+                  if (placing == i) {
                      processor.process(msg);
-//                  }
+                  }
 
                }
             }
          } catch (Exception e) {
-            logger.info("Error SENDING " + e.getMessage());
+            logger.error("Error Consuming message", e);
          }
       }
    }
