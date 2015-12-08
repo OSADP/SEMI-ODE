@@ -91,8 +91,18 @@ public class DdsRequestManager extends DataRequestManager {
             OdeQryRequest odeQuery = (OdeQryRequest) odeRequest;
             qryRequest.setStartDate(odeQuery.getStartDate());
             qryRequest.setEndDate(odeQuery.getEndDate());
-            qryRequest.setSkip(odeQuery.getSkip());
-            qryRequest.setLimit(odeQuery.getLimit());
+            /*
+             * Because some data are bundled (VSD, for instance), never skip. 
+             * ODE will unbundle and skip the records as needed.
+             */
+            qryRequest.setSkip(0);
+
+            /*
+             * Because some data are bundled (VSD, for instance), add the skip 
+             * to the limit to ensure that we will get enough records to skip 
+             * and limit independent of the data source.
+             */
+            qryRequest.setLimit(odeQuery.getSkip() + odeQuery.getLimit());
          }
          ddsRequest = qryRequest;
       } else {
