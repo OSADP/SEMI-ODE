@@ -17,6 +17,9 @@
 package com.bah.ode.util;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -111,5 +114,16 @@ public class JsonUtils {
       return jsonNode;
    }
    
+   public static HashMap<String, JsonNode> jsonNodeToHashMap(
+         JsonNode jsonNode) {
+      HashMap<String, JsonNode> nodeProps = new HashMap<String, JsonNode>();
+      Iterator<Entry<String, JsonNode>> iter = jsonNode.fields();
+      
+      while(iter.hasNext()) {
+         Entry<String, JsonNode> element = iter.next();
+         nodeProps.put(element.getKey(), element.getValue());
+      }
+      return nodeProps;
+   }
 
 }

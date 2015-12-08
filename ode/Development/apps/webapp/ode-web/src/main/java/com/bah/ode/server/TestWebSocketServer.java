@@ -150,64 +150,87 @@ public class TestWebSocketServer {
             //feedback to the upload client
             WebSocketUtils.send(session, message);
             if (testMgr != null) {
+               ObjectNode odm = OdeDataMessage.jsonStringToObjectNode(message);
+               if (odm != null) {
+                  ObjectNode idm = 
+                        InternalDataMessage.createObjectNodeFromPayloadNode(odm.get("payload"));
                
-               ObjectNode dm = InternalDataMessage.jsonStringToObjectNode(message);
-               JsonNode payload = null;
-               JsonNode jsonPayloadType = null;
-               if (dm != null && 
-                     (payload = dm.get("payload")) != null &&
-                     (jsonPayloadType = dm.get("payloadType")) != null) {
-                  OdeDataType payloadType = 
-                        OdeDataType.getByShortName(jsonPayloadType.textValue());
-
-                  switch (payloadType) {
-                  case VehicleData:
-                     OdeVehicleDataFlat ovdf = 
-                           (OdeVehicleDataFlat) JsonUtils.fromJson(
-                                 payload.toString(), OdeVehicleDataFlat.class);
-                     sendThroughOde(payload, ovdf);
-                     break;
-
-                  case IntersectionData:
-                     IntersectionSituationData isd = 
-                     (IntersectionSituationData) JsonUtils.fromJson(
-                           payload.toString(), IntersectionSituationData.class);
-                     OdeIntersectionDataRaw oidr = new OdeIntersectionDataRaw(isd);
-                     sendThroughOde(payload, oidr);
-                     break;
-
-                  case AdvisoryData:
-                     AdvisorySituationData asd = 
-                     (AdvisorySituationData) JsonUtils.fromJson(
-                           payload.toString(), AdvisorySituationData.class);
-                      OdeAdvisoryDataRaw oadr = new OdeAdvisoryDataRaw(asd);
-                      sendThroughOde(payload, oadr);
-
-                     break;
-
-                  default:
+                  JsonNode payload = null;
+                  JsonNode jsonPayloadType = null;
+                  OdeDataType payloadType = null; 
+                  if (idm != null && 
+                        (payload = idm.get("payload")) != null &&
+                        (jsonPayloadType = idm.get("payloadType")) != null) {
+                     payloadType = OdeDataType.getByShortName(jsonPayloadType.textValue());
+                  } else { // look for className
+                     JsonNode classNameNode = idm.get("className");
+                     if (classNameNode != null) {
+                        String className = classNameNode.textValue();
+                        if (className != null) {
+                           payloadType = OdeDataType.getByClassName(className);
+                        } else {
+                           status.setCode(Code.FAILURE);
+                           status.setMessage("Invalid className: " + classNameNode); 
+                           logger.error(status.getMessage());
+                           WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
+                        }
+                     } else { // unsupported message
+                        status.setCode(Code.FAILURE);
+                        status.setMessage("Unsupported message: " + message +
+                              "\npayload, metadata or className required."); 
+                        logger.error(status.getMessage());
+                        WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
+                     }
+                  }
+                  
+                  if (payloadType != null) {
+                     switch (payloadType) {
+                     case VehicleData:
+                        OdeVehicleDataFlat ovdf = 
+                              (OdeVehicleDataFlat) JsonUtils.fromJson(
+                                    payload.toString(), OdeVehicleDataFlat.class);
+                        sendThroughOde(payload, ovdf);
+                        break;
+      
+                     case IntersectionData:
+                        IntersectionSituationData isd = 
+                        (IntersectionSituationData) JsonUtils.fromJson(
+                              payload.toString(), IntersectionSituationData.class);
+                        OdeIntersectionDataRaw oidr = new OdeIntersectionDataRaw(isd);
+                        sendThroughOde(payload, oidr);
+                        break;
+      
+                     case AdvisoryData:
+                        AdvisorySituationData asd = 
+                        (AdvisorySituationData) JsonUtils.fromJson(
+                              payload.toString(), AdvisorySituationData.class);
+                         OdeAdvisoryDataRaw oadr = new OdeAdvisoryDataRaw(asd);
+                         sendThroughOde(payload, oadr);
+      
+                        break;
+      
+                     default:
+                        status.setCode(Code.FAILURE);
+                        status.setMessage("Invalid payloadType: " + jsonPayloadType.textValue()); 
+                        logger.error(status.getMessage());
+                        WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
+                        break;
+                     }
+                  } else {
                      status.setCode(Code.FAILURE);
-                     status.setMessage("Invalid payloadType: " + jsonPayloadType.textValue()); 
+                     status.setMessage("Invalid payload type: " + jsonPayloadType); 
                      logger.error(status.getMessage());
                      WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
-                     break;
                   }
-               } else {
-                  status.setCode(Code.FAILURE);
-                  status.setMessage("Invalid message: " + message +
-                        "\npayload and metadata required."); 
-                  logger.error(status.getMessage());
-                  WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
                }
-               
-            } else {
+            } else { //testMgr == null
                status.setCode(Code.FAILURE);
                status.setMessage("Test Manager NOT Initialized. "
                      + "Send a Test Request to ODE before sending test data."); 
                logger.error(status.getMessage());
                WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
             }
-         }
+         } // message != null && !message.isEmpty()
       } catch (Exception ex) {
          status.setCode(OdeStatus.Code.FAILURE)
             .setMessage(String.format("%s: Error processing test data %s.",

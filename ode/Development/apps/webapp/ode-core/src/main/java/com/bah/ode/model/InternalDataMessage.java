@@ -1,6 +1,7 @@
 package com.bah.ode.model;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import com.bah.ode.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -53,29 +54,34 @@ public class InternalDataMessage extends OdeObject {
       this.metadata = metadata;
       return this;
    }
+   
+   public static ObjectNode createObjectNodeFromPayloadNode(JsonNode payloadNode) 
+         throws JsonProcessingException, IOException, ClassNotFoundException {
+      ObjectNode idm = null;
+      if (payloadNode != null) {
+         idm = buildJsonObjectNode(payloadNode, payloadNode.get("className"));
+      }
+      return idm;
+   }
    public static ObjectNode jsonStringToObjectNode(String data)
          throws JsonProcessingException, IOException, ClassNotFoundException {
       ObjectNode idm = null;
       ObjectNode jsonObject = JsonUtils.toObjectNode(data);
-      JsonNode className = jsonObject.get("className");
-      if (className != null) {
-         idm = buildJsonObjectNode(jsonObject, className);
-      } else {
-         JsonNode payload = jsonObject.get("payload");
-         if (payload != null) {
-            ObjectNode p = JsonUtils.toObjectNode(payload.toString());
-            idm = buildJsonObjectNode(p, p.get("className"));
-         }
-      }
+      JsonNode payloadNode = jsonObject.get("payload");
+      idm = createObjectNodeFromPayloadNode(payloadNode);
       return idm;
    }
    
-   private static ObjectNode buildJsonObjectNode(ObjectNode jsonObject, JsonNode className)
+   private static ObjectNode buildJsonObjectNode(JsonNode jsonObject, JsonNode className)
          throws ClassNotFoundException {
       ObjectNode idm;
       idm = JsonUtils.newNode();
       idm.put("payloadType", OdeDataType.getByClassName(className.textValue()).getShortName());
-      idm.putObject("payload").setAll(jsonObject);
+      
+      HashMap<String, JsonNode> nodeProps = JsonUtils.jsonNodeToHashMap(jsonObject);
+      
+      idm.putObject("payload").setAll(nodeProps);
+      
       return idm;
    }
 
