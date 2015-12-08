@@ -43,7 +43,7 @@ public class RecordSanitizer implements  PairFunction<Tuple2<String, Tuple2<Stri
 			double seLon = sanitizationBox.get("seLon").asDouble();
 
 			/* Inside a sanitizationBox*/
-			if(record_latitude >= nwLat && record_latitude <= seLat && record_longitude >= nwLon && record_longitude <= seLon){
+			if(record_latitude <= nwLat && record_latitude >= seLat && record_longitude >= nwLon && record_longitude <= seLon){
 
 				/* Inside sanitizationBox, but outside of speed limits */
 				if(sanitizationBox.has("minSpeed") && sanitizationBox.has("maxSpeed") && vehicledata.has("speed")){
