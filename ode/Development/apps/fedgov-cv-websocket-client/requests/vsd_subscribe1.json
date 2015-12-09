@@ -6,6 +6,6 @@ SUBSCRIBE:{
    "nwLon2":"-85.94707489013672",
    "seLat2":"36.4765153148293",
    "seLon2":"-74.53468322753906",
-   "resultEncoding":"hex"
+   "resultEncoding":"base64"
 }
 
