@@ -556,7 +556,7 @@ $( document ).ready(function() {
     ws.onopen = function (event) {
       setConnectionState(true, false);
       log(0, 'Info: WebSocket connection opened.');
-      intervalFunc = setInterval(updateClustersOnMap, 1000)
+      intervalFunc = setInterval(updateClustersOnMap, 3000)
       features = [];
       coordinateMappings = {};
     };
