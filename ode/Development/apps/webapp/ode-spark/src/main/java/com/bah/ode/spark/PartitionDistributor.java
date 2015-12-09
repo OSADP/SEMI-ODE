@@ -30,14 +30,16 @@ public class PartitionDistributor extends BaseDistributor implements
       
       while (partitionOfRecords.hasNext()) {
          Tuple2<String, Tuple2<String, String>> record = partitionOfRecords.next();
-         String key = record._1();
-         String className = JsonUtils.getJsonNode(record._2()._1(), "className").textValue();
-         if (className != null) {
-            OdeData payload = (OdeData) JsonUtils.fromJson(record._2()._1(), className);
-            OdeMetadata metadata = (OdeMetadata) JsonUtils.fromJson(record._2()._2(), OdeMetadata.class);
-            InternalDataMessage idm = new InternalDataMessage(key, payload, metadata);
-            producer.send(metadata.getOutputTopic().getName(), key, idm.toJson());
-         }         
+         if(record != null){ /* result of ODE-38 records that are removed are now null */
+            String key = record._1();
+            String className = JsonUtils.getJsonNode(record._2()._1(), "className").textValue();
+            if (className != null) {
+               OdeData payload = (OdeData) JsonUtils.fromJson(record._2()._1(), className);
+               OdeMetadata metadata = (OdeMetadata) JsonUtils.fromJson(record._2()._2(), OdeMetadata.class);
+               InternalDataMessage idm = new InternalDataMessage(key, payload, metadata);
+               producer.send(metadata.getOutputTopic().getName(), key, idm.toJson());
+            }
+         }
       }
       
       producerPool.value().checkIn(producer);
