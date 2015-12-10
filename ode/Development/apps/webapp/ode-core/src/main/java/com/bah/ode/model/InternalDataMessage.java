@@ -55,11 +55,11 @@ public class InternalDataMessage extends OdeObject {
       return this;
    }
    
-   public static ObjectNode createObjectNodeFromPayloadNode(JsonNode payloadNode) 
+   public static ObjectNode createObjectNodeFromPayload(JsonNode payload, JsonNode payloadType) 
          throws JsonProcessingException, IOException, ClassNotFoundException {
       ObjectNode idm = null;
-      if (payloadNode != null) {
-         idm = buildJsonObjectNode(payloadNode, payloadNode.get("className"));
+      if (payload != null && payloadType != null) {
+         idm = buildJsonObjectNode(payload, payloadType);
       }
       return idm;
    }
@@ -67,18 +67,19 @@ public class InternalDataMessage extends OdeObject {
          throws JsonProcessingException, IOException, ClassNotFoundException {
       ObjectNode idm = null;
       ObjectNode jsonObject = JsonUtils.toObjectNode(data);
-      JsonNode payloadNode = jsonObject.get("payload");
-      idm = createObjectNodeFromPayloadNode(payloadNode);
+      JsonNode payload = jsonObject.get("payload");
+      JsonNode payloadType = jsonObject.get("payloadType");
+      idm = createObjectNodeFromPayload(payload, payloadType);
       return idm;
    }
    
-   private static ObjectNode buildJsonObjectNode(JsonNode jsonObject, JsonNode className)
+   private static ObjectNode buildJsonObjectNode(JsonNode payload, JsonNode payloadType)
          throws ClassNotFoundException {
       ObjectNode idm;
       idm = JsonUtils.newNode();
-      idm.put("payloadType", OdeDataType.getByClassName(className.textValue()).getShortName());
+      idm.put("payloadType", payloadType.textValue());
       
-      HashMap<String, JsonNode> nodeProps = JsonUtils.jsonNodeToHashMap(jsonObject);
+      HashMap<String, JsonNode> nodeProps = JsonUtils.jsonNodeToHashMap(payload);
       
       idm.putObject("payload").setAll(nodeProps);
       

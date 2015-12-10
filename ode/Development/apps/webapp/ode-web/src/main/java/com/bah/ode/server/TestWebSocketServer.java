@@ -34,12 +34,12 @@ import com.bah.ode.asn.oss.semi.AdvisorySituationData;
 import com.bah.ode.asn.oss.semi.IntersectionSituationData;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
+import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeAdvisoryDataRaw;
 import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeIntersectionDataRaw;
-import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeStatus;
 import com.bah.ode.model.OdeStatus.Code;
 import com.bah.ode.model.OdeVehicleDataFlat;
@@ -152,73 +152,57 @@ public class TestWebSocketServer {
             if (testMgr != null) {
                ObjectNode odm = OdeDataMessage.jsonStringToObjectNode(message);
                if (odm != null) {
+                  JsonNode payload = odm.get("payload");
+                  JsonNode payloadTypeNode = odm.get("metadata").get("payloadType");
                   ObjectNode idm = 
-                        InternalDataMessage.createObjectNodeFromPayloadNode(odm.get("payload"));
+                        InternalDataMessage.createObjectNodeFromPayload(payload, payloadTypeNode);
                
-                  JsonNode payload = null;
-                  JsonNode jsonPayloadType = null;
-                  OdeDataType payloadType = null; 
-                  if (idm != null && 
-                        (payload = idm.get("payload")) != null &&
-                        (jsonPayloadType = idm.get("payloadType")) != null) {
-                     payloadType = OdeDataType.getByShortName(jsonPayloadType.textValue());
-                  } else { // look for className
-                     JsonNode classNameNode = idm.get("className");
-                     if (classNameNode != null) {
-                        String className = classNameNode.textValue();
-                        if (className != null) {
-                           payloadType = OdeDataType.getByClassName(className);
-                        } else {
+                  if (idm != null) {
+                     OdeDataType payloadType = OdeDataType.getByShortName(payloadTypeNode.textValue());
+                     
+                     if (payloadType != null) {
+                        switch (payloadType) {
+                        case VehicleData:
+                           OdeVehicleDataFlat ovdf = 
+                                 (OdeVehicleDataFlat) JsonUtils.fromJson(
+                                       payload.toString(), OdeVehicleDataFlat.class);
+                           sendThroughOde(ovdf, payloadType);
+                           break;
+         
+                        case IntersectionData:
+                           IntersectionSituationData isd = 
+                           (IntersectionSituationData) JsonUtils.fromJson(
+                                 payload.toString(), IntersectionSituationData.class);
+                           OdeIntersectionDataRaw oidr = new OdeIntersectionDataRaw(isd);
+                           sendThroughOde(oidr, payloadType);
+                           break;
+         
+                        case AdvisoryData:
+                           AdvisorySituationData asd = 
+                           (AdvisorySituationData) JsonUtils.fromJson(
+                                 payload.toString(), AdvisorySituationData.class);
+                            OdeAdvisoryDataRaw oadr = new OdeAdvisoryDataRaw(asd);
+                            sendThroughOde(oadr, payloadType);
+         
+                           break;
+         
+                        default:
                            status.setCode(Code.FAILURE);
-                           status.setMessage("Invalid className: " + classNameNode); 
+                           status.setMessage("Invalid payloadType: " + payloadTypeNode.textValue()); 
                            logger.error(status.getMessage());
                            WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
+                           break;
                         }
-                     } else { // unsupported message
+                     } else {
                         status.setCode(Code.FAILURE);
-                        status.setMessage("Unsupported message: " + message +
-                              "\npayload, metadata or className required."); 
+                        status.setMessage("Invalid payload type: " + payloadTypeNode); 
                         logger.error(status.getMessage());
                         WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
                      }
-                  }
-                  
-                  if (payloadType != null) {
-                     switch (payloadType) {
-                     case VehicleData:
-                        OdeVehicleDataFlat ovdf = 
-                              (OdeVehicleDataFlat) JsonUtils.fromJson(
-                                    payload.toString(), OdeVehicleDataFlat.class);
-                        sendThroughOde(payload, ovdf);
-                        break;
-      
-                     case IntersectionData:
-                        IntersectionSituationData isd = 
-                        (IntersectionSituationData) JsonUtils.fromJson(
-                              payload.toString(), IntersectionSituationData.class);
-                        OdeIntersectionDataRaw oidr = new OdeIntersectionDataRaw(isd);
-                        sendThroughOde(payload, oidr);
-                        break;
-      
-                     case AdvisoryData:
-                        AdvisorySituationData asd = 
-                        (AdvisorySituationData) JsonUtils.fromJson(
-                              payload.toString(), AdvisorySituationData.class);
-                         OdeAdvisoryDataRaw oadr = new OdeAdvisoryDataRaw(asd);
-                         sendThroughOde(payload, oadr);
-      
-                        break;
-      
-                     default:
-                        status.setCode(Code.FAILURE);
-                        status.setMessage("Invalid payloadType: " + jsonPayloadType.textValue()); 
-                        logger.error(status.getMessage());
-                        WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
-                        break;
-                     }
-                  } else {
+                  } else { // unsupported message
                      status.setCode(Code.FAILURE);
-                     status.setMessage("Invalid payload type: " + jsonPayloadType); 
+                     status.setMessage("Unsupported message: " + message +
+                           "\npayload, metadata or className required."); 
                      logger.error(status.getMessage());
                      WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
                   }
@@ -245,7 +229,13 @@ public class TestWebSocketServer {
       }
    }
 
-   public void sendThroughOde(JsonNode payload, OdeData odeData) throws IOException, ClassNotFoundException, DataProcessorException {
+   public void sendThroughOde(OdeData odeData, OdeDataType payloadType)
+         throws IOException, ClassNotFoundException, DataProcessorException {
+      // for backward compatibility, if payload did not contain className,
+      // set it here based on payloadType
+      if (odeData.getClassName() == null)
+         odeData.setClassName(payloadType.getClazz().getName());
+      
       InternalDataMessage idm = new InternalDataMessage();
       idm.setMetadata(testMgr.getMetadata());
       
