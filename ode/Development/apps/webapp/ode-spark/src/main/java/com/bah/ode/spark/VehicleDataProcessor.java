@@ -66,25 +66,25 @@ public class VehicleDataProcessor extends OdeObject {
 
          JavaPairDStream<String, String> payloadStream2 = unifiedStream
                .mapToPair(pam -> new Tuple2<String, String>(pam._1, 
-                     JsonUtils.getJsonNode(pam._2, "payload").toString()));
+                     JsonUtils.getJsonNode(pam._2, AppContext.PAYLOAD_STRING).toString()));
 
          // System.out.println("payloadStream2");
          // System.out.println("===============");
          // payloadStream2.cache().print(10);
 
          // JavaDStream<String> payloadStream =
-         // unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "payload"));
+         // unifiedStream.map(pam -> JsonUtils.getJson(pam._2, AppContext.PAYLOAD_STRING));
 
          JavaPairDStream<String, String> metadataStream2 = unifiedStream
                .mapToPair(pam -> new Tuple2<String, String>(pam._1, 
-                     JsonUtils.getJsonNode(pam._2, "metadata").toString()));
+                     JsonUtils.getJsonNode(pam._2, AppContext.METADATA_STRING).toString()));
 
          // System.out.println("metadataStream2");
          // System.out.println("===============");
          // metadataStream2.cache().print(10);
 
          // JavaDStream<String> metadataStream =
-         // unifiedStream.map(pam -> JsonUtils.getJson(pam._2, "metadata"));
+         // unifiedStream.map(pam -> JsonUtils.getJson(pam._2, AppContext.METADATA_STRING));
          //
          SparkConf conf = ssc.sparkContext().getConf();
 

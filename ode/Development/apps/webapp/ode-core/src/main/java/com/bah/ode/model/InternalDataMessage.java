@@ -3,6 +3,7 @@ package com.bah.ode.model;
 import java.io.IOException;
 import java.util.HashMap;
 
+import com.bah.ode.context.AppContext;
 import com.bah.ode.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,32 +13,35 @@ public class InternalDataMessage extends OdeObject {
    private static final long serialVersionUID = 9152243091714512036L;
    
    private String key;
-   private String payloadType;
    private OdeMsgPayload payload;
    private OdeMetadata metadata;
    
    public InternalDataMessage() {
       super();
    }
-   public InternalDataMessage(String key, OdeMsgPayload payload, OdeMetadata metadata) throws ClassNotFoundException {
+   public InternalDataMessage(String key, OdeMsgPayload payload, OdeMetadata metadata) {
       super();
       this.key = key;
       setMetadata(metadata);
       setPayload(payload);
    }
-   public String getPayloadType() {
-      return payloadType;
-   }
-   public InternalDataMessage setPayloadType(String payloadType) {
-      this.payloadType = payloadType;
-      return this;
+   public InternalDataMessage(String key, OdeMsgPayload payload) {
+      this(key, payload, new OdeMetadata()
+            .setKey(key)
+            .setPayloadType(
+                  payload.getDataType() != null ?
+                        payload.getDataType().getShortName() :
+                           OdeDataType.Unknown.getShortName()));
    }
    public OdeMsgPayload getPayload() {
       return payload;
    }
-   public InternalDataMessage setPayload(OdeMsgPayload payload) throws ClassNotFoundException {
+   public InternalDataMessage setPayload(OdeMsgPayload payload) {
       this.payload = payload;
-      this.payloadType = OdeDataType.getByClassName(payload.getClassName()).getShortName();
+      if (getMetadata() != null)
+         getMetadata().setPayloadType(payload.getDataType() != null ?
+               payload.getDataType().getShortName() :
+                  OdeDataType.Unknown.getShortName());
       return this;
    }
    public String getKey() {
@@ -55,33 +59,33 @@ public class InternalDataMessage extends OdeObject {
       return this;
    }
    
-   public static ObjectNode createObjectNodeFromPayload(JsonNode payload, JsonNode payloadType) 
-         throws JsonProcessingException, IOException, ClassNotFoundException {
+   public static ObjectNode createObjectNodeFromPayload(JsonNode payload, JsonNode metadata) 
+         throws JsonProcessingException, IOException {
       ObjectNode idm = null;
-      if (payload != null && payloadType != null) {
-         idm = buildJsonObjectNode(payload, payloadType);
+      if (payload != null && metadata != null) {
+         idm = buildJsonObjectNode(payload, metadata);
       }
       return idm;
    }
    public static ObjectNode jsonStringToObjectNode(String data)
-         throws JsonProcessingException, IOException, ClassNotFoundException {
+         throws JsonProcessingException, IOException {
       ObjectNode idm = null;
       ObjectNode jsonObject = JsonUtils.toObjectNode(data);
-      JsonNode payload = jsonObject.get("payload");
-      JsonNode payloadType = jsonObject.get("payloadType");
-      idm = createObjectNodeFromPayload(payload, payloadType);
+      JsonNode payload = jsonObject.get(AppContext.PAYLOAD_STRING);
+      JsonNode metadata = jsonObject.get(AppContext.METADATA_STRING);
+      idm = createObjectNodeFromPayload(payload, metadata);
       return idm;
    }
    
-   private static ObjectNode buildJsonObjectNode(JsonNode payload, JsonNode payloadType)
-         throws ClassNotFoundException {
+   private static ObjectNode buildJsonObjectNode(JsonNode payload, JsonNode metadata) {
       ObjectNode idm;
       idm = JsonUtils.newNode();
-      idm.put("payloadType", payloadType.textValue());
       
-      HashMap<String, JsonNode> nodeProps = JsonUtils.jsonNodeToHashMap(payload);
+      HashMap<String, JsonNode> metadataProps = JsonUtils.jsonNodeToHashMap(metadata);
+      idm.putObject(AppContext.METADATA_STRING).setAll(metadataProps);
       
-      idm.putObject("payload").setAll(nodeProps);
+      HashMap<String, JsonNode> payloadProps = JsonUtils.jsonNodeToHashMap(payload);
+      idm.putObject(AppContext.PAYLOAD_STRING).setAll(payloadProps);
       
       return idm;
    }
@@ -94,8 +98,6 @@ public class InternalDataMessage extends OdeObject {
       result = prime * result + ((key == null) ? 0 : key.hashCode());
       result = prime * result + ((metadata == null) ? 0 : metadata.hashCode());
       result = prime * result + ((payload == null) ? 0 : payload.hashCode());
-      result = prime * result
-            + ((payloadType == null) ? 0 : payloadType.hashCode());
       return result;
    }
    @Override
@@ -121,11 +123,6 @@ public class InternalDataMessage extends OdeObject {
          if (other.payload != null)
             return false;
       } else if (!payload.equals(other.payload))
-         return false;
-      if (payloadType == null) {
-         if (other.payloadType != null)
-            return false;
-      } else if (!payloadType.equals(other.payloadType))
          return false;
       return true;
    }

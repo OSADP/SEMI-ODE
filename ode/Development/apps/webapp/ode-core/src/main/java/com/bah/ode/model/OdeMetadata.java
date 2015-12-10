@@ -6,6 +6,7 @@ public class OdeMetadata extends OdeObject {
    private static final long serialVersionUID = 7892898609083630517L;
 
    private String  key;
+   private String payloadType;
    private MQTopic inputTopic;
    private MQTopic outputTopic;
    private OdeRequest odeRequest;
@@ -51,6 +52,15 @@ public class OdeMetadata extends OdeObject {
       this.odeRequest = odeRequest;
       return this;
    }
+   public String getPayloadType() {
+      return payloadType;
+   }
+
+   public OdeMetadata setPayloadType(String payloadType) {
+      this.payloadType = payloadType;
+      return this;
+   }
+
    @Override
    public int hashCode() {
       final int prime = 31;
@@ -62,6 +72,8 @@ public class OdeMetadata extends OdeObject {
             + ((odeRequest == null) ? 0 : odeRequest.hashCode());
       result = prime * result
             + ((outputTopic == null) ? 0 : outputTopic.hashCode());
+      result = prime * result
+            + ((payloadType == null) ? 0 : payloadType.hashCode());
       return result;
    }
    @Override
@@ -92,6 +104,11 @@ public class OdeMetadata extends OdeObject {
          if (other.outputTopic != null)
             return false;
       } else if (!outputTopic.equals(other.outputTopic))
+         return false;
+      if (payloadType == null) {
+         if (other.payloadType != null)
+            return false;
+      } else if (!payloadType.equals(other.payloadType))
          return false;
       return true;
    }

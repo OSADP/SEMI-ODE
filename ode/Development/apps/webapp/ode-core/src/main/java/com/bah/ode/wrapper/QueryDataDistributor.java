@@ -9,6 +9,7 @@ import javax.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.context.AppContext;
 import com.bah.ode.filter.OdeFilter;
 import com.bah.ode.filter.SpatialFilter;
 import com.bah.ode.filter.TemporalFilter;
@@ -51,48 +52,51 @@ public class QueryDataDistributor extends BaseDataDistributor {
       try {
          ObjectNode idm = InternalDataMessage.jsonStringToObjectNode(data);
          if (idm != null) {
-            JsonNode payloadNode = idm.get("payload");
+            JsonNode payloadNode = idm.get(AppContext.PAYLOAD_STRING);
             if (payloadNode != null) {
-               JsonNode payloadTypeNode = idm.get("payloadType");
-               if (payloadTypeNode != null) {
-                  OdeDataType payloadType = OdeDataType
-                        .getByShortName(payloadTypeNode.textValue());
-                  if (payloadType == OdeDataType.Control) {
-                     // OdeControlData payload = (OdeControlData) JsonUtils.fromObjectNode(payloadNode, OdeControlData.class);
-                     // Tried using the above but it doesn't work, so I'm forced
-                     // to use the string representation
-                     OdeControlData controlRec = (OdeControlData) JsonUtils
-                           .fromJson(payloadNode.toString(),
-                                 OdeControlData.class);
-                     if (controlRec.getTag() == OdeControlData.Tag.STOP) {
-                        stopRecord = controlRec;
-                        OdeDataMessage stopMsg = new OdeDataMessage(stopRecord);
-                        WebSocketUtils.send(clientSession, stopMsg.toJson());
-                     }
-                     logger.info("Control Message Received: {}", controlRec.toString());
-                  } else {
-                     OdeMsgPayload payload = (OdeMsgPayload) JsonUtils.fromJson(payloadNode
-                           .toString(), payloadNode.get("className").textValue());
-                     if (payload != null && 
-                           payload instanceof OdeFilterable && 
-                           recordCount < limit) {
-                        boolean allPassed = applyFilters((OdeFilterable)payload);
-
-                        if (allPassed) {
-                           recordCount++;
-                           OdeDataMessage dataMsg = new OdeDataMessage(payload);
-                           WebSocketUtils.send(clientSession, dataMsg.toJson());
-                        }
-                        if (recordCount >= limit) {
-                           OdeDataMessage stopMsg;
-                           if (stopRecord != null) {
-                              stopRecord.setSentRecordCount(recordCount);
-                           } else {
-                              stopRecord = new OdeControlData(OdeControlData.Tag.STOP)
-                                    .setSentRecordCount(recordCount);
-                           }
-                           stopMsg = new OdeDataMessage(stopRecord);
+               JsonNode metadata = idm.get(AppContext.METADATA_STRING);
+               if (metadata != null) {
+                  JsonNode payloadTypeNode = metadata.get(AppContext.PAYLOAD_TYPE_STRING);
+                  if (payloadTypeNode != null) {
+                     OdeDataType payloadType = OdeDataType
+                           .getByShortName(payloadTypeNode.textValue());
+                     if (payloadType == OdeDataType.Control) {
+                        // OdeControlData payload = (OdeControlData) JsonUtils.fromObjectNode(payloadNode, OdeControlData.class);
+                        // Tried using the above but it doesn't work, so I'm forced
+                        // to use the string representation
+                        OdeControlData controlRec = (OdeControlData) JsonUtils
+                              .fromJson(payloadNode.toString(),
+                                    OdeControlData.class);
+                        if (controlRec.getTag() == OdeControlData.Tag.STOP) {
+                           stopRecord = controlRec;
+                           OdeDataMessage stopMsg = new OdeDataMessage(stopRecord);
                            WebSocketUtils.send(clientSession, stopMsg.toJson());
+                        }
+                        logger.info("Control Message Received: {}", controlRec.toString());
+                     } else {
+                        OdeMsgPayload payload = (OdeMsgPayload) JsonUtils.fromJson(payloadNode
+                              .toString(), payloadType.getClazz());
+                        if (payload != null && 
+                              payload instanceof OdeFilterable && 
+                              recordCount < limit) {
+                           boolean allPassed = applyFilters((OdeFilterable)payload);
+
+                           if (allPassed) {
+                              recordCount++;
+                              OdeDataMessage dataMsg = new OdeDataMessage(payload);
+                              WebSocketUtils.send(clientSession, dataMsg.toJson());
+                           }
+                           if (recordCount >= limit) {
+                              OdeDataMessage stopMsg;
+                              if (stopRecord != null) {
+                                 stopRecord.setSentRecordCount(recordCount);
+                              } else {
+                                 stopRecord = new OdeControlData(OdeControlData.Tag.STOP)
+                                       .setSentRecordCount(recordCount);
+                              }
+                              stopMsg = new OdeDataMessage(stopRecord);
+                              WebSocketUtils.send(clientSession, stopMsg.toJson());
+                           }
                         }
                      }
                   }

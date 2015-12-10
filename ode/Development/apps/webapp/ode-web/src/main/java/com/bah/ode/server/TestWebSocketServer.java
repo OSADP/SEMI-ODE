@@ -152,8 +152,8 @@ public class TestWebSocketServer {
             if (testMgr != null) {
                ObjectNode odm = OdeDataMessage.jsonStringToObjectNode(message);
                if (odm != null) {
-                  JsonNode payload = odm.get("payload");
-                  JsonNode payloadTypeNode = odm.get("metadata").get("payloadType");
+                  JsonNode payload = odm.get(AppContext.PAYLOAD_STRING);
+                  JsonNode payloadTypeNode = odm.get(AppContext.METADATA_STRING).get(AppContext.PAYLOAD_TYPE_STRING);
                   ObjectNode idm = 
                         InternalDataMessage.createObjectNodeFromPayload(payload, payloadTypeNode);
                
@@ -230,11 +230,11 @@ public class TestWebSocketServer {
    }
 
    public void sendThroughOde(OdeData odeData, OdeDataType payloadType)
-         throws IOException, ClassNotFoundException, DataProcessorException {
+         throws IOException, DataProcessorException {
       // for backward compatibility, if payload did not contain className,
       // set it here based on payloadType
-      if (odeData.getClassName() == null)
-         odeData.setClassName(payloadType.getClazz().getName());
+      if (odeData.getDataType() == null || odeData.getDataType() == OdeDataType.Unknown)
+         odeData.setDataType(payloadType);
       
       InternalDataMessage idm = new InternalDataMessage();
       idm.setMetadata(testMgr.getMetadata());
