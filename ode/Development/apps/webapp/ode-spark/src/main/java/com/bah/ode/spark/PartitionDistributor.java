@@ -7,8 +7,10 @@ import org.apache.spark.broadcast.Broadcast;
 
 import scala.Tuple2;
 
+import com.bah.ode.context.AppContext;
 import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeData;
+import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQProducer;
@@ -32,9 +34,10 @@ public class PartitionDistributor extends BaseDistributor implements
          Tuple2<String, Tuple2<String, String>> record = partitionOfRecords.next();
          if(record != null){ /* result of ODE-38 records that are removed are now null */
             String key = record._1();
-            String className = JsonUtils.getJsonNode(record._2()._1(), "className").textValue();
-            if (className != null) {
-               OdeData payload = (OdeData) JsonUtils.fromJson(record._2()._1(), className);
+            String dataType = JsonUtils.getJsonNode(record._2()._1(), AppContext.DATA_TYPE_STRING).textValue();
+            if (dataType != null) {
+               OdeData payload = (OdeData) JsonUtils.fromJson(record._2()._1(), 
+                     OdeDataType.valueOf(dataType).getClazz());
                OdeMetadata metadata = (OdeMetadata) JsonUtils.fromJson(record._2()._2(), OdeMetadata.class);
                InternalDataMessage idm = new InternalDataMessage(key, payload, metadata);
                producer.send(metadata.getOutputTopic().getName(), key, idm.toJson());

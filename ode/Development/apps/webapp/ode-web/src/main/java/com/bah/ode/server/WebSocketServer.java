@@ -186,7 +186,6 @@ public class WebSocketServer {
          @PathParam("rtype") String rtype, @PathParam("dtype") String dtype) {
       String sessionId = session.getId();
       logger.info("Message Received on Session ID {}: {}", sessionId, message);
-      OdeDataType dataTypeRequested = OdeDataType.getByShortName(dtype);
       
       OdeStatus status = new OdeStatus();
       MQTopic outputTopic = null;

@@ -1,11 +1,5 @@
 package com.bah.ode.wrapper;
 
-import kafka.consumer.Consumer;
-import kafka.consumer.ConsumerConfig;
-import kafka.consumer.KafkaStream;
-import kafka.javaapi.consumer.ConsumerConnector;
-import kafka.serializer.Decoder;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +13,11 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.model.OdeMetadata;
+import kafka.consumer.Consumer;
+import kafka.consumer.ConsumerConfig;
+import kafka.consumer.KafkaStream;
+import kafka.javaapi.consumer.ConsumerConnector;
+import kafka.serializer.Decoder;
 
 public class MQConsumerGroup<K, V, R> {
    private static Logger logger = LoggerFactory

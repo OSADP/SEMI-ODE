@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.context.AppContext;
 import com.bah.ode.util.JsonUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -44,11 +45,11 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 ///////////////////////////////////////////////////////////////////////////////
 //         ObjectNode bundleObject = JsonUtils.toObjectNode(msg.toString());
 //
-//         JsonNode payloadNode = bundleObject.get("payload");
+//         JsonNode payloadNode = bundleObject.get(AppContext.PAYLOAD_STRING);
 //         if (payloadNode == null) {
 //            processor.process(msg);
 //         } else {
-//            JsonNode serialIdNode = payloadNode.get("serialId");
+//            JsonNode serialIdNode = payloadNode.get(AppContext.SERIAL_ID_STRING);
 //            if (serialIdNode == null) {
 //               processor.process(msg);
 //            } else {
@@ -119,7 +120,7 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
             for (int i = 0; i < vList.size(); i++) {
                for (V msg : vList) {
                   ObjectNode vObject = JsonUtils.toObjectNode(msg.toString());
-                  String sId = vObject.get("payload").get("serialId").asText();
+                  String sId = vObject.get(AppContext.PAYLOAD_STRING).get(AppContext.SERIAL_ID_STRING).asText();
                   int placing = Integer
                         .parseInt(sId.substring(sId.length() - 1));
                   if (placing == i) {

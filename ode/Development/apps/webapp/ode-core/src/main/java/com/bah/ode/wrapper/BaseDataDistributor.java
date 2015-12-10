@@ -8,6 +8,7 @@ import javax.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.context.AppContext;
 import com.bah.ode.filter.OdeFilter;
 import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeDataMessage;
@@ -43,23 +44,29 @@ public abstract class BaseDataDistributor implements DataProcessor<String, Strin
        try {
           ObjectNode idm = InternalDataMessage.jsonStringToObjectNode(data);
           if (idm != null) {
-             JsonNode payloadNode = idm.get("payload");
+             JsonNode payloadNode = idm.get(AppContext.PAYLOAD_STRING);
              if (payloadNode != null) {
-                JsonNode payloadTypeNode = idm.get("payloadType");
-                if (payloadTypeNode != null && OdeDataType.getByShortName(payloadTypeNode.textValue()) != null) {
-                   OdeMsgPayload payload = (OdeMsgPayload) JsonUtils.fromJson(payloadNode
-                         .toString(), payloadNode.get("className").textValue());
-                   if (payload != null && payload instanceof OdeFilterable) {
-                      boolean allPassed = applyFilters((OdeFilterable)payload);
-
-                      if (allPassed) {
-                         OdeDataMessage dataMsg = new OdeDataMessage(payload);
-                         WebSocketUtils.send(clientSession, dataMsg.toJson());
+                JsonNode payloadTypeNode = idm.get(AppContext.METADATA_STRING).get(AppContext.PAYLOAD_TYPE_STRING);
+                if (payloadTypeNode != null) {
+                   OdeDataType payloadType = OdeDataType.getByShortName(payloadTypeNode.textValue());
+                   if (payloadType != null) {
+                      OdeMsgPayload payload = (OdeMsgPayload) JsonUtils.fromJson(payloadNode
+                            .toString(), payloadType.getClazz());
+                      if (payload != null && payload instanceof OdeFilterable) {
+                         boolean allPassed = applyFilters((OdeFilterable)payload);
+   
+                         if (allPassed) {
+                            OdeDataMessage dataMsg = new OdeDataMessage(payload);
+                            WebSocketUtils.send(clientSession, dataMsg.toJson());
+                         }
                       }
+                   } else {
+                      throw new DataProcessorException(
+                            "Unsupported payload type: " + payloadTypeNode);
                    }
                 } else {
                    throw new DataProcessorException(
-                         "Unsupported payload type: " + payloadTypeNode);
+                         "Unsupported payload type: " + payloadNode);
                 }
              }
           }

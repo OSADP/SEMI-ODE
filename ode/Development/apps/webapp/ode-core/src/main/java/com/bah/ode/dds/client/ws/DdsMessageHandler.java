@@ -34,7 +34,6 @@ import com.bah.ode.model.OdeAdvisoryDataRaw;
 import com.bah.ode.model.OdeControlData;
 import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
-import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeFullMessage;
 import com.bah.ode.model.OdeIntersectionDataRaw;
 import com.bah.ode.model.OdeMetadata;
@@ -179,11 +178,10 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    
    private void sendVehicleData(InternalDataMessage idm, String topicName,
          OdeVehicleDataFlat ovdf)
-               throws ClassNotFoundException, DataProcessorException {
+               throws DataProcessorException {
       idm.setKey(ovdf.getSerialId());
       idm.getMetadata().setKey(idm.getKey());
       idm.setPayload(ovdf);
-      idm.setPayloadType(OdeDataType.VehicleData.getShortName());
       if (!AppContext.loopbackTest()) {
          producer.send(topicName, idm.getKey(), idm.toJson());
       } else {

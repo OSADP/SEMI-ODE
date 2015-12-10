@@ -61,16 +61,17 @@ public class JsonUtils {
       Class<?> clazz = Class.forName(className);
       return gson.fromJson(s, clazz);
    }
-   
-   public static Object fromObjectNode(JsonNode s, Class<?> clazz) {
-      Object o = null;
-      try {
-         o = mapper.treeToValue(s, clazz);
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
-      return o;
-   }
+
+// This method does not seem to work so commenting it out.
+//   public static Object fromObjectNode(JsonNode s, Class<?> clazz) {
+//      Object o = null;
+//      try {
+//         o = mapper.treeToValue(s, clazz);
+//      } catch (IOException e) {
+//         e.printStackTrace();
+//      }
+//      return o;
+//   }
    
    public static String newJson(String key, Object value) {
    	return newObjectNode(key, value).toString();

@@ -16,30 +16,39 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OdeMsgPayload extends OdeMessage {
    private static final long serialVersionUID = -7711340868799607662L;
-   private String  className;
+
+   private static Logger logger = LoggerFactory.getLogger(OdeMsgPayload.class);
+
+   private OdeDataType  dataType;
 
    public OdeMsgPayload() {
       super();
-      this.className = this.getClass().getName();
+      try {
+         this.dataType = OdeDataType.getByClassName(this.getClass().getName());
+      } catch (ClassNotFoundException e) {
+         logger.error("Unable to determine data type.", e);
+         this.dataType = OdeDataType.Unknown;
+      }
    }
 
-   public String getClassName() {
-      return className;
+   public OdeDataType getDataType() {
+      return dataType;
    }
 
-   public void setClassName(String className) {
-      this.className = className;
+   public void setDataType(OdeDataType dataType) {
+      this.dataType = dataType;
    }
 
    @Override
    public int hashCode() {
       final int prime = 31;
       int result = super.hashCode();
-      result = prime * result
-            + ((className == null) ? 0 : className.hashCode());
+      result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
       return result;
    }
 
@@ -52,10 +61,7 @@ public class OdeMsgPayload extends OdeMessage {
       if (getClass() != obj.getClass())
          return false;
       OdeMsgPayload other = (OdeMsgPayload) obj;
-      if (className == null) {
-         if (other.className != null)
-            return false;
-      } else if (!className.equals(other.className))
+      if (dataType != other.dataType)
          return false;
       return true;
    }

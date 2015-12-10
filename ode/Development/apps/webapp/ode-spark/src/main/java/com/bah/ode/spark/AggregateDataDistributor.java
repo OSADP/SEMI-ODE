@@ -43,8 +43,7 @@ public class AggregateDataDistributor extends BaseDistributor
 
          InternalDataMessage dm = new InternalDataMessage(
                record.getString(0),
-               payload,
-               null);
+               payload);
          
          producer.send(outputTopic, tempId, dm.toJson());
       }

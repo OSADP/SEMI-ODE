@@ -2,6 +2,7 @@ package com.bah.ode.model;
 
 import java.io.IOException;
 
+import com.bah.ode.context.AppContext;
 import com.bah.ode.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -52,25 +53,24 @@ public class OdeDataMessage extends OdeMessage {
     * @return ObjectNode representation of the given OdeDataMessage object
     * @throws JsonProcessingException
     * @throws IOException
-    * @throws ClassNotFoundException
     */
    public static ObjectNode jsonStringToObjectNode(String data)
-         throws JsonProcessingException, IOException, ClassNotFoundException {
+         throws JsonProcessingException, IOException {
       ObjectNode dm = null;
       ObjectNode jsonObject = JsonUtils.toObjectNode(data);
-      JsonNode payload = jsonObject.get("payload");
-      JsonNode metadata = jsonObject.get("metadata");
+      JsonNode payload = jsonObject.get(AppContext.PAYLOAD_STRING);
+      JsonNode metadata = jsonObject.get(AppContext.METADATA_STRING);
       if (payload != null && metadata != null) {
-         JsonNode payloadType = metadata.get("payloadType");
+         JsonNode payloadType = metadata.get(AppContext.PAYLOAD_TYPE_STRING);
          if (payloadType != null)
             dm = jsonObject;
       } else {
-         JsonNode className = jsonObject.get("className");
-         if (className != null) {
+         JsonNode dataType = jsonObject.get(AppContext.DATA_TYPE_STRING);
+         if (dataType != null) {
             dm = JsonUtils.newNode();
-            dm.putObject("metadata")
-                  .put("payloadType", OdeDataType.getByClassName(className.textValue()).getShortName());
-            dm.putObject("payload").setAll(jsonObject);
+            dm.putObject(AppContext.METADATA_STRING)
+                  .put(AppContext.PAYLOAD_TYPE_STRING, OdeDataType.valueOf(dataType.textValue()).getShortName());
+            dm.putObject(AppContext.PAYLOAD_STRING).setAll(jsonObject);
          }
       }
       return dm;

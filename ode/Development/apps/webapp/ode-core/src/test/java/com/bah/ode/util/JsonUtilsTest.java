@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeVehicleDataFlat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -59,7 +60,7 @@ public class JsonUtilsTest extends TestCase {
    public void testPutObject() {
       ObjectNode dm = JsonUtils.newNode();
       dm.putObject("metadata");
-      dm.putObject("payload").setAll(JsonUtils.newObjectNode("key1", "value1"));
+      dm.putObject(AppContext.PAYLOAD_STRING).setAll(JsonUtils.newObjectNode("key1", "value1"));
       assertEquals("{\"metadata\":{},\"payload\":{\"key1\":value1}}", dm.toString());
    }
    
@@ -69,8 +70,8 @@ public class JsonUtilsTest extends TestCase {
       assertNotNull(ovdf);
    }
    
-   public void testJsonNodeToHashMap() throws ClassNotFoundException {
-      JsonNode jsonNode = JsonUtils.getJsonNode(ODM, "payload");
+   public void testJsonNodeToHashMap() {
+      JsonNode jsonNode = JsonUtils.getJsonNode(ODM, AppContext.PAYLOAD_STRING);
       HashMap<String, JsonNode> hashMap = JsonUtils.jsonNodeToHashMap(jsonNode);
       Iterator<Entry<String, JsonNode>> fieldsIter = jsonNode.fields();
       
