@@ -1511,13 +1511,15 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
       OdeRoadSegment minSeg = null;
       for (OdeRoadSegment seg : roadSegments) {
          Line2D l = seg.toLine2D(seg);
-         Point2D p = GeoUtils.latLngToMap(latitude.doubleValue(), longitude.doubleValue());
-         if (GeoUtils.isPointInBounds(p, l, tolerance)) {
-            double dist = GeoUtils.distanceToLine(l, p);
-            if (dist <= tolerance) {
-               if (dist < minDist) {
-                  minDist = dist;
-                  minSeg = seg;
+         if (latitude != null && longitude != null) {
+            Point2D p = GeoUtils.latLngToMap(latitude.doubleValue(), longitude.doubleValue());
+            if (GeoUtils.isPointInBounds(p, l, tolerance)) {
+               double dist = GeoUtils.distanceToLine(l, p);
+               if (dist <= tolerance) {
+                  if (dist < minDist) {
+                     minDist = dist;
+                     minSeg = seg;
+                  }
                }
             }
          }

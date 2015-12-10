@@ -58,29 +58,23 @@ public class OdeDataMessage extends OdeMessage {
          throws JsonProcessingException, IOException, ClassNotFoundException {
       ObjectNode dm = null;
       ObjectNode jsonObject = JsonUtils.toObjectNode(data);
-      JsonNode className = jsonObject.get("className");
-      if (className != null) {
-         dm = buildJsonObjectNode(jsonObject, className);
+      JsonNode payload = jsonObject.get("payload");
+      JsonNode metadata = jsonObject.get("metadata");
+      if (payload != null && metadata != null) {
+         JsonNode payloadType = metadata.get("payloadType");
+         if (payloadType != null)
+            dm = jsonObject;
       } else {
-         JsonNode payload = jsonObject.get("payload");
-         if (payload != null) {
-            ObjectNode p = JsonUtils.toObjectNode(payload.toString());
-            dm = buildJsonObjectNode(p, p.get("className"));
+         JsonNode className = jsonObject.get("className");
+         if (className != null) {
+            dm = JsonUtils.newNode();
+            dm.putObject("metadata")
+                  .put("payloadType", OdeDataType.getByClassName(className.textValue()).getShortName());
+            dm.putObject("payload").setAll(jsonObject);
          }
       }
       return dm;
    }
-
-   private static ObjectNode buildJsonObjectNode(ObjectNode jsonObject, JsonNode className)
-         throws ClassNotFoundException {
-      ObjectNode dm;
-      dm = JsonUtils.newNode();
-      dm.putObject("metadata")
-            .put("payloadType", OdeDataType.getByClassName(className.textValue()).getShortName());
-      dm.putObject("payload").setAll(jsonObject);
-      return dm;
-   }
-
 
    @Override
    public int hashCode() {
