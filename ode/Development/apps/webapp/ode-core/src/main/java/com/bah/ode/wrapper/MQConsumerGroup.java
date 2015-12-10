@@ -26,21 +26,21 @@ public class MQConsumerGroup<K, V, R> {
          .getLogger(MQConsumerGroup.class);
 
    private ConsumerConnector consumerConnector;
-   private OdeMetadata metadata;
+   private MQTopic topic;
    private ExecutorService executor;
    private DataProcessor<V, R> processor;
    private Decoder<K> keyDecoder;
    private Decoder<V> valueDecoder;
 
    public MQConsumerGroup(String zookeepers, String a_groupId, 
-         OdeMetadata metadata, Decoder<K> keyDecoder,
+         MQTopic topic, Decoder<K> keyDecoder,
          Decoder<V> valueDecoder,
          DataProcessor<V, R> a_processor) {
       
       consumerConnector = Consumer.createJavaConsumerConnector(
             createConsumerConfig(zookeepers, a_groupId));
       
-      this.metadata = metadata;
+      this.topic = topic;
       this.keyDecoder = keyDecoder;
       this.valueDecoder = valueDecoder;
       this.processor = a_processor;
@@ -62,15 +62,14 @@ public class MQConsumerGroup<K, V, R> {
 
    public void consume() throws InterruptedException, ExecutionException {
       Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
-      MQTopic outputTopic = metadata.getOutputTopic();
-      if (outputTopic != null) {
-         topicCountMap.put(outputTopic.getName(), outputTopic.getPartitions());
+      if (topic != null) {
+         topicCountMap.put(topic.getName(), topic.getPartitions());
          Map<String, List<KafkaStream<K, V>>> consumerMap = consumerConnector
                .createMessageStreams(topicCountMap, keyDecoder, valueDecoder);
-         List<KafkaStream<K, V>> streams = consumerMap.get(outputTopic.getName());
+         List<KafkaStream<K, V>> streams = consumerMap.get(topic.getName());
          // now launch all the threads
          //
-         executor = Executors.newFixedThreadPool(outputTopic.getPartitions());
+         executor = Executors.newFixedThreadPool(topic.getPartitions());
          // now create an object to consume the messages
          //
          int threadNumber = 0;
@@ -95,12 +94,12 @@ public class MQConsumerGroup<K, V, R> {
       return new ConsumerConfig(props);
    }
 
-   public OdeMetadata getMetadata() {
-      return metadata;
+   public MQTopic getMetadata() {
+      return topic;
    }
 
-   public void setMetadata(OdeMetadata metadata) {
-      this.metadata = metadata;
+   public void setMetadata(MQTopic topic) {
+      this.topic = topic;
    }
 
 }

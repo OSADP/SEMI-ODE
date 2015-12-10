@@ -107,7 +107,8 @@ public class OdeRequestManager {
           */
          return true;
       } else {
-         if (dataType == OdeDataType.VehicleData) {
+         if (dataType == OdeDataType.VehicleData ||
+               dataType == OdeDataType.AggregateData) {
             return false;
          } else {
             return true;

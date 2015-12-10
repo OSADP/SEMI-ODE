@@ -191,13 +191,7 @@ public class WebSocketServer {
       OdeStatus status = new OdeStatus();
       MQTopic outputTopic = null;
       try {
-         if (dataTypeRequested == OdeDataType.AggregateData) {
-            odeRequest = OdeRequestManager.buildOdeRequest(rtype, 
-                  OdeDataType.VehicleData.getShortName(), message);
-         }
-         else {
-            odeRequest = OdeRequestManager.buildOdeRequest(rtype, dtype, message);
-         }
+         odeRequest = OdeRequestManager.buildOdeRequest(rtype, dtype, message);
 
          /*
           * Since queries are finite streams, each query should be treated as
@@ -220,8 +214,8 @@ public class WebSocketServer {
             
             outputTopic = OdeRequestManager.getOrCreateTopic(requestId);
             
-            OdeMetadata metadata = createMetadata(dataTypeRequested,
-                  outputTopic, requestId);
+            OdeMetadata metadata = new OdeMetadata(
+                  requestId, outputTopic, outputTopic, odeRequest);
             
             BaseDataDistributor processor = launchNewDistributor(session, metadata);
             
@@ -275,8 +269,9 @@ public class WebSocketServer {
                   logger.info(status.getMessage());
                }
             } else {
-               OdeMetadata metadata = createMetadata(dataTypeRequested,
-                     outputTopic, requestId);
+               OdeMetadata metadata = new OdeMetadata(
+                     requestId, outputTopic, outputTopic, odeRequest);
+               
                launchNewDistributor(session, metadata);
                OdeRequestManager.addSubscriber(requestId, odeRequest.getDataType());
                status.setMessage(String.format("Tapped into existing request %s using a new distributor", requestId));
@@ -302,27 +297,6 @@ public class WebSocketServer {
             logger.error("Error sending error message back to client", e);
          }
       }
-   }
-   public OdeMetadata createMetadata(OdeDataType dataTypeRequested,
-         MQTopic outputTopic, String requestId) {
-      OdeMetadata metadata;
-      if (dataTypeRequested == OdeDataType.AggregateData) {
-         MQTopic inputTopic = MQTopic.create(
-               AppContext.getInstance().getParam(
-               AppContext.DATA_PROCESSOR_INPUT_TOPIC), 
-               MQTopic.defaultPartitions());
-         MQTopic aggregatesTopic = MQTopic.create(
-               AppContext.getInstance().getParam(
-                     AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC), 
-                     MQTopic.defaultPartitions());
-         
-         metadata = new OdeMetadata(requestId, inputTopic, 
-               aggregatesTopic, odeRequest);
-      } else {
-         metadata = new OdeMetadata(requestId, outputTopic, 
-               outputTopic, odeRequest);
-      }
-      return metadata;
    }
 
    /**
