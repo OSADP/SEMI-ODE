@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
+import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.wrapper.BaseDataDistributor;
 import com.bah.ode.wrapper.MQConsumerGroup;
@@ -45,12 +46,23 @@ public class OdeDataDistributor implements Runnable {
       this.metadata = metadata;
       this.groupId = clientSession.getId();
       this.distributor = processor;
+      //ODE-169 - Aggregate Query Data Results also contain Vehicle Data Records
+      MQTopic consumerTopic = null;
+      if (this.metadata.getOdeRequest().getDataType() == OdeDataType.AggregateData) {
+         consumerTopic = MQTopic.create(
+               AppContext.getInstance().getParam(
+                     AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC), 
+                     MQTopic.defaultPartitions());
+      }
+      else {
+         consumerTopic = this.metadata.getOutputTopic();
+      }
 
       if (!AppContext.loopbackTest()) {
          this.consumerGroup = new MQConsumerGroup<String, String, String>(
                appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
                this.groupId,
-               this.metadata,
+               consumerTopic,
                new StringDecoder(null),
                new StringDecoder(null),
                processor);
@@ -72,8 +84,6 @@ public class OdeDataDistributor implements Runnable {
 
    public OdeDataDistributor setMetadata(OdeMetadata metadata) {
       this.metadata = metadata;
-      if (!AppContext.loopbackTest())
-         consumerGroup.setMetadata(this.metadata);
       return this;
    }
 
