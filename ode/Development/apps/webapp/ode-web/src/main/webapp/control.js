@@ -171,7 +171,7 @@ $( document ).ready(function() {
       if(maxFeatures > newMax){
         features = features.splice(0,newMax);
       }
-      
+
       if(featureCount > newMax)
         featureCount = 0;
 
@@ -556,7 +556,7 @@ $( document ).ready(function() {
     ws.onopen = function (event) {
       setConnectionState(true, false);
       log(0, 'Info: WebSocket connection opened.');
-      intervalFunc = setInterval(updateClustersOnMap, 5000)
+      intervalFunc = setInterval(updateClustersOnMap, 3000)
       features = [];
       coordinateMappings = {};
     };
@@ -707,8 +707,14 @@ function log(consoleid, msgOrData) {
   p.style.wordWrap = 'break-word';
   p.appendChild(document.createTextNode(msgOrData));
   console.appendChild(p);
-  while (console.childNodes.length > 10000) {
-    console.removeChild(console.firstChild);
+  if((dataSource == 0 || dataSource == 3)){
+    while (console.childNodes.length > 10) {
+      console.removeChild(console.firstChild);
+    }
+  }else{
+    while (console.childNodes.length > 10000) {
+      console.removeChild(console.firstChild);
+    }
   }
   console.scrollTop = console.scrollHeight;
 }
@@ -929,12 +935,22 @@ function updateClusters(str){
 
       var vFeature = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat([lon, lat])));
       if(coordinateMappings[vFeature.getGeometry().getCoordinates()] === undefined || coordinateMappings[vFeature.getGeometry().getCoordinates()] === null){
-        if((dataSource == 0 || dataSource == 3) && features.length >= maxFeatures){
+        if((dataSource == 0 || dataSource == 3) && featureCount >= maxFeatures){
           featureCount = 0;
+          if(features[featureCount] != undefined){
+            coordinateMappings[features[featureCount].getGeometry().getCoordinates()] = null;
+          }else if(features[featureCount] != null){
+            coordinateMappings[features[featureCount].getGeometry().getCoordinates()] = null;
+          }
+          coordinateMappings[vFeature.getGeometry().getCoordinates()] = [titleHtml];
           features[featureCount] = (vFeature);
           featureCount ++;
-          coordinateMappings[vFeature.getGeometry().getCoordinates()] = [titleHtml];
         }else{
+          if(features[featureCount] != undefined){
+            coordinateMappings[features[featureCount].getGeometry().getCoordinates()] = null;
+          }else if(features[featureCount] != null){
+            coordinateMappings[features[featureCount].getGeometry().getCoordinates()] = null;
+          }
           features[featureCount] = (vFeature);
           featureCount ++;
           coordinateMappings[vFeature.getGeometry().getCoordinates()] = [titleHtml];
