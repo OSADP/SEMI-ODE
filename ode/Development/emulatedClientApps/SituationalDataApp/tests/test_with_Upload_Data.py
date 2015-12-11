@@ -98,52 +98,51 @@ class ODE_Validation_With_Test_Upload(unittest.TestCase):
                     self.assertEqual(msg.get_payload_value('code'), 'SUCCESS')
                     time.sleep(2)
 
-                if msg.get_payload_type() in dataType.VehicleData:
-                    self.assertEqual(msg.get_payload_value('dataType', None), 'veh')
+                # if msg.get_payload_type() in dataType.VehicleData:
+                #     self.assertEqual(msg.get_payload_value('dataType', None), 'veh')
 
-                    try:
-                        # self.assertTrue(testRunnerHelper.validate_location(msg.payload, self.config),
-                        #                 msg="Error Validating Spatial Region in  Record SerialID: {2}  Lat: {0} Long: {1}".format(
-                        #                     msg.get_payload_value("latitude"), msg.get_payload_value("longitude"),
-                        #                     msg.get_payload_value("serialId")))
+                try:
+                    # self.assertTrue(testRunnerHelper.validate_location(msg.payload, self.config),
+                    #                 msg="Error Validating Spatial Region in  Record SerialID: {2}  Lat: {0} Long: {1}".format(
+                    #                     msg.get_payload_value("latitude"), msg.get_payload_value("longitude"),
+                    #                     msg.get_payload_value("serialId")))
 
-                        # Continue testing if record is within Spatial region
-                        key = 'serialId'
+                    # Continue testing if record is within Spatial region
+                    key = 'serialId'
 
-                        # Should be one and only one record in the expected result file that matches with the
-                        # output from the ode.
-                        expected_record = [r for r in valid_ode_output if r[key] == msg.payload[key]]
+                    # Should be one and only one record in the expected result file that matches with the
+                    # output from the ode.
+                    expected_record = [r for r in valid_ode_output if r[key] == msg.payload[key]]
 
-                        self.assertEquals(len(expected_record), 1,
-                                          msg="Could not find record with serial Id {} in expected results file".format(
-                                              msg.get_payload_value('serialId')))
+                    self.assertEquals(len(expected_record), 1,
+                                      msg="Could not find record with serial Id {} in expected results file".format(
+                                          msg.get_payload_value('serialId')))
 
-                        # Filter records to remove empty Key/Value pairs prior to evaluation
-                        actual_record = {k: v for k, v in msg.payload.items() if v != ""}
-                        filtered_expected_record = {k: v for k, v in expected_record[0].items() if v != ""}
+                    # Filter records to remove empty Key/Value pairs prior to evaluation
+                    actual_record = {k: v for k, v in msg.payload.items() if v != ""}
+                    filtered_expected_record = {k: v for k, v in expected_record[0].items() if v != ""}
 
-                        if expected_record is not None:
-                            record_delta = set(filtered_expected_record.items()) - set(actual_record.items())
-                            actual_record_delta = set(actual_record.items()) - set(filtered_expected_record.items())
+                    if expected_record is not None:
+                        record_delta = set(filtered_expected_record.items()) - set(actual_record.items())
+                        actual_record_delta = set(actual_record.items()) - set(filtered_expected_record.items())
 
-                            self.assertTrue((len(record_delta) == 0 or len(actual_record_delta) == 0),
-                                            msg="No matching record found. Found similar record Serial Id: {0}.\nExpected: {1}\nActual:   {2}".format(
-                                                msg.get_payload_value('serialId'), sorted(record_delta),
-                                                sorted(actual_record_delta)))
-                            record_count += 1
-                    except AssertionError as e:
-                        self.logger.warn(e.message)
+                        self.assertTrue((len(record_delta) == 0 or len(actual_record_delta) == 0),
+                                        msg="No matching record found. Found similar record Serial Id: {0}.\nExpected: {1}\nActual:   {2}".format(
+                                            msg.get_payload_value('serialId'), sorted(record_delta),
+                                            sorted(actual_record_delta)))
+                        record_count += 1
+                except AssertionError as e:
+                    self.logger.warn(e.message)
 
             time.sleep(.5)
 
         self.logger.info("Valid number of vehicle records received: %d", record_count)
         self.logger.info("Total number of records receive %d", total_records_received)
+        self.logger.info("Total number of expected records %d", len(valid_ode_output))
 
-        # self.assertEquals(record_count, len(valid_ode_output),
-        #                   msg="Did not receive {} valid records".format(len(valid_ode_output)))
-        self.assertEquals(total_records_received, len(valid_ode_output),
+        self.assertEquals(record_count, len(valid_ode_output),
                           msg="Received {} more(less) record(s) than expected ".format(
-                              total_records_received - len(valid_ode_output)))
+                              record_count - len(valid_ode_output)))
 
 
 
