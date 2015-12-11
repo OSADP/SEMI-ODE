@@ -589,6 +589,10 @@ $( document ).ready(function() {
       ws.close();
       ws = null;
     }
+    featureCount = 0;
+    features = [];
+    coordinateMappings = {};
+    clearInterval(intervalFunc);
     setConnectionState(false, false);
     setButtonHoverOver('send',false);
   }

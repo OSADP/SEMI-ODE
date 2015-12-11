@@ -144,7 +144,7 @@ public class VehicleDataProcessor extends OdeObject {
 
              List<String> sanitizationData = sanitizationFrame.toJavaRDD()
                    .map(new DataFrameMapper(sanitizationFrame.columns())).toArray();
-
+         
              withRoadSegment =  withRoadSegment.mapToPair(new RecordSanitizer(sanitizationData));
 
          }
@@ -155,11 +155,6 @@ public class VehicleDataProcessor extends OdeObject {
          windowedPnM.foreachRDD(new Aggregator(producerPool, ssc
                .sparkContext().getConf()
                .get("spark.topics."+AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC)));
-
-         /*
-          * Vehicle data Distribution
-          */
-         withRoadSegment.foreachRDD(new PayloadDistributor(producerPool));
             
          /*
           * Weather data integration
@@ -201,6 +196,12 @@ public class VehicleDataProcessor extends OdeObject {
                   withRoadSegment.mapToPair(new WeatherIntegrator(weatherData));
 
             withWeatherData.foreachRDD(new PayloadDistributor(producerPool));
+         }else{
+        	 
+             /*
+              * Vehicle data Distribution
+              */
+             withRoadSegment.foreachRDD(new PayloadDistributor(producerPool));
          }
       } catch (Exception e) {
          logger.info("Error in Spark Job {}", e);

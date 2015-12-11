@@ -55,7 +55,7 @@ public class RecordSanitizer implements  PairFunction<Tuple2<String, Tuple2<Stri
 					}
 				}
 
-				/* Inside a sanitizationBox, but meets groupID exception*/
+				/* Inside a sanitizationBox, but meets groupID exception */
 				if(sanitizationBox.has("exceptions") && vehicledata.has("groupId")){
 					String[] groupIDs = sanitizationBox.get("exceptions").asText().split(",");
 					String record_groupID = vehicledata.get("groupId").asText();
@@ -67,8 +67,9 @@ public class RecordSanitizer implements  PairFunction<Tuple2<String, Tuple2<Stri
 				}
 
 				/* Should not be returned because it meets the bounding box record */
-				if(!excepted)
-					return null;
+				if(!excepted){
+					return new Tuple2<String, Tuple2<String, String>>("sanitized", new Tuple2<String,String>(vehicledata.toString(), null));
+				}
 			}
 		}
 

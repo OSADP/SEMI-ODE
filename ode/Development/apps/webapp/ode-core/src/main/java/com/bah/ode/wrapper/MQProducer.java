@@ -61,6 +61,10 @@ public class MQProducer<K, V> {
        producer.send(data);
     }
     
+    public void logSanitizedData(String msg){
+    	logger.info("SANITIZED MSG: " + msg);
+    }
+    
    public void shutDown() {
       producer.close();
       logger.info("Producer Closed");
