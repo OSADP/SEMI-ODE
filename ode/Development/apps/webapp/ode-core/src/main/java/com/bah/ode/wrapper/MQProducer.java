@@ -96,6 +96,7 @@ public class MQProducer<K, V> {
     }
 
    public void shutDown() {
+	  out.close();
       producer.close();
       logger.info("Producer Closed");
    }
