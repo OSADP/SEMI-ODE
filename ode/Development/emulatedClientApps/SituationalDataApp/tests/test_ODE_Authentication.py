@@ -282,4 +282,4 @@ class ODE_Streaming_API_Authentication_Tests(unittest.TestCase):
                     break_loop = True
 
 if __name__ == "__main__":
-    unittest.main()  # run all Tes
+    unittest.main()  # run all Tests
