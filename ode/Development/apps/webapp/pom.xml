@@ -22,8 +22,8 @@
    <properties>
       <!-- Generic properties -->
       <java.home>${env.JAVA_HOME}</java.home>
-	<!-- Mac OSX home -->
-	<!--	<java.home>/Library/Java/JavaVirtualMachines/jdk1.8.0_51.jdk/Contents/Home</java.home> -->
+      <!-- Mac OSX home -->
+      <!--	<java.home>/Library/Java/JavaVirtualMachines/jdk1.8.0_51.jdk/Contents/Home</java.home> -->
       <java.version>1.8</java.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -137,6 +137,18 @@
          <version>${apache.zookeeper.version}.${hdp.stack.version}.${hdp.release.increment}-${hdp.build.version}</version>
          <!-- <version>3.4.6.2.3.0.0-2557</version> -->
          <!-- <scope>provided</scope> -->
+      </dependency>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <version>${junit.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jmockit</groupId>
+         <artifactId>jmockit</artifactId>
+         <version>1.17</version>
+         <scope>test</scope>
       </dependency>
    </dependencies>
 
