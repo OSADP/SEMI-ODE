@@ -33,7 +33,7 @@ public class MainAuthenticationFilter implements ContainerRequestFilter {
    private TokenRepository tokenRepository;
 
    private static String BEARER = "Bearer";
-   private static String BASIC = "Basic";
+   public static String BASIC = "Basic";
 
    @Override
    public void filter(ContainerRequestContext requestContext)
