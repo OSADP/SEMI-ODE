@@ -1,0 +1,1 @@
+DSRC_R36_Source.asn SEMI_ASN.1_Structures_2.2.asn -ber -der -per -root -uper -path JavaAPI/semi/src/main/java -output com.bah.ode.asn.oss -toed

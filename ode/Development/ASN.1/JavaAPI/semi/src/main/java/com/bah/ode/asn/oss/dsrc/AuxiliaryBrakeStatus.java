@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 11:50:30 2015 */
+/* Created: Mon Dec 14 18:10:04 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
