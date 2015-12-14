@@ -6,6 +6,7 @@ import os
 import ConfigParser
 
 import dateutil.parser
+
 try:
     import odeClient
 except:
@@ -27,41 +28,43 @@ def build_region(regionValues):
                                    regionValues["seLat"],
                                    regionValues["seLon"])
 
-def build_query_request(config,**kwargs):
+
+def build_query_request(config, **kwargs):
     return client.QueryRequest(config['DATA'],
-                                build_region(config['SERVICE_REGION']),
-                                config['START_DATE'],
-                                config['END_DATE'],
-                                config['SKIP'],
-                                config['LIMIT'],
-                                **kwargs)
+                               build_region(config['SERVICE_REGION']),
+                               config['START_DATE'],
+                               config['END_DATE'],
+                               config['SKIP'],
+                               config['LIMIT'],
+                               **kwargs)
+
 
 def build_subscription_request(config):
     return client.SubscriptionRequest(config.get('DATA'),
                                       build_region(config['SERVICE_REGION']))
 
-def build_road_Segment(request, config):
 
+def build_road_Segment(request, config):
     for segment in config['ROAD_SEGMENTS']:
         if segment.get('startPoint'):
             startPoint = client.OdePoint(*tuple(segment['startPoint'].split(',')))
         else:
-            startPoint=None
+            startPoint = None
 
         endpoint = client.OdePoint(*tuple(segment['endPoint'].split(',')))
         rs = client.RoadSegment(segment['id'],
                                 startPoint=startPoint,
                                 endPoint=endpoint,
-                                previousSegmentId=segment.get('previousSegmentId',None))
+                                previousSegmentId=segment.get('previousSegmentId', None))
         request.add_road_segments(rs)
 
-def parse_config_file(file_path, **kwargs):
 
+def parse_config_file(file_path, config={}, **kwargs):
     if kwargs is None:
         kwargs = {}
         config = {}
     else:
-        config = kwargs.get('config', {})
+        config = config
 
     config_file = ConfigParser.ConfigParser()
     config_file.optionxform = str
@@ -78,31 +81,42 @@ def parse_config_file(file_path, **kwargs):
         config['USERNAME'] = config_file.get('ode', 'userName')
         config['PASSWORD'] = config_file.get('ode', 'password')
 
-        if config_file.has_option('ode','validationFile'):
+        if config_file.has_option('ode', 'validationFile'):
             config['VALIDATION_FILE'] = config_file.get('ode', 'validationFile')
         else:
             config['VALIDATION_FILE'] = None
 
-        if config_file.has_option('ode','inputFile'):
+        if config_file.has_option('ode', 'inputFile'):
             config['INPUT_FILE'] = config_file.get('ode', 'inputFile')
         else:
             config['INPUT_FILE'] = None
 
-        if config_file.has_option('ode','uploadData'):
-            config['UPLOAD_TEST_DATA'] = bool (config_file.getboolean('ode', 'uploadData'))
+        if config_file.has_option('ode', 'uploadData'):
+            config['UPLOAD_TEST_DATA'] = bool(config_file.getboolean('ode', 'uploadData'))
         else:
             config['UPLOAD_TEST_DATA'] = False
+
+        if config_file.has_option('ode', 'subscriptionTimeout'):
+            config['SUBSCRIPTION_TIMEOUT'] = config_file.getint('ode', 'subscriptionTImeout')
+        else:
+            config['SUBSCRIPTION_TIMEOUT'] = 60
+
+        if config_file.has_option('ode', 'testName'):
+            config['TEST_NAME'] = config_file.get('ode', 'testName')
+        else:
+            config['TEST_NAME'] = " "
+
 
 
     if config_file.has_section('queryParams'):
         config['START_DATE'] = config_file.get('queryParams', 'startDate')
         config['END_DATE'] = config_file.get('queryParams', 'endDate')
-        config['SKIP']  = config_file.get('queryParams','skip')
-        config['LIMIT'] = config_file.get('queryParams','limit')
+        config['SKIP'] = config_file.get('queryParams', 'skip')
+        config['LIMIT'] = config_file.get('queryParams', 'limit')
     area = None
 
     if config_file.has_section('serviceRegion'):
-        area={}
+        area = {}
         for key, value in config_file.items('serviceRegion'):
             area[key] = value
 
@@ -113,13 +127,13 @@ def parse_config_file(file_path, **kwargs):
     if segments is not None:
         road_segments = []
         for segment in segments:
-            rs ={}
+            rs = {}
             for key, value in config_file.items(segment):
-                rs[key]=value
+                rs[key] = value
             road_segments.append(rs)
         config['ROAD_SEGMENTS'] = road_segments
     else:
-       config['ROAD_SEGMENTS'] = None
+        config['ROAD_SEGMENTS'] = None
 
     return config
 
@@ -134,12 +148,13 @@ def validate_location(msg_payload, config):
     service_region = config['SERVICE_REGION']
 
     if float(service_region['seLat']) <= float(msg_payload['latitude']) <= float(service_region['nwLat']) and \
-       float(service_region['nwLon']) <= float(msg_payload['longitude']) <= float(service_region['seLon']):
+                            float(service_region['nwLon']) <= float(msg_payload['longitude']) <= float(service_region['seLon']):
         return True
     else:
         return False
 
-def validate_datetime(msg_payload,config):
+
+def validate_datetime(msg_payload, config):
     """
      Validates that the dateTime for a query result is within the requested
      start and end time interval.
@@ -152,8 +167,8 @@ def validate_datetime(msg_payload,config):
     else:
         return False
 
-def extract_payload_expected_records(json_file):
 
+def extract_payload_expected_records(json_file, subkey='payload'):
     json_file_data = []
 
     with open(json_file, ) as f:
@@ -161,7 +176,10 @@ def extract_payload_expected_records(json_file):
             try:
                 if line is None or line == "\n":
                     break
-                json_file_data.append(json.loads(line, encoding='utf-8')['payload'])
+                if subkey is not None:
+                    json_file_data.append(json.loads(line, encoding='utf-8')[subkey])
+                else:
+                    json_file_data.append(json.loads(line, encoding='utf-8'))
             except Exception as e:
                 print e.message
                 sys.exit(-1)
