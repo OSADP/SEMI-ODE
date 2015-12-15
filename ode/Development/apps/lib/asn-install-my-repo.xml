@@ -25,7 +25,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 							<artifactId>oss.runtime</artifactId>
 							<version>6.2</version>
 							<packaging>jar</packaging>
-							<file>..\..\ASN.1\JavaAPI\semi\lib\osstoed.jar</file>
+							<file>${project.basedir}\..\..\ASN.1\JavaAPI\semi\lib\osstoed.jar</file>
 							  <localRepositoryPath>${project.basedir}\my-repo</localRepositoryPath> 
                     </configuration>
                 </execution>
@@ -40,7 +40,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 							<artifactId>semi</artifactId>
 							<version>2.2</version>
 							<packaging>jar</packaging>
-							<file>..\..\ASN.1\JavaAPI\semi\target\semi-2.2.jar</file>
+							<file>${project.basedir}\..\..\ASN.1\JavaAPI\semi\target\semi-2.2.jar</file>
 							<localRepositoryPath>${project.basedir}\my-repo</localRepositoryPath> 
                     </configuration>
                     </execution>
