@@ -1,17 +1,7 @@
 package com.bah.ode.wrapper;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.text.DateFormat;
 import java.util.*;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +53,7 @@ public class MQProducer<K, V> {
 
 		producer = new Producer<K, V>(config);
 
-		sanitizationTopic = "Sanitized-"+AppContext.getInstance().getParam(AppContext.ODE_HOSTNAME);
+		sanitizationTopic = "Santized-Records-"+UUID.randomUUID().toString();
 		logger.info("Sanitization Topic = " +sanitizationTopic);
 		logger.info("Producer Created");
 	}
