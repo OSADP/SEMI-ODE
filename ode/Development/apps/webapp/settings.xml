@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <profiles>
+    <profile>
+      <id>ode-private-repo</id>
+      <repositories>
+        <repository>
+          <id>ode-private-repository</id>
+          <name>Local Private Repository for ODE Specific Dependencies</name>
+          <url>file://${basedir}/../lib/my-repo</url>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>ode-private-repo</activeProfile>
+  </activeProfiles>
+</settings>
