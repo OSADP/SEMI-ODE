@@ -32,7 +32,6 @@ VoidFunction<Iterator<Tuple2<String, Tuple2<String, String>>>> {
 
 		while (partitionOfRecords.hasNext()) {
 			Tuple2<String, Tuple2<String, String>> record = partitionOfRecords.next();
-			/* result of ODE-38 records that are removed are now null */
 			String key = record._1();
 			if(key.equals("sanitized")){
 				producer.logSanitizedData(record._2()._1());
