@@ -3,8 +3,8 @@ package com.bah.ode.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.distributors.BaseDataDistributor;
 import com.bah.ode.model.OdeMetadata;
-import com.bah.ode.wrapper.BaseDataDistributor;
 
 public abstract class DataRequestManager {
    private static Logger logger = 

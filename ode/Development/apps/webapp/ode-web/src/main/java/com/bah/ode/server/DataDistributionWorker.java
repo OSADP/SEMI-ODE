@@ -6,16 +6,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
+import com.bah.ode.distributors.BaseDataDistributor;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
-import com.bah.ode.wrapper.BaseDataDistributor;
 import com.bah.ode.wrapper.MQConsumerGroup;
 import com.bah.ode.wrapper.MQTopic;
 
 import kafka.serializer.StringDecoder;
 
-public class OdeDataDistributor implements Runnable {
+public class DataDistributionWorker implements Runnable {
 
    public class DataDistributorException extends OdeException {
 
@@ -28,7 +28,7 @@ public class OdeDataDistributor implements Runnable {
    }
 
    private static Logger logger = LoggerFactory
-         .getLogger(OdeDataDistributor.class);
+         .getLogger(DataDistributionWorker.class);
    private static AppContext appContext = AppContext.getInstance();
 
    private Session clientSession;
@@ -37,7 +37,7 @@ public class OdeDataDistributor implements Runnable {
    private MQConsumerGroup<String, String, String> consumerGroup;
    private BaseDataDistributor distributor;
 
-   public OdeDataDistributor(
+   public DataDistributionWorker(
          final Session clientSession, 
          OdeMetadata metadata,
          BaseDataDistributor processor) {
@@ -73,7 +73,7 @@ public class OdeDataDistributor implements Runnable {
       return clientSession;
    }
 
-   public OdeDataDistributor setClientSession(Session clientSession) {
+   public DataDistributionWorker setClientSession(Session clientSession) {
       this.clientSession = clientSession;
       return this;
    }
@@ -82,7 +82,7 @@ public class OdeDataDistributor implements Runnable {
       return metadata;
    }
 
-   public OdeDataDistributor setMetadata(OdeMetadata metadata) {
+   public DataDistributionWorker setMetadata(OdeMetadata metadata) {
       this.metadata = metadata;
       return this;
    }

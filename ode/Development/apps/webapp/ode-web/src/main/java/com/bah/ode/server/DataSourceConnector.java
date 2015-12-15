@@ -5,12 +5,12 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.DdsMessageHandler;
+import com.bah.ode.distributors.BaseDataDistributor;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.server.DdsRequestManager.DdsRequestManagerException;
-import com.bah.ode.wrapper.BaseDataDistributor;
 import com.bah.ode.wrapper.MQTopic;
 
 public class DataSourceConnector {
