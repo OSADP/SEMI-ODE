@@ -100,7 +100,6 @@ public class AppContext {
 
    public static final String SPARK_STATIC_WEATHER_FILE_LOCATION = "spark.static.weather.file.location";
    public static final String SPARK_STATIC_SANITIZATION_FILE_LOCATION = "spark.static.sanitization.file.location";
-   public static final String SPARK_STATIC_SANITIZATION_LOG_LOCATION = "spark.static.sanitization.log.location";
 
    public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
    public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
