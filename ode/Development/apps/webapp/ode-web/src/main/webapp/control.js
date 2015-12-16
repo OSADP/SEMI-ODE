@@ -29,8 +29,6 @@ var segmentLat = null;
 var segmentLng = null;
 var segmentClickActive = false;
 var isTest = false;
-var requestIdChangeFunc;
-var currentRequestId;
 
 
 
@@ -69,6 +67,12 @@ $( document ).ready(function() {
   /*
   * Setting up the entry button listeners
   */
+
+  var now = new Date();
+  var yesterday = new Date();
+  yesterday.setDate(now.getDate()-1);
+  $("#startDate").val( yesterday.toISOString());
+  $("#endDate").val(now.toISOString());
 
   $('#nextEntry').on('click', function(){
     try{
@@ -323,15 +327,7 @@ $( document ).ready(function() {
         $('#vehicleRadio').show();
         $('.testRadio').hide();
       }else if(dataSource == 3){
-        //window.open("deposit.xhtml",'_blank');
-        currentRequestId = $('#requestId').val();
         isTest = true;
-        requestIdChangeFunc = setInterval(function(){
-          if(currentRequestId != $('#requestId').val()){
-            clearInterval(requestIdChangeFunc);
-            window.open("deposit.xhtml#"+$('#requestId').val()+"#"+dataType,'_blank');
-          }
-        }, 500);
         sourceController(".subscription");
         partOneURI = "/ode/api/ws/tst/";
 
@@ -494,14 +490,6 @@ $( document ).ready(function() {
       document.getElementById('requestUri').value = "wss://" + window.location.host + partOneURI + partTwoURI + "?token=" + token;
     }
     setConnectionState(false, false);
-    if(dataSource == 1 || dataSource == 2){
-      var now = new Date();
-      var yesterday = new Date();
-      yesterday.setDate(now.getDate()-1);
-      $("#startDate").val( yesterday.toISOString());
-      $("#endDate").val(now.toISOString());
-
-    }
   }
 
   function setConnectionState(c, s) {
@@ -569,8 +557,9 @@ $( document ).ready(function() {
       }
       log(1, event.data);
       updateClusters(event.data);
-      if(isTest)
-      openTestUpload(event.data);
+      if(isTest){
+        openTestUpload(event.data);
+      }
     };
     ws.onclose = function (event) {
       setConnectionState(false, false);
@@ -889,7 +878,7 @@ function setLonLat() {
   var nw = new ol.proj.transform([extent[0],extent[3]],'EPSG:3857','EPSG:4326');
   var se = new ol.proj.transform([extent[2],extent[1]],'EPSG:3857','EPSG:4326');
 
-  if(dataSource == 0){
+  if(dataSource == 0 || dataSource == 3){
     $('#nwLatSub').val(nw[1]);
     $('#nwLonSub').val(nw[0]);
     $('#seLatSub').val(se[1]);
@@ -914,9 +903,8 @@ function openTestUpload(str){
   var pl = getPayload(str);
   if(pl !== undefined && pl !== false && pl !== null && pl.requestId !== undefined){
     $('#requestId').val(pl.requestId);
+    window.open("deposit.xhtml#"+$('#requestId').val()+"#"+dataType,'_blank');
   }
-
-
 }
 
 function updateClusters(str){
