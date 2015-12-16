@@ -56,8 +56,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * context root and "ws" is the address to access this class from the server
  */
 @ServerEndpoint("/tst/ws/{dtype}/{requestId}")
-public class TestWebSocketServer {
-   private static Logger logger = LoggerFactory.getLogger(TestWebSocketServer.class);
+public class TestUploadServer {
+   private static Logger logger = LoggerFactory.getLogger(TestUploadServer.class);
    
    private MQProducer<String, String> producer;
    private TestRequestManager testMgr;
@@ -278,8 +278,8 @@ public class TestWebSocketServer {
       }
    }
 
-   public static class WebSocketServerException extends OdeException {
-      public WebSocketServerException(String message) {
+   public static class TestUploadServerException extends OdeException {
+      public TestUploadServerException(String message) {
          super(message);
       }
 
