@@ -497,14 +497,15 @@ $( document ).ready(function() {
     started = s;
 
     if (!connected)
-    started = false;
+      started = false;
 
-    document.getElementById('connect').disabled = connected;
+    document.getElementById('connect').disabled = (token == null);
     document.getElementById('disconnect').disabled = !connected;
-    document.getElementById('send').disabled = (started || !connected);
-    setButtonHoverOver('connect',connected);
+    document.getElementById('send').disabled = !connected;
+    setButtonHoverOver('connect',(connected));
     setButtonHoverOver('disconnect',connected);
     setButtonHoverOver('send',(started || !connected))
+    setButtonHoverOver('get-token',(token == null))
 
   }
 
@@ -773,6 +774,7 @@ function getToken()  {
   client.setRequestHeader('Authorization','Basic '+hash)
   client.send();
 
+
   client.onreadystatechange=function()
   {
     if (client.readyState==4 && client.status==200)
@@ -799,10 +801,12 @@ function getToken(email, password)  {
       if (payload != null) {
         token = payload["token"];
         if (token != null) {
-          setConnectionState(true,false)
+          setConnectionState(true,false);
           if ( $("#selectData input:radio").is(":checked"))
           updateRequestUri( $("#selectData input:radio").filter(":checked").val());
         }
+      }else{
+        setConnectionState(false,false);
       }
     },
     error: function (jqXHR, textStatus, errorThrown ) {
