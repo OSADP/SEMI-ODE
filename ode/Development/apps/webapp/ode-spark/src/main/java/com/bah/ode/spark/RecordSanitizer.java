@@ -47,16 +47,18 @@ public class RecordSanitizer implements  PairFunction<Tuple2<String, Tuple2<Stri
 
 				/* Inside sanitizationBox, but outside of speed limits */
 				if(sanitizationBox.has("minSpeed") && sanitizationBox.has("maxSpeed") && vehicledata.has("speed")){
-					double minSpeed = sanitizationBox.get("minSpeed").asDouble();
-					double maxSpeed = sanitizationBox.get("maxSpeed").asDouble();
-					double record_speed = vehicledata.get("speed").asDouble();
-					if(record_speed < minSpeed || record_speed > maxSpeed){
+					double minSpeed = sanitizationBox.get("minSpeed").asDouble(-1);
+					double maxSpeed = sanitizationBox.get("maxSpeed").asDouble(-1);
+					double record_speed = vehicledata.get("speed").asDouble(-1);
+					if(minSpeed == -1 || maxSpeed == -1 || record_speed == -1){
+						excepted = false;
+					}else if(record_speed < minSpeed || record_speed > maxSpeed){
 						excepted = true;
 					}
 				}
 
 				/* Inside a sanitizationBox, but meets groupID exception */
-				if(sanitizationBox.has("exceptions") && vehicledata.has("groupId")){
+				if(!excepted && sanitizationBox.has("exceptions") && vehicledata.has("groupId")){
 					String[] groupIDs = sanitizationBox.get("exceptions").asText().split(",");
 					String record_groupID = vehicledata.get("groupId").asText();
 					for(String excludedID : groupIDs){
