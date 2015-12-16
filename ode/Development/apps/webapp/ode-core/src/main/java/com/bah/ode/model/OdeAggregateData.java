@@ -2,7 +2,7 @@ package com.bah.ode.model;
 
 import java.math.BigDecimal;
 
-public final class OdeAggregateData extends OdeData {
+public final class OdeAggregateData extends OdeData implements HasKey {
 
    private static final long serialVersionUID = 1595406822366147861L;
 
@@ -12,7 +12,7 @@ public final class OdeAggregateData extends OdeData {
    private BigDecimal avgSpeed;
    private BigDecimal maxSpeed;
 
-   
+   @Override
    public String getKey() {
       return key;
    }

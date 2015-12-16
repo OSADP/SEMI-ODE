@@ -37,6 +37,9 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.api.sec.SecurityService;
 import com.bah.ode.api.sec.filters.WebSocketAuthenticationConfiguration;
 import com.bah.ode.context.AppContext;
+import com.bah.ode.distributors.BaseDataDistributor;
+import com.bah.ode.distributors.QueryDataDistributor;
+import com.bah.ode.distributors.SubscriptionDataDistributor;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
@@ -45,10 +48,7 @@ import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.model.OdeStatus;
 import com.bah.ode.util.WebSocketUtils;
-import com.bah.ode.wrapper.BaseDataDistributor;
 import com.bah.ode.wrapper.MQTopic;
-import com.bah.ode.wrapper.QueryDataDistributor;
-import com.bah.ode.wrapper.SubscriptionDataDistributor;
 
 /**
  * gives the relative name for the end point. This will be accessed via
@@ -65,7 +65,7 @@ public class WebSocketServer {
          new HashMap<String, DataSourceConnector>();
    
    private DataSourceConnector connector;
-   private OdeDataDistributor distributor;
+   private DataDistributionWorker distroWorker;
    private OdeRequest odeRequest;
    
    public static DataSourceConnector getConnector(String requestId) {
@@ -216,7 +216,7 @@ public class WebSocketServer {
             OdeMetadata metadata = new OdeMetadata(
                   requestId, outputTopic, outputTopic, odeRequest);
             
-            BaseDataDistributor processor = launchNewDistributor(session, metadata);
+            BaseDataDistributor distributor = launchNewDistributor(session, metadata);
             
             if (connector == null) {
                connector = new DataSourceConnector(metadata);
@@ -227,7 +227,7 @@ public class WebSocketServer {
             
             //FOR TEST ONLY
             if (AppContext.loopbackTest()) {
-               connector.setDistributor(processor);
+               connector.setDistributor(distributor);
             }
 
             connector.connectToSource();
@@ -247,20 +247,20 @@ public class WebSocketServer {
             status.setMessage("Data Source Connection Established");
          } else {
             // Topic already exists by this or another subscriber
-            if (distributor != null) {
-               if (!distributor.getMetadata().getOutputTopic().getName().equals(outputTopic.getName())) {
+            if (distroWorker != null) {
+               if (!distroWorker.getMetadata().getOutputTopic().getName().equals(outputTopic.getName())) {
                   /* 
                    * This subscriber is subscribing to a new topic. Remove the old
                    * topic and add the new one. 
                    */
                   
                   OdeRequestManager.removeSubscriber(
-                        distributor.getMetadata().getOutputTopic().getName(), 
+                        distroWorker.getMetadata().getOutputTopic().getName(), 
                         odeRequest.getDataType());
                   
                   OdeRequestManager.addSubscriber(requestId, 
                         odeRequest.getDataType());
-                  distributor.getMetadata().setOutputTopic(outputTopic);
+                  distroWorker.getMetadata().setOutputTopic(outputTopic);
                   status.setMessage(String.format("Tapped into existing request %s using existing distributor", requestId));
                   logger.info(status.getMessage());
                } else {
@@ -324,8 +324,8 @@ public class WebSocketServer {
       
       // Start the processor to receive data from the client topic and 
       // send it to client session
-      distributor = new OdeDataDistributor(session, metadata, processor );
-      Thread respThread = new Thread(distributor);
+      distroWorker = new DataDistributionWorker(session, metadata, processor );
+      Thread respThread = new Thread(distroWorker);
       respThread.start();
       
       return processor;
@@ -355,8 +355,8 @@ public class WebSocketServer {
             connectors.remove(connector.getMetadata().getOutputTopic().getName());
          }
          
-         if (distributor != null) {
-            distributor.shutDown();
+         if (distroWorker != null) {
+            distroWorker.shutDown();
          }
 
          if (odeRequest != null) {
