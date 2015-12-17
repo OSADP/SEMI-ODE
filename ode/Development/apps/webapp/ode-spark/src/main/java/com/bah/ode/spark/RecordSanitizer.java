@@ -46,8 +46,8 @@ public class RecordSanitizer implements  PairFunction<Tuple2<String, Tuple2<Stri
 			if(record_latitude <= nwLat && record_latitude >= seLat && record_longitude >= nwLon && record_longitude <= seLon){
 
 				/* Inside a sanitizationBox, but meets groupID exempted */
-				if(sanitizationBox.has("exemption") && vehicledata.has("groupId")){
-					String[] groupIDs = sanitizationBox.get("exemption").asText().split(",");
+				if(sanitizationBox.has("exemptions") && vehicledata.has("groupId")){
+					String[] groupIDs = sanitizationBox.get("exemptions").asText().split(",");
 					String record_groupID = vehicledata.get("groupId").asText();
 					for(String excludedID : groupIDs){
 						if(excludedID.contains(record_groupID)){
