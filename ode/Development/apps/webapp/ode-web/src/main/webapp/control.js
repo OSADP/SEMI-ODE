@@ -11,7 +11,8 @@ var partTwoURI = "";
 var clear = "clear";
 var features = [];
 var featureCount = 0;
-var maxFeatures = 10;
+var maxFeatures = 100;
+var recordsReceived = 0;
 var clusters;
 var map;
 var intervalFunc;
@@ -71,8 +72,10 @@ $( document ).ready(function() {
   var now = new Date();
   var yesterday = new Date();
   yesterday.setDate(now.getDate()-1);
-  $("#startDate").val( yesterday.toISOString());
-  $("#endDate").val(now.toISOString());
+  $("#startDateQuery").val( yesterday.toISOString());
+  $("#endDateQuery").val(now.toISOString());
+  $("#startDateSub").val( yesterday.toISOString());
+  $("#endDateSub").val(now.toISOString());
 
   $('#nextEntry').on('click', function(){
     try{
@@ -308,6 +311,7 @@ $( document ).ready(function() {
         $('.testRadio').hide();
         $('#intersectionRadio').show();
         $('#vehicleRadio').show();
+        $('#testUploadOnly').hide();
       }else if(dataSource == 1){
         sourceController(".query");
         partOneURI = "/ode/api/ws/qry/";
@@ -339,6 +343,7 @@ $( document ).ready(function() {
         $('#requestId').show();
         $('#intersectionRadio').hide();
         $('#vehicleRadio').hide();
+        $('#testUploadOnly').show();
       }else{
         sourceController(clear);
       }
@@ -548,6 +553,7 @@ $( document ).ready(function() {
       intervalFunc = setInterval(updateClustersOnMap, 3000)
       features = [];
       coordinateMappings = {};
+      recordsReceived = 0;
     };
     ws.onmessage = function (event) {
       if (!started && dataSource != 3) { // does not happen in deposit
@@ -595,6 +601,12 @@ $( document ).ready(function() {
         request["nwLon"] = document.getElementById('nwLonSub').value;
         request["seLat"] = document.getElementById('seLatSub').value;
         request["seLon"] = document.getElementById('seLonSub').value;
+        if(dataSource == 3){
+          request["startDate"] = document.getElementById('startDateSub').value;
+          request["endDate"] = document.getElementById('endDateSub').value;
+          request["skip"] = $("#skip").val();
+          request["limit"] = $("#limit").val();
+        }
 
         var s1 = {};
         s1["id"] = "LarnedShelbyGriswold";
@@ -637,8 +649,8 @@ $( document ).ready(function() {
         request["nwLon"] = document.getElementById('nwLonQuery').value;
         request["seLat"] = document.getElementById('seLatQuery').value;
         request["seLon"] = document.getElementById('seLonQuery').value;
-        request["startDate"] = document.getElementById('startDate').value;
-        request["endDate"] = document.getElementById('endDate').value;
+        request["startDate"] = document.getElementById('startDateQuery').value;
+        request["endDate"] = document.getElementById('endDateQuery').value;
         request["skip"] = $("#skip").val();
         request["limit"] = $("#limit").val();
 
@@ -915,7 +927,7 @@ function updateClusters(str){
   var pl = getPayload(str);
 
   if(pl !== undefined && pl !== false && pl !== null && pl.longitude !== undefined && pl.latitude !== undefined){
-
+    recordsReceived += 1;
     var lon = parseFloat(pl.longitude);
     var lat = parseFloat(pl.latitude);
     var temp = ol.proj.fromLonLat([lon, lat]);
@@ -931,7 +943,7 @@ function updateClusters(str){
 
       var vFeature = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat([lon, lat])));
       if(coordinateMappings[vFeature.getGeometry().getCoordinates()] === undefined || coordinateMappings[vFeature.getGeometry().getCoordinates()] === null){
-        if((dataSource == 0 || dataSource == 3) && featureCount >= maxFeatures){
+        if(featureCount >= maxFeatures){
           featureCount = 0;
           if(features[featureCount] != undefined){
             coordinateMappings[features[featureCount].getGeometry().getCoordinates()] = null;
@@ -961,6 +973,7 @@ function updateClusters(str){
 
 function updateClustersOnMap(){
 
+  $('#recordCounter').val('Records Received: ' +recordsReceived);
 
   var source = new ol.source.Vector({
     features: features
