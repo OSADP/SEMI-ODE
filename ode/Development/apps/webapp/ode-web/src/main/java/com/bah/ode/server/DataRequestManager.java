@@ -3,7 +3,7 @@ package com.bah.ode.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.distributors.BaseDataDistributor;
+import com.bah.ode.distributors.BaseDataPropagator;
 import com.bah.ode.model.OdeMetadata;
 
 public abstract class DataRequestManager {
@@ -14,12 +14,12 @@ public abstract class DataRequestManager {
    protected OdeMetadata metadata;
    
    // FOR LOOPBACK TEST ONLY
-   private BaseDataDistributor distributor;
+   private BaseDataPropagator distributor;
    
-   public BaseDataDistributor getDistributor() {
+   public BaseDataPropagator getDistributor() {
       return distributor;
    }
-   public void setDistributor(BaseDataDistributor distributor) {
+   public void setDistributor(BaseDataPropagator distributor) {
       this.distributor = distributor;
    }
    // FOR LOOPBACK TEST ONLY

@@ -22,15 +22,15 @@ import com.bah.ode.wrapper.DataProcessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public abstract class BaseDataDistributor implements DataProcessor<String, String> {
+public abstract class BaseDataPropagator implements DataProcessor<String, String> {
 
-   private static Logger logger = LoggerFactory.getLogger(BaseDataDistributor.class);
+   private static Logger logger = LoggerFactory.getLogger(BaseDataPropagator.class);
 
    protected Session clientSession;
    protected OdeMetadata metadata;
    protected List<OdeFilter> filters;
 
-   public BaseDataDistributor(Session clientSession, OdeMetadata metadata) {
+   public BaseDataPropagator(Session clientSession, OdeMetadata metadata) {
       super();
       this.clientSession = clientSession;
       this.metadata = metadata;

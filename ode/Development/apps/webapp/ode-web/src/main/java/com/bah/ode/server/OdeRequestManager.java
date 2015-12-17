@@ -39,7 +39,7 @@ public class OdeRequestManager {
          odeRequest = (OdeRequest) JsonUtils.fromJson(message,
                OdeSubRequest.class);
       } else if (requestType == OdeRequestType.Query) {
-         odeRequest = (OdeRequest) JsonUtils.fromJson(message, 
+         odeRequest = (OdeRequest) JsonUtils.fromJson(message,
                OdeQryRequest.class);
       } else if (requestType == OdeRequestType.Test) {
          odeRequest = (OdeRequest) JsonUtils.fromJson(message,

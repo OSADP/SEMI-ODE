@@ -36,10 +36,12 @@ import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeAdvisoryDataRaw;
+import com.bah.ode.model.OdeControlData;
 import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeIntersectionDataRaw;
+import com.bah.ode.model.OdeMsgPayload;
 import com.bah.ode.model.OdeStatus;
 import com.bah.ode.model.OdeStatus.Code;
 import com.bah.ode.model.OdeVehicleDataFlat;
@@ -150,6 +152,10 @@ public class TestUploadServer {
             //feedback to the upload client
             WebSocketUtils.send(session, message);
             if (testMgr != null) {
+               // If the message does not appear to be a json
+               if (!JsonUtils.isValid(message))
+                  return;
+               
                ObjectNode odm = OdeDataMessage.jsonStringToObjectNode(message);
                if (odm != null) {
                   JsonNode payload = odm.get(AppContext.PAYLOAD_STRING);
@@ -166,7 +172,7 @@ public class TestUploadServer {
                            OdeVehicleDataFlat ovdf = 
                                  (OdeVehicleDataFlat) JsonUtils.fromJson(
                                        payload.toString(), OdeVehicleDataFlat.class);
-                           sendThroughOde(ovdf, payloadType);
+                           sendOdeMsgPayload(ovdf, payloadType, ovdf.getSerialId());
                            break;
          
                         case IntersectionData:
@@ -174,7 +180,7 @@ public class TestUploadServer {
                            (IntersectionSituationData) JsonUtils.fromJson(
                                  payload.toString(), IntersectionSituationData.class);
                            OdeIntersectionDataRaw oidr = new OdeIntersectionDataRaw(isd);
-                           sendThroughOde(oidr, payloadType);
+                           sendOdeMsgPayload(oidr, payloadType, oidr.getSerialId());
                            break;
          
                         case AdvisoryData:
@@ -182,7 +188,15 @@ public class TestUploadServer {
                            (AdvisorySituationData) JsonUtils.fromJson(
                                  payload.toString(), AdvisorySituationData.class);
                             OdeAdvisoryDataRaw oadr = new OdeAdvisoryDataRaw(asd);
-                            sendThroughOde(oadr, payloadType);
+                            sendOdeMsgPayload(oadr, payloadType, oadr.getSerialId());
+         
+                           break;
+         
+                        case Control:
+                           OdeControlData ocd = 
+                           (OdeControlData) JsonUtils.fromJson(
+                                 payload.toString(), OdeControlData.class);
+                            sendOdeMsgPayload(ocd, payloadType, null);
          
                            break;
          
@@ -229,20 +243,20 @@ public class TestUploadServer {
       }
    }
 
-   public void sendThroughOde(OdeData odeData, OdeDataType payloadType)
+   public void sendOdeMsgPayload(OdeMsgPayload msgPayload, OdeDataType payloadType, String key)
          throws IOException, DataProcessorException {
       // for backward compatibility, if payload did not contain className,
       // set it here based on payloadType
-      if (odeData.getDataType() == null || odeData.getDataType() == OdeDataType.Unknown)
-         odeData.setDataType(payloadType);
+      if (msgPayload.getDataType() == null || msgPayload.getDataType() == OdeDataType.Unknown)
+         msgPayload.setDataType(payloadType);
       
       InternalDataMessage idm = new InternalDataMessage();
       idm.setMetadata(testMgr.getMetadata());
       
       if (producer != null) {
-         idm.setKey(odeData.getSerialId());
+         idm.setKey(key);
          idm.getMetadata().setKey(idm.getKey());
-         idm.setPayload(odeData);
+         idm.setPayload(msgPayload);
          
          producer.send(
                testMgr.getMetadata().getInputTopic().getName(), 
@@ -251,7 +265,7 @@ public class TestUploadServer {
       
       //FOR TEST ONLY
       if (AppContext.loopbackTest()) {
-         testMgr.getDistributor().process(new OdeDataMessage(odeData).toJson());
+         testMgr.getDistributor().process(new OdeDataMessage(msgPayload).toJson());
       }
    }
 

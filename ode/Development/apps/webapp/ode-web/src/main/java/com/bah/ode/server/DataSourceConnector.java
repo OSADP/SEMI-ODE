@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.DdsMessageHandler;
-import com.bah.ode.distributors.BaseDataDistributor;
+import com.bah.ode.distributors.BaseDataPropagator;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeRequest;
@@ -22,12 +22,12 @@ public class DataSourceConnector {
    private TestRequestManager testMgr;
    
    // FOR LOOPBACK TEST ONLY
-   private BaseDataDistributor distributor;
+   private BaseDataPropagator distributor;
    
-   public BaseDataDistributor getDistributor() {
+   public BaseDataPropagator getDistributor() {
       return distributor;
    }
-   public void setDistributor(BaseDataDistributor distributor) {
+   public void setDistributor(BaseDataPropagator distributor) {
       this.distributor = distributor;
    }
    // FOR LOOPBACK TEST ONLY

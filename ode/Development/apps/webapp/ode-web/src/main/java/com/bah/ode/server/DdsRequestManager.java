@@ -102,7 +102,11 @@ public class DdsRequestManager extends DataRequestManager {
              * to the limit to ensure that we will get enough records to skip 
              * and limit independent of the data source.
              */
-            qryRequest.setLimit(odeQuery.getSkip() + odeQuery.getLimit());
+            if (odeQuery.getLimit() != null) {
+               qryRequest.setLimit(
+                     (odeQuery.getSkip() != null  ? odeQuery.getSkip().intValue() : 0) + 
+                     odeQuery.getLimit().intValue());
+            }
          }
          ddsRequest = qryRequest;
       } else {

@@ -21,14 +21,14 @@ import com.bah.ode.model.OdeMsgPayload;
 import com.bah.ode.model.OdeQryRequest;
 import com.bah.ode.util.WebSocketUtils;
 
-public class QueryDataDistributor extends BaseDataDistributor {
+public class QueryDataPropagator extends BaseDataPropagator {
    private static Logger logger = LoggerFactory
-         .getLogger(QueryDataDistributor.class);
+         .getLogger(QueryDataPropagator.class);
    private long recordCount;
-   private long limit;
+   private Integer limit;
    private OdeControlData stopRecord;
 
-   public QueryDataDistributor(Session clientSession, OdeMetadata metadata) {
+   public QueryDataPropagator(Session clientSession, OdeMetadata metadata) {
       super(clientSession, metadata);
       OdeQryRequest queryReq = (OdeQryRequest) metadata.getOdeRequest();
       limit = queryReq.getLimit();
@@ -62,26 +62,41 @@ public class QueryDataDistributor extends BaseDataDistributor {
                logger.info("Control Message Received: {}", controlRec.toString());
             } else { // Not a Control record
                OdeMsgPayload payload = dataMsg.getPayload();
-               if (payload != null && 
-                     payload instanceof OdeFilterable && 
-                     recordCount < limit) {
-                  if (applyFilters((OdeFilterable)payload)) {
-                     recordCount++;
-                     WebSocketUtils.send(clientSession, dataMsg.toJson());
-                  }
+               if (payload != null && payload instanceof OdeFilterable) { 
+                  if (limit != null) {
+                     if (recordCount < limit) {
+                        if (applyFilters((OdeFilterable)payload)) {
+                           recordCount++;
+                           WebSocketUtils.send(clientSession, dataMsg.toJson());
+                        }
 
-                  if (recordCount >= limit) {
-                     OdeDataMessage stopMsg;
-                     if (stopRecord != null) {
-                        stopRecord.setSentRecordCount(recordCount);
-                     } else {
-                        stopRecord = new OdeControlData(OdeControlData.Tag.STOP)
-                              .setSentRecordCount(recordCount);
+                        if (recordCount >= limit) {
+                           OdeDataMessage stopMsg;
+                           if (stopRecord != null) {
+                              stopRecord.setSentRecordCount(recordCount);
+                           } else {
+                              stopRecord = new OdeControlData(OdeControlData.Tag.STOP)
+                                    .setSentRecordCount(recordCount);
+                           }
+                           stopMsg = new OdeDataMessage(stopRecord);
+                           WebSocketUtils.send(clientSession, stopMsg.toJson());
+                        }
                      }
-                     stopMsg = new OdeDataMessage(stopRecord);
-                     WebSocketUtils.send(clientSession, stopMsg.toJson());
+                  } else { // We DON'T have a limit
+                     if (applyFilters((OdeFilterable)payload)) {
+                        recordCount++;
+                        WebSocketUtils.send(clientSession, dataMsg.toJson());
+                     }
+
+                     if (stopRecord != null &&
+                           stopRecord.getSentRecordCount() != null &&
+                           recordCount >= stopRecord.getSentRecordCount()) {
+                        stopRecord.setSentRecordCount(recordCount);
+                        OdeDataMessage stopMsg = new OdeDataMessage(stopRecord);
+                        WebSocketUtils.send(clientSession, stopMsg.toJson());
+                     }
                   }
-               }// recordCount < limit
+               }// We have a Filterable paylaod
             }// Not a Control record
          }// dataMsg != null 
       } catch (Exception e) {
