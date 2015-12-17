@@ -11,7 +11,8 @@ var partTwoURI = "";
 var clear = "clear";
 var features = [];
 var featureCount = 0;
-var maxFeatures = 10;
+var maxFeatures = 100;
+var recordsReceived = 0;
 var clusters;
 var map;
 var intervalFunc;
@@ -29,8 +30,6 @@ var segmentLat = null;
 var segmentLng = null;
 var segmentClickActive = false;
 var isTest = false;
-var requestIdChangeFunc;
-var currentRequestId;
 
 
 
@@ -69,6 +68,14 @@ $( document ).ready(function() {
   /*
   * Setting up the entry button listeners
   */
+
+  var now = new Date();
+  var yesterday = new Date();
+  yesterday.setDate(now.getDate()-1);
+  $("#startDateQuery").val( yesterday.toISOString());
+  $("#endDateQuery").val(now.toISOString());
+  $("#startDateSub").val( yesterday.toISOString());
+  $("#endDateSub").val(now.toISOString());
 
   $('#nextEntry').on('click', function(){
     try{
@@ -304,6 +311,7 @@ $( document ).ready(function() {
         $('.testRadio').hide();
         $('#intersectionRadio').show();
         $('#vehicleRadio').show();
+        $('#testUploadOnly').hide();
       }else if(dataSource == 1){
         sourceController(".query");
         partOneURI = "/ode/api/ws/qry/";
@@ -323,15 +331,7 @@ $( document ).ready(function() {
         $('#vehicleRadio').show();
         $('.testRadio').hide();
       }else if(dataSource == 3){
-        //window.open("deposit.xhtml",'_blank');
-        currentRequestId = $('#requestId').val();
         isTest = true;
-        requestIdChangeFunc = setInterval(function(){
-          if(currentRequestId != $('#requestId').val()){
-            clearInterval(requestIdChangeFunc);
-            window.open("deposit.xhtml#"+$('#requestId').val()+"#"+dataType,'_blank');
-          }
-        }, 500);
         sourceController(".subscription");
         partOneURI = "/ode/api/ws/tst/";
 
@@ -343,6 +343,7 @@ $( document ).ready(function() {
         $('#requestId').show();
         $('#intersectionRadio').hide();
         $('#vehicleRadio').hide();
+        $('#testUploadOnly').show();
       }else{
         sourceController(clear);
       }
@@ -494,14 +495,6 @@ $( document ).ready(function() {
       document.getElementById('requestUri').value = "wss://" + window.location.host + partOneURI + partTwoURI + "?token=" + token;
     }
     setConnectionState(false, false);
-    if(dataSource == 1 || dataSource == 2){
-      var now = new Date();
-      var yesterday = new Date();
-      yesterday.setDate(now.getDate()-1);
-      $("#startDate").val( yesterday.toISOString());
-      $("#endDate").val(now.toISOString());
-
-    }
   }
 
   function setConnectionState(c, s) {
@@ -509,14 +502,15 @@ $( document ).ready(function() {
     started = s;
 
     if (!connected)
-    started = false;
+      started = false;
 
-    document.getElementById('connect').disabled = connected;
+    document.getElementById('connect').disabled = (token == null);
     document.getElementById('disconnect').disabled = !connected;
-    document.getElementById('send').disabled = (started || !connected);
-    setButtonHoverOver('connect',connected);
+    document.getElementById('send').disabled = !connected;
+    setButtonHoverOver('connect',(connected));
     setButtonHoverOver('disconnect',connected);
     setButtonHoverOver('send',(started || !connected))
+    setButtonHoverOver('get-token',(token == null))
 
   }
 
@@ -559,6 +553,7 @@ $( document ).ready(function() {
       intervalFunc = setInterval(updateClustersOnMap, 3000)
       features = [];
       coordinateMappings = {};
+      recordsReceived = 0;
     };
     ws.onmessage = function (event) {
       if (!started && dataSource != 3) { // does not happen in deposit
@@ -569,8 +564,9 @@ $( document ).ready(function() {
       }
       log(1, event.data);
       updateClusters(event.data);
-      if(isTest)
-      openTestUpload(event.data);
+      if(isTest){
+        openTestUpload(event.data);
+      }
     };
     ws.onclose = function (event) {
       setConnectionState(false, false);
@@ -605,6 +601,12 @@ $( document ).ready(function() {
         request["nwLon"] = document.getElementById('nwLonSub').value;
         request["seLat"] = document.getElementById('seLatSub').value;
         request["seLon"] = document.getElementById('seLonSub').value;
+        if(dataSource == 3){
+          request["startDate"] = document.getElementById('startDateSub').value;
+          request["endDate"] = document.getElementById('endDateSub').value;
+          request["skip"] = $("#skip").val();
+          request["limit"] = $("#limit").val();
+        }
 
         var s1 = {};
         s1["id"] = "LarnedShelbyGriswold";
@@ -647,8 +649,8 @@ $( document ).ready(function() {
         request["nwLon"] = document.getElementById('nwLonQuery').value;
         request["seLat"] = document.getElementById('seLatQuery').value;
         request["seLon"] = document.getElementById('seLonQuery').value;
-        request["startDate"] = document.getElementById('startDate').value;
-        request["endDate"] = document.getElementById('endDate').value;
+        request["startDate"] = document.getElementById('startDateQuery').value;
+        request["endDate"] = document.getElementById('endDateQuery').value;
         request["skip"] = $("#skip").val();
         request["limit"] = $("#limit").val();
 
@@ -784,6 +786,7 @@ function getToken()  {
   client.setRequestHeader('Authorization','Basic '+hash)
   client.send();
 
+
   client.onreadystatechange=function()
   {
     if (client.readyState==4 && client.status==200)
@@ -810,10 +813,12 @@ function getToken(email, password)  {
       if (payload != null) {
         token = payload["token"];
         if (token != null) {
-          setConnectionState(true,false)
+          setConnectionState(true,false);
           if ( $("#selectData input:radio").is(":checked"))
           updateRequestUri( $("#selectData input:radio").filter(":checked").val());
         }
+      }else{
+        setConnectionState(false,false);
       }
     },
     error: function (jqXHR, textStatus, errorThrown ) {
@@ -889,7 +894,7 @@ function setLonLat() {
   var nw = new ol.proj.transform([extent[0],extent[3]],'EPSG:3857','EPSG:4326');
   var se = new ol.proj.transform([extent[2],extent[1]],'EPSG:3857','EPSG:4326');
 
-  if(dataSource == 0){
+  if(dataSource == 0 || dataSource == 3){
     $('#nwLatSub').val(nw[1]);
     $('#nwLonSub').val(nw[0]);
     $('#seLatSub').val(se[1]);
@@ -914,16 +919,15 @@ function openTestUpload(str){
   var pl = getPayload(str);
   if(pl !== undefined && pl !== false && pl !== null && pl.requestId !== undefined){
     $('#requestId').val(pl.requestId);
+    window.open("deposit.xhtml#"+$('#requestId').val()+"#"+dataType,'_blank');
   }
-
-
 }
 
 function updateClusters(str){
   var pl = getPayload(str);
 
   if(pl !== undefined && pl !== false && pl !== null && pl.longitude !== undefined && pl.latitude !== undefined){
-
+    recordsReceived += 1;
     var lon = parseFloat(pl.longitude);
     var lat = parseFloat(pl.latitude);
     var temp = ol.proj.fromLonLat([lon, lat]);
@@ -939,7 +943,7 @@ function updateClusters(str){
 
       var vFeature = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat([lon, lat])));
       if(coordinateMappings[vFeature.getGeometry().getCoordinates()] === undefined || coordinateMappings[vFeature.getGeometry().getCoordinates()] === null){
-        if((dataSource == 0 || dataSource == 3) && featureCount >= maxFeatures){
+        if(featureCount >= maxFeatures){
           featureCount = 0;
           if(features[featureCount] != undefined){
             coordinateMappings[features[featureCount].getGeometry().getCoordinates()] = null;
@@ -969,6 +973,7 @@ function updateClusters(str){
 
 function updateClustersOnMap(){
 
+  $('#recordCounter').val('Records Received: ' +recordsReceived);
 
   var source = new ol.source.Vector({
     features: features

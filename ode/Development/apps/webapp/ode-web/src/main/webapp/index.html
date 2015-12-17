@@ -163,8 +163,15 @@
 
 						<hr />
 
-						<h3>Maximum Unique Record Locations</h3>
-						<input id="maxFeatures" type="text" value = "10" size="10" style="width: 100px" class="georegion-text"/><br /><br />
+						<h2>Options:</h2>
+						<div id="testUploadOnly">
+							<label>Skip | Limit</label><br />
+							<input id="skip" type="text" value = "0" size="10" style="width: 100px" class="georegion-text" placeholder="Skip"/>
+							<input id="limit" type="text" value = "100" size="10" style="width: 100px" class="georegion-text" placeholder="Limit"/><br /><br />
+							<label>Start Date-Time</label><br/><input id="startDateSub" type="text" value = "yyyy-MM-ddTHH:mm:ss" size="40" style="width: 90%;" /><br />
+							<label>End Date-Time</label><br/><input id="endDateSub" type="text" value = "yyyy-MM-ddTHH:mm:ss" size="40" style="width: 90%;" /><br />
+						</div>
+						<label>Maximum Unique Record Locations</label><br/><input id="maxFeatures" type="text" value = "100" size="10" style="width: 90%;" class="georegion-text"/><br /><br />
 					</div>
 				</div>
 
@@ -226,12 +233,12 @@
 
 						<hr />
 						<h2>Options:</h2>
-						<label>Skip</label><br />
-						<input id="skip" type="text" value = "0" size="10" style="width: 100px" class="georegion-text"/><br />
-						<label>Limit:</label><br />
-						<input id="limit" type="text" value = "100" size="10" style="width: 100px" class="georegion-text"/><br /><br />
-            <label>Start Date-Time</label> <input id="startDate" type="text" value = "yyyy-MM-ddTHH:mm:ss" size="40" style="width: 350px" /><br />
-            <label>End Date-Time</label> <input id="endDate" type="text" value = "yyyy-MM-ddTHH:mm:ss" size="40" style="width: 350px" /><br />
+						<label>Skip | Limit</label><br />
+						<input id="skip" type="text" value = "0" size="10" style="width: 100px" class="georegion-text" placeholder="Skip"/>
+						<input id="limit" type="text" value = "100" size="10" style="width: 100px" class="georegion-text" placeholder="Limit"/><br /><br />
+            <label>Start Date-Time</label> <input id="startDateQuery" type="text" value = "yyyy-MM-ddTHH:mm:ss" size="40" style="width: 90%;" /><br />
+            <label>End Date-Time</label> <input id="endDateQuery" type="text" value = "yyyy-MM-ddTHH:mm:ss" size="40" style="width: 90%;" /><br />
+						<label>Maximum Unique Record Locations</label><br/><input id="maxFeatures" type="text" value = "100" size="10" style="width: 90%;" class="georegion-text"/><br /><br />
 					</div>
 
 				</div>
@@ -295,6 +302,8 @@
 							Clear
 						</div>
 					</button>
+					<input id="recordCounter" type="text" value = "Records Received: 0" size="50" style="margin-top: 1%; float: right; height: 80%;"/>
+
 				</div>
 
 			</div>

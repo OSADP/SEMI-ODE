@@ -34,7 +34,7 @@ public class RecordSanitizer implements  PairFunction<Tuple2<String, Tuple2<Stri
 			 * if true then continue looking for another box
 			 * Reason: if one box restricts it later on then it should not be shown.
 			 */
-			boolean excepted = false;
+			boolean exempted = false;
 
 			ObjectNode sanitizationBox = JsonUtils.toObjectNode(sanitizationJSON);
 			double nwLat = sanitizationBox.get("nwLat").asDouble();
@@ -45,29 +45,32 @@ public class RecordSanitizer implements  PairFunction<Tuple2<String, Tuple2<Stri
 			/* Inside a sanitizationBox*/
 			if(record_latitude <= nwLat && record_latitude >= seLat && record_longitude >= nwLon && record_longitude <= seLon){
 
-				/* Inside sanitizationBox, but outside of speed limits */
-				if(sanitizationBox.has("minSpeed") && sanitizationBox.has("maxSpeed") && vehicledata.has("speed")){
-					double minSpeed = sanitizationBox.get("minSpeed").asDouble();
-					double maxSpeed = sanitizationBox.get("maxSpeed").asDouble();
-					double record_speed = vehicledata.get("speed").asDouble();
-					if(record_speed < minSpeed || record_speed > maxSpeed){
-						excepted = true;
-					}
-				}
-
-				/* Inside a sanitizationBox, but meets groupID exception */
-				if(sanitizationBox.has("exceptions") && vehicledata.has("groupId")){
-					String[] groupIDs = sanitizationBox.get("exceptions").asText().split(",");
+				/* Inside a sanitizationBox, but meets groupID exempted */
+				if(sanitizationBox.has("exemptions") && vehicledata.has("groupId")){
+					String[] groupIDs = sanitizationBox.get("exemptions").asText().split(",");
 					String record_groupID = vehicledata.get("groupId").asText();
 					for(String excludedID : groupIDs){
 						if(excludedID.contains(record_groupID)){
-							excepted = true;
+							exempted = true;
 						}
+					}
+				}
+				
+
+				/* Inside sanitizationBox, but outside of speed limits. Only applies if not exempted */
+				if(!exempted && sanitizationBox.has("minSpeed") && sanitizationBox.has("maxSpeed") && vehicledata.has("speed")){
+					double minSpeed = sanitizationBox.get("minSpeed").asDouble(-1);
+					double maxSpeed = sanitizationBox.get("maxSpeed").asDouble(-1);
+					double record_speed = vehicledata.get("speed").asDouble(-1);
+					if(minSpeed == -1 || maxSpeed == -1 || record_speed == -1){
+						exempted = false;
+					}else if(record_speed < minSpeed || record_speed > maxSpeed){
+						exempted = true;
 					}
 				}
 
 				/* Should not be returned because it meets the bounding box record */
-				if(!excepted){
+				if(!exempted){
 					return new Tuple2<String, Tuple2<String, String>>("sanitized", new Tuple2<String,String>(vehicledata.toString(), null));
 				}
 			}
