@@ -115,6 +115,15 @@ public class JsonUtils {
       return jsonNode;
    }
    
+   public static boolean isValid(String tree) throws IOException {
+      try {
+         ObjectNode jsonNode = (ObjectNode) mapper.readTree(tree);
+         return jsonNode != null;
+      } catch (JsonProcessingException jpe) {
+         return false;
+      }
+   }
+
    public static HashMap<String, JsonNode> jsonNodeToHashMap(
          JsonNode jsonNode) {
       HashMap<String, JsonNode> nodeProps = new HashMap<String, JsonNode>();

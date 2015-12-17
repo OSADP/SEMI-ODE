@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
-import com.bah.ode.distributors.BaseDataDistributor;
+import com.bah.ode.distributors.BaseDataPropagator;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
@@ -35,12 +35,12 @@ public class DataDistributionWorker implements Runnable {
    private OdeMetadata metadata;
    private String groupId;
    private MQConsumerGroup<String, String, String> consumerGroup;
-   private BaseDataDistributor distributor;
+   private BaseDataPropagator distributor;
 
    public DataDistributionWorker(
          final Session clientSession, 
          OdeMetadata metadata,
-         BaseDataDistributor processor) {
+         BaseDataPropagator processor) {
       super();
       this.clientSession = clientSession;
       this.metadata = metadata;
@@ -87,11 +87,11 @@ public class DataDistributionWorker implements Runnable {
       return this;
    }
 
-   public BaseDataDistributor getDistributor() {
+   public BaseDataPropagator getDistributor() {
       return distributor;
    }
 
-   public void setDistributor(BaseDataDistributor distributor) {
+   public void setDistributor(BaseDataPropagator distributor) {
       this.distributor = distributor;
    }
 

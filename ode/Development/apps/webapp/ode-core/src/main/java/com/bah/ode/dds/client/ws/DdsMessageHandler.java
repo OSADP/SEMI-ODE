@@ -28,7 +28,7 @@ import com.bah.ode.asn.oss.semi.VehSitDataMessage;
 import com.bah.ode.asn.oss.semi.VehSitDataMessage.Bundle;
 import com.bah.ode.asn.oss.semi.VehSitRecord;
 import com.bah.ode.context.AppContext;
-import com.bah.ode.distributors.BaseDataDistributor;
+import com.bah.ode.distributors.BaseDataPropagator;
 import com.bah.ode.model.DdsData;
 import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeAdvisoryDataRaw;
@@ -63,12 +63,12 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    private static AppContext appContext = AppContext.getInstance(); 
    
    // FOR LOOPBACK TEST ONLY
-   private BaseDataDistributor distributor;
+   private BaseDataPropagator distributor;
    
-   public BaseDataDistributor getDistributor() {
+   public BaseDataPropagator getDistributor() {
       return distributor;
    }
-   public void setDistributor(BaseDataDistributor distributor) {
+   public void setDistributor(BaseDataPropagator distributor) {
       this.distributor = distributor;
    }
    // FOR LOOPBACK TEST ONLY
@@ -118,17 +118,20 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                }
             } else {
                OdeData odeData;
-               boolean sendRecord = checkSkipAndLimit();
+               //Send records by default, unless otherwise changed by checkSkipAndLimit()
+               boolean sendRecord = true;
                if (ddsData.getIsd() != null) {
                   topicName = metadata.getInputTopic().getName();
                   odeData = new OdeIntersectionDataRaw(ddsData.getIsd());
                   idm.setKey(odeData.getSerialId());
                   idm.setPayload(odeData);
+                  sendRecord = checkSkipAndLimit();
                } else if (ddsData.getAsd() != null) {
                   topicName = metadata.getInputTopic().getName();
                   odeData = new OdeAdvisoryDataRaw(ddsData.getAsd());
                   idm.setKey(odeData.getSerialId());
                   idm.setPayload(odeData);
+                  sendRecord = checkSkipAndLimit();
                } else if (ddsData.getControlMessage() != null) {
                   topicName = metadata.getOutputTopic().getName();
                   OdeControlData controlData = new OdeControlData(ddsData.getControlMessage());
@@ -136,13 +139,9 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                      controlData.setReceivedRecordCount(receivedRecordCount);
                   
                   idm.setPayload(controlData);
-                  // Always send control data
-                  sendRecord = true;
                } else {
                   topicName = metadata.getOutputTopic().getName();
                   idm.setPayload(new OdeFullMessage(ddsData.getFullMessage()));
-                  //Always send unknown data
-                  sendRecord = true;
                }
                
                if (sendRecord) {

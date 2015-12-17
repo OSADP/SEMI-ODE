@@ -5,7 +5,10 @@ QUERY:{
     "nwLon": -83.13457489013672,
     "seLat": 42.31184652369511,
     "seLon": -82.97218322753906,
+    "startDate":"2015-12-17T00:00:00Z",
+    "startDateOperator":"GTE",
+    "endDate":"2015-12-17T00:01:00Z",
+    "endDateOperator":"LTE",
     "skip": 0,
-    "limit": 5000,
     "resultEncoding": "hex"
 }

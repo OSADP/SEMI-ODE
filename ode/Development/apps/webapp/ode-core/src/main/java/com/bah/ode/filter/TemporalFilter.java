@@ -31,15 +31,23 @@ public class TemporalFilter extends BaseFilter {
       if (data instanceof HasTimestamp) {
          HasTimestamp hasTimestamp = (HasTimestamp) data;
 
-         if (startDate == null ||
-               hasTimestamp.getTimestamp().isBefore(startDate) ||
-               endDate == null ||
-               hasTimestamp.getTimestamp().isAfter(endDate))
-            return false;
-         else
-            return true;
+         if (startDate == null) {
+            if (endDate == null) {// Both startDate and endDate are null, so it's pass by default
+               return true;
+            } else {// We only have the endDate, so any record not after the end date is a pass
+               return !hasTimestamp.getTimestamp().isAfter(endDate);
+            }
+         } else {
+            if (endDate == null) {// We only have the startDate, so any record not before the start date is a pass
+               return !hasTimestamp.getTimestamp().isBefore(startDate);
+            } else {// We have both the startDate and the endDate, so any record not before the start date and not after the end date is a pass
+               return !hasTimestamp.getTimestamp().isBefore(startDate) &&
+                     !hasTimestamp.getTimestamp().isAfter(endDate);
+            }
+         }
+      } else {
+         return true;
       }
-      return true;
    }
 
    @Override
@@ -49,16 +57,20 @@ public class TemporalFilter extends BaseFilter {
             getMetadata().getOdeRequest() instanceof OdeQryRequest) {
          OdeQryRequest qryReq = (OdeQryRequest) getMetadata().getOdeRequest();
          
-         try {
-            startDate = DateTimeUtils.isoDateTime(qryReq.getStartDate());
-         } catch (ParseException e) {
-            logger.error("Error parsing start date: " + qryReq.getStartDate(), e);
+         if (qryReq.getStartDate() != null) {
+            try {
+               startDate = DateTimeUtils.isoDateTime(qryReq.getStartDate());
+            } catch (ParseException e) {
+               logger.error("Error parsing start date: " + qryReq.getStartDate(), e);
+            }
          }
          
-         try {
-            endDate = DateTimeUtils.isoDateTime(qryReq.getEndDate());
-         } catch (ParseException e) {
-            logger.error("Error parsing end date: " + qryReq.getEndDate(), e);
+         if (qryReq.getEndDate() != null) {
+            try {
+               endDate = DateTimeUtils.isoDateTime(qryReq.getEndDate());
+            } catch (ParseException e) {
+               logger.error("Error parsing end date: " + qryReq.getEndDate(), e);
+            }
          }
       }
       return this;

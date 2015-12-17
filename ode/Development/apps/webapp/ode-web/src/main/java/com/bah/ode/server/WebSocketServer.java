@@ -37,9 +37,10 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.api.sec.SecurityService;
 import com.bah.ode.api.sec.filters.WebSocketAuthenticationConfiguration;
 import com.bah.ode.context.AppContext;
-import com.bah.ode.distributors.BaseDataDistributor;
-import com.bah.ode.distributors.QueryDataDistributor;
-import com.bah.ode.distributors.SubscriptionDataDistributor;
+import com.bah.ode.distributors.AggregateDataPropagator;
+import com.bah.ode.distributors.BaseDataPropagator;
+import com.bah.ode.distributors.QueryDataPropagator;
+import com.bah.ode.distributors.SubscriptionDataPropagator;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
@@ -216,7 +217,7 @@ public class WebSocketServer {
             OdeMetadata metadata = new OdeMetadata(
                   requestId, outputTopic, outputTopic, odeRequest);
             
-            BaseDataDistributor distributor = launchNewDistributor(session, metadata);
+            BaseDataPropagator propagator = launchNewPropagator(session, metadata);
             
             if (connector == null) {
                connector = new DataSourceConnector(metadata);
@@ -227,7 +228,7 @@ public class WebSocketServer {
             
             //FOR TEST ONLY
             if (AppContext.loopbackTest()) {
-               connector.setDistributor(distributor);
+               connector.setDistributor(propagator);
             }
 
             connector.connectToSource();
@@ -271,7 +272,7 @@ public class WebSocketServer {
                OdeMetadata metadata = new OdeMetadata(
                      requestId, outputTopic, outputTopic, odeRequest);
                
-               launchNewDistributor(session, metadata);
+               launchNewPropagator(session, metadata);
                OdeRequestManager.addSubscriber(requestId, odeRequest.getDataType());
                status.setMessage(String.format("Tapped into existing request %s using a new distributor", requestId));
                logger.info(status.getMessage());
@@ -309,26 +310,29 @@ public class WebSocketServer {
       logger.error("Error encountered",throwable);
    }
    
-   private BaseDataDistributor launchNewDistributor(
+   private BaseDataPropagator launchNewPropagator(
          Session session, OdeMetadata metadata) {
       
       logger.info("Launching new Distributor for client session {} client topic {}",
             session.getId(), metadata.getOutputTopic());
       
-      BaseDataDistributor processor;
-      if (metadata.getOdeRequest().getRequestType() == OdeRequestType.Query) {
-         processor = new QueryDataDistributor(session, metadata);
+      BaseDataPropagator propegator;
+      if (metadata.getOdeRequest().getDataType() == OdeDataType.AggregateData) {
+         propegator = new AggregateDataPropagator(session, metadata);
+      } else if (metadata.getOdeRequest().getRequestType() == OdeRequestType.Query ||
+            metadata.getOdeRequest().getRequestType() == OdeRequestType.Test) {
+         propegator = new QueryDataPropagator(session, metadata);
       } else {
-         processor = new SubscriptionDataDistributor(session, metadata);
+         propegator = new SubscriptionDataPropagator(session, metadata);
       }
       
       // Start the processor to receive data from the client topic and 
       // send it to client session
-      distroWorker = new DataDistributionWorker(session, metadata, processor );
+      distroWorker = new DataDistributionWorker(session, metadata, propegator );
       Thread respThread = new Thread(distroWorker);
       respThread.start();
       
-      return processor;
+      return propegator;
    }
 
    /**
