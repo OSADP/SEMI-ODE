@@ -604,8 +604,8 @@ $( document ).ready(function() {
         if(dataSource == 3){
           request["startDate"] = document.getElementById('startDateSub').value;
           request["endDate"] = document.getElementById('endDateSub').value;
-          request["skip"] = $("#skip").val();
-          request["limit"] = $("#limit").val();
+          request["skip"] = $("#skipSub").val();
+          request["limit"] = $("#limitSub").val();
         }
 
         var s1 = {};
@@ -651,8 +651,8 @@ $( document ).ready(function() {
         request["seLon"] = document.getElementById('seLonQuery').value;
         request["startDate"] = document.getElementById('startDateQuery').value;
         request["endDate"] = document.getElementById('endDateQuery').value;
-        request["skip"] = $("#skip").val();
-        request["limit"] = $("#limit").val();
+        request["skip"] = $("#skipQuery").val();
+        request["limit"] = $("#limitQuery").val();
 
         var s1 = {};
         s1["id"] = "LarnedShelbyGriswold";
