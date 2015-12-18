@@ -74,8 +74,6 @@ $( document ).ready(function() {
   yesterday.setDate(now.getDate()-1);
   $("#startDateQuery").val( yesterday.toISOString());
   $("#endDateQuery").val(now.toISOString());
-  $("#startDateSub").val( yesterday.toISOString());
-  $("#endDateSub").val(now.toISOString());
 
   $('#nextEntry').on('click', function(){
     try{
@@ -602,10 +600,25 @@ $( document ).ready(function() {
         request["seLat"] = document.getElementById('seLatSub').value;
         request["seLon"] = document.getElementById('seLonSub').value;
         if(dataSource == 3){
-          request["startDate"] = document.getElementById('startDateSub').value;
-          request["endDate"] = document.getElementById('endDateSub').value;
-          request["skip"] = $("#skipSub").val();
-          request["limit"] = $("#limitSub").val();
+
+          var requestStart  = document.getElementById('startDateSub').value;
+          var requestEnd = document.getElementById('endDateSub').value;
+          var requestSkip = $("#skipSub").val();
+          var requestLimit = $("#limitSub").val();
+
+          if(requestStart.length !== 0){
+            request["startDate"] = requestStart;
+          }
+          if(requestEnd.length !== 0){
+            request["endDate"] = requestEnd;
+          }
+          if(requestSkip.length !== 0){
+            request["skip"] = requestSkip;
+          }
+          if(requestLimit.length !== 0){
+            request["limit"] = requestLimit;
+          }
+
         }
 
         var s1 = {};
