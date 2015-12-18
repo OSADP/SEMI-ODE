@@ -25,7 +25,7 @@ public class KeyFilter extends BaseFilter {
    public boolean pass(OdeFilterable data) {
       if (data instanceof HasKey) {
          HasKey hasKey = (HasKey) data;
-         if (segments != null) {
+         if (segments != null && hasKey.getKey() != null && !hasKey.getKey().isEmpty()) {
             for (OdeRoadSegment segment : segments){
                if (hasKey.getKey().equalsIgnoreCase(segment.getId()))
                   return true;
