@@ -972,7 +972,7 @@ function updateClusters(str){
         coordinateMappings[vFeature.getGeometry().getCoordinates()] = arr.concat(titleHtml);
       }
     }
-  }else if(pl !== undefined && pl !== false && pl !== null && pl.code === undefined && pl.token === undefined){ //avoid success and token responses in payload
+  }else if(pl !== undefined && pl !== false && pl !== null && pl.code === undefined && pl.token === undefined && pl.tag === undefined){ //avoid success and token responses in payload
       recordsReceived += 1;
   }
 }
