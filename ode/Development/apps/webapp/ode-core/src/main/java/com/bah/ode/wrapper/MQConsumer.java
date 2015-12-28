@@ -1,6 +1,8 @@
 package com.bah.ode.wrapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
@@ -16,123 +18,123 @@ import kafka.consumer.KafkaStream;
 
 public class MQConsumer<K, V, R> implements Callable<Object> {
 
-   private static Logger logger = LoggerFactory.getLogger(MQConsumer.class);
+	private static Logger logger = LoggerFactory.getLogger(MQConsumer.class);
 
-   private KafkaStream<K, V> m_stream;
-   private int m_threadNumber;
-   private DataProcessor<V, R> processor;
-   private boolean hasSent = false;
-   private String lastSerialId = null;
+	private KafkaStream<K, V> m_stream;
+	private int m_threadNumber;
+	private DataProcessor<V, R> processor;
+	private HashMap<String, ArrayList<V>> records;
 
-   public MQConsumer(KafkaStream<K, V> a_stream, int a_threadNumber,
-         DataProcessor<V, R> a_processor) {
-      this.m_threadNumber = a_threadNumber;
-      this.m_stream = a_stream;
-      this.processor = a_processor;
-   }
+	public MQConsumer(KafkaStream<K, V> a_stream, int a_threadNumber,
+			DataProcessor<V, R> a_processor) {
+		this.m_threadNumber = a_threadNumber;
+		this.m_stream = a_stream;
+		this.processor = a_processor;
+		records = new HashMap<String, ArrayList<V>>();
+	}
 
-   @Override
-   public Object call() throws Exception {
-      ConsumerIterator<K, V> it = m_stream.iterator();
+	@Override
+	public Object call() throws Exception {
+		ConsumerIterator<K, V> it = m_stream.iterator();
 
-      ArrayList<V> vList = new ArrayList<V>();
-      while (it.hasNext()) {
-         V msg = it.next().message();
-         //TODO: MQConsumer does not send all the records to the processor.
-         //Commenting out the code below and calling processor.process.
-         // If you uncomment the code, make sure to remove the line below.
-           processor.process(msg);
-///////////////////////////////////////////////////////////////////////////////
-//         ObjectNode bundleObject = JsonUtils.toObjectNode(msg.toString());
-//
-//         JsonNode payloadNode = bundleObject.get(AppContext.PAYLOAD_STRING);
-//         if (payloadNode == null) {
-//            processor.process(msg);
-//         } else {
-//            JsonNode serialIdNode = payloadNode.get(AppContext.SERIAL_ID_STRING);
-//            if (serialIdNode == null) {
-//               processor.process(msg);
-//            } else {
-//               String tempSerialId = serialIdNode.asText();
-//               if (tempSerialId == null || tempSerialId.equals("")) {
-//                  processor.process(msg);
-//               } else {
-//                  String[] test = tempSerialId
-//                        .split("[^\\w-]+"); /* Non-alphanumerics and hyphen */
-//                  tempSerialId = test[0] + "." + test[1];
-//
-//                  if (lastSerialId == null)
-//                     lastSerialId = tempSerialId;
-//
-//                  if (tempSerialId.equals(lastSerialId)) {
-//                     hasSent = false;
-//                     vList.add(msg);
-//                     new java.util.Timer().schedule(new java.util.TimerTask() {
-//                        @Override
-//                        public void run() {
-//                           if (!hasSent) {
-//                              /*
-//                               * Sends the batch after 5 seconds without waiting for
-//                               * the next bundle if it hasn't arrived yet.
-//                               */
-//                              if (vList.size() != 0) {
-//                                 BatchSend batchSender = new BatchSend(vList);
-//                                 Thread t = new Thread(batchSender);
-//                                 t.start();
-//                                 vList.clear();
-//                                 lastSerialId = null;
-//                              }
-//                           }
-//                        }
-//                     }, 5000);
-//                  } else {
-//                     /* If it receives the next bundle send */
-//                     hasSent = true;
-//                     BatchSend batchSender = new BatchSend(vList);
-//                     Thread t = new Thread(batchSender);
-//                     t.start();
-//                     vList.clear();
-//                     lastSerialId = tempSerialId;
-//                     vList.add(msg);
-//                  }
-//               }// End of serial ID is not blank
-//            }// End of 'has serialId' bock
-//         }// End of 'has payload' block
-////////////////////////////////////////////////////////////////////////////////
+		
+		/**
+		 * Sends all received and ordered records every second as a batch
+		 * Records sent as map of serialId.bundleId
+		 */
+		
+		new java.util.Timer().schedule(new java.util.TimerTask() {
+			@Override
+			public void run() {
+				/*
+				 * Sends the batch after 5 seconds without waiting for
+				 * the next bundle if it hasn't arrived yet.
+				 */
+				if (records.size() != 0) {
+					BatchSend batchSender = new BatchSend();
+					Thread t = new Thread(batchSender);
+					t.start();
+				}
+			}
+		}, 1000, 1000);
 
-      }//End of while loop
+		while (it.hasNext()) {
+			V msg = it.next().message();
+			ObjectNode bundleObject = JsonUtils.toObjectNode(msg.toString());
 
-      logger.info("Shutting down Thread: " + m_threadNumber);
-      return null;
-   }
+			JsonNode payloadNode = bundleObject.get(AppContext.PAYLOAD_STRING);
+			if (payloadNode == null) {
+				processor.process(msg);
+			} else {
+				JsonNode serialIdNode = payloadNode.get(AppContext.SERIAL_ID_STRING);
+				if (serialIdNode == null) {
+					processor.process(msg);
+				} else {
+					String tempSerialId = serialIdNode.asText();
+					if (tempSerialId == null || tempSerialId.equals("")) {
+						processor.process(msg);
+					} else {
+						try{
+							String[] test = tempSerialId
+									.split("[^\\w-]+"); /* Non-alphanumerics and hyphen */
+							tempSerialId = test[0] + "." + test[1];
+							int index = Integer.parseInt(test[2]);
+							
+							/* 
+							 * vList is an array with the recordId as the index 
+							 * that way there is no need to loop twice through arrays
+							 * 
+							 * uses map as to not lose records if multiple record Ids
+							 * come in scrambled
+							 */
+							ArrayList<V> vList = records.get(tempSerialId);
+							if(vList == null){
+								vList = new ArrayList<V>();
+								while(index + 1 > vList.size()){
+									vList.add(vList.size(), null);
+								}
+								vList.set(index, msg);
+								records.put(tempSerialId, vList);
+							}else{
+								while(index + 1 > vList.size()){
+									vList.add(vList.size(), null);
+								}
+								records.get(tempSerialId).set(index, msg);
+							}
+						}catch(Exception e){
+							logger.info("ERROR IN CODE : ", e);
+						}
 
-   public class BatchSend implements Runnable {
+					}// End of serial ID is not blank
+				}// End of 'has serialId' block
+			}// End of 'has payload' block
+		}//End of while loop
 
-      private final ArrayList<V> vList;
+		logger.info("Shutting down Thread: " + m_threadNumber);
+		return null;
+	}
 
-      @SuppressWarnings("unchecked")
-      public BatchSend(ArrayList<V> vList) {
-         this.vList = (ArrayList<V>) vList.clone();
-      }
+	public class BatchSend implements Runnable {
 
-      public void run() {
-         try {
-            for (int i = 0; i < vList.size(); i++) {
-               for (V msg : vList) {
-                  ObjectNode vObject = JsonUtils.toObjectNode(msg.toString());
-                  String sId = vObject.get(AppContext.PAYLOAD_STRING).get(AppContext.SERIAL_ID_STRING).asText();
-                  int placing = Integer
-                        .parseInt(sId.substring(sId.length() - 1));
-                  if (placing == i) {
-                     processor.process(msg);
-                  }
-
-               }
-            }
-         } catch (Exception e) {
-            logger.error("Error Consuming message", e);
-         }
-      }
-   }
+		public void run() {
+			try {
+				Iterator<String> iter = records.keySet().iterator();
+				while (iter.hasNext()) {
+				    String key = iter.next();
+					ArrayList<V> vList = records.get(key);
+					for (int i = 0; i < vList.size(); i++) {
+						V msg = vList.get(i);
+						if(msg != null){
+							processor.process(msg);
+						}
+					}
+					// remove the record key from the map if it was sent outs
+					iter.remove();
+				}
+			} catch (Exception e) {
+				logger.error("Error Consuming message", e);
+			}
+		}
+	}
 
 }

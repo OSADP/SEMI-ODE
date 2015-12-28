@@ -503,7 +503,7 @@ $( document ).ready(function() {
     document.getElementById('send').disabled = !connected;
     setButtonHoverOver('connect',(connected));
     setButtonHoverOver('disconnect',connected);
-    setButtonHoverOver('send',(started || !connected))
+    setButtonHoverOver('send',(started || connected))
     setButtonHoverOver('get-token',(token == null))
 
   }
