@@ -186,7 +186,8 @@ public class WebSocketServer {
    public void onMessage(Session session, String message, boolean last,
          @PathParam("rtype") String rtype, @PathParam("dtype") String dtype) {
       String sessionId = session.getId();
-      logger.info("Message Received on Session ID {}: {}", sessionId, message);
+      logger.info("Message Received on Session ID {}, Request Type {}, Data Type {} : {}", 
+            sessionId, rtype, dtype, message);
       
       OdeStatus status = new OdeStatus();
       MQTopic outputTopic = null;
