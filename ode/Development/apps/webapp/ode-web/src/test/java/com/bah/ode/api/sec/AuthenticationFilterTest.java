@@ -4,17 +4,16 @@ import java.io.IOException;
 
 import javax.ws.rs.container.ContainerRequestContext;
 
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.bah.ode.api.sec.filters.MainAuthenticationFilter;
 import com.bah.ode.api.sec.filters.LiferayWSClient;
+import com.bah.ode.api.sec.filters.MainAuthenticationFilter;
+
+import mockit.Deencapsulation;
+import mockit.Injectable;
+import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
 
 @RunWith(JMockit.class)
 public class AuthenticationFilterTest {

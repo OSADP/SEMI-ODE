@@ -21,7 +21,7 @@ import java.time.ZonedDateTime;
 
 import com.bah.ode.util.DateTimeUtils;
 
-public class OdeData extends OdeMsgPayload implements OdeFilterable{
+public class OdeData extends OdeMsgPayload implements OdeFilterable {
    private static final long serialVersionUID = -7711340868799607662L;
    private String serialId;
    private String receivedAt;

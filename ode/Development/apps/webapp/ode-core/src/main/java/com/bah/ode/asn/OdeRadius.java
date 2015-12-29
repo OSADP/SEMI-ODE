@@ -32,17 +32,23 @@ public class OdeRadius extends OdeChoice {
       }
    }
    
+   public OdeKilometers km_chosen;
+   public OdeMiles miles_chosen;
+   public OdeRadiusSteps radiusSteps_chosen;
+   
    public OdeRadius(Raduis radius) {
+      super();
+
       int flag = radius.getChosenFlag();
       switch (flag) {
       case Raduis.km_chosen:
-         setChosenObject(new OdeKilometers(radius.getKm()));
+         km_chosen = new OdeKilometers(radius.getKm());
          break;
       case Raduis.miles_chosen:
-         setChosenObject(new OdeMiles(radius.getMiles()));
+         miles_chosen = new OdeMiles(radius.getMiles());
          break;
       case Raduis.radiusSteps_chosen:
-         setChosenObject(new OdeRadiusSteps(radius.getRadiusSteps()));
+         radiusSteps_chosen = new OdeRadiusSteps(radius.getRadiusSteps());
          break;
       }
    }

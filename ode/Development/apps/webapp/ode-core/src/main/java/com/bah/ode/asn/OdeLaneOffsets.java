@@ -17,7 +17,6 @@
 package com.bah.ode.asn;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import com.bah.ode.asn.oss.dsrc.NodeList;

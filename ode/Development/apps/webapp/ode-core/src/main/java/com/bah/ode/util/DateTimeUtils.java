@@ -30,6 +30,10 @@ public class DateTimeUtils {
          ZonedDateTime dateTime,
          ZonedDateTime startDateTime,
          ZonedDateTime endDateTime) {
+      
+      if (dateTime == null)
+         return true;
+      
       if (startDateTime == null) {
          if (endDateTime == null) {// Both startDate and endDate are null, so it's false
             return true;

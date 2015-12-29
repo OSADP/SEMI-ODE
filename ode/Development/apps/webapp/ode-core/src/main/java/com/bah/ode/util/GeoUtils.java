@@ -343,7 +343,7 @@ public class GeoUtils {
    }
 
    public static boolean isPositionInBoundsInclusive(OdePosition3D pos, OdeGeoRegion region) {
-      if (region == null)
+      if (pos == null || region == null)
          return false;
       
       OdePosition3D nw = region.getNwCorner();

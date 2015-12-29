@@ -23,6 +23,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import com.bah.ode.asn.OdeDateTime;
+import com.bah.ode.asn.OdeGeoRegion;
 import com.bah.ode.asn.OdePosition3D;
 import com.bah.ode.asn.OdeTransmissionState;
 import com.bah.ode.asn.oss.dsrc.AccelerationSet4Way;
@@ -1456,20 +1457,19 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
    }
 
    @Override
-   public boolean isOnTime(ZonedDateTime dateTime) {
-      return dateTime.isEqual(getTimestamp());
+   public boolean isOnTime(ZonedDateTime start, ZonedDateTime end) {
+      return DateTimeUtils.isBetweenTimesInclusive(getTimestamp(),
+            start, end);
    }
 
    @Override
    public OdePosition3D getPosition() {
-      // TODO Auto-generated method stub
-      return null;
+      return new OdePosition3D(latitude, longitude, elevation);
    }
 
    @Override
-   public boolean isInBounds(OdePosition3D position) {
-      // TODO Auto-generated method stub
-      return false;
+   public boolean isInBounds(OdeGeoRegion region) {
+      return GeoUtils.isPositionInBoundsInclusive(getPosition(), region);
    }
 
 
