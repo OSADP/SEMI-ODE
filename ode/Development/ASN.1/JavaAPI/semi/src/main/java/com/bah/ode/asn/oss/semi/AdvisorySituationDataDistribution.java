@@ -11,10 +11,10 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 18:10:04 2015 */
+/* Created: Tue Dec 22 00:38:27 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
  * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
@@ -37,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -48,7 +53,7 @@ import com.oss.coders.per.PerCoder;
  * @see Sequence
  */
 
-public class AdvisorySituationDataDistribution extends Sequence implements BEREncodable, BERDecodable, DEREncodable, PEREncodable, PERDecodable {
+public class AdvisorySituationDataDistribution extends Sequence implements BEREncodable, BERDecodable, DEREncodable, JSONEncodable, JSONDecodable, PEREncodable, PERDecodable {
     public SemiDialogID dialogID;
     public SemiSequenceID seqID;
     public GroupID groupID;
@@ -350,6 +355,70 @@ public class AdvisorySituationDataDistribution extends Sequence implements BEREn
 	}
 
 	/**
+	 * Implements JSON value encoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public void encodeValue(JsonCoder coder, JsonWriter sink)
+		throws IOException, EncoderException
+	{
+	    int total_len0 = this.elements.size();
+	    int idx0 = 0;
+
+	    sink.beginArray();
+	    if (total_len0 > 0) {
+		while (true) {
+		    try {
+			AdvisorySituationBundle item1 = this.elements.get(idx0);
+
+			item1.encodeValue(coder, sink);
+		    
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext(null, "AdvisorySituationBundle", idx0);
+		    throw ee;
+		}
+		idx0++;
+		if (idx0 == total_len0) break;
+		sink.writeSeparator();
+	    }
+	}
+	sink.endArray();
+
+    }
+
+	/**
+	 * Implements JSON value decoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public AsdBundles decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	int total_len0 = 0;
+	int idx0 = 0;
+
+	if (this.elements != null)
+	    this.elements.clear();
+	else
+	    this.elements = new java.util.ArrayList<AdvisorySituationBundle>(total_len0);
+	coder.decodeArray(source);
+	if (coder.hasMoreElements(source, true))
+	    do {
+		try {
+		    AdvisorySituationBundle item1 = new AdvisorySituationBundle();
+
+		    this.elements.add(item1);
+		    item1.decodeValue(coder, source);
+		} catch (Exception e) {
+		    DecoderException de = DecoderException.wrapException(e);
+		    de.appendElementContext(null, "AdvisorySituationBundle", idx0);
+		    throw de;
+		}
+		++idx0;
+	    } while (coder.hasMoreElements(source, false));
+	    return this;
+	}
+
+	/**
 	 * Compare 'this' object to another object to see if their contents are the same.
 	 */
 	public boolean abstractEqualTo(AbstractData that)
@@ -405,6 +474,41 @@ public class AdvisorySituationDataDistribution extends Sequence implements BEREn
 	}
     } // End class definition for AsdBundles
 
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__dialogID("dialogID"),
+	__seqID("seqID"),
+	__groupID("groupID"),
+	__requestID("requestID"),
+	__recordCount("recordCount"),
+	__bundleCount("bundleCount"),
+	__asdBundles("asdBundles"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(8);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
+    
     /**
      * Encode the PDU using BER (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
@@ -1529,6 +1633,308 @@ public class AdvisorySituationDataDistribution extends Sequence implements BEREn
     {
 	try {
 	    this.decodeValue(coder, source, this);
+	    return this;
+	} catch (Exception e) {
+	    DecoderException de = DecoderException.wrapException(e);
+	    de.appendFieldContext(null, "AdvisorySituationDataDistribution");
+	    throw de;
+	}
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'dialogID'
+	try {
+	    SemiDialogID item1 = this.dialogID;
+
+	    {
+		sink.encodeKey("dialogID");
+		if (item1.isUnknownEnumerator()) {
+		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		} else 
+		    sink.writeString(item1.name());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("dialogID", "SemiDialogID");
+	    throw ee;
+	}
+	// Encode field 'seqID'
+	try {
+	    SemiSequenceID item1 = this.seqID;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("seqID");
+		if (item1.isUnknownEnumerator()) {
+		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		} else 
+		    sink.writeString(item1.name());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("seqID", "SemiSequenceID");
+	    throw ee;
+	}
+	// Encode field 'groupID'
+	try {
+	    GroupID item1 = this.groupID;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("groupID");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("groupID", "GroupID");
+	    throw ee;
+	}
+	// Encode field 'requestID'
+	try {
+	    com.bah.ode.asn.oss.dsrc.TemporaryID item1 = this.requestID;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("requestID");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("requestID", "TemporaryID");
+	    throw ee;
+	}
+	// Encode field 'recordCount'
+	try {
+	    INTEGER item1 = this.recordCount;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("recordCount");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("recordCount", "INTEGER");
+	    throw ee;
+	}
+	// Encode field 'bundleCount'
+	try {
+	    INTEGER item1 = this.bundleCount;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("bundleCount");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("bundleCount", "INTEGER");
+	    throw ee;
+	}
+	// Encode field 'asdBundles'
+	try {
+	    AsdBundles item1 = this.asdBundles;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("asdBundles");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("asdBundles", "SEQUENCE OF");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Encode the PDU using JSON (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encode(JsonCoder coder, JsonWriter sink)
+	    throws EncoderException
+    {
+	try {
+	    this.encodeValue(coder, sink);
+
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext(null, "AdvisorySituationDataDistribution");
+	    throw ee;
+	}
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public AdvisorySituationDataDistribution decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[8];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		AdvisorySituationDataDistribution.__Tag t_tag0 = AdvisorySituationDataDistribution.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = AdvisorySituationDataDistribution.__Tag._null_;
+		switch (t_tag0) {
+		    case __dialogID:
+		    // Decode field 'dialogID'
+		    try {
+			String content1 = coder.decodeString(source);
+			int idx1;
+			SemiDialogID temp1;
+
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			idx1 = coder.resolveName(SemiDialogID.cConstantNameList, content1);
+			if (idx1 < 0 )
+			    temp1 = SemiDialogID.unknownEnumerator();
+			else
+			    temp1 = SemiDialogID.cNamedNumbers[idx1];
+			this.dialogID = temp1;
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("dialogID", "SemiDialogID");
+			throw de;
+		    }
+		    break;
+		    case __seqID:
+		    // Decode field 'seqID'
+		    try {
+			String content1 = coder.decodeString(source);
+			int idx1;
+			SemiSequenceID temp1;
+
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			idx1 = coder.resolveName(SemiSequenceID.cConstantNameList, content1);
+			if (idx1 < 0 )
+			    temp1 = SemiSequenceID.unknownEnumerator();
+			else
+			    temp1 = SemiSequenceID.cNamedNumbers[idx1];
+			this.seqID = temp1;
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("seqID", "SemiSequenceID");
+			throw de;
+		    }
+		    break;
+		    case __groupID:
+		    // Decode field 'groupID'
+		    try {
+			if (present0[2])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.groupID = new GroupID(coder.decodeOctetString(source));
+			present0[2] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("groupID", "GroupID");
+			throw de;
+		    }
+		    break;
+		    case __requestID:
+		    // Decode field 'requestID'
+		    try {
+			if (present0[3])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.requestID = new com.bah.ode.asn.oss.dsrc.TemporaryID(coder.decodeOctetString(source));
+			present0[3] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("requestID", "TemporaryID");
+			throw de;
+		    }
+		    break;
+		    case __recordCount:
+		    // Decode field 'recordCount'
+		    try {
+			if (present0[4])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.recordCount == null)
+			    this.recordCount = new INTEGER();
+			this.recordCount.setValue(coder.decodeInteger(source));
+			present0[4] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("recordCount", "INTEGER");
+			throw de;
+		    }
+		    break;
+		    case __bundleCount:
+		    // Decode field 'bundleCount'
+		    try {
+			if (present0[5])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.bundleCount == null)
+			    this.bundleCount = new INTEGER();
+			this.bundleCount.setValue(coder.decodeInteger(source));
+			present0[5] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("bundleCount", "INTEGER");
+			throw de;
+		    }
+		    break;
+		    case __asdBundles:
+		    // Decode field 'asdBundles'
+		    try {
+			if (present0[6])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.asdBundles == null)
+			    this.asdBundles = new AsdBundles();
+			this.asdBundles.decodeValue(coder, source);
+			present0[6] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("asdBundles", "SEQUENCE OF");
+			throw de;
+		    }
+		    break;
+		    default:
+			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'dialogID'");
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'seqID'");
+	if (!present0[2])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'groupID'");
+	if (!present0[3])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'requestID'");
+	if (!present0[4])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'recordCount'");
+	if (!present0[5])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'bundleCount'");
+	if (!present0[6])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'asdBundles'");
+	return this;
+    }
+
+    /**
+     * Decode the PDU using JSON (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public AbstractData decode(JsonCoder coder, JsonReader source)
+	    throws DecoderException
+    {
+	try {
+	    this.decodeValue(coder, source);
 	    return this;
 	} catch (Exception e) {
 	    DecoderException de = DecoderException.wrapException(e);

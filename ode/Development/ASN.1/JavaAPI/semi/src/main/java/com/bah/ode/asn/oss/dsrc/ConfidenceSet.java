@@ -11,10 +11,10 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 18:10:04 2015 */
+/* Created: Tue Dec 22 00:38:27 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
  * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
@@ -37,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -213,6 +218,40 @@ public class ConfidenceSet extends Sequence {
 	throttleConfidence = null;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__accelConfidence("accelConfidence"),
+	__speedConfidence("speedConfidence"),
+	__timeConfidence("timeConfidence"),
+	__posConfidence("posConfidence"),
+	__steerConfidence("steerConfidence"),
+	__throttleConfidence("throttleConfidence"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(7);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -731,6 +770,300 @@ public class ConfidenceSet extends Sequence {
 	    }
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	String separator0 = null;
+
+	sink.beginObject();
+	// Encode field 'accelConfidence'
+	try {
+	    AccelSteerYawRateConfidence item1 = this.accelConfidence;
+
+	    if (item1 != null) {
+		{
+		    separator0 = ",";
+		    sink.encodeKey("accelConfidence");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "accelConfidence");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("accelConfidence", "AccelSteerYawRateConfidence");
+	    throw ee;
+	}
+	// Encode field 'speedConfidence'
+	try {
+	    SpeedandHeadingandThrottleConfidence item1 = this.speedConfidence;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("speedConfidence");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "speedConfidence");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("speedConfidence", "SpeedandHeadingandThrottleConfidence");
+	    throw ee;
+	}
+	// Encode field 'timeConfidence'
+	try {
+	    TimeConfidence item1 = this.timeConfidence;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("timeConfidence");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "timeConfidence");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("timeConfidence", "TimeConfidence");
+	    throw ee;
+	}
+	// Encode field 'posConfidence'
+	try {
+	    PositionConfidenceSet item1 = this.posConfidence;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("posConfidence");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "posConfidence");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("posConfidence", "PositionConfidenceSet");
+	    throw ee;
+	}
+	// Encode field 'steerConfidence'
+	try {
+	    SteeringWheelAngleConfidence item1 = this.steerConfidence;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("steerConfidence");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "steerConfidence");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("steerConfidence", "SteeringWheelAngleConfidence");
+	    throw ee;
+	}
+	// Encode field 'throttleConfidence'
+	try {
+	    ThrottleConfidence item1 = this.throttleConfidence;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("throttleConfidence");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "throttleConfidence");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("throttleConfidence", "ThrottleConfidence");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public ConfidenceSet decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[7];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		ConfidenceSet.__Tag t_tag0 = ConfidenceSet.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = ConfidenceSet.__Tag._null_;
+		switch (t_tag0) {
+		    case __accelConfidence:
+		    // Decode field 'accelConfidence'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[0])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.accelConfidence == null)
+				this.accelConfidence = new AccelSteerYawRateConfidence();
+			    this.accelConfidence.decodeValue(coder, source);
+			    present0[0] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("accelConfidence", "AccelSteerYawRateConfidence");
+			throw de;
+		    }
+		    break;
+		    case __speedConfidence:
+		    // Decode field 'speedConfidence'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[1])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.speedConfidence = new SpeedandHeadingandThrottleConfidence(coder.decodeOctetString(source));
+			    present0[1] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("speedConfidence", "SpeedandHeadingandThrottleConfidence");
+			throw de;
+		    }
+		    break;
+		    case __timeConfidence:
+		    // Decode field 'timeConfidence'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    TimeConfidence temp1;
+
+			    if (present0[2])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(TimeConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = TimeConfidence.cNamedNumbers[idx1];
+			    this.timeConfidence = temp1;
+			    present0[2] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("timeConfidence", "TimeConfidence");
+			throw de;
+		    }
+		    break;
+		    case __posConfidence:
+		    // Decode field 'posConfidence'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[3])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.posConfidence = new PositionConfidenceSet(coder.decodeOctetString(source));
+			    present0[3] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("posConfidence", "PositionConfidenceSet");
+			throw de;
+		    }
+		    break;
+		    case __steerConfidence:
+		    // Decode field 'steerConfidence'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    SteeringWheelAngleConfidence temp1;
+
+			    if (present0[4])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(SteeringWheelAngleConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = SteeringWheelAngleConfidence.cNamedNumbers[idx1];
+			    this.steerConfidence = temp1;
+			    present0[4] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("steerConfidence", "SteeringWheelAngleConfidence");
+			throw de;
+		    }
+		    break;
+		    case __throttleConfidence:
+		    // Decode field 'throttleConfidence'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    ThrottleConfidence temp1;
+
+			    if (present0[5])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(ThrottleConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = ThrottleConfidence.cNamedNumbers[idx1];
+			    this.throttleConfidence = temp1;
+			    present0[5] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("throttleConfidence", "ThrottleConfidence");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    this.accelConfidence = null;
+	if (!present0[1])
+	    this.speedConfidence = null;
+	if (!present0[2])
+	    this.timeConfidence = null;
+	if (!present0[3])
+	    this.posConfidence = null;
+	if (!present0[4])
+	    this.steerConfidence = null;
+	if (!present0[5])
+	    this.throttleConfidence = null;
+	return this;
     }
 
     /**

@@ -11,10 +11,10 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 18:10:04 2015 */
+/* Created: Tue Dec 22 00:38:27 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
  * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
@@ -37,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -133,6 +138,11 @@ public class Oss extends ASN1Project {
     public static PERUnalignedCoder getPERUnalignedCoder()
     {
 	return createPERUnalignedCoder(c_project);
+    }
+    
+    public static JSONCoder getJSONCoder()
+    {
+	return createJSONCoder(c_project);
     }
     
 }

@@ -11,10 +11,10 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 18:10:04 2015 */
+/* Created: Tue Dec 22 00:38:27 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
  * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
@@ -37,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -48,7 +53,7 @@ import com.oss.coders.per.PerCoder;
  * @see Sequence
  */
 
-public class DataSubscriptionRequest extends Sequence implements BEREncodable, BERDecodable, DEREncodable, PEREncodable, PERDecodable {
+public class DataSubscriptionRequest extends Sequence implements BEREncodable, BERDecodable, DEREncodable, JSONEncodable, JSONDecodable, PEREncodable, PERDecodable {
     public SemiDialogID dialogID;
     public SemiSequenceID seqID;
     public GroupID groupID;
@@ -235,6 +240,36 @@ public class DataSubscriptionRequest extends Sequence implements BEREncodable, B
 	
 	
 	/**
+	 * Hashtable for tags (reserved for internal use).
+	 * This class is reserved for internal use and must not be used in the application code.
+	 */
+	public static enum __Tag
+	{
+	    __vsmType("vsmType"),
+	    __isdType("isdType"),
+	    _null_("_null_");
+	    private String tag;
+	    private static java.util.HashMap<String, __Tag> map =
+		new java.util.HashMap<String, __Tag>(3);
+	    private __Tag(String tag) {
+		this.tag = tag;
+	    }
+	    private String getTag() {
+		return tag;
+	    }
+	    /**
+	     * This method is reserved for internal use and must not be invoked from the application code.
+	     */
+	    public static __Tag getTagSub(String tag) {
+		return map.get(tag);
+	    }
+	    static {
+		for (__Tag t:values())
+		    map.put(t.getTag(), t);
+	    }
+	}
+	
+	/**
 	 * Implements PER value encoder for the type (reserved for internal use).
 	 * This method is reserved for internal use and must not be invoked from the application code.
 	 */
@@ -330,6 +365,102 @@ public class DataSubscriptionRequest extends Sequence implements BEREncodable, B
 	}
 
 	/**
+	 * Implements JSON value encoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public void encodeValue(JsonCoder coder, JsonWriter sink)
+		throws IOException, EncoderException
+	{
+	    int idx0 = this.mChosenFlag;
+
+	    sink.beginObject();
+	    switch (idx0)
+	    {
+	    case vsmType_chosen:
+		// Encode alternative 'vsmType'
+		try {
+		    VsmType item1 = (VsmType)this.mChosenValue;
+
+		    sink.encodeKey("vsmType");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("vsmType", "VsmType", 0);
+		    throw ee;
+		}
+		break;
+	    case isdType_chosen:
+		// Encode alternative 'isdType'
+		try {
+		    IsdType item1 = (IsdType)this.mChosenValue;
+
+		    sink.encodeKey("isdType");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("isdType", "IsdType", 0);
+		    throw ee;
+		}
+		break;
+	    default:
+		throw new EncoderException(com.oss.util.ExceptionDescriptor._bad_choice, null, idx0);
+	    }
+	    sink.endObject();
+
+	}
+
+	/**
+	 * Implements JSON value decoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public Type decodeValue(JsonCoder coder, JsonReader source)
+		throws IOException, DecoderException
+	{
+	    coder.decodeObject(source);
+	    String tag0 = coder.nextProperty(source);
+	    Type.__Tag t_tag0 = Type.__Tag.getTagSub(tag0);
+	    if (t_tag0 == null) 
+		t_tag0 = Type.__Tag._null_;
+	    switch (t_tag0) {
+		case __vsmType:
+		    // Decode alternative 'vsmType'
+		    try {
+			VsmType item1 = null;
+
+			// Decode alternative 'vsmType'
+			item1 = new VsmType(coder.decodeOctetString(source));
+			this.mChosenValue = item1;
+			this.mChosenFlag = vsmType_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("vsmType", "VsmType", 0);
+			throw de;
+		    }
+		    break;
+		case __isdType:
+		    // Decode alternative 'isdType'
+		    try {
+			IsdType item1 = null;
+
+			// Decode alternative 'isdType'
+			item1 = new IsdType(coder.decodeOctetString(source));
+			this.mChosenValue = item1;
+			this.mChosenFlag = isdType_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("isdType", "IsdType", 0);
+			throw de;
+		    }
+		    break;
+		default:
+		    throw new DecoderException(com.oss.util.ExceptionDescriptor._unknown_field, null, tag0);
+	    }
+	    if (coder.hasMoreProperties(source, false))
+		throw new DecoderException(com.oss.util.ExceptionDescriptor._json_unexpected_token, null, ": expecting '}'");
+	    return this;
+	}
+
+	/**
 	 * Clone 'this' object.
 	 */
 	public Type clone() {
@@ -371,6 +502,41 @@ public class DataSubscriptionRequest extends Sequence implements BEREncodable, B
 	serviceRegion = null;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__dialogID("dialogID"),
+	__seqID("seqID"),
+	__groupID("groupID"),
+	__requestID("requestID"),
+	__type("type"),
+	__endTime("endTime"),
+	__serviceRegion("serviceRegion"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(8);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Encode the PDU using BER (reserved for internal use).
@@ -973,6 +1139,315 @@ public class DataSubscriptionRequest extends Sequence implements BEREncodable, B
     {
 	try {
 	    this.decodeValue(coder, source, this);
+	    return this;
+	} catch (Exception e) {
+	    DecoderException de = DecoderException.wrapException(e);
+	    de.appendFieldContext(null, "DataSubscriptionRequest");
+	    throw de;
+	}
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'dialogID'
+	try {
+	    SemiDialogID item1 = this.dialogID;
+
+	    {
+		sink.encodeKey("dialogID");
+		if (item1.isUnknownEnumerator()) {
+		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		} else 
+		    sink.writeString(item1.name());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("dialogID", "SemiDialogID");
+	    throw ee;
+	}
+	// Encode field 'seqID'
+	try {
+	    SemiSequenceID item1 = this.seqID;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("seqID");
+		if (item1.isUnknownEnumerator()) {
+		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		} else 
+		    sink.writeString(item1.name());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("seqID", "SemiSequenceID");
+	    throw ee;
+	}
+	// Encode field 'groupID'
+	try {
+	    GroupID item1 = this.groupID;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("groupID");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("groupID", "GroupID");
+	    throw ee;
+	}
+	// Encode field 'requestID'
+	try {
+	    com.bah.ode.asn.oss.dsrc.TemporaryID item1 = this.requestID;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("requestID");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("requestID", "TemporaryID");
+	    throw ee;
+	}
+	// Encode field 'type'
+	try {
+	    Type item1 = this.type;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("type");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("type", "CHOICE");
+	    throw ee;
+	}
+	// Encode field 'endTime'
+	try {
+	    com.bah.ode.asn.oss.dsrc.DFullTime item1 = this.endTime;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("endTime");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("endTime", "DFullTime");
+	    throw ee;
+	}
+	// Encode field 'serviceRegion'
+	try {
+	    GeoRegion item1 = this.serviceRegion;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("serviceRegion");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "serviceRegion");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("serviceRegion", "GeoRegion");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Encode the PDU using JSON (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encode(JsonCoder coder, JsonWriter sink)
+	    throws EncoderException
+    {
+	try {
+	    this.encodeValue(coder, sink);
+
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext(null, "DataSubscriptionRequest");
+	    throw ee;
+	}
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public DataSubscriptionRequest decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[8];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		DataSubscriptionRequest.__Tag t_tag0 = DataSubscriptionRequest.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = DataSubscriptionRequest.__Tag._null_;
+		switch (t_tag0) {
+		    case __dialogID:
+		    // Decode field 'dialogID'
+		    try {
+			String content1 = coder.decodeString(source);
+			int idx1;
+			SemiDialogID temp1;
+
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			idx1 = coder.resolveName(SemiDialogID.cConstantNameList, content1);
+			if (idx1 < 0 )
+			    temp1 = SemiDialogID.unknownEnumerator();
+			else
+			    temp1 = SemiDialogID.cNamedNumbers[idx1];
+			this.dialogID = temp1;
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("dialogID", "SemiDialogID");
+			throw de;
+		    }
+		    break;
+		    case __seqID:
+		    // Decode field 'seqID'
+		    try {
+			String content1 = coder.decodeString(source);
+			int idx1;
+			SemiSequenceID temp1;
+
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			idx1 = coder.resolveName(SemiSequenceID.cConstantNameList, content1);
+			if (idx1 < 0 )
+			    temp1 = SemiSequenceID.unknownEnumerator();
+			else
+			    temp1 = SemiSequenceID.cNamedNumbers[idx1];
+			this.seqID = temp1;
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("seqID", "SemiSequenceID");
+			throw de;
+		    }
+		    break;
+		    case __groupID:
+		    // Decode field 'groupID'
+		    try {
+			if (present0[2])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.groupID = new GroupID(coder.decodeOctetString(source));
+			present0[2] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("groupID", "GroupID");
+			throw de;
+		    }
+		    break;
+		    case __requestID:
+		    // Decode field 'requestID'
+		    try {
+			if (present0[3])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.requestID = new com.bah.ode.asn.oss.dsrc.TemporaryID(coder.decodeOctetString(source));
+			present0[3] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("requestID", "TemporaryID");
+			throw de;
+		    }
+		    break;
+		    case __type:
+		    // Decode field 'type'
+		    try {
+			if (present0[4])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.type == null)
+			    this.type = new Type();
+			this.type.decodeValue(coder, source);
+			present0[4] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("type", "CHOICE");
+			throw de;
+		    }
+		    break;
+		    case __endTime:
+		    // Decode field 'endTime'
+		    try {
+			if (present0[5])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.endTime == null)
+			    this.endTime = new com.bah.ode.asn.oss.dsrc.DFullTime();
+			this.endTime.decodeValue(coder, source);
+			present0[5] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("endTime", "DFullTime");
+			throw de;
+		    }
+		    break;
+		    case __serviceRegion:
+		    // Decode field 'serviceRegion'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[6])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.serviceRegion == null)
+				this.serviceRegion = new GeoRegion();
+			    this.serviceRegion.decodeValue(coder, source);
+			    present0[6] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("serviceRegion", "GeoRegion");
+			throw de;
+		    }
+		    break;
+		    default:
+			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'dialogID'");
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'seqID'");
+	if (!present0[2])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'groupID'");
+	if (!present0[3])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'requestID'");
+	if (!present0[4])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'type'");
+	if (!present0[5])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'endTime'");
+	if (!present0[6])
+	    this.serviceRegion = null;
+	return this;
+    }
+
+    /**
+     * Decode the PDU using JSON (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public AbstractData decode(JsonCoder coder, JsonReader source)
+	    throws DecoderException
+    {
+	try {
+	    this.decodeValue(coder, source);
 	    return this;
 	} catch (Exception e) {
 	    DecoderException de = DecoderException.wrapException(e);

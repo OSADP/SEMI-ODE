@@ -11,10 +11,10 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 18:10:04 2015 */
+/* Created: Tue Dec 22 00:38:27 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
  * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
@@ -37,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -224,6 +229,41 @@ public class SignalRequest extends Sequence {
 	codeWord = null;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__id("id"),
+	__isCancel("isCancel"),
+	__requestedAction("requestedAction"),
+	__inLane("inLane"),
+	__outLane("outLane"),
+	__type("type"),
+	__codeWord("codeWord"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(8);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -731,6 +771,280 @@ public class SignalRequest extends Sequence {
 	    }
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'id'
+	try {
+	    IntersectionID item1 = this.id;
+
+	    {
+		sink.encodeKey("id");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("id", "IntersectionID");
+	    throw ee;
+	}
+	// Encode field 'isCancel'
+	try {
+	    SignalReqScheme item1 = this.isCancel;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("isCancel");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "isCancel");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("isCancel", "SignalReqScheme");
+	    throw ee;
+	}
+	// Encode field 'requestedAction'
+	try {
+	    SignalReqScheme item1 = this.requestedAction;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("requestedAction");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "requestedAction");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("requestedAction", "SignalReqScheme");
+	    throw ee;
+	}
+	// Encode field 'inLane'
+	try {
+	    LaneNumber item1 = this.inLane;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("inLane");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "inLane");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("inLane", "LaneNumber");
+	    throw ee;
+	}
+	// Encode field 'outLane'
+	try {
+	    LaneNumber item1 = this.outLane;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("outLane");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "outLane");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("outLane", "LaneNumber");
+	    throw ee;
+	}
+	// Encode field 'type'
+	try {
+	    NTCIPVehicleclass item1 = this.type;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("type");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("type", "NTCIPVehicleclass");
+	    throw ee;
+	}
+	// Encode field 'codeWord'
+	try {
+	    CodeWord item1 = this.codeWord;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("codeWord");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "codeWord");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("codeWord", "CodeWord");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public SignalRequest decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[8];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		SignalRequest.__Tag t_tag0 = SignalRequest.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = SignalRequest.__Tag._null_;
+		switch (t_tag0) {
+		    case __id:
+		    // Decode field 'id'
+		    try {
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.id = new IntersectionID(coder.decodeOctetString(source));
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("id", "IntersectionID");
+			throw de;
+		    }
+		    break;
+		    case __isCancel:
+		    // Decode field 'isCancel'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[1])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.isCancel = new SignalReqScheme(coder.decodeOctetString(source));
+			    present0[1] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("isCancel", "SignalReqScheme");
+			throw de;
+		    }
+		    break;
+		    case __requestedAction:
+		    // Decode field 'requestedAction'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[2])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.requestedAction = new SignalReqScheme(coder.decodeOctetString(source));
+			    present0[2] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("requestedAction", "SignalReqScheme");
+			throw de;
+		    }
+		    break;
+		    case __inLane:
+		    // Decode field 'inLane'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[3])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.inLane = new LaneNumber(coder.decodeOctetString(source));
+			    present0[3] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("inLane", "LaneNumber");
+			throw de;
+		    }
+		    break;
+		    case __outLane:
+		    // Decode field 'outLane'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[4])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.outLane = new LaneNumber(coder.decodeOctetString(source));
+			    present0[4] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("outLane", "LaneNumber");
+			throw de;
+		    }
+		    break;
+		    case __type:
+		    // Decode field 'type'
+		    try {
+			if (present0[5])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.type = new NTCIPVehicleclass(coder.decodeOctetString(source));
+			present0[5] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("type", "NTCIPVehicleclass");
+			throw de;
+		    }
+		    break;
+		    case __codeWord:
+		    // Decode field 'codeWord'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[6])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.codeWord = new CodeWord(coder.decodeOctetString(source));
+			    present0[6] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("codeWord", "CodeWord");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'id'");
+	if (!present0[1])
+	    this.isCancel = null;
+	if (!present0[2])
+	    this.requestedAction = null;
+	if (!present0[3])
+	    this.inLane = null;
+	if (!present0[4])
+	    this.outLane = null;
+	if (!present0[5])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'type'");
+	if (!present0[6])
+	    this.codeWord = null;
+	return this;
     }
 
     /**

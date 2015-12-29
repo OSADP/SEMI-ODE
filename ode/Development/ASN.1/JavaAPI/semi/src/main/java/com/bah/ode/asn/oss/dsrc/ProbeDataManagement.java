@@ -11,10 +11,10 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 18:10:04 2015 */
+/* Created: Tue Dec 22 00:38:27 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
  * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
@@ -37,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -48,7 +53,7 @@ import com.oss.coders.per.PerCoder;
  * @see Sequence
  */
 
-public class ProbeDataManagement extends Sequence implements BEREncodable, BERDecodable, DEREncodable, PEREncodable, PERDecodable {
+public class ProbeDataManagement extends Sequence implements BEREncodable, BERDecodable, DEREncodable, JSONEncodable, JSONDecodable, PEREncodable, PERDecodable {
     public DSRCmsgID msgID;
     public Sample sample;
     public HeadingSlice directions;
@@ -228,6 +233,36 @@ public class ProbeDataManagement extends Sequence implements BEREncodable, BERDe
 	
 	
 	/**
+	 * Hashtable for tags (reserved for internal use).
+	 * This class is reserved for internal use and must not be used in the application code.
+	 */
+	public static enum __Tag
+	{
+	    __termtime("termtime"),
+	    __termDistance("termDistance"),
+	    _null_("_null_");
+	    private String tag;
+	    private static java.util.HashMap<String, __Tag> map =
+		new java.util.HashMap<String, __Tag>(3);
+	    private __Tag(String tag) {
+		this.tag = tag;
+	    }
+	    private String getTag() {
+		return tag;
+	    }
+	    /**
+	     * This method is reserved for internal use and must not be invoked from the application code.
+	     */
+	    public static __Tag getTagSub(String tag) {
+		return map.get(tag);
+	    }
+	    static {
+		for (__Tag t:values())
+		    map.put(t.getTag(), t);
+	    }
+	}
+	
+	/**
 	 * Implements PER value encoder for the type (reserved for internal use).
 	 * This method is reserved for internal use and must not be invoked from the application code.
 	 */
@@ -331,6 +366,102 @@ public class ProbeDataManagement extends Sequence implements BEREncodable, BERDe
 	}
 
 	/**
+	 * Implements JSON value encoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public void encodeValue(JsonCoder coder, JsonWriter sink)
+		throws IOException, EncoderException
+	{
+	    int idx0 = this.mChosenFlag;
+
+	    sink.beginObject();
+	    switch (idx0)
+	    {
+	    case termtime_chosen:
+		// Encode alternative 'termtime'
+		try {
+		    TermTime item1 = (TermTime)this.mChosenValue;
+
+		    sink.encodeKey("termtime");
+		    coder.encodeInteger(item1.longValue(), sink);
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("termtime", "TermTime", 0);
+		    throw ee;
+		}
+		break;
+	    case termDistance_chosen:
+		// Encode alternative 'termDistance'
+		try {
+		    TermDistance item1 = (TermDistance)this.mChosenValue;
+
+		    sink.encodeKey("termDistance");
+		    coder.encodeInteger(item1.longValue(), sink);
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("termDistance", "TermDistance", 0);
+		    throw ee;
+		}
+		break;
+	    default:
+		throw new EncoderException(com.oss.util.ExceptionDescriptor._bad_choice, null, idx0);
+	    }
+	    sink.endObject();
+
+	}
+
+	/**
+	 * Implements JSON value decoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public Term decodeValue(JsonCoder coder, JsonReader source)
+		throws IOException, DecoderException
+	{
+	    coder.decodeObject(source);
+	    String tag0 = coder.nextProperty(source);
+	    Term.__Tag t_tag0 = Term.__Tag.getTagSub(tag0);
+	    if (t_tag0 == null) 
+		t_tag0 = Term.__Tag._null_;
+	    switch (t_tag0) {
+		case __termtime:
+		    // Decode alternative 'termtime'
+		    try {
+			TermTime item1 = new TermTime();
+
+			// Decode alternative 'termtime'
+			item1.setValue(coder.decodeInteger(source));
+			this.mChosenValue = item1;
+			this.mChosenFlag = termtime_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("termtime", "TermTime", 0);
+			throw de;
+		    }
+		    break;
+		case __termDistance:
+		    // Decode alternative 'termDistance'
+		    try {
+			TermDistance item1 = new TermDistance();
+
+			// Decode alternative 'termDistance'
+			item1.setValue(coder.decodeInteger(source));
+			this.mChosenValue = item1;
+			this.mChosenFlag = termDistance_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("termDistance", "TermDistance", 0);
+			throw de;
+		    }
+		    break;
+		default:
+		    throw new DecoderException(com.oss.util.ExceptionDescriptor._unknown_field, null, tag0);
+	    }
+	    if (coder.hasMoreProperties(source, false))
+		throw new DecoderException(com.oss.util.ExceptionDescriptor._json_unexpected_token, null, ": expecting '}'");
+	    return this;
+	}
+
+	/**
 	 * Clone 'this' object.
 	 */
 	public Term clone() {
@@ -427,6 +558,36 @@ public class ProbeDataManagement extends Sequence implements BEREncodable, BERDe
 	
 	
 	/**
+	 * Hashtable for tags (reserved for internal use).
+	 * This class is reserved for internal use and must not be used in the application code.
+	 */
+	public static enum __Tag
+	{
+	    __snapshotTime("snapshotTime"),
+	    __snapshotDistance("snapshotDistance"),
+	    _null_("_null_");
+	    private String tag;
+	    private static java.util.HashMap<String, __Tag> map =
+		new java.util.HashMap<String, __Tag>(3);
+	    private __Tag(String tag) {
+		this.tag = tag;
+	    }
+	    private String getTag() {
+		return tag;
+	    }
+	    /**
+	     * This method is reserved for internal use and must not be invoked from the application code.
+	     */
+	    public static __Tag getTagSub(String tag) {
+		return map.get(tag);
+	    }
+	    static {
+		for (__Tag t:values())
+		    map.put(t.getTag(), t);
+	    }
+	}
+	
+	/**
 	 * Implements PER value encoder for the type (reserved for internal use).
 	 * This method is reserved for internal use and must not be invoked from the application code.
 	 */
@@ -513,6 +674,102 @@ public class ProbeDataManagement extends Sequence implements BEREncodable, BERDe
 		    break;
 	    }
 	    return data;
+	}
+
+	/**
+	 * Implements JSON value encoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public void encodeValue(JsonCoder coder, JsonWriter sink)
+		throws IOException, EncoderException
+	{
+	    int idx0 = this.mChosenFlag;
+
+	    sink.beginObject();
+	    switch (idx0)
+	    {
+	    case snapshotTime_chosen:
+		// Encode alternative 'snapshotTime'
+		try {
+		    SnapshotTime item1 = (SnapshotTime)this.mChosenValue;
+
+		    sink.encodeKey("snapshotTime");
+		    item1.encodeValue(coder, sink);
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("snapshotTime", "SnapshotTime", 0);
+		    throw ee;
+		}
+		break;
+	    case snapshotDistance_chosen:
+		// Encode alternative 'snapshotDistance'
+		try {
+		    SnapshotDistance item1 = (SnapshotDistance)this.mChosenValue;
+
+		    sink.encodeKey("snapshotDistance");
+		    item1.encodeValue(coder, sink);
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("snapshotDistance", "SnapshotDistance", 0);
+		    throw ee;
+		}
+		break;
+	    default:
+		throw new EncoderException(com.oss.util.ExceptionDescriptor._bad_choice, null, idx0);
+	    }
+	    sink.endObject();
+
+	}
+
+	/**
+	 * Implements JSON value decoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public Snapshot decodeValue(JsonCoder coder, JsonReader source)
+		throws IOException, DecoderException
+	{
+	    coder.decodeObject(source);
+	    String tag0 = coder.nextProperty(source);
+	    Snapshot.__Tag t_tag0 = Snapshot.__Tag.getTagSub(tag0);
+	    if (t_tag0 == null) 
+		t_tag0 = Snapshot.__Tag._null_;
+	    switch (t_tag0) {
+		case __snapshotTime:
+		    // Decode alternative 'snapshotTime'
+		    try {
+			SnapshotTime item1 = new SnapshotTime();
+
+			// Decode alternative 'snapshotTime'
+			item1.decodeValue(coder, source);
+			this.mChosenValue = item1;
+			this.mChosenFlag = snapshotTime_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("snapshotTime", "SnapshotTime", 0);
+			throw de;
+		    }
+		    break;
+		case __snapshotDistance:
+		    // Decode alternative 'snapshotDistance'
+		    try {
+			SnapshotDistance item1 = new SnapshotDistance();
+
+			// Decode alternative 'snapshotDistance'
+			item1.decodeValue(coder, source);
+			this.mChosenValue = item1;
+			this.mChosenFlag = snapshotDistance_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("snapshotDistance", "SnapshotDistance", 0);
+			throw de;
+		    }
+		    break;
+		default:
+		    throw new DecoderException(com.oss.util.ExceptionDescriptor._unknown_field, null, tag0);
+	    }
+	    if (coder.hasMoreProperties(source, false))
+		throw new DecoderException(com.oss.util.ExceptionDescriptor._json_unexpected_token, null, ": expecting '}'");
+	    return this;
 	}
 
 	/**
@@ -722,6 +979,70 @@ public class ProbeDataManagement extends Sequence implements BEREncodable, BERDe
 	}
 
 	/**
+	 * Implements JSON value encoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public void encodeValue(JsonCoder coder, JsonWriter sink)
+		throws IOException, EncoderException
+	{
+	    int total_len0 = this.elements.size();
+	    int idx0 = 0;
+
+	    sink.beginArray();
+	    if (total_len0 > 0) {
+		while (true) {
+		    try {
+			VehicleStatusRequest item1 = this.elements.get(idx0);
+
+			item1.encodeValue(coder, sink);
+		    
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext(null, "VehicleStatusRequest", idx0);
+		    throw ee;
+		}
+		idx0++;
+		if (idx0 == total_len0) break;
+		sink.writeSeparator();
+	    }
+	}
+	sink.endArray();
+
+    }
+
+	/**
+	 * Implements JSON value decoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public DataElements decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	int total_len0 = 0;
+	int idx0 = 0;
+
+	if (this.elements != null)
+	    this.elements.clear();
+	else
+	    this.elements = new java.util.ArrayList<VehicleStatusRequest>(total_len0);
+	coder.decodeArray(source);
+	if (coder.hasMoreElements(source, true))
+	    do {
+		try {
+		    VehicleStatusRequest item1 = new VehicleStatusRequest();
+
+		    this.elements.add(item1);
+		    item1.decodeValue(coder, source);
+		} catch (Exception e) {
+		    DecoderException de = DecoderException.wrapException(e);
+		    de.appendElementContext(null, "VehicleStatusRequest", idx0);
+		    throw de;
+		}
+		++idx0;
+	    } while (coder.hasMoreElements(source, false));
+	    return this;
+	}
+
+	/**
 	 * Compare 'this' object to another object to see if their contents are the same.
 	 */
 	public boolean abstractEqualTo(AbstractData that)
@@ -777,6 +1098,42 @@ public class ProbeDataManagement extends Sequence implements BEREncodable, BERDe
 	}
     } // End class definition for DataElements
 
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__msgID("msgID"),
+	__sample("sample"),
+	__directions("directions"),
+	__term("term"),
+	__snapshot("snapshot"),
+	__txInterval("txInterval"),
+	__cntTthreshold("cntTthreshold"),
+	__dataElements("dataElements"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(9);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
+    
     /**
      * Encode the PDU using BER (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
@@ -1591,6 +1948,332 @@ public class ProbeDataManagement extends Sequence implements BEREncodable, BERDe
     {
 	try {
 	    this.decodeValue(coder, source, this);
+	    return this;
+	} catch (Exception e) {
+	    DecoderException de = DecoderException.wrapException(e);
+	    de.appendFieldContext(null, "ProbeDataManagement");
+	    throw de;
+	}
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'msgID'
+	try {
+	    DSRCmsgID item1 = this.msgID;
+
+	    {
+		sink.encodeKey("msgID");
+		if (item1.isUnknownEnumerator()) {
+		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		} else 
+		    sink.writeString(item1.name());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msgID", "DSRCmsgID");
+	    throw ee;
+	}
+	// Encode field 'sample'
+	try {
+	    Sample item1 = this.sample;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("sample");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("sample", "Sample");
+	    throw ee;
+	}
+	// Encode field 'directions'
+	try {
+	    HeadingSlice item1 = this.directions;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("directions");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("directions", "HeadingSlice");
+	    throw ee;
+	}
+	// Encode field 'term'
+	try {
+	    Term item1 = this.term;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("term");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("term", "CHOICE");
+	    throw ee;
+	}
+	// Encode field 'snapshot'
+	try {
+	    Snapshot item1 = this.snapshot;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("snapshot");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("snapshot", "CHOICE");
+	    throw ee;
+	}
+	// Encode field 'txInterval'
+	try {
+	    TxTime item1 = this.txInterval;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("txInterval");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("txInterval", "TxTime");
+	    throw ee;
+	}
+	// Encode field 'cntTthreshold'
+	try {
+	    Count item1 = this.cntTthreshold;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("cntTthreshold");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("cntTthreshold", "Count");
+	    throw ee;
+	}
+	// Encode field 'dataElements'
+	try {
+	    DataElements item1 = this.dataElements;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("dataElements");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("dataElements", "SEQUENCE OF");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Encode the PDU using JSON (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encode(JsonCoder coder, JsonWriter sink)
+	    throws EncoderException
+    {
+	try {
+	    this.encodeValue(coder, sink);
+
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext(null, "ProbeDataManagement");
+	    throw ee;
+	}
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public ProbeDataManagement decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[9];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		ProbeDataManagement.__Tag t_tag0 = ProbeDataManagement.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = ProbeDataManagement.__Tag._null_;
+		switch (t_tag0) {
+		    case __msgID:
+		    // Decode field 'msgID'
+		    try {
+			String content1 = coder.decodeString(source);
+			int idx1;
+			DSRCmsgID temp1;
+
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			idx1 = coder.resolveName(DSRCmsgID.cConstantNameList, content1);
+			if (idx1 < 0 )
+			    temp1 = DSRCmsgID.unknownEnumerator();
+			else
+			    temp1 = DSRCmsgID.cNamedNumbers[idx1];
+			this.msgID = temp1;
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msgID", "DSRCmsgID");
+			throw de;
+		    }
+		    break;
+		    case __sample:
+		    // Decode field 'sample'
+		    try {
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.sample == null)
+			    this.sample = new Sample();
+			this.sample.decodeValue(coder, source);
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("sample", "Sample");
+			throw de;
+		    }
+		    break;
+		    case __directions:
+		    // Decode field 'directions'
+		    try {
+			if (present0[2])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.directions = new HeadingSlice(coder.decodeOctetString(source));
+			present0[2] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("directions", "HeadingSlice");
+			throw de;
+		    }
+		    break;
+		    case __term:
+		    // Decode field 'term'
+		    try {
+			if (present0[3])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.term == null)
+			    this.term = new Term();
+			this.term.decodeValue(coder, source);
+			present0[3] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("term", "CHOICE");
+			throw de;
+		    }
+		    break;
+		    case __snapshot:
+		    // Decode field 'snapshot'
+		    try {
+			if (present0[4])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.snapshot == null)
+			    this.snapshot = new Snapshot();
+			this.snapshot.decodeValue(coder, source);
+			present0[4] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("snapshot", "CHOICE");
+			throw de;
+		    }
+		    break;
+		    case __txInterval:
+		    // Decode field 'txInterval'
+		    try {
+			if (present0[5])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.txInterval == null)
+			    this.txInterval = new TxTime();
+			this.txInterval.setValue(coder.decodeInteger(source));
+			present0[5] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("txInterval", "TxTime");
+			throw de;
+		    }
+		    break;
+		    case __cntTthreshold:
+		    // Decode field 'cntTthreshold'
+		    try {
+			if (present0[6])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.cntTthreshold == null)
+			    this.cntTthreshold = new Count();
+			this.cntTthreshold.setValue(coder.decodeInteger(source));
+			present0[6] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("cntTthreshold", "Count");
+			throw de;
+		    }
+		    break;
+		    case __dataElements:
+		    // Decode field 'dataElements'
+		    try {
+			if (present0[7])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.dataElements == null)
+			    this.dataElements = new DataElements();
+			this.dataElements.decodeValue(coder, source);
+			present0[7] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("dataElements", "SEQUENCE OF");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'msgID'");
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'sample'");
+	if (!present0[2])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'directions'");
+	if (!present0[3])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'term'");
+	if (!present0[4])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'snapshot'");
+	if (!present0[5])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'txInterval'");
+	if (!present0[6])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'cntTthreshold'");
+	if (!present0[7])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'dataElements'");
+	return this;
+    }
+
+    /**
+     * Decode the PDU using JSON (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public AbstractData decode(JsonCoder coder, JsonReader source)
+	    throws DecoderException
+    {
+	try {
+	    this.decodeValue(coder, source);
 	    return this;
 	} catch (Exception e) {
 	    DecoderException de = DecoderException.wrapException(e);

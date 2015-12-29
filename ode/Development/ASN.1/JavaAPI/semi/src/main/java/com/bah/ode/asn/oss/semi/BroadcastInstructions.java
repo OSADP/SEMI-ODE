@@ -11,10 +11,10 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 18:10:04 2015 */
+/* Created: Tue Dec 22 00:38:27 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
  * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
@@ -37,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -218,6 +223,41 @@ public class BroadcastInstructions extends Sequence {
 	dsrcInst = null;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__biType("biType"),
+	__biPriority("biPriority"),
+	__biDeliveryStart("biDeliveryStart"),
+	__biDeliveryStop("biDeliveryStop"),
+	__biSignature("biSignature"),
+	__biEncryption("biEncryption"),
+	__dsrcInst("dsrcInst"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(8);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements PER value encoder for the type (reserved for internal use).
@@ -455,6 +495,274 @@ public class BroadcastInstructions extends Sequence {
 	    }
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'biType'
+	try {
+	    AdvisoryBroadcastType item1 = this.biType;
+
+	    {
+		sink.encodeKey("biType");
+		if (item1.isUnknownEnumerator()) {
+		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		} else 
+		    sink.writeString(item1.name());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("biType", "AdvisoryBroadcastType");
+	    throw ee;
+	}
+	// Encode field 'biPriority'
+	try {
+	    com.bah.ode.asn.oss.dsrc.Priority item1 = this.biPriority;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("biPriority");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("biPriority", "Priority");
+	    throw ee;
+	}
+	// Encode field 'biDeliveryStart'
+	try {
+	    com.bah.ode.asn.oss.dsrc.DFullTime item1 = this.biDeliveryStart;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("biDeliveryStart");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("biDeliveryStart", "DFullTime");
+	    throw ee;
+	}
+	// Encode field 'biDeliveryStop'
+	try {
+	    com.bah.ode.asn.oss.dsrc.DFullTime item1 = this.biDeliveryStop;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("biDeliveryStop");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("biDeliveryStop", "DFullTime");
+	    throw ee;
+	}
+	// Encode field 'biSignature'
+	try {
+	    BOOLEAN item1 = this.biSignature;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("biSignature");
+		sink.writeBoolean(item1.booleanValue());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("biSignature", "BOOLEAN");
+	    throw ee;
+	}
+	// Encode field 'biEncryption'
+	try {
+	    BOOLEAN item1 = this.biEncryption;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("biEncryption");
+		sink.writeBoolean(item1.booleanValue());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("biEncryption", "BOOLEAN");
+	    throw ee;
+	}
+	// Encode field 'dsrcInst'
+	try {
+	    DsrcInstructions item1 = this.dsrcInst;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("dsrcInst");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "dsrcInst");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("dsrcInst", "DsrcInstructions");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public BroadcastInstructions decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[8];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		BroadcastInstructions.__Tag t_tag0 = BroadcastInstructions.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = BroadcastInstructions.__Tag._null_;
+		switch (t_tag0) {
+		    case __biType:
+		    // Decode field 'biType'
+		    try {
+			String content1 = coder.decodeString(source);
+			int idx1;
+			AdvisoryBroadcastType temp1;
+
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			idx1 = coder.resolveName(AdvisoryBroadcastType.cConstantNameList, content1);
+			if (idx1 < 0 )
+			    temp1 = AdvisoryBroadcastType.unknownEnumerator();
+			else
+			    temp1 = AdvisoryBroadcastType.cNamedNumbers[idx1];
+			this.biType = temp1;
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("biType", "AdvisoryBroadcastType");
+			throw de;
+		    }
+		    break;
+		    case __biPriority:
+		    // Decode field 'biPriority'
+		    try {
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.biPriority = new com.bah.ode.asn.oss.dsrc.Priority(coder.decodeOctetString(source));
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("biPriority", "Priority");
+			throw de;
+		    }
+		    break;
+		    case __biDeliveryStart:
+		    // Decode field 'biDeliveryStart'
+		    try {
+			if (present0[2])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.biDeliveryStart == null)
+			    this.biDeliveryStart = new com.bah.ode.asn.oss.dsrc.DFullTime();
+			this.biDeliveryStart.decodeValue(coder, source);
+			present0[2] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("biDeliveryStart", "DFullTime");
+			throw de;
+		    }
+		    break;
+		    case __biDeliveryStop:
+		    // Decode field 'biDeliveryStop'
+		    try {
+			if (present0[3])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.biDeliveryStop == null)
+			    this.biDeliveryStop = new com.bah.ode.asn.oss.dsrc.DFullTime();
+			this.biDeliveryStop.decodeValue(coder, source);
+			present0[3] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("biDeliveryStop", "DFullTime");
+			throw de;
+		    }
+		    break;
+		    case __biSignature:
+		    // Decode field 'biSignature'
+		    try {
+			if (present0[4])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.biSignature == null)
+			    this.biSignature = new BOOLEAN();
+			this.biSignature.setValue(coder.decodeBoolean(source));
+			present0[4] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("biSignature", "BOOLEAN");
+			throw de;
+		    }
+		    break;
+		    case __biEncryption:
+		    // Decode field 'biEncryption'
+		    try {
+			if (present0[5])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.biEncryption == null)
+			    this.biEncryption = new BOOLEAN();
+			this.biEncryption.setValue(coder.decodeBoolean(source));
+			present0[5] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("biEncryption", "BOOLEAN");
+			throw de;
+		    }
+		    break;
+		    case __dsrcInst:
+		    // Decode field 'dsrcInst'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[6])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.dsrcInst == null)
+				this.dsrcInst = new DsrcInstructions();
+			    this.dsrcInst.decodeValue(coder, source);
+			    present0[6] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("dsrcInst", "DsrcInstructions");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'biType'");
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'biPriority'");
+	if (!present0[2])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'biDeliveryStart'");
+	if (!present0[3])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'biDeliveryStop'");
+	if (!present0[4])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'biSignature'");
+	if (!present0[5])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'biEncryption'");
+	if (!present0[6])
+	    this.dsrcInst = null;
+	return this;
     }
 
     /**
