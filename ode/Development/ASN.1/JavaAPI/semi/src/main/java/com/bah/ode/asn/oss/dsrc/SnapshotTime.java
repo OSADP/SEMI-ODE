@@ -11,10 +11,10 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 18:10:04 2015 */
+/* Created: Tue Dec 22 00:38:27 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
  * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
@@ -37,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -149,6 +154,38 @@ public class SnapshotTime extends Sequence {
 	this.s2 = s2;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__t1("t1"),
+	__s1("s1"),
+	__t2("t2"),
+	__s2("s2"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(5);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -430,6 +467,165 @@ public class SnapshotTime extends Sequence {
 	    throw de;
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 't1'
+	try {
+	    INTEGER item1 = this.t1;
+
+	    {
+		sink.encodeKey("t1");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("t1", "INTEGER");
+	    throw ee;
+	}
+	// Encode field 's1'
+	try {
+	    INTEGER item1 = this.s1;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("s1");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("s1", "INTEGER");
+	    throw ee;
+	}
+	// Encode field 't2'
+	try {
+	    INTEGER item1 = this.t2;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("t2");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("t2", "INTEGER");
+	    throw ee;
+	}
+	// Encode field 's2'
+	try {
+	    INTEGER item1 = this.s2;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("s2");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("s2", "INTEGER");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public SnapshotTime decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[5];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		SnapshotTime.__Tag t_tag0 = SnapshotTime.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = SnapshotTime.__Tag._null_;
+		switch (t_tag0) {
+		    case __t1:
+		    // Decode field 't1'
+		    try {
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.t1 == null)
+			    this.t1 = new INTEGER();
+			this.t1.setValue(coder.decodeInteger(source));
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("t1", "INTEGER");
+			throw de;
+		    }
+		    break;
+		    case __s1:
+		    // Decode field 's1'
+		    try {
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.s1 == null)
+			    this.s1 = new INTEGER();
+			this.s1.setValue(coder.decodeInteger(source));
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("s1", "INTEGER");
+			throw de;
+		    }
+		    break;
+		    case __t2:
+		    // Decode field 't2'
+		    try {
+			if (present0[2])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.t2 == null)
+			    this.t2 = new INTEGER();
+			this.t2.setValue(coder.decodeInteger(source));
+			present0[2] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("t2", "INTEGER");
+			throw de;
+		    }
+		    break;
+		    case __s2:
+		    // Decode field 's2'
+		    try {
+			if (present0[3])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.s2 == null)
+			    this.s2 = new INTEGER();
+			this.s2.setValue(coder.decodeInteger(source));
+			present0[3] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("s2", "INTEGER");
+			throw de;
+		    }
+		    break;
+		    default:
+			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 't1'");
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 's1'");
+	if (!present0[2])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 't2'");
+	if (!present0[3])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 's2'");
+	return this;
     }
 
     /**

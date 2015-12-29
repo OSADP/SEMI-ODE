@@ -11,10 +11,10 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 18:10:04 2015 */
+/* Created: Tue Dec 22 00:38:27 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
  * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
@@ -37,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -232,6 +237,37 @@ public class ValidRegion extends Sequence {
 	
 	
 	/**
+	 * Hashtable for tags (reserved for internal use).
+	 * This class is reserved for internal use and must not be used in the application code.
+	 */
+	public static enum __Tag
+	{
+	    __shapePointSet("shapePointSet"),
+	    __circle("circle"),
+	    __regionPointSet("regionPointSet"),
+	    _null_("_null_");
+	    private String tag;
+	    private static java.util.HashMap<String, __Tag> map =
+		new java.util.HashMap<String, __Tag>(4);
+	    private __Tag(String tag) {
+		this.tag = tag;
+	    }
+	    private String getTag() {
+		return tag;
+	    }
+	    /**
+	     * This method is reserved for internal use and must not be invoked from the application code.
+	     */
+	    public static __Tag getTagSub(String tag) {
+		return map.get(tag);
+	    }
+	    static {
+		for (__Tag t:values())
+		    map.put(t.getTag(), t);
+	    }
+	}
+	
+	/**
 	 * Implements PER value encoder for the type (reserved for internal use).
 	 * This method is reserved for internal use and must not be invoked from the application code.
 	 */
@@ -347,6 +383,130 @@ public class ValidRegion extends Sequence {
 	}
 
 	/**
+	 * Implements JSON value encoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public void encodeValue(JsonCoder coder, JsonWriter sink)
+		throws IOException, EncoderException
+	{
+	    int idx0 = this.mChosenFlag;
+
+	    sink.beginObject();
+	    switch (idx0)
+	    {
+	    case shapePointSet_chosen:
+		// Encode alternative 'shapePointSet'
+		try {
+		    ShapePointSet item1 = (ShapePointSet)this.mChosenValue;
+
+		    sink.encodeKey("shapePointSet");
+		    item1.encodeValue(coder, sink);
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("shapePointSet", "ShapePointSet", 0);
+		    throw ee;
+		}
+		break;
+	    case circle_chosen:
+		// Encode alternative 'circle'
+		try {
+		    Circle item1 = (Circle)this.mChosenValue;
+
+		    sink.encodeKey("circle");
+		    item1.encodeValue(coder, sink);
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("circle", "Circle", 0);
+		    throw ee;
+		}
+		break;
+	    case regionPointSet_chosen:
+		// Encode alternative 'regionPointSet'
+		try {
+		    RegionPointSet item1 = (RegionPointSet)this.mChosenValue;
+
+		    sink.encodeKey("regionPointSet");
+		    item1.encodeValue(coder, sink);
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("regionPointSet", "RegionPointSet", 0);
+		    throw ee;
+		}
+		break;
+	    default:
+		throw new EncoderException(com.oss.util.ExceptionDescriptor._bad_choice, null, idx0);
+	    }
+	    sink.endObject();
+
+	}
+
+	/**
+	 * Implements JSON value decoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public Area decodeValue(JsonCoder coder, JsonReader source)
+		throws IOException, DecoderException
+	{
+	    coder.decodeObject(source);
+	    String tag0 = coder.nextProperty(source);
+	    Area.__Tag t_tag0 = Area.__Tag.getTagSub(tag0);
+	    if (t_tag0 == null) 
+		t_tag0 = Area.__Tag._null_;
+	    switch (t_tag0) {
+		case __shapePointSet:
+		    // Decode alternative 'shapePointSet'
+		    try {
+			ShapePointSet item1 = new ShapePointSet();
+
+			// Decode alternative 'shapePointSet'
+			item1.decodeValue(coder, source);
+			this.mChosenValue = item1;
+			this.mChosenFlag = shapePointSet_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("shapePointSet", "ShapePointSet", 0);
+			throw de;
+		    }
+		    break;
+		case __circle:
+		    // Decode alternative 'circle'
+		    try {
+			Circle item1 = new Circle();
+
+			// Decode alternative 'circle'
+			item1.decodeValue(coder, source);
+			this.mChosenValue = item1;
+			this.mChosenFlag = circle_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("circle", "Circle", 0);
+			throw de;
+		    }
+		    break;
+		case __regionPointSet:
+		    // Decode alternative 'regionPointSet'
+		    try {
+			RegionPointSet item1 = new RegionPointSet();
+
+			// Decode alternative 'regionPointSet'
+			item1.decodeValue(coder, source);
+			this.mChosenValue = item1;
+			this.mChosenFlag = regionPointSet_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("regionPointSet", "RegionPointSet", 0);
+			throw de;
+		    }
+		    break;
+		default:
+		    throw new DecoderException(com.oss.util.ExceptionDescriptor._unknown_field, null, tag0);
+	    }
+	    if (coder.hasMoreProperties(source, false))
+		throw new DecoderException(com.oss.util.ExceptionDescriptor._json_unexpected_token, null, ": expecting '}'");
+	    return this;
+	}
+
+	/**
 	 * Clone 'this' object.
 	 */
 	public Area clone() {
@@ -355,6 +515,37 @@ public class ValidRegion extends Sequence {
 
     } // End class definition for Area
 
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__direction("direction"),
+	__extent("extent"),
+	__area("area"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(4);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
+    
     /**
      * Implements BER value encoder for the type (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
@@ -703,6 +894,146 @@ public class ValidRegion extends Sequence {
 	    throw de;
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'direction'
+	try {
+	    HeadingSlice item1 = this.direction;
+
+	    {
+		sink.encodeKey("direction");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("direction", "HeadingSlice");
+	    throw ee;
+	}
+	// Encode field 'extent'
+	try {
+	    Extent item1 = this.extent;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("extent");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "extent");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("extent", "Extent");
+	    throw ee;
+	}
+	// Encode field 'area'
+	try {
+	    Area item1 = this.area;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("area");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("area", "CHOICE");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public ValidRegion decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[4];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		ValidRegion.__Tag t_tag0 = ValidRegion.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = ValidRegion.__Tag._null_;
+		switch (t_tag0) {
+		    case __direction:
+		    // Decode field 'direction'
+		    try {
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.direction = new HeadingSlice(coder.decodeOctetString(source));
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("direction", "HeadingSlice");
+			throw de;
+		    }
+		    break;
+		    case __extent:
+		    // Decode field 'extent'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    Extent temp1;
+
+			    if (present0[1])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(Extent.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = Extent.cNamedNumbers[idx1];
+			    this.extent = temp1;
+			    present0[1] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("extent", "Extent");
+			throw de;
+		    }
+		    break;
+		    case __area:
+		    // Decode field 'area'
+		    try {
+			if (present0[2])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.area == null)
+			    this.area = new Area();
+			this.area.decodeValue(coder, source);
+			present0[2] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("area", "CHOICE");
+			throw de;
+		    }
+		    break;
+		    default:
+			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'direction'");
+	if (!present0[1])
+	    this.extent = null;
+	if (!present0[2])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'area'");
+	return this;
     }
 
     /**

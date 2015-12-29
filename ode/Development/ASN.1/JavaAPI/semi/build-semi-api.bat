@@ -4,7 +4,7 @@ call mvn install:install-file -DcreateChecksum=true -Dpackaging=jar -Dfile=lib\o
 
 REM Generate ASN.1 JavaAPI
 call "C:\Program Files (x86)\OSS Nokalva\asn1pjav\win32\6.2.0\ossvars.bat"
-call "C:\Program Files (x86)\OSS Nokalva\asn1pjav\win32\6.2.0\bin\asn1pjav.exe" ..\..\DSRC_R36_Source.asn ..\..\SEMI_ASN.1_Structures_2.2.asn -ber -der -per -root -uper -path src/main/java -output com.bah.ode.asn.oss -toed
+call "C:\Program Files (x86)\OSS Nokalva\asn1pjav\win32\6.2.0\bin\asn1pjav.exe" ..\..\DSRC_R36_Source.asn ..\..\SEMI_ASN.1_Structures_2.2.asn -ber -der -per -root -uper -json -path src/main/java -output com.bah.ode.asn.oss -toed
 
 REM build ASN.1 Java API Jar file and install it in the local Maven repository
 call mvn clean package

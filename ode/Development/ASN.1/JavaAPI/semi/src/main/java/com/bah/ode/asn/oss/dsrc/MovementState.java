@@ -11,10 +11,10 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 18:10:04 2015 */
+/* Created: Tue Dec 22 00:38:27 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
  * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
@@ -37,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -430,6 +435,49 @@ public class MovementState extends Sequence {
      */
     public static final EPAInfo _cEPAInfo_movementName = 
 	com.bah.ode.asn.oss.dsrc.DescriptiveName._cEPAInfo_;
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__movementName("movementName"),
+	__laneCnt("laneCnt"),
+	__laneSet("laneSet"),
+	__currState("currState"),
+	__pedState("pedState"),
+	__specialState("specialState"),
+	__timeToChange("timeToChange"),
+	__stateConfidence("stateConfidence"),
+	__yellState("yellState"),
+	__yellPedState("yellPedState"),
+	__yellTimeToChange("yellTimeToChange"),
+	__yellStateConfidence("yellStateConfidence"),
+	__vehicleCount("vehicleCount"),
+	__pedDetect("pedDetect"),
+	__pedCount("pedCount"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(16);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -1632,6 +1680,659 @@ public class MovementState extends Sequence {
 	    }
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	String separator0 = null;
+
+	sink.beginObject();
+	// Encode field 'movementName'
+	try {
+	    DescriptiveName item1 = this.movementName;
+
+	    if (item1 != null) {
+		{
+		    separator0 = ",";
+		    sink.encodeKey("movementName");
+		    coder.encodeString(item1.stringValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "movementName");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("movementName", "DescriptiveName");
+	    throw ee;
+	}
+	// Encode field 'laneCnt'
+	try {
+	    LaneCount item1 = this.laneCnt;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("laneCnt");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "laneCnt");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("laneCnt", "LaneCount");
+	    throw ee;
+	}
+	// Encode field 'laneSet'
+	try {
+	    LaneSet item1 = this.laneSet;
+
+	    {
+		sink.writeSeparator(separator0);
+		sink.encodeKey("laneSet");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("laneSet", "LaneSet");
+	    throw ee;
+	}
+	// Encode field 'currState'
+	try {
+	    SignalLightState item1 = this.currState;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("currState");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "currState");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("currState", "SignalLightState");
+	    throw ee;
+	}
+	// Encode field 'pedState'
+	try {
+	    PedestrianSignalState item1 = this.pedState;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("pedState");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "pedState");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("pedState", "PedestrianSignalState");
+	    throw ee;
+	}
+	// Encode field 'specialState'
+	try {
+	    SpecialSignalState item1 = this.specialState;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("specialState");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "specialState");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("specialState", "SpecialSignalState");
+	    throw ee;
+	}
+	// Encode field 'timeToChange'
+	try {
+	    TimeMark item1 = this.timeToChange;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("timeToChange");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("timeToChange", "TimeMark");
+	    throw ee;
+	}
+	// Encode field 'stateConfidence'
+	try {
+	    StateConfidence item1 = this.stateConfidence;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("stateConfidence");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "stateConfidence");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("stateConfidence", "StateConfidence");
+	    throw ee;
+	}
+	// Encode field 'yellState'
+	try {
+	    SignalLightState item1 = this.yellState;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("yellState");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "yellState");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("yellState", "SignalLightState");
+	    throw ee;
+	}
+	// Encode field 'yellPedState'
+	try {
+	    PedestrianSignalState item1 = this.yellPedState;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("yellPedState");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "yellPedState");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("yellPedState", "PedestrianSignalState");
+	    throw ee;
+	}
+	// Encode field 'yellTimeToChange'
+	try {
+	    TimeMark item1 = this.yellTimeToChange;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("yellTimeToChange");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "yellTimeToChange");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("yellTimeToChange", "TimeMark");
+	    throw ee;
+	}
+	// Encode field 'yellStateConfidence'
+	try {
+	    StateConfidence item1 = this.yellStateConfidence;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("yellStateConfidence");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "yellStateConfidence");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("yellStateConfidence", "StateConfidence");
+	    throw ee;
+	}
+	// Encode field 'vehicleCount'
+	try {
+	    ObjectCount item1 = this.vehicleCount;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("vehicleCount");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "vehicleCount");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("vehicleCount", "ObjectCount");
+	    throw ee;
+	}
+	// Encode field 'pedDetect'
+	try {
+	    PedestrianDetect item1 = this.pedDetect;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("pedDetect");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "pedDetect");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("pedDetect", "PedestrianDetect");
+	    throw ee;
+	}
+	// Encode field 'pedCount'
+	try {
+	    ObjectCount item1 = this.pedCount;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("pedCount");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "pedCount");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("pedCount", "ObjectCount");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public MovementState decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[16];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		MovementState.__Tag t_tag0 = MovementState.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = MovementState.__Tag._null_;
+		switch (t_tag0) {
+		    case __movementName:
+		    // Decode field 'movementName'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[0])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.movementName = new DescriptiveName(coder.decodeString(source));
+			    present0[0] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("movementName", "DescriptiveName");
+			throw de;
+		    }
+		    break;
+		    case __laneCnt:
+		    // Decode field 'laneCnt'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[1])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.laneCnt == null)
+				this.laneCnt = new LaneCount();
+			    this.laneCnt.setValue(coder.decodeInteger(source));
+			    present0[1] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("laneCnt", "LaneCount");
+			throw de;
+		    }
+		    break;
+		    case __laneSet:
+		    // Decode field 'laneSet'
+		    try {
+			if (present0[2])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.laneSet = new LaneSet(coder.decodeOctetString(source));
+			present0[2] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("laneSet", "LaneSet");
+			throw de;
+		    }
+		    break;
+		    case __currState:
+		    // Decode field 'currState'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[3])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.currState == null)
+				this.currState = new SignalLightState();
+			    this.currState.setValue(coder.decodeInteger(source));
+			    present0[3] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("currState", "SignalLightState");
+			throw de;
+		    }
+		    break;
+		    case __pedState:
+		    // Decode field 'pedState'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    PedestrianSignalState temp1;
+
+			    if (present0[4])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(PedestrianSignalState.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = PedestrianSignalState.unknownEnumerator();
+			    else
+				temp1 = PedestrianSignalState.cNamedNumbers[idx1];
+			    this.pedState = temp1;
+			    present0[4] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("pedState", "PedestrianSignalState");
+			throw de;
+		    }
+		    break;
+		    case __specialState:
+		    // Decode field 'specialState'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    SpecialSignalState temp1;
+
+			    if (present0[5])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(SpecialSignalState.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = SpecialSignalState.unknownEnumerator();
+			    else
+				temp1 = SpecialSignalState.cNamedNumbers[idx1];
+			    this.specialState = temp1;
+			    present0[5] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("specialState", "SpecialSignalState");
+			throw de;
+		    }
+		    break;
+		    case __timeToChange:
+		    // Decode field 'timeToChange'
+		    try {
+			if (present0[6])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.timeToChange == null)
+			    this.timeToChange = new TimeMark();
+			this.timeToChange.setValue(coder.decodeInteger(source));
+			present0[6] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("timeToChange", "TimeMark");
+			throw de;
+		    }
+		    break;
+		    case __stateConfidence:
+		    // Decode field 'stateConfidence'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    StateConfidence temp1;
+
+			    if (present0[7])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(StateConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = StateConfidence.unknownEnumerator();
+			    else
+				temp1 = StateConfidence.cNamedNumbers[idx1];
+			    this.stateConfidence = temp1;
+			    present0[7] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("stateConfidence", "StateConfidence");
+			throw de;
+		    }
+		    break;
+		    case __yellState:
+		    // Decode field 'yellState'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[8])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.yellState == null)
+				this.yellState = new SignalLightState();
+			    this.yellState.setValue(coder.decodeInteger(source));
+			    present0[8] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("yellState", "SignalLightState");
+			throw de;
+		    }
+		    break;
+		    case __yellPedState:
+		    // Decode field 'yellPedState'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    PedestrianSignalState temp1;
+
+			    if (present0[9])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(PedestrianSignalState.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = PedestrianSignalState.unknownEnumerator();
+			    else
+				temp1 = PedestrianSignalState.cNamedNumbers[idx1];
+			    this.yellPedState = temp1;
+			    present0[9] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("yellPedState", "PedestrianSignalState");
+			throw de;
+		    }
+		    break;
+		    case __yellTimeToChange:
+		    // Decode field 'yellTimeToChange'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[10])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.yellTimeToChange == null)
+				this.yellTimeToChange = new TimeMark();
+			    this.yellTimeToChange.setValue(coder.decodeInteger(source));
+			    present0[10] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("yellTimeToChange", "TimeMark");
+			throw de;
+		    }
+		    break;
+		    case __yellStateConfidence:
+		    // Decode field 'yellStateConfidence'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    StateConfidence temp1;
+
+			    if (present0[11])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(StateConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = StateConfidence.unknownEnumerator();
+			    else
+				temp1 = StateConfidence.cNamedNumbers[idx1];
+			    this.yellStateConfidence = temp1;
+			    present0[11] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("yellStateConfidence", "StateConfidence");
+			throw de;
+		    }
+		    break;
+		    case __vehicleCount:
+		    // Decode field 'vehicleCount'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[12])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.vehicleCount == null)
+				this.vehicleCount = new ObjectCount();
+			    this.vehicleCount.setValue(coder.decodeInteger(source));
+			    present0[12] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("vehicleCount", "ObjectCount");
+			throw de;
+		    }
+		    break;
+		    case __pedDetect:
+		    // Decode field 'pedDetect'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    PedestrianDetect temp1;
+
+			    if (present0[13])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(PedestrianDetect.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = PedestrianDetect.unknownEnumerator();
+			    else
+				temp1 = PedestrianDetect.cNamedNumbers[idx1];
+			    this.pedDetect = temp1;
+			    present0[13] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("pedDetect", "PedestrianDetect");
+			throw de;
+		    }
+		    break;
+		    case __pedCount:
+		    // Decode field 'pedCount'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[14])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.pedCount == null)
+				this.pedCount = new ObjectCount();
+			    this.pedCount.setValue(coder.decodeInteger(source));
+			    present0[14] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("pedCount", "ObjectCount");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    this.movementName = null;
+	if (!present0[1])
+	    this.laneCnt = null;
+	if (!present0[2])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'laneSet'");
+	if (!present0[3])
+	    this.currState = null;
+	if (!present0[4])
+	    this.pedState = null;
+	if (!present0[5])
+	    this.specialState = null;
+	if (!present0[6])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'timeToChange'");
+	if (!present0[7])
+	    this.stateConfidence = null;
+	if (!present0[8])
+	    this.yellState = null;
+	if (!present0[9])
+	    this.yellPedState = null;
+	if (!present0[10])
+	    this.yellTimeToChange = null;
+	if (!present0[11])
+	    this.yellStateConfidence = null;
+	if (!present0[12])
+	    this.vehicleCount = null;
+	if (!present0[13])
+	    this.pedDetect = null;
+	if (!present0[14])
+	    this.pedCount = null;
+	return this;
     }
 
     /**

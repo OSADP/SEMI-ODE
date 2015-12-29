@@ -11,10 +11,10 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 18:10:04 2015 */
+/* Created: Tue Dec 22 00:38:27 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
  * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
@@ -37,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -196,6 +201,41 @@ public class FundamentalSituationalStatus extends Sequence {
 	vsmEventFlag = null;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__speed("speed"),
+	__heading("heading"),
+	__steeringAngle("steeringAngle"),
+	__accelSet("accelSet"),
+	__brakes("brakes"),
+	__vehSize("vehSize"),
+	__vsmEventFlag("vsmEventFlag"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(8);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements PER value encoder for the type (reserved for internal use).
@@ -381,6 +421,255 @@ public class FundamentalSituationalStatus extends Sequence {
 	    data.vsmEventFlag = null;
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'speed'
+	try {
+	    com.bah.ode.asn.oss.dsrc.TransmissionAndSpeed item1 = this.speed;
+
+	    {
+		sink.encodeKey("speed");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("speed", "TransmissionAndSpeed");
+	    throw ee;
+	}
+	// Encode field 'heading'
+	try {
+	    com.bah.ode.asn.oss.dsrc.Heading item1 = this.heading;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("heading");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("heading", "Heading");
+	    throw ee;
+	}
+	// Encode field 'steeringAngle'
+	try {
+	    com.bah.ode.asn.oss.dsrc.SteeringWheelAngle item1 = this.steeringAngle;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("steeringAngle");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("steeringAngle", "SteeringWheelAngle");
+	    throw ee;
+	}
+	// Encode field 'accelSet'
+	try {
+	    com.bah.ode.asn.oss.dsrc.AccelerationSet4Way item1 = this.accelSet;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("accelSet");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("accelSet", "AccelerationSet4Way");
+	    throw ee;
+	}
+	// Encode field 'brakes'
+	try {
+	    com.bah.ode.asn.oss.dsrc.BrakeSystemStatus item1 = this.brakes;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("brakes");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("brakes", "BrakeSystemStatus");
+	    throw ee;
+	}
+	// Encode field 'vehSize'
+	try {
+	    com.bah.ode.asn.oss.dsrc.VehicleSize item1 = this.vehSize;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("vehSize");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("vehSize", "VehicleSize");
+	    throw ee;
+	}
+	// Encode field 'vsmEventFlag'
+	try {
+	    VsmEventFlag item1 = this.vsmEventFlag;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("vsmEventFlag");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "vsmEventFlag");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("vsmEventFlag", "VsmEventFlag");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public FundamentalSituationalStatus decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[8];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		FundamentalSituationalStatus.__Tag t_tag0 = FundamentalSituationalStatus.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = FundamentalSituationalStatus.__Tag._null_;
+		switch (t_tag0) {
+		    case __speed:
+		    // Decode field 'speed'
+		    try {
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.speed = new com.bah.ode.asn.oss.dsrc.TransmissionAndSpeed(coder.decodeOctetString(source));
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("speed", "TransmissionAndSpeed");
+			throw de;
+		    }
+		    break;
+		    case __heading:
+		    // Decode field 'heading'
+		    try {
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.heading == null)
+			    this.heading = new com.bah.ode.asn.oss.dsrc.Heading();
+			this.heading.setValue(coder.decodeInteger(source));
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("heading", "Heading");
+			throw de;
+		    }
+		    break;
+		    case __steeringAngle:
+		    // Decode field 'steeringAngle'
+		    try {
+			if (present0[2])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.steeringAngle = new com.bah.ode.asn.oss.dsrc.SteeringWheelAngle(coder.decodeOctetString(source));
+			present0[2] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("steeringAngle", "SteeringWheelAngle");
+			throw de;
+		    }
+		    break;
+		    case __accelSet:
+		    // Decode field 'accelSet'
+		    try {
+			if (present0[3])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.accelSet = new com.bah.ode.asn.oss.dsrc.AccelerationSet4Way(coder.decodeOctetString(source));
+			present0[3] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("accelSet", "AccelerationSet4Way");
+			throw de;
+		    }
+		    break;
+		    case __brakes:
+		    // Decode field 'brakes'
+		    try {
+			if (present0[4])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.brakes = new com.bah.ode.asn.oss.dsrc.BrakeSystemStatus(coder.decodeOctetString(source));
+			present0[4] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("brakes", "BrakeSystemStatus");
+			throw de;
+		    }
+		    break;
+		    case __vehSize:
+		    // Decode field 'vehSize'
+		    try {
+			if (present0[5])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.vehSize == null)
+			    this.vehSize = new com.bah.ode.asn.oss.dsrc.VehicleSize();
+			this.vehSize.decodeValue(coder, source);
+			present0[5] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("vehSize", "VehicleSize");
+			throw de;
+		    }
+		    break;
+		    case __vsmEventFlag:
+		    // Decode field 'vsmEventFlag'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[6])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.vsmEventFlag = new VsmEventFlag(coder.decodeOctetString(source));
+			    present0[6] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("vsmEventFlag", "VsmEventFlag");
+			throw de;
+		    }
+		    break;
+		    default:
+			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'speed'");
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'heading'");
+	if (!present0[2])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'steeringAngle'");
+	if (!present0[3])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'accelSet'");
+	if (!present0[4])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'brakes'");
+	if (!present0[5])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'vehSize'");
+	if (!present0[6])
+	    this.vsmEventFlag = null;
+	return this;
     }
 
     /**

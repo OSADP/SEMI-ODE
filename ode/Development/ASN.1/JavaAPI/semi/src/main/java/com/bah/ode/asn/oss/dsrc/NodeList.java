@@ -11,10 +11,10 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 18:10:04 2015 */
+/* Created: Tue Dec 22 00:38:27 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
  * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
@@ -37,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -300,6 +305,70 @@ public class NodeList extends SequenceOf {
 	if (total_len0 < 1)
 	    throw new DecoderException(com.oss.util.ExceptionDescriptor._sizeConstraint, null, "length = " + total_len0);
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	int total_len0 = this.elements.size();
+	int idx0 = 0;
+
+	sink.beginArray();
+	if (total_len0 > 0) {
+	    while (true) {
+		try {
+		    Offsets item1 = this.elements.get(idx0);
+
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		
+	    } catch (Exception e) {
+		EncoderException ee = EncoderException.wrapException(e);
+		ee.appendElementContext(null, "Offsets", idx0);
+		throw ee;
+	    }
+	    idx0++;
+	    if (idx0 == total_len0) break;
+	    sink.writeSeparator();
+	}
+    }
+    sink.endArray();
+
+}
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public NodeList decodeValue(JsonCoder coder, JsonReader source)
+	throws IOException, DecoderException
+{
+    int total_len0 = 0;
+    int idx0 = 0;
+
+    if (this.elements != null)
+	this.elements.clear();
+    else
+	this.elements = new java.util.ArrayList<Offsets>(total_len0);
+    coder.decodeArray(source);
+    if (coder.hasMoreElements(source, true))
+	do {
+	    try {
+		Offsets item1;
+
+		item1 = new Offsets(coder.decodeOctetString(source));
+		this.elements.add(item1);
+	    } catch (Exception e) {
+		DecoderException de = DecoderException.wrapException(e);
+		de.appendElementContext(null, "Offsets", idx0);
+		throw de;
+	    }
+	    ++idx0;
+	} while (coder.hasMoreElements(source, false));
+	return this;
     }
 
     /**

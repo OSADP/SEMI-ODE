@@ -11,10 +11,10 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Mon Dec 14 18:10:04 2015 */
+/* Created: Tue Dec 22 00:38:27 2015 */
 /* ASN.1 Compiler for Java version: 6.2 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
  * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
@@ -37,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -377,6 +382,70 @@ public class PathHistory extends Sequence {
 	    }
 
 	    /**
+	     * Implements JSON value encoder for the type (reserved for internal use).
+	     * This method is reserved for internal use and must not be invoked from the application code.
+	     */
+	    public void encodeValue(JsonCoder coder, JsonWriter sink)
+		    throws IOException, EncoderException
+	    {
+		int total_len0 = this.elements.size();
+		int idx0 = 0;
+
+		sink.beginArray();
+		if (total_len0 > 0) {
+		    while (true) {
+			try {
+			    PathHistoryPointType_01 item1 = this.elements.get(idx0);
+
+			    item1.encodeValue(coder, sink);
+			
+		    } catch (Exception e) {
+			EncoderException ee = EncoderException.wrapException(e);
+			ee.appendElementContext(null, "PathHistoryPointType-01", idx0);
+			throw ee;
+		    }
+		    idx0++;
+		    if (idx0 == total_len0) break;
+		    sink.writeSeparator();
+		}
+	    }
+	    sink.endArray();
+
+	}
+
+	    /**
+	     * Implements JSON value decoder for the type (reserved for internal use).
+	     * This method is reserved for internal use and must not be invoked from the application code.
+	     */
+	    public PathHistoryPointSets_01 decodeValue(JsonCoder coder, JsonReader source)
+		throws IOException, DecoderException
+	{
+	    int total_len0 = 0;
+	    int idx0 = 0;
+
+	    if (this.elements != null)
+		this.elements.clear();
+	    else
+		this.elements = new java.util.ArrayList<PathHistoryPointType_01>(total_len0);
+	    coder.decodeArray(source);
+	    if (coder.hasMoreElements(source, true))
+		do {
+		    try {
+			PathHistoryPointType_01 item1 = new PathHistoryPointType_01();
+
+			this.elements.add(item1);
+			item1.decodeValue(coder, source);
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext(null, "PathHistoryPointType-01", idx0);
+			throw de;
+		    }
+		    ++idx0;
+		} while (coder.hasMoreElements(source, false));
+		return this;
+	    }
+
+	    /**
 	     * Compare 'this' object to another object to see if their contents are the same.
 	     */
 	    public boolean abstractEqualTo(AbstractData that)
@@ -692,6 +761,44 @@ public class PathHistory extends Sequence {
 	    setChosenFlag(pathHistoryPointSets_10_chosen);
 	}
 	
+	
+	/**
+	 * Hashtable for tags (reserved for internal use).
+	 * This class is reserved for internal use and must not be used in the application code.
+	 */
+	public static enum __Tag
+	{
+	    __pathHistoryPointSets_01("pathHistoryPointSets-01"),
+	    __pathHistoryPointSets_02("pathHistoryPointSets-02"),
+	    __pathHistoryPointSets_03("pathHistoryPointSets-03"),
+	    __pathHistoryPointSets_04("pathHistoryPointSets-04"),
+	    __pathHistoryPointSets_05("pathHistoryPointSets-05"),
+	    __pathHistoryPointSets_06("pathHistoryPointSets-06"),
+	    __pathHistoryPointSets_07("pathHistoryPointSets-07"),
+	    __pathHistoryPointSets_08("pathHistoryPointSets-08"),
+	    __pathHistoryPointSets_09("pathHistoryPointSets-09"),
+	    __pathHistoryPointSets_10("pathHistoryPointSets-10"),
+	    _null_("_null_");
+	    private String tag;
+	    private static java.util.HashMap<String, __Tag> map =
+		new java.util.HashMap<String, __Tag>(11);
+	    private __Tag(String tag) {
+		this.tag = tag;
+	    }
+	    private String getTag() {
+		return tag;
+	    }
+	    /**
+	     * This method is reserved for internal use and must not be invoked from the application code.
+	     */
+	    public static __Tag getTagSub(String tag) {
+		return map.get(tag);
+	    }
+	    static {
+		for (__Tag t:values())
+		    map.put(t.getTag(), t);
+	    }
+	}
 	
 	/**
 	 * Implements PER value encoder for the type (reserved for internal use).
@@ -1018,6 +1125,326 @@ public class PathHistory extends Sequence {
 	}
 
 	/**
+	 * Implements JSON value encoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public void encodeValue(JsonCoder coder, JsonWriter sink)
+		throws IOException, EncoderException
+	{
+	    int idx0 = this.mChosenFlag;
+
+	    sink.beginObject();
+	    switch (idx0)
+	    {
+	    case pathHistoryPointSets_01_chosen:
+		// Encode alternative 'pathHistoryPointSets-01'
+		try {
+		    PathHistoryPointSets_01 item1 = (PathHistoryPointSets_01)this.mChosenValue;
+
+		    sink.encodeKey("pathHistoryPointSets-01");
+		    item1.encodeValue(coder, sink);
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("pathHistoryPointSets-01", "SEQUENCE OF", 0);
+		    throw ee;
+		}
+		break;
+	    case pathHistoryPointSets_02_chosen:
+		// Encode alternative 'pathHistoryPointSets-02'
+		try {
+		    OctetString item1 = (OctetString)this.mChosenValue;
+
+		    sink.encodeKey("pathHistoryPointSets-02");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("pathHistoryPointSets-02", "OCTET STRING", 0);
+		    throw ee;
+		}
+		break;
+	    case pathHistoryPointSets_03_chosen:
+		// Encode alternative 'pathHistoryPointSets-03'
+		try {
+		    OctetString item1 = (OctetString)this.mChosenValue;
+
+		    sink.encodeKey("pathHistoryPointSets-03");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("pathHistoryPointSets-03", "OCTET STRING", 0);
+		    throw ee;
+		}
+		break;
+	    case pathHistoryPointSets_04_chosen:
+		// Encode alternative 'pathHistoryPointSets-04'
+		try {
+		    OctetString item1 = (OctetString)this.mChosenValue;
+
+		    sink.encodeKey("pathHistoryPointSets-04");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("pathHistoryPointSets-04", "OCTET STRING", 0);
+		    throw ee;
+		}
+		break;
+	    case pathHistoryPointSets_05_chosen:
+		// Encode alternative 'pathHistoryPointSets-05'
+		try {
+		    OctetString item1 = (OctetString)this.mChosenValue;
+
+		    sink.encodeKey("pathHistoryPointSets-05");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("pathHistoryPointSets-05", "OCTET STRING", 0);
+		    throw ee;
+		}
+		break;
+	    case pathHistoryPointSets_06_chosen:
+		// Encode alternative 'pathHistoryPointSets-06'
+		try {
+		    OctetString item1 = (OctetString)this.mChosenValue;
+
+		    sink.encodeKey("pathHistoryPointSets-06");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("pathHistoryPointSets-06", "OCTET STRING", 0);
+		    throw ee;
+		}
+		break;
+	    case pathHistoryPointSets_07_chosen:
+		// Encode alternative 'pathHistoryPointSets-07'
+		try {
+		    OctetString item1 = (OctetString)this.mChosenValue;
+
+		    sink.encodeKey("pathHistoryPointSets-07");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("pathHistoryPointSets-07", "OCTET STRING", 0);
+		    throw ee;
+		}
+		break;
+	    case pathHistoryPointSets_08_chosen:
+		// Encode alternative 'pathHistoryPointSets-08'
+		try {
+		    OctetString item1 = (OctetString)this.mChosenValue;
+
+		    sink.encodeKey("pathHistoryPointSets-08");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("pathHistoryPointSets-08", "OCTET STRING", 0);
+		    throw ee;
+		}
+		break;
+	    case pathHistoryPointSets_09_chosen:
+		// Encode alternative 'pathHistoryPointSets-09'
+		try {
+		    OctetString item1 = (OctetString)this.mChosenValue;
+
+		    sink.encodeKey("pathHistoryPointSets-09");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("pathHistoryPointSets-09", "OCTET STRING", 0);
+		    throw ee;
+		}
+		break;
+	    case pathHistoryPointSets_10_chosen:
+		// Encode alternative 'pathHistoryPointSets-10'
+		try {
+		    OctetString item1 = (OctetString)this.mChosenValue;
+
+		    sink.encodeKey("pathHistoryPointSets-10");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("pathHistoryPointSets-10", "OCTET STRING", 0);
+		    throw ee;
+		}
+		break;
+	    default:
+		throw new EncoderException(com.oss.util.ExceptionDescriptor._bad_choice, null, idx0);
+	    }
+	    sink.endObject();
+
+	}
+
+	/**
+	 * Implements JSON value decoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public CrumbData decodeValue(JsonCoder coder, JsonReader source)
+		throws IOException, DecoderException
+	{
+	    coder.decodeObject(source);
+	    String tag0 = coder.nextProperty(source);
+	    CrumbData.__Tag t_tag0 = CrumbData.__Tag.getTagSub(tag0);
+	    if (t_tag0 == null) 
+		t_tag0 = CrumbData.__Tag._null_;
+	    switch (t_tag0) {
+		case __pathHistoryPointSets_01:
+		    // Decode alternative 'pathHistoryPointSets-01'
+		    try {
+			PathHistoryPointSets_01 item1 = new PathHistoryPointSets_01();
+
+			// Decode alternative 'pathHistoryPointSets-01'
+			item1.decodeValue(coder, source);
+			this.mChosenValue = item1;
+			this.mChosenFlag = pathHistoryPointSets_01_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("pathHistoryPointSets-01", "SEQUENCE OF", 0);
+			throw de;
+		    }
+		    break;
+		case __pathHistoryPointSets_02:
+		    // Decode alternative 'pathHistoryPointSets-02'
+		    try {
+			OctetString item1 = null;
+
+			// Decode alternative 'pathHistoryPointSets-02'
+			item1 = new OctetString(coder.decodeOctetString(source));
+			this.mChosenValue = item1;
+			this.mChosenFlag = pathHistoryPointSets_02_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("pathHistoryPointSets-02", "OCTET STRING", 0);
+			throw de;
+		    }
+		    break;
+		case __pathHistoryPointSets_03:
+		    // Decode alternative 'pathHistoryPointSets-03'
+		    try {
+			OctetString item1 = null;
+
+			// Decode alternative 'pathHistoryPointSets-03'
+			item1 = new OctetString(coder.decodeOctetString(source));
+			this.mChosenValue = item1;
+			this.mChosenFlag = pathHistoryPointSets_03_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("pathHistoryPointSets-03", "OCTET STRING", 0);
+			throw de;
+		    }
+		    break;
+		case __pathHistoryPointSets_04:
+		    // Decode alternative 'pathHistoryPointSets-04'
+		    try {
+			OctetString item1 = null;
+
+			// Decode alternative 'pathHistoryPointSets-04'
+			item1 = new OctetString(coder.decodeOctetString(source));
+			this.mChosenValue = item1;
+			this.mChosenFlag = pathHistoryPointSets_04_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("pathHistoryPointSets-04", "OCTET STRING", 0);
+			throw de;
+		    }
+		    break;
+		case __pathHistoryPointSets_05:
+		    // Decode alternative 'pathHistoryPointSets-05'
+		    try {
+			OctetString item1 = null;
+
+			// Decode alternative 'pathHistoryPointSets-05'
+			item1 = new OctetString(coder.decodeOctetString(source));
+			this.mChosenValue = item1;
+			this.mChosenFlag = pathHistoryPointSets_05_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("pathHistoryPointSets-05", "OCTET STRING", 0);
+			throw de;
+		    }
+		    break;
+		case __pathHistoryPointSets_06:
+		    // Decode alternative 'pathHistoryPointSets-06'
+		    try {
+			OctetString item1 = null;
+
+			// Decode alternative 'pathHistoryPointSets-06'
+			item1 = new OctetString(coder.decodeOctetString(source));
+			this.mChosenValue = item1;
+			this.mChosenFlag = pathHistoryPointSets_06_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("pathHistoryPointSets-06", "OCTET STRING", 0);
+			throw de;
+		    }
+		    break;
+		case __pathHistoryPointSets_07:
+		    // Decode alternative 'pathHistoryPointSets-07'
+		    try {
+			OctetString item1 = null;
+
+			// Decode alternative 'pathHistoryPointSets-07'
+			item1 = new OctetString(coder.decodeOctetString(source));
+			this.mChosenValue = item1;
+			this.mChosenFlag = pathHistoryPointSets_07_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("pathHistoryPointSets-07", "OCTET STRING", 0);
+			throw de;
+		    }
+		    break;
+		case __pathHistoryPointSets_08:
+		    // Decode alternative 'pathHistoryPointSets-08'
+		    try {
+			OctetString item1 = null;
+
+			// Decode alternative 'pathHistoryPointSets-08'
+			item1 = new OctetString(coder.decodeOctetString(source));
+			this.mChosenValue = item1;
+			this.mChosenFlag = pathHistoryPointSets_08_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("pathHistoryPointSets-08", "OCTET STRING", 0);
+			throw de;
+		    }
+		    break;
+		case __pathHistoryPointSets_09:
+		    // Decode alternative 'pathHistoryPointSets-09'
+		    try {
+			OctetString item1 = null;
+
+			// Decode alternative 'pathHistoryPointSets-09'
+			item1 = new OctetString(coder.decodeOctetString(source));
+			this.mChosenValue = item1;
+			this.mChosenFlag = pathHistoryPointSets_09_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("pathHistoryPointSets-09", "OCTET STRING", 0);
+			throw de;
+		    }
+		    break;
+		case __pathHistoryPointSets_10:
+		    // Decode alternative 'pathHistoryPointSets-10'
+		    try {
+			OctetString item1 = null;
+
+			// Decode alternative 'pathHistoryPointSets-10'
+			item1 = new OctetString(coder.decodeOctetString(source));
+			this.mChosenValue = item1;
+			this.mChosenFlag = pathHistoryPointSets_10_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("pathHistoryPointSets-10", "OCTET STRING", 0);
+			throw de;
+		    }
+		    break;
+		default:
+		    throw new DecoderException(com.oss.util.ExceptionDescriptor._unknown_field, null, tag0);
+	    }
+	    if (coder.hasMoreProperties(source, false))
+		throw new DecoderException(com.oss.util.ExceptionDescriptor._json_unexpected_token, null, ": expecting '}'");
+	    return this;
+	}
+
+	/**
 	 * Clone 'this' object.
 	 */
 	public CrumbData clone() {
@@ -1026,6 +1453,38 @@ public class PathHistory extends Sequence {
 
     } // End class definition for CrumbData
 
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__initialPosition("initialPosition"),
+	__currGPSstatus("currGPSstatus"),
+	__itemCnt("itemCnt"),
+	__crumbData("crumbData"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(5);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
+    
     /**
      * Implements BER value encoder for the type (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
@@ -1778,6 +2237,197 @@ public class PathHistory extends Sequence {
 	    }
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	String separator0 = null;
+
+	sink.beginObject();
+	// Encode field 'initialPosition'
+	try {
+	    FullPositionVector item1 = this.initialPosition;
+
+	    if (item1 != null) {
+		{
+		    separator0 = ",";
+		    sink.encodeKey("initialPosition");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "initialPosition");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("initialPosition", "FullPositionVector");
+	    throw ee;
+	}
+	// Encode field 'currGPSstatus'
+	try {
+	    GPSstatus item1 = this.currGPSstatus;
+
+	    if (item1 != null) {
+		{
+		    int len1 = item1.getSize();
+		    byte[] temp1 = item1.byteArrayValue();
+
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("currGPSstatus");
+		    coder.encodeBitString(temp1, len1, -1, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "currGPSstatus");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("currGPSstatus", "GPSstatus");
+	    throw ee;
+	}
+	// Encode field 'itemCnt'
+	try {
+	    Count item1 = this.itemCnt;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("itemCnt");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "itemCnt");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("itemCnt", "Count");
+	    throw ee;
+	}
+	// Encode field 'crumbData'
+	try {
+	    CrumbData item1 = this.crumbData;
+
+	    {
+		sink.writeSeparator(separator0);
+		sink.encodeKey("crumbData");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("crumbData", "CHOICE");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public PathHistory decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[5];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		PathHistory.__Tag t_tag0 = PathHistory.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = PathHistory.__Tag._null_;
+		switch (t_tag0) {
+		    case __initialPosition:
+		    // Decode field 'initialPosition'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[0])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.initialPosition == null)
+				this.initialPosition = new FullPositionVector();
+			    this.initialPosition.decodeValue(coder, source);
+			    present0[0] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("initialPosition", "FullPositionVector");
+			throw de;
+		    }
+		    break;
+		    case __currGPSstatus:
+		    // Decode field 'currGPSstatus'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[1])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.currGPSstatus == null)
+				this.currGPSstatus = new GPSstatus();
+			    coder.decodeBitString(-1, source, this.currGPSstatus);
+			    present0[1] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("currGPSstatus", "GPSstatus");
+			throw de;
+		    }
+		    break;
+		    case __itemCnt:
+		    // Decode field 'itemCnt'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[2])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.itemCnt == null)
+				this.itemCnt = new Count();
+			    this.itemCnt.setValue(coder.decodeInteger(source));
+			    present0[2] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("itemCnt", "Count");
+			throw de;
+		    }
+		    break;
+		    case __crumbData:
+		    // Decode field 'crumbData'
+		    try {
+			if (present0[3])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.crumbData == null)
+			    this.crumbData = new CrumbData();
+			this.crumbData.decodeValue(coder, source);
+			present0[3] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("crumbData", "CHOICE");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    this.initialPosition = null;
+	if (!present0[1])
+	    this.currGPSstatus = null;
+	if (!present0[2])
+	    this.itemCnt = null;
+	if (!present0[3])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'crumbData'");
+	return this;
     }
 
     /**
