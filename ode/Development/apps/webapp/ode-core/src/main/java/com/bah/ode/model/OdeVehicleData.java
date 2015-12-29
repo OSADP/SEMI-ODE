@@ -18,6 +18,7 @@ package com.bah.ode.model;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,191 +52,183 @@ public final class OdeVehicleData extends OdeData {
 
    private static Logger logger = LoggerFactory.getLogger(OdeVehicleData.class);
 
-	private String groupId;
-	private OdeDateTime dateTime;
-	private OdePosition3D location;
-	private String speed;
-	private Integer heading;
-	private String steeringAngle;
-	private String accelSet;
-	private String brakes;
-	private OdeVehicleSize size;
-	private String vsmEventFlag;
+   private String groupId;
+   private OdeDateTime dateTime;
+   private OdePosition3D location;
+   private String speed;
+   private Integer heading;
+   private String steeringAngle;
+   private String accelSet;
+   private String brakes;
+   private OdeVehicleSize size;
+   private String vsmEventFlag;
 
-	public OdeVehicleData() {
-	}
+   public OdeVehicleData() {
+   }
 
-	public OdeVehicleData(GroupID groupId, OdeDateTime dateTime, OdePosition3D location,
-			TransmissionAndSpeed speed, Heading heading, SteeringWheelAngle steeringAngle,
-			AccelerationSet4Way accelSet, BrakeSystemStatus brakes, OdeVehicleSize size,
-			VsmEventFlag vsmEventFlag) 
-	{
-		super();
-		this.groupId = CodecUtils.toHex(groupId != null ? groupId.byteArrayValue() : "".getBytes());
-		this.dateTime = dateTime;
-		this.location = location;
-		this.speed = CodecUtils.toHex(speed != null ? speed.byteArrayValue() : "".getBytes());
-		this.heading = heading != null ? heading.intValue() : 0;
-		this.steeringAngle = CodecUtils.toHex(steeringAngle != null ? steeringAngle.byteArrayValue() : "".getBytes());
-		this.accelSet = CodecUtils.toHex(accelSet != null ? accelSet.byteArrayValue() : "".getBytes());
-		this.brakes = CodecUtils.toHex(brakes != null ? brakes.byteArrayValue() : "".getBytes());
-		this.size = size;
-		this.vsmEventFlag = CodecUtils.toHex(vsmEventFlag != null ? vsmEventFlag.byteArrayValue() : "".getBytes());
-	}
-	
-	public String getGroupId() {
-		return groupId;
-	}
+   public OdeVehicleData(GroupID groupId, OdeDateTime dateTime,
+         OdePosition3D location, TransmissionAndSpeed speed, Heading heading,
+         SteeringWheelAngle steeringAngle, AccelerationSet4Way accelSet,
+         BrakeSystemStatus brakes, OdeVehicleSize size,
+         VsmEventFlag vsmEventFlag) {
+      super();
+      this.groupId = CodecUtils
+            .toHex(groupId != null ? groupId.byteArrayValue() : "".getBytes());
+      this.dateTime = dateTime;
+      this.location = location;
+      this.speed = CodecUtils
+            .toHex(speed != null ? speed.byteArrayValue() : "".getBytes());
+      this.heading = heading != null ? heading.intValue() : 0;
+      this.steeringAngle = CodecUtils.toHex(steeringAngle != null
+            ? steeringAngle.byteArrayValue() : "".getBytes());
+      this.accelSet = CodecUtils.toHex(
+            accelSet != null ? accelSet.byteArrayValue() : "".getBytes());
+      this.brakes = CodecUtils
+            .toHex(brakes != null ? brakes.byteArrayValue() : "".getBytes());
+      this.size = size;
+      this.vsmEventFlag = CodecUtils.toHex(vsmEventFlag != null
+            ? vsmEventFlag.byteArrayValue() : "".getBytes());
+   }
 
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
+   public String getGroupId() {
+      return groupId;
+   }
 
-	public OdeDateTime getDateTime() {
-		return dateTime;
-	}
+   public void setGroupId(String groupId) {
+      this.groupId = groupId;
+   }
 
-	public void setDateTime(OdeDateTime dateTime) {
-		this.dateTime = dateTime;
-	}
+   public OdeDateTime getDateTime() {
+      return dateTime;
+   }
 
-	public OdePosition3D getLocation() {
-		return location;
-	}
+   public void setDateTime(OdeDateTime dateTime) {
+      this.dateTime = dateTime;
+   }
 
-	public void setLocation(OdePosition3D location) {
-		this.location = location;
-	}
+   public OdePosition3D getLocation() {
+      return location;
+   }
 
-	public String getSpeed() {
-		return speed;
-	}
+   public void setLocation(OdePosition3D location) {
+      this.location = location;
+   }
 
-	public void setSpeed(String speed) {
-		this.speed = speed;
-	}
+   public String getSpeed() {
+      return speed;
+   }
 
-	public Integer getHeading() {
-		return heading;
-	}
+   public void setSpeed(String speed) {
+      this.speed = speed;
+   }
 
-	public void setHeading(Integer heading) {
-		this.heading = heading;
-	}
+   public Integer getHeading() {
+      return heading;
+   }
 
-	public String getSteeringAngle() {
-		return steeringAngle;
-	}
+   public void setHeading(Integer heading) {
+      this.heading = heading;
+   }
 
-	public void setSteeringAngle(String steeringAngle) {
-		this.steeringAngle = steeringAngle;
-	}
+   public String getSteeringAngle() {
+      return steeringAngle;
+   }
 
-	public String getAccelSet() {
-		return accelSet;
-	}
+   public void setSteeringAngle(String steeringAngle) {
+      this.steeringAngle = steeringAngle;
+   }
 
-	public void setAccelSet(String accelSet) {
-		this.accelSet = accelSet;
-	}
+   public String getAccelSet() {
+      return accelSet;
+   }
 
-	public String getBrakes() {
-		return brakes;
-	}
+   public void setAccelSet(String accelSet) {
+      this.accelSet = accelSet;
+   }
 
-	public void setBrakes(String brakes) {
-		this.brakes = brakes;
-	}
+   public String getBrakes() {
+      return brakes;
+   }
 
-	public OdeVehicleSize getSize() {
-		return size;
-	}
+   public void setBrakes(String brakes) {
+      this.brakes = brakes;
+   }
 
-	public void setSize(OdeVehicleSize size) {
-		this.size = size;
-	}
+   public OdeVehicleSize getSize() {
+      return size;
+   }
 
-	public String getVsmEventFlag() {
-		return vsmEventFlag;
-	}
+   public void setSize(OdeVehicleSize size) {
+      this.size = size;
+   }
 
-	public void setVsmEventFlag(String vsmEventFlag) {
-		this.vsmEventFlag = vsmEventFlag;
-	}
+   public String getVsmEventFlag() {
+      return vsmEventFlag;
+   }
 
+   public void setVsmEventFlag(String vsmEventFlag) {
+      this.vsmEventFlag = vsmEventFlag;
+   }
 
-	public static List<OdeVehicleData> fromBase64(String base64) {
-		byte[] bytes = DatatypeConverter.parseBase64Binary(base64);
-		InputStream ins = new ByteArrayInputStream(bytes);
-		ArrayList<OdeVehicleData> odeDataBundle = new ArrayList<OdeVehicleData>();
-		
-		Coder coder = Oss.getBERCoder();
-		try {
-			long decodeTime = System.currentTimeMillis();
-			
-			do {
-				try {
-					VehSitDataMessage value = new VehSitDataMessage();
-					coder.decode(ins, value);
-					
-					Bundle bundle = value.getBundle();
-					
-					int bSize = bundle.getSize();
-					
-					for (int i = 0; i < bSize; i++) {
-						VehSitRecord vsr = bundle.get(i);
-						DDateTime time = vsr.getTime();
-						OdeDateTime dateTime = new OdeDateTime(
-								time.getYear().intValue(), 
-								time.getMonth().intValue(),
-								time.getDay().intValue(),
-								time.getHour().intValue(),
-								time.getMinute().intValue(),
-								time.getSecond().intValue());
-						
-						Position3D pos = vsr.getPos();
-						OdePosition3D location = new OdePosition3D(
-								pos.getLat().longValue(),
-								pos.get_long().longValue(),
-								pos.elevation.byteArrayValue());
-						
-						FundamentalSituationalStatus fund = vsr.getFundamental();
-						
-						OdeVehicleSize size = new OdeVehicleSize(
-								fund.getVehSize().getWidth().intValue(),
-								fund.getVehSize().getLength().intValue());
-						
-						OdeVehicleData vsd = 
-								new OdeVehicleData(
-										value.getGroupID(),
-										dateTime, 
-										location, 
-										fund.getSpeed(),
-										fund.getHeading(),
-										fund.getSteeringAngle(),
-										fund.getAccelSet(),
-										fund.getBrakes(),
-										size,
-										fund.getVsmEventFlag());
-						odeDataBundle.add(vsd);
-					}
-				} catch (Exception e) {
-					System.out.println("Decode complete.\n" + e.getMessage());
-					break;
-				}
-				break;
-			} while (true);
-			ins.close();
-			
-			decodeTime = System.currentTimeMillis() - decodeTime;
-			
-			logger.info("Decode Time: " + decodeTime + " ms");
+   public static List<OdeVehicleData> fromBase64(String base64) {
+      byte[] bytes = DatatypeConverter.parseBase64Binary(base64);
+      InputStream ins = new ByteArrayInputStream(bytes);
+      ArrayList<OdeVehicleData> odeDataBundle = new ArrayList<OdeVehicleData>();
 
-		} catch (Exception e) {
-			logger.error("", e);
-		} finally {
-		}
-		return odeDataBundle;		
-	}
+      Coder coder = Oss.getBERCoder();
+      try {
+         long decodeTime = System.currentTimeMillis();
+
+         do {
+            try {
+               VehSitDataMessage value = new VehSitDataMessage();
+               coder.decode(ins, value);
+
+               Bundle bundle = value.getBundle();
+
+               int bSize = bundle.getSize();
+
+               for (int i = 0; i < bSize; i++) {
+                  VehSitRecord vsr = bundle.get(i);
+                  DDateTime time = vsr.getTime();
+                  OdeDateTime dateTime = new OdeDateTime(
+                        time.getYear().intValue(), time.getMonth().intValue(),
+                        time.getDay().intValue(), time.getHour().intValue(),
+                        time.getMinute().intValue(),
+                        BigDecimal.valueOf(time.getSecond().intValue()));
+
+                  Position3D pos = vsr.getPos();
+                  OdePosition3D location = new OdePosition3D(pos);
+
+                  FundamentalSituationalStatus fund = vsr.getFundamental();
+
+                  OdeVehicleSize size = new OdeVehicleSize(
+                        fund.getVehSize().getWidth().intValue(),
+                        fund.getVehSize().getLength().intValue());
+
+                  OdeVehicleData vsd = new OdeVehicleData(value.getGroupID(),
+                        dateTime, location, fund.getSpeed(), fund.getHeading(),
+                        fund.getSteeringAngle(), fund.getAccelSet(),
+                        fund.getBrakes(), size, fund.getVsmEventFlag());
+                  odeDataBundle.add(vsd);
+               }
+            } catch (Exception e) {
+               System.out.println("Decode complete.\n" + e.getMessage());
+               break;
+            }
+            break;
+         } while (true);
+         ins.close();
+
+         decodeTime = System.currentTimeMillis() - decodeTime;
+
+         logger.info("Decode Time: " + decodeTime + " ms");
+
+      } catch (Exception e) {
+         logger.error("", e);
+      } finally {
+      }
+      return odeDataBundle;
+   }
 
 }

@@ -31,7 +31,7 @@ import com.bah.ode.context.AppContext;
 import com.bah.ode.distributors.BaseDataPropagator;
 import com.bah.ode.model.DdsData;
 import com.bah.ode.model.InternalDataMessage;
-import com.bah.ode.model.OdeAdvisoryDataRaw;
+import com.bah.ode.model.OdeAdvisoryData;
 import com.bah.ode.model.OdeControlData;
 import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
@@ -128,7 +128,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                   sendRecord = checkSkipAndLimit();
                } else if (ddsData.getAsd() != null) {
                   topicName = metadata.getInputTopic().getName();
-                  odeData = new OdeAdvisoryDataRaw(ddsData.getAsd());
+                  odeData = new OdeAdvisoryData(ddsData.getAsd());
                   idm.setKey(odeData.getSerialId());
                   idm.setPayload(odeData);
                   sendRecord = checkSkipAndLimit();

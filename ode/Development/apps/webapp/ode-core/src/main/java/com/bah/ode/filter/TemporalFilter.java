@@ -30,21 +30,8 @@ public class TemporalFilter extends BaseFilter {
    public boolean pass(OdeFilterable data) {
       if (data instanceof HasTimestamp) {
          HasTimestamp hasTimestamp = (HasTimestamp) data;
-
-         if (startDate == null) {
-            if (endDate == null) {// Both startDate and endDate are null, so it's pass by default
-               return true;
-            } else {// We only have the endDate, so any record not after the end date is a pass
-               return !hasTimestamp.getTimestamp().isAfter(endDate);
-            }
-         } else {
-            if (endDate == null) {// We only have the startDate, so any record not before the start date is a pass
-               return !hasTimestamp.getTimestamp().isBefore(startDate);
-            } else {// We have both the startDate and the endDate, so any record not before the start date and not after the end date is a pass
-               return !hasTimestamp.getTimestamp().isBefore(startDate) &&
-                     !hasTimestamp.getTimestamp().isAfter(endDate);
-            }
-         }
+         ZonedDateTime dateTime = hasTimestamp.getTimestamp();
+         return DateTimeUtils.isBetweenTimesInclusive(dateTime, startDate, endDate);
       } else {
          return true;
       }

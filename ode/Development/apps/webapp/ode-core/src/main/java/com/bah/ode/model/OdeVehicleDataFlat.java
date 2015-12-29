@@ -20,17 +20,15 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import com.bah.ode.asn.OdeDateTime;
+import com.bah.ode.asn.OdePosition3D;
 import com.bah.ode.asn.OdeTransmissionState;
 import com.bah.ode.asn.oss.dsrc.AccelerationSet4Way;
 import com.bah.ode.asn.oss.dsrc.BrakeSystemStatus;
-import com.bah.ode.asn.oss.dsrc.DDateTime;
 import com.bah.ode.asn.oss.dsrc.Heading;
-import com.bah.ode.asn.oss.dsrc.Position3D;
 import com.bah.ode.asn.oss.dsrc.SteeringWheelAngle;
-import com.bah.ode.asn.oss.dsrc.TemporaryID;
 import com.bah.ode.asn.oss.dsrc.TransmissionAndSpeed;
 import com.bah.ode.asn.oss.dsrc.VehicleSize;
 import com.bah.ode.asn.oss.semi.Capacity;
@@ -132,7 +130,7 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
       super();
       setSerialId(serialId); 
       
-      setGroupId(groupId);
+      setGroupId(CodecUtils.toHex(groupId.byteArrayValue()));
       
       if (vsr.elveh != null)
          setElectricVehicle(vsr.elveh);
@@ -143,14 +141,19 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
       if (vsr.fundamental != null)
          setFundamental(vsr.fundamental);
       
-      if (vsr.pos != null)
-         setPosition(vsr.pos);
+      if (vsr.pos != null) {
+         OdePosition3D pos3d = new OdePosition3D(vsr.pos);
+         setLatitude(pos3d.getLatitude());
+         setLongitude(pos3d.getLongitude());
+         setElevation(pos3d.getElevation());
+      }
+
+      setTempId(CodecUtils.toHex(vsr.tempID.byteArrayValue()));
       
-      if (vsr.tempID != null)
-         setTempId(vsr.tempID);
-      
-      if (vsr.time != null)
-         setDateTime(vsr.time);
+      if (vsr.time != null) {
+         OdeDateTime odt = new OdeDateTime(vsr.time);
+         setDateTime(odt.getISODateTime());
+      }
       
       if (vsr.vehstat != null)
          setVehicleStatus(vsr.vehstat);
@@ -339,54 +342,6 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
                .intValue() : null);
          setTirePressureRR(tirePressure.rightRear != null ? tirePressure.rightRear
                .intValue() : null);
-      }
-   }
-
-   private void setTempId(TemporaryID tempID) {
-      //TemporaryID ::= OCTET STRING (SIZE(4)) -- a 4 byte string array
-      if (tempID != null)
-         setTempId(CodecUtils.toHex(tempID.byteArrayValue()));
-   }
-
-   private void setPosition(Position3D pos) {
-      // private OdePosition3D position;
-      //    Position3D ::=  SEQUENCE {
-      //       lat         Latitude,   -- in 1/10th micro degrees
-      //       long        Longitude,  -- in 1/10th micro degrees
-      //       elevation   Elevation   OPTIONAL  
-      //       }
-      //Latitude ::= INTEGER (-900000000..900000001)  
-      //      -- LSB = 1/10 micro degree
-      //      -- Providing a range of plus-minus 90 degrees
-      //Longitude ::= INTEGER (-1800000000..1800000001)  
-      //      -- LSB = 1/10 micro degree
-      //      -- Providing a range of plus-minus 180 degrees
-      // Elevation ::= OCTET STRING (SIZE(2))
-      // -- 1 decimeter LSB (10 cm) 
-      // -- Encode elevations from 0 to 6143.9 meters 
-      // -- above the reference ellipsoid as 0x0000 to 0xEFFF.  
-      // -- Encode elevations from -409.5 to -0.1 meters, 
-      // -- i.e. below the reference ellipsoid, as 0xF001 to 0xFFFF
-      // -- unknown as 0xF000
-      
-      if (pos != null) {
-         setLatitude(pos.lat != null ? BigDecimal.valueOf(pos.lat.longValue(),
-               7) : null);
-         setLongitude(pos._long != null ? BigDecimal.valueOf(
-               pos._long.longValue(), 7) : null);
-         if (pos.elevation != null) {
-            int elev = ByteUtils.unsignedByteArrayToInt(pos.elevation
-                  .byteArrayValue());
-            if (elev == 0xF000) {
-               setElevation(null);
-            } else if (elev >= 0x0000 && elev <= 0xEFFF) {
-               setElevation(BigDecimal.valueOf(elev, 1));
-            } else {
-               setElevation(BigDecimal.valueOf(-elev, 1));
-            }
-         } else {
-            setElevation(null);
-         }
       }
    }
 
@@ -639,38 +594,6 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
       }
    }
 
-   private synchronized void setDateTime(DDateTime dDateTime) {
-      if (dDateTime != null) {
-         setYear(dDateTime.getYear().intValue());
-         setMonth(dDateTime.getMonth().intValue());
-         setDay(dDateTime.getDay().intValue());
-         setHour(dDateTime.getHour().intValue());
-         setMinute(dDateTime.getMinute().intValue());
-         
-         /*
-          * 7.36 Data Element: DE_DSecond Use: The DSRC style second is a simple
-          * value consisting of integer values from zero to 61000 representing
-          * the milliseconds within a minute. A leap second is represented by
-          * the value range 60001 to 61000. The value of 65535 SHALL represent
-          * an unknown value in the range of the minute, other values from 61001
-          * to 65534 are reserved.
-          */
-         int millisecs = dDateTime.getSecond().intValue();
-         if (millisecs <= 61000) {
-            setSecond(BigDecimal.valueOf(dDateTime.getSecond().intValue(), 3));
-         }
-         
-         this.dateTime = getISODateTime(dDateTime);
-      }
-   }
-
-   protected String getISODateTime(DDateTime dDateTime) {
-      int millisecs = dDateTime.getSecond().intValue() >= 60000 ? 0 : dDateTime.getSecond().intValue();
-      return DateTimeUtils.isoDateTime(getYear(), getMonth(),
-            getDay(), getHour(), getMinute(), millisecs / 1000,
-            millisecs % 1000).format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
-   }
-
 //   TransmissionAndSpeed ::= OCTET STRING (SIZE(2)) 
 //         -- Bits 14~16 to be made up of the data element
 //         -- DE_TransmissionState 
@@ -703,11 +626,6 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
             // speed is received in units of 0.02 m/s
             setSpeed(BigDecimal.valueOf(s * 2, 2));
       }
-   }
-
-   private void setGroupId(GroupID groupId) {
-      this.groupId = CodecUtils.toHex(groupId != null ? groupId
-            .byteArrayValue() : "".getBytes());
    }
 
    public String getDateTime() {
@@ -1535,6 +1453,23 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
       int milli = second.remainder(BigDecimal.ONE).multiply(BigDecimal.valueOf(1000)).intValue();
       
       return DateTimeUtils.isoDateTime(year, month, day, hour, minute, sec, milli);
+   }
+
+   @Override
+   public boolean isOnTime(ZonedDateTime dateTime) {
+      return dateTime.isEqual(getTimestamp());
+   }
+
+   @Override
+   public OdePosition3D getPosition() {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   @Override
+   public boolean isInBounds(OdePosition3D position) {
+      // TODO Auto-generated method stub
+      return false;
    }
 
 

@@ -2,9 +2,12 @@ package com.bah.ode.filter;
 
 import java.math.BigDecimal;
 
+import com.bah.ode.asn.OdeGeoRegion;
+import com.bah.ode.asn.OdePosition3D;
 import com.bah.ode.model.HasPosition;
 import com.bah.ode.model.OdeFilterable;
 import com.bah.ode.model.OdeMetadata;
+import com.bah.ode.util.GeoUtils;
 
 public class SpatialFilter extends BaseFilter {
 
@@ -27,14 +30,13 @@ public class SpatialFilter extends BaseFilter {
    public boolean pass(OdeFilterable data) {
       if (data instanceof HasPosition) {
          HasPosition hasPosition = (HasPosition) data;
-         if (nwLat == null || hasPosition.getLatitude().doubleValue() > nwLat.doubleValue())
-            return false;
-         if (nwLon == null || hasPosition.getLongitude().doubleValue() < nwLon.doubleValue())
-            return false;
-         if (seLat == null || hasPosition.getLatitude().doubleValue() < seLat.doubleValue())
-            return false;
-         if (seLon == null || hasPosition.getLongitude().doubleValue() > seLon.doubleValue())
-            return false;
+         OdePosition3D pos = hasPosition.getPosition();
+         
+         OdeGeoRegion region = new OdeGeoRegion(
+               new OdePosition3D(nwLat, nwLon, new BigDecimal(0)), 
+               new OdePosition3D(seLat, seLon, new BigDecimal(0)));
+         
+         return GeoUtils.isPositionInBoundsInclusive(pos, region );
       }
       return true;
    }

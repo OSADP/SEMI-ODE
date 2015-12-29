@@ -16,7 +16,6 @@
  *******************************************************************************/
 package com.bah.ode.asn;
 
-
 public class OdeApproachObject {
    public OdePosition3D refPoint;
    public Integer laneWidthCm;

@@ -35,9 +35,8 @@ import com.bah.ode.asn.oss.semi.IntersectionSituationData;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.InternalDataMessage;
-import com.bah.ode.model.OdeAdvisoryDataRaw;
+import com.bah.ode.model.OdeAdvisoryData;
 import com.bah.ode.model.OdeControlData;
-import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeIntersectionDataRaw;
@@ -187,7 +186,7 @@ public class TestUploadServer {
                            AdvisorySituationData asd = 
                            (AdvisorySituationData) JsonUtils.fromJson(
                                  payload.toString(), AdvisorySituationData.class);
-                            OdeAdvisoryDataRaw oadr = new OdeAdvisoryDataRaw(asd);
+                            OdeAdvisoryData oadr = new OdeAdvisoryData(asd);
                             sendOdeMsgPayload(oadr, payloadType, oadr.getSerialId());
          
                            break;
