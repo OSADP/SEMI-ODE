@@ -276,13 +276,9 @@ $( document ).ready(function() {
 
 
       /* reset connection */
-      if(ws != null){
-        ws.close();
-        ws = null;
+      if(ws == null || token == null){
+          dialog.dialog("open");
       }
-      setConnectionState(false, false);
-
-      dialog.dialog("open");
 
       $('.column-center').show()
       $('.column-right').show()
@@ -492,7 +488,7 @@ $( document ).ready(function() {
     }else{
       document.getElementById('requestUri').value = "wss://" + window.location.host + partOneURI + partTwoURI + "?token=" + token;
     }
-    setConnectionState(false, false);
+    setConnectionState(connected, false);
   }
 
   function setConnectionState(c, s) {
@@ -507,7 +503,7 @@ $( document ).ready(function() {
     document.getElementById('send').disabled = !connected;
     setButtonHoverOver('connect',(connected));
     setButtonHoverOver('disconnect',connected);
-    setButtonHoverOver('send',(started || !connected))
+    setButtonHoverOver('send',(started || connected))
     setButtonHoverOver('get-token',(token == null))
 
   }
@@ -726,14 +722,8 @@ function log(consoleid, msgOrData) {
   p.style.wordWrap = 'break-word';
   p.appendChild(document.createTextNode(msgOrData));
   console.appendChild(p);
-  if((dataSource == 0 || dataSource == 3)){
-    while (console.childNodes.length > 10) {
-      console.removeChild(console.firstChild);
-    }
-  }else{
-    while (console.childNodes.length > 10000) {
-      console.removeChild(console.firstChild);
-    }
+  while (console.childNodes.length > 10000) {
+    console.removeChild(console.firstChild);
   }
   console.scrollTop = console.scrollHeight;
 }
@@ -827,8 +817,7 @@ function getToken(email, password)  {
         token = payload["token"];
         if (token != null) {
           setConnectionState(true,false);
-          if ( $("#selectData input:radio").is(":checked"))
-          updateRequestUri( $("#selectData input:radio").filter(":checked").val());
+          updateRequestUri();
         }
       }else{
         setConnectionState(false,false);
@@ -847,6 +836,8 @@ function clearLog(logNum){
     $('#sent-console').text("");
   }else{
     $('#received-console').text("");
+    recordsReceived = 0;
+    $('#recordCounter').val('Records Received: 0');
   }
 }
 
@@ -981,7 +972,16 @@ function updateClusters(str){
         coordinateMappings[vFeature.getGeometry().getCoordinates()] = arr.concat(titleHtml);
       }
     }
+  }else if(pl !== undefined && pl !== false && pl !== null && pl.code === undefined && pl.token === undefined && pl.tag === undefined){ //avoid success and token responses in payload
+      recordsReceived += 1;
   }
+}
+
+function clearMap(){
+  features = [];
+  coordinateMappings = {};
+  featureCount = 0;
+  updateClustersOnMap();
 }
 
 function updateClustersOnMap(){
