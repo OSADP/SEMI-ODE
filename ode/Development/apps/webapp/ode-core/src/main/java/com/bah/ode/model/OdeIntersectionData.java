@@ -23,11 +23,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.asn.OdeGeoRegion;
-import com.bah.ode.asn.OdeGroupId;
 import com.bah.ode.asn.OdeMapData;
 import com.bah.ode.asn.OdeSpatData;
 import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.semi.IntersectionSituationData;
+import com.bah.ode.util.CodecUtils;
 import com.oss.asn1.Coder;
 
 public final class OdeIntersectionData extends OdeData {
@@ -35,7 +35,7 @@ public final class OdeIntersectionData extends OdeData {
 
    private static Logger logger = LoggerFactory.getLogger(OdeIntersectionData.class);
 
-	private OdeGroupId groupId;
+	private String groupId;
 	private OdeGeoRegion serviceRegion;
 	private OdeMapData mapData;
 	private OdeSpatData spatData;
@@ -43,7 +43,7 @@ public final class OdeIntersectionData extends OdeData {
 	public OdeIntersectionData() {
 	}
 
-	public OdeIntersectionData(OdeGroupId groupId, OdeGeoRegion serviceRegion,
+	public OdeIntersectionData(String groupId, OdeGeoRegion serviceRegion,
          OdeMapData mapData, OdeSpatData spatData) {
 	   super();
 	   this.groupId = groupId;
@@ -53,17 +53,17 @@ public final class OdeIntersectionData extends OdeData {
    }
 
 	public OdeIntersectionData(IntersectionSituationData isd) {
-		this.setGroupId(new OdeGroupId(isd.getGroupID()));
+		this.setGroupId(CodecUtils.toHex(isd.getGroupID().byteArrayValue()));
 		this.setServiceRegion(new OdeGeoRegion(isd.getServiceRegion()));
 		this.setMapData(new OdeMapData(isd.getIntersectionRecord().getMapData()));
 		this.setSpatData(new OdeSpatData(isd.getIntersectionRecord().getSpatData()));
    }
 
-	public OdeGroupId getGroupId() {
+	public String getGroupId() {
 		return groupId;
 	}
 
-	public OdeIntersectionData setGroupId(OdeGroupId groupId) {
+	public OdeIntersectionData setGroupId(String groupId) {
 		this.groupId = groupId;
 		return this;
 	}

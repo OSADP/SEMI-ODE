@@ -25,4 +25,24 @@ public class DateTimeUtils {
    public static ZonedDateTime isoDateTime(String s) throws ParseException {
       return ZonedDateTime.parse(s);
    }
+
+   public static boolean isBetweenTimesInclusive(
+         ZonedDateTime dateTime,
+         ZonedDateTime startDateTime,
+         ZonedDateTime endDateTime) {
+      if (startDateTime == null) {
+         if (endDateTime == null) {// Both startDate and endDate are null, so it's false
+            return true;
+         } else {// We only have the endDate, so any dateTime not after the endDateTime is true
+            return !dateTime.isAfter(endDateTime);
+         }
+      } else {
+         if (endDateTime == null) {// We only have the startDateTime, so any dateTime not before the startDateTime is true
+            return !dateTime.isBefore(startDateTime);
+         } else {// We have both startDateTime and endDateTime, so any dateTime not before the startDate and not after endDateTime is true
+            return !dateTime.isBefore(startDateTime) &&
+                  !dateTime.isAfter(endDateTime);
+         }
+      }
+   }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.bah.ode.asn.oss.dsrc.NodeList;
 import com.bah.ode.asn.oss.dsrc.Offsets;
+import com.bah.ode.util.ByteUtils;
 
 //   -- xOffset  INTEGER (-32767..32767), 
 //   -- yOffset  INTEGER (-32767..32767),
@@ -33,90 +34,51 @@ import com.bah.ode.asn.oss.dsrc.Offsets;
 //   -- if 8 bytes in length:
 //   -- width    LaneWidth               OPTIONAL
 //   -- a length of 7 bytes is never used
-public class OdeLaneOffsets {
-   private Integer xOffsetCm; 
-   private Integer yOffsetCm;
-   private Integer zOffsetCm;
+public class OdeLaneOffsets extends OdeRegionOffsets {
+   private static final long serialVersionUID = -4812679580897977812L;
    private Integer LaneWidthCm;
-   
-	public OdeLaneOffsets() {
-	   super();
+
+   public OdeLaneOffsets() {
+      super();
    }
 
-	public OdeLaneOffsets(Integer xOffsetCm, Integer yOffsetCm,
+   public OdeLaneOffsets(Integer xOffsetCm, Integer yOffsetCm,
          Integer zOffsetCm, Integer laneWidthCm) {
-	   super();
-	   this.xOffsetCm = xOffsetCm;
-	   this.yOffsetCm = yOffsetCm;
-	   this.zOffsetCm = zOffsetCm;
-	   LaneWidthCm = laneWidthCm;
+      super(xOffsetCm.longValue(), yOffsetCm.longValue(), zOffsetCm.longValue());
+
+      LaneWidthCm = laneWidthCm;
    }
 
-	public OdeLaneOffsets(Offsets ofs) {
-	   if (ofs.byteArrayValue().length >= 2)
-	   	this.xOffsetCm = ofs.byteArrayValue()[0] << 8 | ofs.byteArrayValue()[1];
-	   
-	   if (ofs.byteArrayValue().length >= 4)
-	   	this.yOffsetCm = ofs.byteArrayValue()[2] << 8 | ofs.byteArrayValue()[3];
-	   
-	   if (ofs.byteArrayValue().length >= 6)
-	   	this.zOffsetCm = ofs.byteArrayValue()[4] << 8 | ofs.byteArrayValue()[5];
-	   
-	   if (ofs.byteArrayValue().length >= 8)
-	   	LaneWidthCm = ofs.byteArrayValue()[6] << 8 | ofs.byteArrayValue()[7];
+   public OdeLaneOffsets(Offsets ofs) {
+      if (ofs.byteArrayValue().length >= 2)
+         setxOffsetCm(ByteUtils.unsignedByteArrayToLong(ofs.byteArrayValue(), 0, 2));
+
+      if (ofs.byteArrayValue().length >= 4)
+         setyOffsetCm(ByteUtils.unsignedByteArrayToLong(ofs.byteArrayValue(), 2, 2));
+
+      if (ofs.byteArrayValue().length >= 6)
+         setzOffsetCm(ByteUtils.unsignedByteArrayToLong(ofs.byteArrayValue(), 4, 2));
+
+      if (ofs.byteArrayValue().length >= 8)
+         setLaneWidthCm(ByteUtils.unsignedByteArrayToInt(ofs.byteArrayValue(), 6, 2));
    }
 
-	public static List<OdeLaneOffsets> createList(NodeList keepOutList) {
-      @SuppressWarnings("unchecked")
-      Enumeration<Offsets> kol = keepOutList.elements();
-		ArrayList<OdeLaneOffsets> odeKOL = new ArrayList<OdeLaneOffsets>();
-		
-		if (null != kol) {
-			while (kol.hasMoreElements()) {
-				Offsets ofs = kol.nextElement();
-				if (ofs != null) {
-					odeKOL.add(new OdeLaneOffsets(ofs));
-				}
-			}
-		}
-	   return odeKOL;
+   public static List<OdeLaneOffsets> createList(NodeList nodeList) {
+      ArrayList<OdeLaneOffsets> nl = new ArrayList<OdeLaneOffsets>();
+
+      for (Offsets ofs : nodeList.elements) {
+         nl.add(new OdeLaneOffsets(ofs));
+      }
+      return nl;
    }
-   
-	public Integer getxOffsetCm() {
-		return xOffsetCm;
-	}
 
-	public OdeLaneOffsets setxOffsetCm(Integer xOffsetCm) {
-		this.xOffsetCm = xOffsetCm;
-		return this;
-	}
+   public Integer getLaneWidthCm() {
+      return LaneWidthCm;
+   }
 
-	public Integer getyOffsetCm() {
-		return yOffsetCm;
-	}
+   public OdeLaneOffsets setLaneWidthCm(Integer laneWidthCm) {
+      LaneWidthCm = laneWidthCm;
+      return this;
+   }
 
-	public OdeLaneOffsets setyOffsetCm(Integer yOffsetCm) {
-		this.yOffsetCm = yOffsetCm;
-		return this;
-	}
-
-	public Integer getzOffsetCm() {
-		return zOffsetCm;
-	}
-
-	public OdeLaneOffsets setzOffsetCm(Integer zOffsetCm) {
-		this.zOffsetCm = zOffsetCm;
-		return this;
-	}
-
-	public Integer getLaneWidthCm() {
-		return LaneWidthCm;
-	}
-
-	public OdeLaneOffsets setLaneWidthCm(Integer laneWidthCm) {
-		LaneWidthCm = laneWidthCm;
-		return this;
-	}
-
-   
 }

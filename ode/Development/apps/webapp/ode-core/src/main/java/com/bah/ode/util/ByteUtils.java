@@ -10,19 +10,40 @@ public class ByteUtils {
    }
 
    public static int unsignedByteArrayToInt(byte[] byteArray, int offset, int length) {
-      int r = unsignedByteToInt(byteArray[offset]);
-
-      for (int i = offset+1; i < offset+length; i++) {
+      int r = 0;
+      
+      int highIndex = offset + length;
+      int maxIndex = (byteArray.length > Integer.BYTES ? Integer.BYTES : byteArray.length) + offset;
+      
+      if (highIndex > maxIndex)
+         highIndex = maxIndex;
+      
+      for (int i = offset; i < highIndex; i++) {
          r = (r << 8) | unsignedByteToInt(byteArray[i]);
       }
       return r;
    }
 
-   public static void main(String[] args) {
-      byte[] b = { (byte) 0xE1, (byte) 0xA6 };
+   public static long unsignedByteToLong(byte b) {
+      return (long) b & 0xFF;
+   }
 
-      int i = unsignedByteArrayToInt(b);
+   public static long unsignedByteArrayToLong(byte[] byteArray) {
+      return unsignedByteArrayToLong(byteArray, 0, byteArray.length);
+   }
 
-      System.out.println(i);
+   public static long unsignedByteArrayToLong(byte[] byteArray, int offset, int length) {
+      long r = 0;
+      
+      int highIndex = offset + length;
+      int maxIndex = (byteArray.length > Long.BYTES ? Long.BYTES : byteArray.length) + offset;
+      
+      if (highIndex > maxIndex)
+         highIndex = maxIndex;
+      
+      for (int i = offset; i < highIndex; i++) {
+         r = (r << 8) | unsignedByteToLong(byteArray[i]);
+      }
+      return r;
    }
 }

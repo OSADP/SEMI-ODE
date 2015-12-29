@@ -3,6 +3,9 @@ package com.bah.ode.util;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
+import com.bah.ode.asn.OdeGeoRegion;
+import com.bah.ode.asn.OdePosition3D;
+
 public class GeoUtils {
 
    public static class QELLIPSOID {
@@ -337,6 +340,25 @@ public class GeoUtils {
             && (p.getX() <= (Math.max(l.getX1(), l.getX2()) + tolerance))
             && (p.getY() >= (Math.min(l.getY1(), l.getY2()) - tolerance)) 
             && (p.getY() <= (Math.max(l.getY1(), l.getY2()) + tolerance)));
+   }
+
+   public static boolean isPositionInBoundsInclusive(OdePosition3D pos, OdeGeoRegion region) {
+      if (region == null)
+         return false;
+      
+      OdePosition3D nw = region.getNwCorner();
+      OdePosition3D se = region.getSeCorner();
+      
+      if (nw == null || nw.getLatitude() == null || pos == null || pos.getLatitude().doubleValue() > nw.getLatitude().doubleValue())
+         return false;
+      if (nw.getLongitude() == null || pos.getLongitude().doubleValue() < nw.getLongitude().doubleValue())
+         return false;
+      if (se == null || se.getLatitude() == null || pos.getLatitude().doubleValue() < se.getLatitude().doubleValue())
+         return false;
+      if (se.getLongitude() == null || pos.getLongitude().doubleValue() > se.getLongitude().doubleValue())
+         return false;
+      
+      return true;
    }
 
    // public static void snapToPathSegment(Path2D path, Point2D p) {

@@ -1,10 +1,8 @@
 package com.bah.ode.model;
 
-import java.math.BigDecimal;
+import com.bah.ode.asn.OdePosition3D;
 
 public interface HasPosition extends OdeFilterable {
-   BigDecimal getLatitude();
-   BigDecimal getLongitude();
-   BigDecimal getElevation();
-
+   OdePosition3D getPosition();
+   boolean isInBounds(OdePosition3D position);
 }

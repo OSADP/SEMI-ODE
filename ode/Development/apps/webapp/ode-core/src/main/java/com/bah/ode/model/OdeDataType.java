@@ -32,7 +32,6 @@ public enum OdeDataType {
    IntersectionData("int", OdeIntersectionData.class),
    IntersectionSituationData("isd", OdeIntersectionDataRaw.class),
    AdvisoryData("adv", OdeAdvisoryData.class),
-   AdvisorySituationData("asd", OdeAdvisoryDataRaw.class),
    MapData("map", OdeMapData.class), 
    SPaTData("spat", OdeSpatData.class), 
    AggregateData("agg", OdeAggregateData.class),
