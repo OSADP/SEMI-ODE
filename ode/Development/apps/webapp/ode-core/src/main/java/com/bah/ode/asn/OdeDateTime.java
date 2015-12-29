@@ -82,7 +82,7 @@ public class OdeDateTime {
 
    public String getISODateTime() {
       BigDecimal secFract = second.remainder(BigDecimal.valueOf(second.intValue()));
-      BigDecimal millisec = secFract.multiply(BigDecimal.valueOf(1000000));
+      BigDecimal millisec = secFract.multiply(BigDecimal.valueOf(1000));
       return DateTimeUtils.isoDateTime(getYear(), getMonth(),
             getDay(), getHour(), getMinute(), second.intValue(), millisec.intValue())
             .format(DateTimeFormatter.ISO_ZONED_DATE_TIME);

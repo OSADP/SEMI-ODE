@@ -26,14 +26,19 @@ public class OdeAdvisoryDataFrame extends OdeObject {
 
       private static final long serialVersionUID = 5091542631221985473L;
 
+      public OdeFurtherInfoID furtherInfoID_chosen;
+      public OdeRoadSignId roadSignID_chosen;
+      
       public MessageId(MsgId msgId) {
+         super();
+
          int chosenFlag = msgId.getChosenFlag();
          switch (chosenFlag) {
          case MsgId.furtherInfoID_chosen:
-            setChosenObject(new OdeFurtherInfoID(msgId.getFurtherInfoID()));
+            furtherInfoID_chosen = new OdeFurtherInfoID(msgId.getFurtherInfoID());
             break;
          case MsgId.roadSignID_chosen:
-            setChosenObject(new OdeRoadSignId(msgId.getRoadSignID()));
+            roadSignID_chosen = new OdeRoadSignId(msgId.getRoadSignID());
             break;
          }
       }
@@ -76,11 +81,15 @@ public class OdeAdvisoryDataFrame extends OdeObject {
             
          }
 
+         public Code code_chosen;
+         public Text text_chosen;
+         
          public CodeOrText (Integer code, String text) {
+            super();
             if (code != null) {
-               setChosenObject(new Code(code));
+               code_chosen = new Code(code);
             } else if (text != null) {
-               setChosenObject(new Text(text));
+               text_chosen = new Text(text);
             }
             
          }
@@ -94,79 +103,89 @@ public class OdeAdvisoryDataFrame extends OdeObject {
                new ArrayList<MessageContent.CodeOrText>();
       }
       
+      public CodeOrTextSequence advisory_chosen;
+      public CodeOrTextSequence exitService_chosen;
+      public CodeOrTextSequence genericSign_chosen;
+      public CodeOrTextSequence speedLimit_chosen;
+      public CodeOrTextSequence workZone_chosen;
+      
       public MessageContent(Content content) {
+         super();
+
          int chosenFlag = content.getChosenFlag();
-         
-         CodeOrTextSequence msgSequence = new CodeOrTextSequence();
          
          switch (chosenFlag) {
          case Content.advisory_chosen:
+            advisory_chosen = new CodeOrTextSequence();
             ITIScodesAndText advisory = content.getAdvisory();
             for (ITIScodesAndText.Sequence_ e : advisory.elements) {
                switch (e.item.getChosenFlag()) {
                case ITIScodesAndText.Sequence_.Item.itis_chosen:
-                  msgSequence.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
+                  advisory_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
                   break;
                case ITIScodesAndText.Sequence_.Item.text_chosen:
-                  msgSequence.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
+                  advisory_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
                   break;
                }
             }
             break;
          case Content.exitService_chosen:
+            exitService_chosen = new CodeOrTextSequence();
             ExitService exitService = content.getExitService();
             for (ExitService.Sequence_ e : exitService.elements) {
                switch (e.item.getChosenFlag()) {
                case ExitService.Sequence_.Item.itis_chosen:
-                  msgSequence.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
+                  exitService_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
                   break;
                case ExitService.Sequence_.Item.text_chosen:
-                  msgSequence.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
+                  exitService_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
                   break;
                }
             }
             break;
          case Content.genericSign_chosen:
+            genericSign_chosen = new CodeOrTextSequence();
             GenericSignage genericSign = content.getGenericSign();
             for (GenericSignage.Sequence_ e : genericSign.elements) {
                switch (e.item.getChosenFlag()) {
                case GenericSignage.Sequence_.Item.itis_chosen:
-                  msgSequence.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
+                  genericSign_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
                   break;
                case GenericSignage.Sequence_.Item.text_chosen:
-                  msgSequence.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
+                  genericSign_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
                   break;
                }
             }
             break;
          case Content.speedLimit_chosen:
+            speedLimit_chosen = new CodeOrTextSequence();
             SpeedLimit speedLimit = content.getSpeedLimit();
             for (SpeedLimit.Sequence_ e : speedLimit.elements) {
                switch (e.item.getChosenFlag()) {
                case SpeedLimit.Sequence_.Item.itis_chosen:
-                  msgSequence.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
+                  speedLimit_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
                   break;
                case SpeedLimit.Sequence_.Item.text_chosen:
-                  msgSequence.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
+                  speedLimit_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
                   break;
                }
             }
             break;
          case Content.workZone_chosen:
+            workZone_chosen = new CodeOrTextSequence();
             WorkZone workZone = content.getWorkZone();
             for (WorkZone.Sequence_ e : workZone.elements) {
                switch (e.item.getChosenFlag()) {
                case WorkZone.Sequence_.Item.itis_chosen:
-                  msgSequence.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
+                  workZone_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
                   break;
                case WorkZone.Sequence_.Item.text_chosen:
-                  msgSequence.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
+                  workZone_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
                   break;
                }
             }
             break;
          }
-         setChosenObject(msgSequence);
       }
 
    }

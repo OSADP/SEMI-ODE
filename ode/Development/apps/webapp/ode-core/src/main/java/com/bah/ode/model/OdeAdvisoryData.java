@@ -32,7 +32,7 @@ public final class OdeAdvisoryData extends OdeData
    public static final byte DIST_TYPE_RSU = 1;
    public static final byte DIST_TYPE_IP = 2;
 
-   private OdePosition3D position;
+   private OdePosition3D centerPosition;
    private String groupID;
    private OdeTimeToLive timeToLive;
    private OdeGeoRegion serviceRegion;
@@ -50,17 +50,17 @@ public final class OdeAdvisoryData extends OdeData
       
       setServiceRegion(new OdeGeoRegion(asd.getServiceRegion()));
       
-      setPosition(this.serviceRegion.getCenterPosition());
+      setCenterPosition(this.serviceRegion.getCenterPosition());
       
       setAdvisoryMessage(new OdeAdvisoryDetails(asd.getAsdmDetails()));
    }
 
-   public OdePosition3D getPosition() {
-      return position;
+   public OdePosition3D getCenterPosition() {
+      return centerPosition;
    }
 
-   public void setPosition(OdePosition3D position) {
-      this.position = position;
+   public void setCenterPosition(OdePosition3D centerPosition) {
+      this.centerPosition = centerPosition;
    }
 
    public String getGroupId() {
@@ -96,9 +96,26 @@ public final class OdeAdvisoryData extends OdeData
    }
 
    @Override
+   public OdePosition3D getPosition() {
+      return getCenterPosition();
+   }
+
+   @Override
+   public boolean isInBounds(OdeGeoRegion region) {
+      return GeoUtils.isPositionInBoundsInclusive(centerPosition, region);
+   }
+
+   @Override
    public ZonedDateTime getTimestamp() {
       try {
-         return DateTimeUtils.isoDateTime(getReceivedAt());
+         if (advisoryMessage.getStartTime() == null ||
+               advisoryMessage.getStopTime() == null) {
+            return null;
+         } else {
+            ZonedDateTime startTime = DateTimeUtils.isoDateTime(advisoryMessage.getStartTime());
+            ZonedDateTime endTime = DateTimeUtils.isoDateTime(advisoryMessage.getStopTime());
+            return startTime.plusSeconds(endTime.toEpochSecond() - startTime.toEpochSecond());
+         }
       } catch (ParseException e) {
          logger.error("Error getting timestamp: ", e);
       }
@@ -107,20 +124,9 @@ public final class OdeAdvisoryData extends OdeData
    }
 
    @Override
-   public boolean isInBounds(OdePosition3D position) {
-      return GeoUtils.isPositionInBoundsInclusive(position, serviceRegion);
-   }
-
-   @Override
-   public boolean isOnTime(ZonedDateTime dateTime) {
-      try {
-         return DateTimeUtils.isBetweenTimesInclusive(getTimestamp(),
-               DateTimeUtils.isoDateTime(getAdvisoryMessage().getStartTime()),
-               DateTimeUtils.isoDateTime(getAdvisoryMessage().getStopTime()));
-      } catch (ParseException e) {
-         logger.error("Error getting timestamp: ", e);
-      }
-      return false;
+   public boolean isOnTime(ZonedDateTime start, ZonedDateTime end) {
+      return DateTimeUtils.isBetweenTimesInclusive(getTimestamp(),
+            start, end);
    }
 
    @Override
@@ -130,7 +136,7 @@ public final class OdeAdvisoryData extends OdeData
       result = prime * result
             + ((advisoryMessage == null) ? 0 : advisoryMessage.hashCode());
       result = prime * result + ((groupID == null) ? 0 : groupID.hashCode());
-      result = prime * result + ((position == null) ? 0 : position.hashCode());
+      result = prime * result + ((centerPosition == null) ? 0 : centerPosition.hashCode());
       result = prime * result
             + ((serviceRegion == null) ? 0 : serviceRegion.hashCode());
       result = prime * result
@@ -157,10 +163,10 @@ public final class OdeAdvisoryData extends OdeData
             return false;
       } else if (!groupID.equals(other.groupID))
          return false;
-      if (position == null) {
-         if (other.position != null)
+      if (centerPosition == null) {
+         if (other.centerPosition != null)
             return false;
-      } else if (!position.equals(other.position))
+      } else if (!centerPosition.equals(other.centerPosition))
          return false;
       if (serviceRegion == null) {
          if (other.serviceRegion != null)
@@ -171,5 +177,6 @@ public final class OdeAdvisoryData extends OdeData
          return false;
       return true;
    }
+
 
 }

@@ -30,8 +30,7 @@ public class TemporalFilter extends BaseFilter {
    public boolean pass(OdeFilterable data) {
       if (data instanceof HasTimestamp) {
          HasTimestamp hasTimestamp = (HasTimestamp) data;
-         ZonedDateTime dateTime = hasTimestamp.getTimestamp();
-         return DateTimeUtils.isBetweenTimesInclusive(dateTime, startDate, endDate);
+         return hasTimestamp.isOnTime(startDate, endDate);
       } else {
          return true;
       }

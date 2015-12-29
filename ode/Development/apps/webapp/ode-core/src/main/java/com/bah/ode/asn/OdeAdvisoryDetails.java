@@ -74,7 +74,7 @@ public class OdeAdvisoryDetails extends OdeObject {
       try {
          coder.decode(ins, tim);
       } catch (Exception e) {
-         logger.error("Error decoding ", e);
+         logger.error("Error decoding message: " + message, e);
       } finally {
          try {
             ins.close();
