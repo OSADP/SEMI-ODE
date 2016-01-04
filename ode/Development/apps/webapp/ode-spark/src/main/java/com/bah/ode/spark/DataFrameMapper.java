@@ -21,11 +21,17 @@ public class DataFrameMapper implements Function<Row, String>, Serializable {
 	public String call(Row row) throws Exception {
 
 		ObjectNode node = JsonNodeFactory.instance.objectNode();
-		
+
 		for (int i = 0; i < row.length(); i ++ ){
-			node.put(dataframeHeader[i], row.getString(i));
+			/* getDouble allows non-quoted numerics in the JSON */
+			try{
+				node.put(dataframeHeader[i], row.getString(i));
+			}catch(ClassCastException e){
+				node.put(dataframeHeader[i], row.getDouble(i));
+			}
+
 		}
-		
+
 		return node.toString();
 	}
 

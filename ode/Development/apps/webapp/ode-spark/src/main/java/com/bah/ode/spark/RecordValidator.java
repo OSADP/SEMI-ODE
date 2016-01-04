@@ -5,6 +5,7 @@ package com.bah.ode.spark;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.spark.api.java.function.PairFunction;
 
 import com.bah.ode.util.JsonUtils;
@@ -18,6 +19,7 @@ public class RecordValidator implements  PairFunction<Tuple2<String, Tuple2<Stri
 
 	private static final long serialVersionUID = 2040465851629473055L;
 	private List<String> validationData = null;
+	private static final Logger logger = Logger.getLogger(RecordValidator.class);
 
 	public RecordValidator(List<String> validationData) {
 		this.validationData = validationData;
@@ -29,7 +31,7 @@ public class RecordValidator implements  PairFunction<Tuple2<String, Tuple2<Stri
 
 			int count = 0;
 			ArrayList<ObjectNode> violations = new ArrayList<ObjectNode>();
-			ObjectNode metadata = JsonUtils.toObjectNode(record._1());
+			ObjectNode metadata = JsonUtils.toObjectNode(record._2()._2());
 
 			for(String validationJSON : validationData){
 
@@ -56,11 +58,10 @@ public class RecordValidator implements  PairFunction<Tuple2<String, Tuple2<Stri
 				}
 			}
 
-			if(violations.size() > 0 ){
-				metadata.putArray("payloadViolations").addAll(violations);
-				metadata.put("count", count);
-				return new Tuple2<String, Tuple2<String, String>>(metadata.toString(), new Tuple2<String,String>(record._2()._1(), record._2()._2()));
-			}
+			//				metadata.putArray("payloadViolations").addAll(violations);
+			metadata.put("count", count);
+			return new Tuple2<String, Tuple2<String, String>>(record._1(), new Tuple2<String,String>(record._2()._1(), metadata.toString()));
+
 
 
 		}
