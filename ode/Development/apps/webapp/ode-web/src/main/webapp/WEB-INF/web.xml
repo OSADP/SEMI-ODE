@@ -120,6 +120,10 @@
   <param-value></param-value> <!-- CAN BE HDFS OR LOCAL <param-value>hdfs://localhost.localdomain:8020/tmp/sanitization.json</param-value>-->
 </context-param>
 <context-param>
+   <param-name>spark.static.validation.file.location</param-name>
+   <param-value></param-value> <!-- CAN BE HDFS OR LOCAL -->
+</context-param>
+<context-param>
   <param-name>spark.road.segment.snapping.tolerance</param-name>
   <param-value>20</param-value>
 </context-param>
