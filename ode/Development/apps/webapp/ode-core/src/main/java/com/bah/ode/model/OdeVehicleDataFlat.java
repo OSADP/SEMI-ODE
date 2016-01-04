@@ -153,6 +153,13 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
       
       if (vsr.time != null) {
          OdeDateTime odt = new OdeDateTime(vsr.time);
+         setYear(odt.getYear());
+         setMonth(odt.getMonth());
+         setDay(odt.getDay());
+         setHour(odt.getHour());
+         setMinute(odt.getMinute());
+         setSecond(odt.getSecond());
+
          setDateTime(odt.getISODateTime());
       }
       
