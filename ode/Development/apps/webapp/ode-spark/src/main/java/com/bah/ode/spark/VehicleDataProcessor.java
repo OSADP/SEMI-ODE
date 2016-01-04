@@ -148,6 +148,23 @@ public class VehicleDataProcessor extends OdeObject {
              withRoadSegment =  withRoadSegment.mapToPair(new RecordSanitizer(sanitizationData));
 
          }
+
+         /*
+          * Validation ODE-68
+         String validationLocation = ssc.sparkContext().getConf()
+        		 .get(AppContext.SPARK_STATIC_VALIDATION_FILE_LOCATION, "");
+         if(!validationLocation.equals("")){
+             SQLContext sqlContext = SqlContextSingleton.getInstance(ssc
+                     .sparkContext().sc());
+
+        	 DataFrame validationFrame = sqlContext.jsonFile(validationLocation);
+
+             List<String> validationData = validationFrame.toJavaRDD()
+                   .map(new DataFrameMapper(validationFrame.columns())).toArray();
+
+             withRoadSegment =  withRoadSegment.mapToPair(new RecordValidator(validationData));
+         }
+          */
          
          /*
           * Vehicle Data Aggregation and Distribution
