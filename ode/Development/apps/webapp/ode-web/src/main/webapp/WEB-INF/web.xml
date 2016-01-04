@@ -120,6 +120,10 @@
   <param-value></param-value> <!-- CAN BE HDFS OR LOCAL <param-value>hdfs://localhost.localdomain:8020/tmp/sanitization.json</param-value>-->
 </context-param>
 <context-param>
+   <param-name>spark.static.validation.file.location</param-name>
+   <param-value></param-value> <!-- CAN BE HDFS OR LOCAL -->
+</context-param>
+<context-param>
   <param-name>spark.road.segment.snapping.tolerance</param-name>
   <param-value>20</param-value>
 </context-param>
@@ -165,6 +169,13 @@ This param specifies the name based on HDP naming convention
 <context-param>
   <param-name>token.key.rsa.pem</param-name>
   <param-value>mykey.pem</param-value>
+</context-param>
+
+<context-param>
+<!-- Param value can be empty. Must be located within Servelet context, such as in /WEB-INF  -->
+ <param-name>spark.yarn.configuration.file</param-name>
+ <!--  <param-value>/WEB-INF/spark-yarn.properties</param-value> -->
+ <param-value></param-value>
 </context-param>
 <listener>
   <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>

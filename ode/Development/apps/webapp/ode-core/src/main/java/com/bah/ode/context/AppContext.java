@@ -18,6 +18,7 @@ package com.bah.ode.context;
 
 //import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Properties;
 //import java.util.List;
 import java.util.UUID;
 
@@ -63,6 +64,7 @@ public class AppContext {
    public static final String HADOOP_CONF_DIR = HADOOP_HOME+"/conf";
    public static final String HADOOP_YARN_HOME = "/usr/hdp/current/hadoop-yarn-client";
    public static final String YARN_CONF_DIR = HADOOP_YARN_HOME+"/conf";
+   public static final String SPARK_YARN_CONFIGURATION_FILE = "spark.yarn.configuration.file";
 
    //web.xml config parameter keys
    public static final String WEB_SERVER_ROOT = "web.server.root";
@@ -100,6 +102,7 @@ public class AppContext {
 
    public static final String SPARK_STATIC_WEATHER_FILE_LOCATION = "spark.static.weather.file.location";
    public static final String SPARK_STATIC_SANITIZATION_FILE_LOCATION = "spark.static.sanitization.file.location";
+   public static final String SPARK_STATIC_VALIDATION_FILE_LOCATION = "spark.static.validation.file.location";
 
    public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
    public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
@@ -133,7 +136,8 @@ public class AppContext {
    private AppContext() {
    }
 
-   public void init(ServletContext context) {
+   
+public void init(ServletContext context) {
       this.servletContext = context;
       this.sparkMaster = getParam(SPARK_MASTER);
       String hostname = System.getenv("HOSTNAME");
@@ -231,6 +235,21 @@ public class AppContext {
 //            // http://spark.apache.org/docs/1.1.0/configuration.html#spark-streaming
 //            .set("spark.streaming.unpersist", "true")
                         ;
+               
+               // Load external Spark Yarn Properties
+               Properties sparkYarnPropertyFile = new Properties();
+               String sparkConfigFilePath =  getParam(SPARK_YARN_CONFIGURATION_FILE);
+               
+               if( null != sparkConfigFilePath && !sparkConfigFilePath.equals(""))
+               {   
+	               sparkYarnPropertyFile.load(this.servletContext.getResourceAsStream(sparkConfigFilePath));   
+	               Enumeration<?> sparkYarnProperties =  sparkYarnPropertyFile.propertyNames();	               
+	               
+	               while (sparkYarnProperties.hasMoreElements()){
+	            	   String key =  (String) sparkYarnProperties.nextElement();
+	            	   sparkConf.set(key,sparkYarnPropertyFile.getProperty(key));
+	               }
+               }
                startSparkOnYarn();
             } else {
                sparkContext = getOrSetSparkContext();
