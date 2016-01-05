@@ -5,11 +5,9 @@ package com.bah.ode.spark;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.spark.api.java.function.PairFunction;
 
 import com.bah.ode.util.JsonUtils;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -19,12 +17,12 @@ public class RecordValidator implements  PairFunction<Tuple2<String, Tuple2<Stri
 
 	private static final long serialVersionUID = 2040465851629473055L;
 	private List<String> validationData = null;
-	private static final Logger logger = Logger.getLogger(RecordValidator.class);
 
 	public RecordValidator(List<String> validationData) {
 		this.validationData = validationData;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public Tuple2<String, Tuple2<String, String>> call(Tuple2<String, Tuple2<String, String>> record) throws Exception {
 		if(!record._1().equals("sanitized")){
@@ -58,8 +56,18 @@ public class RecordValidator implements  PairFunction<Tuple2<String, Tuple2<Stri
 				}
 			}
 
-			//				metadata.putArray("payloadViolations").addAll(violations);
-			metadata.put("count", count);
+			ObjectNode countNode = JsonNodeFactory.instance.objectNode();
+			countNode.put("count", count);
+			
+
+			ObjectNode payloadViolations = JsonNodeFactory.instance.objectNode();
+			countNode.put("count", count);
+
+			payloadViolations.put("count", count);
+			payloadViolations.putArray("violations").addAll(violations);
+			
+			metadata.set("payloadViolations", payloadViolations);
+
 			return new Tuple2<String, Tuple2<String, String>>(record._1(), new Tuple2<String,String>(record._2()._1(), metadata.toString()));
 
 
