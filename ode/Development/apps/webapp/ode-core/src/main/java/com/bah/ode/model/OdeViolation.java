@@ -8,8 +8,16 @@ public class OdeViolation {
 
 	public OdeViolation() {
 		super();
+		fieldName = null;
 		validMin = Double.NaN;
 		validMax = Double.NaN;
+	}
+	
+	public OdeViolation(String fieldName, double validMin, double validMax) {
+		super();
+		this.fieldName = fieldName;
+		this.validMin = validMin;
+		this.validMax = validMax;
 	}
 
 	public String getFieldName(){
