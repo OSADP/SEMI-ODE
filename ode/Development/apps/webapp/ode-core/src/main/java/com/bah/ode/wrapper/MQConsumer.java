@@ -37,12 +37,12 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 	public Object call() throws Exception {
 		ConsumerIterator<K, V> it = m_stream.iterator();
 
-		
+
 		/**
 		 * Sends all received and ordered records every second as a batch
 		 * Records sent as map of serialId.bundleId
 		 */
-		
+
 		new java.util.Timer().schedule(new java.util.TimerTask() {
 			@Override
 			public void run() {
@@ -79,7 +79,7 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 									.split("[^\\w-]+"); /* Non-alphanumerics and hyphen */
 							tempSerialId = test[0] + "." + test[1];
 							int index = Integer.parseInt(test[2]);
-							
+
 							/* 
 							 * vList is an array with the recordId as the index 
 							 * that way there is no need to loop twice through arrays
@@ -116,11 +116,11 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 
 	public class BatchSend implements Runnable {
 
-		public void run() {
+		public synchronized void run() {
 			try {
 				Iterator<String> iter = records.keySet().iterator();
 				while (iter.hasNext()) {
-				    String key = iter.next();
+					String key = iter.next();
 					ArrayList<V> vList = records.get(key);
 					for (int i = 0; i < vList.size(); i++) {
 						V msg = vList.get(i);
@@ -128,9 +128,8 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 							processor.process(msg);
 						}
 					}
-					// remove the record key from the map if it was sent outs
-					iter.remove();
 				}
+				records.clear();
 			} catch (Exception e) {
 				logger.error("Error Consuming message", e);
 			}
