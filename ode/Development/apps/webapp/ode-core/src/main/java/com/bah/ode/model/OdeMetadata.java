@@ -1,5 +1,7 @@
 package com.bah.ode.model;
 
+import java.util.List;
+
 import com.bah.ode.wrapper.MQTopic;
 
 public class OdeMetadata extends OdeObject {
@@ -7,6 +9,7 @@ public class OdeMetadata extends OdeObject {
 
    private String  key;
    private String payloadType;
+   private List<OdeViolation> violations;
    private MQTopic inputTopic;
    private MQTopic outputTopic;
    private OdeRequest odeRequest;
@@ -60,6 +63,17 @@ public class OdeMetadata extends OdeObject {
       this.payloadType = payloadType;
       return this;
    }
+   
+   public List<OdeViolation> getViolations(){
+	   return violations;
+   }
+   
+   public OdeMetadata setViolations(List<OdeViolation> violations){
+	   this.violations = violations;
+	   return this;
+   }
+   
+   
 
    @Override
    public int hashCode() {
@@ -76,6 +90,7 @@ public class OdeMetadata extends OdeObject {
             + ((payloadType == null) ? 0 : payloadType.hashCode());
       return result;
    }
+   
    @Override
    public boolean equals(Object obj) {
       if (this == obj)

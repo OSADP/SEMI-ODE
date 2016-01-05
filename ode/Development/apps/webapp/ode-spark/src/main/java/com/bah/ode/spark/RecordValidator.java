@@ -25,8 +25,6 @@ public class RecordValidator implements  PairFunction<Tuple2<String, Tuple2<Stri
 	@Override
 	public Tuple2<String, Tuple2<String, String>> call(Tuple2<String, Tuple2<String, String>> record) throws Exception {
 		if(!record._1().equals("sanitized")){
-
-			int count = 0;
 			ArrayList<ObjectNode> violations = new ArrayList<ObjectNode>();
 			ObjectNode metadata = JsonUtils.toObjectNode(record._2()._2());
 
@@ -44,8 +42,6 @@ public class RecordValidator implements  PairFunction<Tuple2<String, Tuple2<Stri
 				double vehicleField = vehicledata.get(fieldName).asDouble(Double.NaN);
 
 				if(vehicleField > maxValue || vehicleField < minValue){
-					count += 1;
-
 					ObjectNode node = JsonNodeFactory.instance.objectNode();
 					node.put("fieldName", fieldName);
 					node.put("validMin", minValue);
@@ -55,17 +51,7 @@ public class RecordValidator implements  PairFunction<Tuple2<String, Tuple2<Stri
 				}
 			}
 
-			ObjectNode countNode = JsonNodeFactory.instance.objectNode();
-			countNode.put("count", count);
-			
-
-			ObjectNode payloadViolations = JsonNodeFactory.instance.objectNode();
-			countNode.put("count", count);
-
-			payloadViolations.put("count", count);
-			payloadViolations.putArray("violations").addAll(violations);
-			
-			metadata.set("payloadViolations", payloadViolations);
+			metadata.putArray("violations").addAll(violations);
 
 			return new Tuple2<String, Tuple2<String, String>>(record._1(), new Tuple2<String,String>(record._2()._1(), metadata.toString()));
 
