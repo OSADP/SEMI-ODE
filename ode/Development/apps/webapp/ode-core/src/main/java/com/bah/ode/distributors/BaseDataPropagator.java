@@ -66,13 +66,14 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
             JsonNode payloadNode = idm.get(AppContext.PAYLOAD_STRING);
             if (payloadNode != null) {
                JsonNode payloadTypeNode = idm.get(AppContext.METADATA_STRING).get(AppContext.PAYLOAD_TYPE_STRING);
+               JsonNode violations = idm.get(AppContext.METADATA_STRING).withArray(AppContext.METADATA_VIOLATIONS_STRING);
                if (payloadTypeNode != null) {
                   OdeDataType payloadType = OdeDataType.getByShortName(payloadTypeNode.textValue());
                   if (payloadType != null) {
                      OdeMsgPayload payload = (OdeMsgPayload) JsonUtils.fromJson(payloadNode
                            .toString(), payloadType.getClazz());
                      if (payload != null) {
-                        return new OdeDataMessage(payload);
+                        return new OdeDataMessage(payload, violations);
                      } else {
                         throw new DataProcessorException(
                               "Unsupported payload type: " + payloadType);
