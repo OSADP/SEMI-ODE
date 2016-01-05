@@ -158,7 +158,6 @@ public class VehicleDataProcessor extends OdeObject {
          if(!validationLocation.equals("")){
              SQLContext sqlContext = SqlContextSingleton.getInstance(ssc
                      .sparkContext().sc());
-             logger.info(validationLocation);
 
         	 DataFrame validationFrame = sqlContext.jsonFile(validationLocation);
 

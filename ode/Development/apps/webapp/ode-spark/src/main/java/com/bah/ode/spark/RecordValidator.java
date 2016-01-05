@@ -22,7 +22,6 @@ public class RecordValidator implements  PairFunction<Tuple2<String, Tuple2<Stri
 		this.validationData = validationData;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public Tuple2<String, Tuple2<String, String>> call(Tuple2<String, Tuple2<String, String>> record) throws Exception {
 		if(!record._1().equals("sanitized")){
