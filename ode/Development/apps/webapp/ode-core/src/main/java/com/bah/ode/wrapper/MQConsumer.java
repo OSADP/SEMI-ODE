@@ -47,13 +47,27 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 			@Override
 			public void run() {
 				/*
-				 * Sends the batch after 5 seconds without waiting for
+				 * Sends the batch every second without waiting for
 				 * the next bundle if it hasn't arrived yet.
 				 */
 				if (records.size() != 0) {
-					BatchSend batchSender = new BatchSend();
-					Thread t = new Thread(batchSender);
-					t.start();
+					try {
+						HashMap<String, ArrayList<V>> sendMap = new HashMap<String, ArrayList<V>>(records);
+						records.clear();
+						Iterator<String> iter = sendMap.keySet().iterator();
+						while (iter.hasNext()) {
+							String key = iter.next();
+							ArrayList<V> vList = sendMap.get(key);
+							for (int i = 0; i < vList.size(); i++) {
+								V msg = vList.get(i);
+								if(msg != null){
+									processor.process(msg);
+								}
+							}
+						}
+					} catch (Exception e) {
+						logger.error("Error Consuming message", e);
+					}
 				}
 			}
 		}, 1000, 1000);
@@ -117,22 +131,6 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 	public class BatchSend implements Runnable {
 
 		public synchronized void run() {
-			try {
-				Iterator<String> iter = records.keySet().iterator();
-				while (iter.hasNext()) {
-					String key = iter.next();
-					ArrayList<V> vList = records.get(key);
-					for (int i = 0; i < vList.size(); i++) {
-						V msg = vList.get(i);
-						if(msg != null){
-							processor.process(msg);
-						}
-					}
-				}
-				records.clear();
-			} catch (Exception e) {
-				logger.error("Error Consuming message", e);
-			}
 		}
 	}
 
