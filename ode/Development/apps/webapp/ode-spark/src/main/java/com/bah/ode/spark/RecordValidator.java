@@ -41,13 +41,15 @@ public class RecordValidator implements  PairFunction<Tuple2<String, Tuple2<Stri
 
 				double vehicleField = vehicledata.get(fieldName).asDouble(Double.NaN);
 
-				if(vehicleField > maxValue || vehicleField < minValue){
-					ObjectNode node = JsonNodeFactory.instance.objectNode();
-					node.put("fieldName", fieldName);
-					node.put("validMin", minValue);
-					node.put("validMax", maxValue);
+				if(!fieldName.equals("") && vehicleField != Double.NaN && minValue != Double.NaN && maxValue != Double.NaN){
+					if(vehicleField > maxValue || vehicleField < minValue){
+						ObjectNode node = JsonNodeFactory.instance.objectNode();
+						node.put("fieldName", fieldName);
+						node.put("validMin", minValue);
+						node.put("validMax", maxValue);
 
-					violations.add(node);
+						violations.add(node);
+					}
 				}
 			}
 
