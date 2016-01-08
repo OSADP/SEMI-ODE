@@ -17,6 +17,10 @@
          <name>Hortonworks HDP Maven Repository</name>
          <url>http://repo.hortonworks.com/content/repositories/releases/</url>
       </repository>
+      <repository>
+        <id>cnsi-ode-repo</id>
+        <url>http://dropbox.cnsi.com/nexus/content/repositories/ODE/</url>
+      </repository>
    </repositories>
 
    <properties>
