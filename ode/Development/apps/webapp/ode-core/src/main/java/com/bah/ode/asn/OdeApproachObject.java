@@ -16,7 +16,17 @@
  *******************************************************************************/
 package com.bah.ode.asn;
 
-public class OdeApproachObject {
+import java.util.ArrayList;
+import java.util.List;
+
+import com.bah.ode.asn.oss.dsrc.ApproachObject;
+import com.bah.ode.asn.oss.dsrc.Intersection_.Approaches;
+import com.bah.ode.model.OdeObject;
+
+public class OdeApproachObject extends OdeObject {
+
+   private static final long serialVersionUID = 4326844331427902719L;
+   
    public OdePosition3D refPoint;
    public Integer laneWidthCm;
    public OdeApproach approach;
@@ -26,16 +36,21 @@ public class OdeApproachObject {
 	   super();
    }
 
-	public OdeApproachObject(OdePosition3D refPoint, Integer laneWidthCm,
-         OdeApproach approach, OdeApproach egress) {
-	   super();
-	   this.refPoint = refPoint;
-	   this.laneWidthCm = laneWidthCm;
-	   this.approach = approach;
-	   this.egress = egress;
+	public OdeApproachObject(ApproachObject approachObj) {
+	   if (approachObj.hasApproach())
+	      setApproach(new OdeApproach(approachObj.getApproach()));
+	   
+	   if (approachObj.hasEgress())
+	      setEgress(new OdeApproach(approachObj.getEgress()));
+	   
+	   if (approachObj.hasLaneWidth())
+	      setLaneWidthCm(approachObj.getLaneWidth().intValue());
+	   
+	   if (approachObj.hasRefPoint())
+	      setRefPoint(new OdePosition3D(approachObj.getRefPoint()));
    }
 
-	public OdePosition3D getRefPoint() {
+   public OdePosition3D getRefPoint() {
 		return refPoint;
 	}
 
@@ -70,6 +85,65 @@ public class OdeApproachObject {
 		this.egress = egress;
 		return this;
 	}
+
+   public static List<OdeApproachObject> createList(Approaches approaches) {
+
+      List<OdeApproachObject> aos = null;
+      if (approaches != null) {
+         aos = new ArrayList<OdeApproachObject>();
+         for (ApproachObject ao : approaches.elements) {
+            if (ao != null) {
+               aos.add(new OdeApproachObject(ao));
+            }
+         }
+      }
+      return aos;
+   }
+
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((approach == null) ? 0 : approach.hashCode());
+      result = prime * result + ((egress == null) ? 0 : egress.hashCode());
+      result = prime * result
+            + ((laneWidthCm == null) ? 0 : laneWidthCm.hashCode());
+      result = prime * result + ((refPoint == null) ? 0 : refPoint.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      OdeApproachObject other = (OdeApproachObject) obj;
+      if (approach == null) {
+         if (other.approach != null)
+            return false;
+      } else if (!approach.equals(other.approach))
+         return false;
+      if (egress == null) {
+         if (other.egress != null)
+            return false;
+      } else if (!egress.equals(other.egress))
+         return false;
+      if (laneWidthCm == null) {
+         if (other.laneWidthCm != null)
+            return false;
+      } else if (!laneWidthCm.equals(other.laneWidthCm))
+         return false;
+      if (refPoint == null) {
+         if (other.refPoint != null)
+            return false;
+      } else if (!refPoint.equals(other.refPoint))
+         return false;
+      return true;
+   }
 
    
 }

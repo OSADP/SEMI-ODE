@@ -18,62 +18,122 @@ package com.bah.ode.asn;
 
 import java.util.List;
 
+import com.bah.ode.asn.oss.dsrc.ConnectsTo;
+import com.bah.ode.asn.oss.dsrc.LaneNumber;
+import com.bah.ode.asn.oss.dsrc.LaneWidth;
+import com.bah.ode.asn.oss.dsrc.NodeList;
+import com.bah.ode.model.OdeObject;
+import com.bah.ode.util.ByteUtils;
 
-public class OdeLane {
-   private byte[] laneNumber;
-   private Integer laneWidthCm;
+public class OdeLane extends OdeObject {
+   
+   private static final long serialVersionUID = -7836255625114649553L;
+
+   private Integer laneNumber;
+   private Integer laneWidth;
    private List<OdeLaneOffsets> nodeList;
    private List<OdeConnectsTo> connectsTo;
-   
-	public OdeLane() {
-	   super();
+
+   public OdeLane() {
+      super();
    }
 
-	public OdeLane(byte[] laneNumber, Integer laneWidthCm,
-			List<OdeLaneOffsets> nodeList, List<OdeConnectsTo> connectsTo) {
-	   super();
-	   this.laneNumber = laneNumber;
-	   this.laneWidthCm = laneWidthCm;
-	   this.nodeList = nodeList;
-	   this.connectsTo = connectsTo;
+   public OdeLane(LaneNumber laneNumber2, LaneWidth laneWidth2,
+         NodeList nodeList2, ConnectsTo connectsTo2) {
+      super();
+      if (laneNumber2 != null)
+         this.laneNumber = ByteUtils.unsignedByteArrayToInt(laneNumber2.byteArrayValue());
+      
+      if (laneWidth2 != null)
+         this.laneWidth = laneWidth2.intValue();
+      
+      if (nodeList2 != null)
+         this.nodeList = OdeLaneOffsets.createList(nodeList2);
+      
+      if (connectsTo2 != null)
+         this.connectsTo = OdeConnectsTo.createList(connectsTo2);
    }
 
-	public byte[] getLaneNumber() {
-		return laneNumber;
-	}
+   public Integer getLaneNumber() {
+      return laneNumber;
+   }
 
-	public OdeLane setLaneNumber(byte[] laneNumber) {
-		this.laneNumber = laneNumber;
-		return this;
-	}
+   public OdeLane setLaneNumber(Integer laneNumber) {
+      this.laneNumber = laneNumber;
+      return this;
+   }
 
-	public Integer getLaneWidthCm() {
-		return laneWidthCm;
-	}
+   public Integer getLaneWidth() {
+      return laneWidth;
+   }
 
-	public OdeLane setLaneWidthCm(Integer laneWidthCm) {
-		this.laneWidthCm = laneWidthCm;
-		return this;
-	}
+   public OdeLane setLaneWidth(Integer laneWidthCm) {
+      this.laneWidth = laneWidthCm;
+      return this;
+   }
 
-	public List<OdeLaneOffsets> getNodeList() {
-		return nodeList;
-	}
+   public List<OdeLaneOffsets> getNodeList() {
+      return nodeList;
+   }
 
-	public OdeLane setNodeList(List<OdeLaneOffsets> nodeList) {
-		this.nodeList = nodeList;
-		return this;
-	}
-   
-	public List<OdeConnectsTo> getConnectsTo() {
-		return connectsTo;
-	}
+   public OdeLane setNodeList(List<OdeLaneOffsets> nodeList) {
+      this.nodeList = nodeList;
+      return this;
+   }
 
-	public OdeLane setConnectsTo(List<OdeConnectsTo> connectsTo) {
-		this.connectsTo = connectsTo;
-		return this;
-	}
+   public List<OdeConnectsTo> getConnectsTo() {
+      return connectsTo;
+   }
 
-   
+   public OdeLane setConnectsTo(List<OdeConnectsTo> connectsTo) {
+      this.connectsTo = connectsTo;
+      return this;
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result
+            + ((connectsTo == null) ? 0 : connectsTo.hashCode());
+      result = prime * result
+            + ((laneNumber == null) ? 0 : laneNumber.hashCode());
+      result = prime * result
+            + ((laneWidth == null) ? 0 : laneWidth.hashCode());
+      result = prime * result + ((nodeList == null) ? 0 : nodeList.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      OdeLane other = (OdeLane) obj;
+      if (connectsTo == null) {
+         if (other.connectsTo != null)
+            return false;
+      } else if (!connectsTo.equals(other.connectsTo))
+         return false;
+      if (laneNumber == null) {
+         if (other.laneNumber != null)
+            return false;
+      } else if (!laneNumber.equals(other.laneNumber))
+         return false;
+      if (laneWidth == null) {
+         if (other.laneWidth != null)
+            return false;
+      } else if (!laneWidth.equals(other.laneWidth))
+         return false;
+      if (nodeList == null) {
+         if (other.nodeList != null)
+            return false;
+      } else if (!nodeList.equals(other.nodeList))
+         return false;
+      return true;
+   }
 
 }

@@ -17,73 +17,99 @@
 package com.bah.ode.asn;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import com.bah.ode.asn.oss.dsrc.Approach.DrivingLanes;
 import com.bah.ode.asn.oss.dsrc.VehicleReferenceLane;
 
 public class OdeVehicleReferenceLane extends OdeLane {
-   public OdeVehicleLaneAttributes laneAttributes;
-   public List<OdeLaneOffsets> keepOutList;
    
-	public OdeVehicleReferenceLane() {
-	   super();
-   }
-	
-	public OdeVehicleReferenceLane(byte[] laneNumber, Integer laneWidthCm,
-         List<OdeLaneOffsets> nodeList, List<OdeConnectsTo> connectsTo,
-         OdeVehicleLaneAttributes laneAttributes,
-         List<OdeLaneOffsets> keepOutList
-         ) {
-	   super(laneNumber, laneWidthCm, nodeList, connectsTo);
-	   this.laneAttributes = laneAttributes;
-	   this.keepOutList = keepOutList;
-   }
-	
-	public OdeVehicleReferenceLane(VehicleReferenceLane dl) {
-		super(dl.getLaneNumber().byteArrayValue(),
-		      dl.getLaneWidth().intValue(),
-		      OdeLaneOffsets.createList(dl.getNodeList()),
-		      OdeConnectsTo.createList(dl.getConnectsTo()));
-		
-		this.laneAttributes = new OdeVehicleLaneAttributes(
-				dl.getLaneAttributes() != null ? 
-						dl.getLaneAttributes().intValue() : 
-							OdeVehicleLaneAttributes.NO_LANE_DATA);
-	   this.keepOutList = OdeLaneOffsets.createList(dl.getKeepOutList());
-   }
-
-	public static List<OdeVehicleReferenceLane> createList(DrivingLanes drivingLanes) {
-		ArrayList<OdeVehicleReferenceLane> odeDrivingLanes = new ArrayList<OdeVehicleReferenceLane>();
-		
-		@SuppressWarnings("unchecked")
-      Enumeration<VehicleReferenceLane> dls = drivingLanes.elements();
-		
-		if (null != dls) {
-			while (dls.hasMoreElements()) {
-				VehicleReferenceLane dl = dls.nextElement();
-				if (null != dl)
-					odeDrivingLanes.add(new OdeVehicleReferenceLane(dl));
-			}
-		}
-	   return odeDrivingLanes;
-   }
-
-	public OdeVehicleLaneAttributes getLaneAttributes() {
-		return laneAttributes;
-	}
-	public OdeVehicleReferenceLane setLaneAttributes(OdeVehicleLaneAttributes laneAttributes) {
-		this.laneAttributes = laneAttributes;
-		return this;
-	}
-	public List<OdeLaneOffsets> getKeepOutList() {
-		return keepOutList;
-	}
-	public OdeVehicleReferenceLane setKeepOutList(List<OdeLaneOffsets> keepOutList) {
-		this.keepOutList = keepOutList;
-		return this;
-	}
-
+   private static final long serialVersionUID = -7303552550764116223L;
    
+   private OdeVehicleLaneAttributes laneAttributes;
+   private List<OdeLaneOffsets> keepOutList;
+
+   public OdeVehicleReferenceLane() {
+      super();
+   }
+
+   public OdeVehicleReferenceLane(VehicleReferenceLane dl) {
+      super(dl.getLaneNumber(), dl.getLaneWidth(),
+            dl.getNodeList(), dl.getConnectsTo());
+
+      setLaneAttributes(new OdeVehicleLaneAttributes(
+            dl.laneAttributes != null ? dl.laneAttributes.intValue()
+                  : OdeVehicleLaneAttributes.NO_LANE_DATA));
+      
+      if (dl.hasKeepOutList())
+         setKeepOutList(OdeLaneOffsets.createList(dl.getKeepOutList()));
+   }
+
+   public static List<OdeVehicleReferenceLane> createList(DrivingLanes drivingLanes) {
+      if (drivingLanes == null)
+         return null;
+
+      ArrayList<OdeVehicleReferenceLane> rls = new ArrayList<OdeVehicleReferenceLane>();
+
+      for (VehicleReferenceLane rl : drivingLanes.elements) {
+         if (null != rl)
+            rls.add(new OdeVehicleReferenceLane(rl));
+      }
+      
+      return rls;
+   }
+
+   public OdeVehicleLaneAttributes getLaneAttributes() {
+      return laneAttributes;
+   }
+
+   public OdeVehicleReferenceLane setLaneAttributes(
+         OdeVehicleLaneAttributes laneAttributes) {
+      this.laneAttributes = laneAttributes;
+      return this;
+   }
+
+   public List<OdeLaneOffsets> getKeepOutList() {
+      return keepOutList;
+   }
+
+   public OdeVehicleReferenceLane setKeepOutList(
+         List<OdeLaneOffsets> keepOutList) {
+      this.keepOutList = keepOutList;
+      return this;
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = prime * result
+            + ((keepOutList == null) ? 0 : keepOutList.hashCode());
+      result = prime * result
+            + ((laneAttributes == null) ? 0 : laneAttributes.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (!super.equals(obj))
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      OdeVehicleReferenceLane other = (OdeVehicleReferenceLane) obj;
+      if (keepOutList == null) {
+         if (other.keepOutList != null)
+            return false;
+      } else if (!keepOutList.equals(other.keepOutList))
+         return false;
+      if (laneAttributes == null) {
+         if (other.laneAttributes != null)
+            return false;
+      } else if (!laneAttributes.equals(other.laneAttributes))
+         return false;
+      return true;
+   }
+
 }

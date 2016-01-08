@@ -43,8 +43,12 @@ public class VsdReaderOvdfWriter {
             } else {
                System.out.println("usage: VsdReaderOvdfWriter [ -i <filename>");
                System.out.println("   -i <filename>  ");
-               System.out.println("   -latest  ");
+               System.out.println("   -latest  TO only extract the latest reord "
+                     + "withing a bundle");
                System.out.println("   -encoding <hex|base64>  ");
+               System.out.println("   -content <d|*>  'd' The output file "
+                     + "will contain a full OdeDataMessage (payload and metadata, "
+                     + "else the output file will contain only the payload");
                System.exit(1);
             }
          }
@@ -73,7 +77,9 @@ public class VsdReaderOvdfWriter {
          int numVSDs = 0;
          int numVSRs = 0;
          int numOVDFs = 0;
-         String serialIdPrefix = UUID.randomUUID().toString();
+         String streamId = UUID.randomUUID().toString();
+         int bundleId = 0;
+         
 
          while (scanner.hasNext()) {
             try {
@@ -92,10 +98,10 @@ public class VsdReaderOvdfWriter {
                if (allVSRs) {
                   ovdfList = DdsMessageHandler.getLatestOvdfFromVsd(
                         vsd, vsd.getBundle().getSize(),
-                        serialIdPrefix);
+                        streamId, bundleId++);
                } else {
                   ovdfList = DdsMessageHandler.getLatestOvdfFromVsd(vsd, 1,
-                        serialIdPrefix);
+                        streamId, bundleId++);
                }
                
                for (OdeVehicleDataFlat ovdf : ovdfList) {

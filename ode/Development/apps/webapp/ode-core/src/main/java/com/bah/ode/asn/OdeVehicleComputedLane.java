@@ -16,67 +16,92 @@
  *******************************************************************************/
 package com.bah.ode.asn;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.bah.ode.asn.oss.dsrc.Approach.ComputedLanes;
+import com.bah.ode.asn.oss.dsrc.VehicleComputedLane;
+import com.bah.ode.util.ByteUtils;
+
 public class OdeVehicleComputedLane extends OdeLane {
-   public OdeVehicleLaneAttributes laneAttributes;
-   public Integer refLaneNum;
-   public Integer lineOffsetCm;
-   public List<OdeLaneOffsets> keepOutList;
-   
-	public OdeVehicleComputedLane() {
-	   super();
-   }
-	
-	public OdeVehicleComputedLane(byte[] laneNumber, Integer laneWidthCm,
-			List<OdeConnectsTo> connectsTo,
-         OdeVehicleLaneAttributes laneAttributes,
-         Integer refLaneNum,
-         Integer lineOffsetCm,
-         List<OdeLaneOffsets> keepOutList
-         ) {
-	   super(laneNumber, laneWidthCm, null, connectsTo);
-	   this.laneAttributes = laneAttributes;
-	   this.refLaneNum = refLaneNum;
-	   this.lineOffsetCm = lineOffsetCm;
-	   this.keepOutList = keepOutList;
+   private static final long serialVersionUID = 2620159885524160754L;
+
+   private OdeVehicleLaneAttributes laneAttributes;
+   private Integer refLaneNum;
+   private Integer lineOffset;
+   private List<OdeLaneOffsets> keepOutList;
+
+   public OdeVehicleComputedLane() {
+      super();
    }
 
-	public OdeVehicleLaneAttributes getLaneAttributes() {
-		return laneAttributes;
-	}
+   public OdeVehicleComputedLane(VehicleComputedLane vcl) {
+      super(vcl.getLaneNumber(), vcl.getLaneWidth(), vcl.getKeepOutList(),
+            vcl.getConnectsTo());
+      
+      if (vcl.hasLaneAttributes())
+         setLaneAttributes(new OdeVehicleLaneAttributes(vcl.getLaneAttributes()));
+      
+      if (vcl.refLaneNum != null)
+         setRefLaneNum(ByteUtils.unsignedByteArrayToInt(vcl.refLaneNum.byteArrayValue()));
+      
+      if (vcl.lineOffset != null)
+         setLineOffset(vcl.lineOffset.intValue());
+      
+      if (vcl.hasKeepOutList())
+         setKeepOutList(OdeLaneOffsets.createList(vcl.getKeepOutList()));
+   }
 
-	public OdeVehicleComputedLane setLaneAttributes(OdeVehicleLaneAttributes laneAttributes) {
-		this.laneAttributes = laneAttributes;
-		return this;
-	}
+   public OdeVehicleLaneAttributes getLaneAttributes() {
+      return laneAttributes;
+   }
 
-	public Integer getRefLaneNum() {
-		return refLaneNum;
-	}
+   public OdeVehicleComputedLane setLaneAttributes(
+         OdeVehicleLaneAttributes laneAttributes) {
+      this.laneAttributes = laneAttributes;
+      return this;
+   }
 
-	public OdeVehicleComputedLane setRefLaneNum(Integer refLaneNum) {
-		this.refLaneNum = refLaneNum;
-		return this;
-	}
+   public Integer getRefLaneNum() {
+      return refLaneNum;
+   }
 
-	public Integer getLineOffsetCm() {
-		return lineOffsetCm;
-	}
+   public OdeVehicleComputedLane setRefLaneNum(Integer refLaneNum) {
+      this.refLaneNum = refLaneNum;
+      return this;
+   }
 
-	public OdeVehicleComputedLane setLineOffsetCm(Integer lineOffsetCm) {
-		this.lineOffsetCm = lineOffsetCm;
-		return this;
-	}
+   public Integer getLineOffset() {
+      return lineOffset;
+   }
 
-	public List<OdeLaneOffsets> getKeepOutList() {
-		return keepOutList;
-	}
+   public OdeVehicleComputedLane setLineOffset(Integer lineOffset) {
+      this.lineOffset = lineOffset;
+      return this;
+   }
 
-	public OdeVehicleComputedLane setKeepOutList(List<OdeLaneOffsets> keepOutList) {
-		this.keepOutList = keepOutList;
-		return this;
-	}
+   public List<OdeLaneOffsets> getKeepOutList() {
+      return keepOutList;
+   }
 
-   
+   public OdeVehicleComputedLane setKeepOutList(
+         List<OdeLaneOffsets> keepOutList) {
+      this.keepOutList = keepOutList;
+      return this;
+   }
+
+   public static List<OdeVehicleComputedLane> createList(ComputedLanes computedLanes) {
+      if (computedLanes == null)
+         return null;
+
+      ArrayList<OdeVehicleComputedLane> vcls = new ArrayList<OdeVehicleComputedLane>();
+
+      for (VehicleComputedLane vcl : computedLanes.elements) {
+         if (vcl != null) {
+            vcls.add(new OdeVehicleComputedLane(vcl));
+         }
+      }
+      return vcls;
+   }
+
 }

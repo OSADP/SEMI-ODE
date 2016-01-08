@@ -13,8 +13,10 @@ public class OdeRegionPointSet extends OdeObject {
    public List<OdeRegionOffsets> nodeList;
 
    public OdeRegionPointSet(RegionPointSet regionPointSet) {
-      this.anchor = new OdePosition3D(regionPointSet.getAnchor());
-      this.nodeList = OdeRegionOffsets.createList(regionPointSet.getNodeList());
+      if (regionPointSet.hasAnchor())
+         this.anchor = new OdePosition3D(regionPointSet.getAnchor());
+      if (regionPointSet.nodeList != null)
+         this.nodeList = OdeRegionOffsets.createList(regionPointSet.nodeList);
    }
 
 }

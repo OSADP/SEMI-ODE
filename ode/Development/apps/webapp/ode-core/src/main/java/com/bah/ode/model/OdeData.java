@@ -32,12 +32,28 @@ public class OdeData extends OdeMsgPayload implements OdeFilterable {
       this.receivedAt = DateTimeUtils.isoDateTime(ZonedDateTime.now(ZoneOffset.UTC));
    }
 
+   public OdeData(String serialId) {
+      super();
+      setSerialId(serialId);
+      this.receivedAt = DateTimeUtils.isoDateTime(ZonedDateTime.now(ZoneOffset.UTC));
+   }
+
+   public OdeData(String streamId, long bundleId, long recordId) {
+      super();
+      setSerialId(serialId);
+      this.receivedAt = DateTimeUtils.isoDateTime(ZonedDateTime.now(ZoneOffset.UTC));
+   }
+
    public String getSerialId() {
       return serialId;
    }
 
    public void setSerialId(String serialId) {
       this.serialId = serialId;
+   }
+
+   public static String buildSerialId(String streamId, long bundleId, long recordId) {
+      return streamId + "." + bundleId + "." + recordId;
    }
 
    public String getReceivedAt() {

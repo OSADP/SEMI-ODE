@@ -26,9 +26,12 @@ public class OdeRoadSignId extends OdeObject {
    }
    
    public OdeRoadSignId(RoadSignID roadSignID) {
-      setPosition(new OdePosition3D(roadSignID.getPosition()));
-      setViewAngle(new OdeHeadingSlice(roadSignID.getViewAngle()));
-      if (roadSignID.getMutcdCode() != null)
+      if (roadSignID.position != null)
+         setPosition(new OdePosition3D(roadSignID.position));
+      if (roadSignID.viewAngle != null)
+         setViewAngle(new OdeHeadingSlice(roadSignID.viewAngle));
+      
+      if (roadSignID.hasMutcdCode())
          setMutcdCode(OdeMUTCDCode.valueOf(roadSignID.getMutcdCode().name()));
    }
 

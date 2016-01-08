@@ -25,7 +25,6 @@ import java.util.List;
 import com.bah.ode.asn.OdeDateTime;
 import com.bah.ode.asn.OdeGeoRegion;
 import com.bah.ode.asn.OdePosition3D;
-import com.bah.ode.asn.OdeTransmissionState;
 import com.bah.ode.asn.oss.dsrc.AccelerationSet4Way;
 import com.bah.ode.asn.oss.dsrc.BrakeSystemStatus;
 import com.bah.ode.asn.oss.dsrc.Heading;
@@ -57,6 +56,17 @@ import com.bah.ode.util.GeoUtils;
 public final class OdeVehicleDataFlat extends OdeData implements HasPosition, HasTimestamp{
    private static final long serialVersionUID = -7170326566884675515L;
 
+   public enum TransmissionState {
+      neutral,       //Neutral, speed relative to the vehicle alignment
+      park,          //Park, speed relative the to vehicle alignment
+      forwardGears,  //Forward gears, speed relative the to vehicle alignment
+      reverseGears,  //Reverse gears, speed relative the to vehicle alignment 
+      reserved1,
+      reserved2,
+      reserved3,      
+      unavailable;   //not-equipped or unavailable value,
+   }
+   
    private String groupId;
 
    private Integer evCap;
@@ -81,7 +91,7 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
    
    private BigDecimal heading;
    
-   private OdeTransmissionState transmission;
+   private TransmissionState transmission;
    private BigDecimal speed;
 
    private BigDecimal steeringAngle;
@@ -127,9 +137,20 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
    
    private String roadSeg = ""; // Required for Aggregator, hence initialized so it appears in JSON
 
-   public OdeVehicleDataFlat(String serialId, GroupID groupId, VehSitRecord vsr) {
+   public OdeVehicleDataFlat() {
       super();
-      setSerialId(serialId); 
+   }
+
+   public OdeVehicleDataFlat(String streamId, long bundleId, long recordId) {
+      super(streamId, bundleId, recordId);
+   }
+
+   public OdeVehicleDataFlat(String serialId) {
+      super(serialId);
+   }
+
+   public OdeVehicleDataFlat(String serialId, GroupID groupId, VehSitRecord vsr) {
+      super(serialId);
       
       setGroupId(CodecUtils.toHex(groupId.byteArrayValue()));
       
@@ -627,8 +648,8 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
       if (tm != null && tm.getSize() >= 2) {
          int i = ByteUtils.unsignedByteArrayToInt(tm.byteArrayValue());
          int t = i >> 13;
-         if (t != OdeTransmissionState.unavailable.ordinal())
-            setTransmission(OdeTransmissionState.values()[t]);
+         if (t != TransmissionState.unavailable.ordinal())
+            setTransmission(TransmissionState.values()[t]);
          int s = i & 0x1FFF; 
          if (s != 8191)
             // speed is received in units of 0.02 m/s
@@ -788,11 +809,11 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
       this.heading = heading;
    }
 
-   public OdeTransmissionState getTransmission() {
+   public TransmissionState getTransmission() {
       return transmission;
    }
 
-   public void setTransmission(OdeTransmissionState transmission) {
+   public void setTransmission(TransmissionState transmission) {
       this.transmission = transmission;
    }
 

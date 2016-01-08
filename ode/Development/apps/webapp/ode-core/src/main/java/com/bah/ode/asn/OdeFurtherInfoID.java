@@ -7,10 +7,10 @@ import com.bah.ode.util.CodecUtils;
 public class OdeFurtherInfoID extends OdeObject {
 
    private static final long serialVersionUID = -6449213999012759703L;
-   String furtherInfoId;
+   private String furtherInfoId;
 
    public OdeFurtherInfoID(FurtherInfoID furtherInfoId2) {
-      this.furtherInfoId = CodecUtils.toHex(furtherInfoId2.byteArrayValue());
+      this.setFurtherInfoId(CodecUtils.toHex(furtherInfoId2.byteArrayValue()));
    }
 
    public String getFurtherInfoId() {

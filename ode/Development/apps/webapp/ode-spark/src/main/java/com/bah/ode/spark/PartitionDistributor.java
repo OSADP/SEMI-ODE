@@ -30,24 +30,27 @@ VoidFunction<Iterator<Tuple2<String, Tuple2<String, String>>>> {
 			throws Exception {
 		MQProducer<String, String> producer = producerPool.value().checkOut();
 
-		while (partitionOfRecords.hasNext()) {
-			Tuple2<String, Tuple2<String, String>> record = partitionOfRecords.next();
-			String key = record._1();
-			if(key.equals("sanitized")){
-				producer.logSanitizedData(record._2()._1());
-			}else{
-				String dataType = JsonUtils.getJsonNode(record._2()._1(), AppContext.DATA_TYPE_STRING).textValue();
-				if (dataType != null) {
-					OdeData payload = (OdeData) JsonUtils.fromJson(record._2()._1(), 
-							OdeDataType.valueOf(dataType).getClazz());
-					OdeMetadata metadata = (OdeMetadata) JsonUtils.fromJson(record._2()._2(), OdeMetadata.class);
-					InternalDataMessage idm = new InternalDataMessage(key, payload, metadata);
-					producer.send(metadata.getOutputTopic().getName(), key, idm.toJson());
-				}
-			}
-		}
+		try {
+         while (partitionOfRecords.hasNext()) {
+         	Tuple2<String, Tuple2<String, String>> record = partitionOfRecords.next();
+         	String key = record._1();
+         	if(key.equals("sanitized")){
+         		producer.logSanitizedData(record._2()._1());
+         	}else{
+         		String dataType = JsonUtils.getJsonNode(record._2()._1(), AppContext.DATA_TYPE_STRING).textValue();
+         		if (dataType != null) {
+         			OdeData payload = (OdeData) JsonUtils.fromJson(record._2()._1(), 
+         					OdeDataType.valueOf(dataType).getClazz());
+         			OdeMetadata metadata = (OdeMetadata) JsonUtils.fromJson(record._2()._2(), OdeMetadata.class);
+         			InternalDataMessage idm = new InternalDataMessage(key, payload, metadata);
+         			producer.send(metadata.getOutputTopic().getName(), key, idm.toJson());
+         		}
+         	}
+         }
+      } finally {
+         producerPool.value().checkIn(producer);
+      }
 
-		producerPool.value().checkIn(producer);
 	}
 
 }

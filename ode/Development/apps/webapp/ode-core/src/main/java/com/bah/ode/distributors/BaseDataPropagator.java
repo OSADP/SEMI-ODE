@@ -14,6 +14,7 @@ import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeFilterable;
+import com.bah.ode.model.OdeIntersectionData;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeMsgPayload;
 import com.bah.ode.util.JsonUtils;
@@ -46,10 +47,10 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
          OdeDataMessage dataMsg = getDataMsg(data);
          if (dataMsg != null && dataMsg.getPayload() instanceof OdeFilterable) {
             if (applyFilters((OdeFilterable)dataMsg.getPayload())) {
-               WebSocketUtils.send(clientSession, dataMsg.toJson());
+               WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
             }
          } else {
-            WebSocketUtils.send(clientSession, dataMsg.toJson());
+            WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
          }
       } catch (Exception e) {
          throw new DataProcessorException(
@@ -57,6 +58,27 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
       }
        return null;
     }
+
+   protected String updateDataMsg(OdeDataMessage dataMsg) {
+      if (dataMsg.getPayload() instanceof OdeIntersectionData) {
+         OdeIntersectionData isectData = (OdeIntersectionData) dataMsg.getPayload();
+         OdeDataType dtype = metadata.getOdeRequest().getDataType();
+         
+         switch(dtype) {
+         case MapData:
+            dataMsg.getMetadata().setPayloadType(OdeDataType.MapData);
+            isectData.setSpatData(null);
+            break;
+         case SPaTData:
+            dataMsg.getMetadata().setPayloadType(OdeDataType.SPaTData);
+            isectData.setMapData(null);
+            break;
+         default:
+            break;
+         }
+      }
+      return dataMsg.toJson();
+   }
 
    protected OdeDataMessage getDataMsg(String data)
          throws DataProcessorException {

@@ -16,162 +16,250 @@
  *******************************************************************************/
 package com.bah.ode.asn;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import com.bah.ode.asn.oss.dsrc.Intersection_;
 import com.bah.ode.asn.oss.dsrc.MapData.Intersections_;
+import com.bah.ode.util.ASN1Utils;
+import com.bah.ode.util.CodecUtils;
 
 public class OdeIntersection {
    private String name;
-   private byte[] id;
+   private String id;
    private OdePosition3D refPoint;
-   private byte[] refInterNum;
-   private Double orientationDeg;
-   private Integer laneWidthCm;
+   private String refInterNum;
+   private BigDecimal orientation;
+   private Integer laneWidth;
    private OdeIntersectionStatusObject type;
    private List<OdeApproachObject> approaches;
    private List<OdeSignalControlZone> preemptZones;
    private List<OdeSignalControlZone> priorityZones;
-   
-	public OdeIntersection() {
-	   super();
+
+   public OdeIntersection() {
+      super();
    }
 
-	public OdeIntersection(String name, byte[] id, OdePosition3D refPoint,
-         byte[] refInterNum, Double orientationDeg, Integer laneWidthCm,
-         OdeIntersectionStatusObject type, List<OdeApproachObject> approaches,
-         List<OdeSignalControlZone> preemptZones,
+   public OdeIntersection(Intersection_ intsct) {
+	   setApproaches(OdeApproachObject.createList(intsct.getApproaches()));
+	   
+	   if (intsct.id != null)
+	      setId(CodecUtils.toHex(intsct.id.byteArrayValue()));
+	   
+	   if (intsct.hasLaneWidth())
+	      setLaneWidth(intsct.getLaneWidth().intValue());
+	   
+	   if (intsct.hasName())
+	      setName(intsct.getName().stringValue());
+	   
+	   if (intsct.hasOrientation())
+	      setOrientation(ASN1Utils.convert(intsct.getOrientation()));
+	   
+	   if (intsct.hasPreemptZones())
+	      setPreemptZones(OdeSignalControlZone.createList(intsct.getPreemptZones().elements));
+	   
+	   if (intsct.hasPriorityZones())
+	      setPriorityZones(OdeSignalControlZone.createList(intsct.getPriorityZones().elements));
+	   
+	   if (intsct.hasRefInterNum())
+	      setRefInterNum(CodecUtils.toHex(intsct.getRefInterNum().byteArrayValue()));
+	   
+	   if (intsct.hasRefPoint())
+	      setRefPoint(new OdePosition3D(intsct.getRefPoint()));
+	   
+	   if (intsct.hasType())
+	      setType(new OdeIntersectionStatusObject(intsct.getType()));
+   }
+
+   public static List<OdeIntersection> createList(Intersections_ ints) {
+      if (ints == null)
+         return null;
+      
+      ArrayList<OdeIntersection> intersections = new ArrayList<OdeIntersection>();
+      
+      for (Intersection_ i : ints.elements) {
+         if (i != null)
+            intersections.add(new OdeIntersection(i));
+      }
+      return intersections;
+   }
+
+   public String getName() {
+      return name;
+   }
+
+   public OdeIntersection setName(String name) {
+      this.name = name;
+      return this;
+   }
+
+   public String getId() {
+      return id;
+   }
+
+   public OdeIntersection setId(String id) {
+      this.id = id;
+      return this;
+   }
+
+   public OdePosition3D getRefPoint() {
+      return refPoint;
+   }
+
+   public OdeIntersection setRefPoint(OdePosition3D refPoint) {
+      this.refPoint = refPoint;
+      return this;
+   }
+
+   public String getRefInterNum() {
+      return refInterNum;
+   }
+
+   public OdeIntersection setRefInterNum(String refInterNum) {
+      this.refInterNum = refInterNum;
+      return this;
+   }
+
+   public BigDecimal getOrientation() {
+      return orientation;
+   }
+
+   public OdeIntersection setOrientation(BigDecimal orientation) {
+      this.orientation = orientation;
+      return this;
+   }
+
+   public Integer getLaneWidth() {
+      return laneWidth;
+   }
+
+   public OdeIntersection setLaneWidth(Integer laneWidthCm) {
+      this.laneWidth = laneWidthCm;
+      return this;
+   }
+
+   public OdeIntersectionStatusObject getType() {
+      return type;
+   }
+
+   public OdeIntersection setType(OdeIntersectionStatusObject type) {
+      this.type = type;
+      return this;
+   }
+
+   public List<OdeApproachObject> getApproaches() {
+      return approaches;
+   }
+
+   public OdeIntersection setApproaches(List<OdeApproachObject> approaches) {
+      this.approaches = approaches;
+      return this;
+   }
+
+   public List<OdeSignalControlZone> getPreemptZones() {
+      return preemptZones;
+   }
+
+   public OdeIntersection setPreemptZones(
+         List<OdeSignalControlZone> preemptZones) {
+      this.preemptZones = preemptZones;
+      return this;
+   }
+
+   public List<OdeSignalControlZone> getPriorityZones() {
+      return priorityZones;
+   }
+
+   public OdeIntersection setPriorityZones(
          List<OdeSignalControlZone> priorityZones) {
-	   super();
-	   this.name = name;
-	   this.id = id;
-	   this.refPoint = refPoint;
-	   this.refInterNum = refInterNum;
-	   this.orientationDeg = orientationDeg;
-	   this.laneWidthCm = laneWidthCm;
-	   this.type = type;
-	   this.approaches = approaches;
-	   this.preemptZones = preemptZones;
-	   this.priorityZones = priorityZones;
+      this.priorityZones = priorityZones;
+      return this;
    }
 
-	public OdeIntersection(Intersection_ intsct) {
-	   this.name = intsct.getName() != null ? intsct.getName().stringValue() : null;
-	   this.id = intsct.getId() != null ? intsct.getId().byteArrayValue() : null;
-	   this.refPoint = new OdePosition3D(intsct.getRefPoint());
-	   this.refInterNum = intsct.getRefInterNum() != null ? intsct.getRefInterNum().byteArrayValue() : null;
-	   this.orientationDeg = intsct.getOrientation() != null ? (double)intsct.getOrientation().intValue()/0.0125 : null;
-	   this.laneWidthCm = intsct.getLaneWidth() != null ? intsct.getLaneWidth().intValue() : null;
-	   this.type = intsct.getType() != null ? new OdeIntersectionStatusObject(intsct.getType().byteArrayValue()) : null;
-//TODO	   
-//	   this.approaches = intsct.getApproaches() != null ? OdeApproachObject.createList(intsct.getApproaches()) : null;
-//	   this.preemptZones = intsct.getPreemptZones() != null ? OdeSignalControlZone.createList(intsct.getPreemptZones()) : null;
-//	   this.priorityZones = intsct.getPriorityZones() != null ? OdeSignalControlZone.createList(intsct.getPriorityZones()) : null;
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result
+            + ((approaches == null) ? 0 : approaches.hashCode());
+      result = prime * result + ((id == null) ? 0 : id.hashCode());
+      result = prime * result
+            + ((laneWidth == null) ? 0 : laneWidth.hashCode());
+      result = prime * result + ((name == null) ? 0 : name.hashCode());
+      result = prime * result
+            + ((orientation == null) ? 0 : orientation.hashCode());
+      result = prime * result
+            + ((preemptZones == null) ? 0 : preemptZones.hashCode());
+      result = prime * result
+            + ((priorityZones == null) ? 0 : priorityZones.hashCode());
+      result = prime * result
+            + ((refInterNum == null) ? 0 : refInterNum.hashCode());
+      result = prime * result + ((refPoint == null) ? 0 : refPoint.hashCode());
+      result = prime * result + ((type == null) ? 0 : type.hashCode());
+      return result;
    }
 
-	public static List<OdeIntersection> create(Intersections_ ints) {
-		ArrayList<OdeIntersection> intersections = new ArrayList<OdeIntersection>();
-		@SuppressWarnings("unchecked")
-      Enumeration<Intersection_> xSections = ints.elements();
-		
-		while (xSections.hasMoreElements()) {
-			Intersection_ intersection = xSections.nextElement();
-			intersections.add(new OdeIntersection(intersection));
-		}
-		
-		return intersections;
-	}
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      OdeIntersection other = (OdeIntersection) obj;
+      if (approaches == null) {
+         if (other.approaches != null)
+            return false;
+      } else if (!approaches.equals(other.approaches))
+         return false;
+      if (id == null) {
+         if (other.id != null)
+            return false;
+      } else if (!id.equals(other.id))
+         return false;
+      if (laneWidth == null) {
+         if (other.laneWidth != null)
+            return false;
+      } else if (!laneWidth.equals(other.laneWidth))
+         return false;
+      if (name == null) {
+         if (other.name != null)
+            return false;
+      } else if (!name.equals(other.name))
+         return false;
+      if (orientation == null) {
+         if (other.orientation != null)
+            return false;
+      } else if (!orientation.equals(other.orientation))
+         return false;
+      if (preemptZones == null) {
+         if (other.preemptZones != null)
+            return false;
+      } else if (!preemptZones.equals(other.preemptZones))
+         return false;
+      if (priorityZones == null) {
+         if (other.priorityZones != null)
+            return false;
+      } else if (!priorityZones.equals(other.priorityZones))
+         return false;
+      if (refInterNum == null) {
+         if (other.refInterNum != null)
+            return false;
+      } else if (!refInterNum.equals(other.refInterNum))
+         return false;
+      if (refPoint == null) {
+         if (other.refPoint != null)
+            return false;
+      } else if (!refPoint.equals(other.refPoint))
+         return false;
+      if (type == null) {
+         if (other.type != null)
+            return false;
+      } else if (!type.equals(other.type))
+         return false;
+      return true;
+   }
 
-	public String getName() {
-		return name;
-	}
-
-	public OdeIntersection setName(String name) {
-		this.name = name;
-		return this;
-	}
-
-	public byte[] getId() {
-		return id;
-	}
-
-	public OdeIntersection setId(byte[] id) {
-		this.id = id;
-		return this;
-	}
-
-	public OdePosition3D getRefPoint() {
-		return refPoint;
-	}
-
-	public OdeIntersection setRefPoint(OdePosition3D refPoint) {
-		this.refPoint = refPoint;
-		return this;
-	}
-
-	public byte[] getRefInterNum() {
-		return refInterNum;
-	}
-
-	public OdeIntersection setRefInterNum(byte[] refInterNum) {
-		this.refInterNum = refInterNum;
-		return this;
-	}
-
-	public Double getOrientationDeg() {
-		return orientationDeg;
-	}
-
-	public OdeIntersection setOrientationDeg(Double orientationDeg) {
-		this.orientationDeg = orientationDeg;
-		return this;
-	}
-
-	public Integer getLaneWidthCm() {
-		return laneWidthCm;
-	}
-
-	public OdeIntersection setLaneWidthCm(Integer laneWidthCm) {
-		this.laneWidthCm = laneWidthCm;
-		return this;
-	}
-
-	public OdeIntersectionStatusObject getType() {
-		return type;
-	}
-
-	public OdeIntersection setType(OdeIntersectionStatusObject type) {
-		this.type = type;
-		return this;
-	}
-
-	public List<OdeApproachObject> getApproaches() {
-		return approaches;
-	}
-
-	public OdeIntersection setApproaches(List<OdeApproachObject> approaches) {
-		this.approaches = approaches;
-		return this;
-	}
-
-	public List<OdeSignalControlZone> getPreemptZones() {
-		return preemptZones;
-	}
-
-	public OdeIntersection setPreemptZones(List<OdeSignalControlZone> preemptZones) {
-		this.preemptZones = preemptZones;
-		return this;
-	}
-
-	public List<OdeSignalControlZone> getPriorityZones() {
-		return priorityZones;
-	}
-
-	public OdeIntersection setPriorityZones(List<OdeSignalControlZone> priorityZones) {
-		this.priorityZones = priorityZones;
-		return this;
-	}
-	
 }

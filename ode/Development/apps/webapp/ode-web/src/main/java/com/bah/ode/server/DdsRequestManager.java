@@ -7,8 +7,6 @@ import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.AsdDecoder;
 import com.bah.ode.dds.client.ws.DdsClientFactory;
 import com.bah.ode.dds.client.ws.IsdDecoder;
-import com.bah.ode.dds.client.ws.MapDecoder;
-import com.bah.ode.dds.client.ws.SpatDecoder;
 import com.bah.ode.dds.client.ws.VsdDecoder;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.DdsQryRequest;
@@ -59,9 +57,9 @@ public class DdsRequestManager extends DataRequestManager {
          } else if (odeRequest.getDataType() == OdeDataType.AdvisoryData) {
             decoder = AsdDecoder.class;
          } else if (odeRequest.getDataType() == OdeDataType.MapData) {
-            decoder = MapDecoder.class;
+            decoder = IsdDecoder.class;
          } else if (odeRequest.getDataType() == OdeDataType.SPaTData) {
-            decoder = SpatDecoder.class;
+            decoder = IsdDecoder.class;
          }
    
          ddsClient = DdsClientFactory.create(appContext, metadata, 

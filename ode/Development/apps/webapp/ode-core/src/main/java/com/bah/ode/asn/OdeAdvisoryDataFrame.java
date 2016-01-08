@@ -35,10 +35,12 @@ public class OdeAdvisoryDataFrame extends OdeObject {
          int chosenFlag = msgId.getChosenFlag();
          switch (chosenFlag) {
          case MsgId.furtherInfoID_chosen:
-            furtherInfoID_chosen = new OdeFurtherInfoID(msgId.getFurtherInfoID());
+            if (msgId.hasFurtherInfoID())
+               furtherInfoID_chosen = new OdeFurtherInfoID(msgId.getFurtherInfoID());
             break;
          case MsgId.roadSignID_chosen:
-            roadSignID_chosen = new OdeRoadSignId(msgId.getRoadSignID());
+            if (msgId.hasRoadSignID())
+               roadSignID_chosen = new OdeRoadSignId(msgId.getRoadSignID());
             break;
          }
       }
@@ -117,15 +119,21 @@ public class OdeAdvisoryDataFrame extends OdeObject {
          switch (chosenFlag) {
          case Content.advisory_chosen:
             advisory_chosen = new CodeOrTextSequence();
-            ITIScodesAndText advisory = content.getAdvisory();
-            for (ITIScodesAndText.Sequence_ e : advisory.elements) {
-               switch (e.item.getChosenFlag()) {
-               case ITIScodesAndText.Sequence_.Item.itis_chosen:
-                  advisory_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
-                  break;
-               case ITIScodesAndText.Sequence_.Item.text_chosen:
-                  advisory_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
-                  break;
+            if (content.hasAdvisory()) {
+               ITIScodesAndText advisory = content.getAdvisory();
+               for (ITIScodesAndText.Sequence_ e : advisory.elements) {
+                  if (e.item != null) {
+                     switch (e.item.getChosenFlag()) {
+                     case ITIScodesAndText.Sequence_.Item.itis_chosen:
+                        if (e.item.hasItis())
+                           advisory_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
+                        break;
+                     case ITIScodesAndText.Sequence_.Item.text_chosen:
+                        if (e.item.hasText())
+                           advisory_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
+                        break;
+                     }
+                  }
                }
             }
             break;
@@ -133,13 +141,19 @@ public class OdeAdvisoryDataFrame extends OdeObject {
             exitService_chosen = new CodeOrTextSequence();
             ExitService exitService = content.getExitService();
             for (ExitService.Sequence_ e : exitService.elements) {
-               switch (e.item.getChosenFlag()) {
-               case ExitService.Sequence_.Item.itis_chosen:
-                  exitService_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
-                  break;
-               case ExitService.Sequence_.Item.text_chosen:
-                  exitService_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
-                  break;
+               if (e.item != null) {
+                  switch (e.item.getChosenFlag()) {
+                  case ExitService.Sequence_.Item.itis_chosen:
+                     if (e.item.hasItis())
+                        exitService_chosen.sequence.add(
+                           new CodeOrText(e.item.getItis().intValue(), null));
+                     break;
+                  case ExitService.Sequence_.Item.text_chosen:
+                     if (e.item.hasText())
+                        exitService_chosen.sequence.add(new CodeOrText(null,
+                           e.item.getText().stringValue()));
+                     break;
+                  }
                }
             }
             break;
@@ -147,13 +161,17 @@ public class OdeAdvisoryDataFrame extends OdeObject {
             genericSign_chosen = new CodeOrTextSequence();
             GenericSignage genericSign = content.getGenericSign();
             for (GenericSignage.Sequence_ e : genericSign.elements) {
-               switch (e.item.getChosenFlag()) {
-               case GenericSignage.Sequence_.Item.itis_chosen:
-                  genericSign_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
-                  break;
-               case GenericSignage.Sequence_.Item.text_chosen:
-                  genericSign_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
-                  break;
+               if (e.item != null) {
+                  switch (e.item.getChosenFlag()) {
+                  case GenericSignage.Sequence_.Item.itis_chosen:
+                     if (e.item.hasItis())
+                        genericSign_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
+                     break;
+                  case GenericSignage.Sequence_.Item.text_chosen:
+                     if (e.item.hasText())
+                        genericSign_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
+                     break;
+                  }
                }
             }
             break;
@@ -161,13 +179,17 @@ public class OdeAdvisoryDataFrame extends OdeObject {
             speedLimit_chosen = new CodeOrTextSequence();
             SpeedLimit speedLimit = content.getSpeedLimit();
             for (SpeedLimit.Sequence_ e : speedLimit.elements) {
-               switch (e.item.getChosenFlag()) {
-               case SpeedLimit.Sequence_.Item.itis_chosen:
-                  speedLimit_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
-                  break;
-               case SpeedLimit.Sequence_.Item.text_chosen:
-                  speedLimit_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
-                  break;
+               if (e.item != null) {
+                  switch (e.item.getChosenFlag()) {
+                  case SpeedLimit.Sequence_.Item.itis_chosen:
+                     if (e.item.hasItis())
+                        speedLimit_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
+                     break;
+                  case SpeedLimit.Sequence_.Item.text_chosen:
+                     if (e.item.hasText())
+                        speedLimit_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
+                     break;
+                  }
                }
             }
             break;
@@ -175,13 +197,17 @@ public class OdeAdvisoryDataFrame extends OdeObject {
             workZone_chosen = new CodeOrTextSequence();
             WorkZone workZone = content.getWorkZone();
             for (WorkZone.Sequence_ e : workZone.elements) {
-               switch (e.item.getChosenFlag()) {
-               case WorkZone.Sequence_.Item.itis_chosen:
-                  workZone_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
-                  break;
-               case WorkZone.Sequence_.Item.text_chosen:
-                  workZone_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
-                  break;
+               if (e.item != null) {
+                  switch (e.item.getChosenFlag()) {
+                  case WorkZone.Sequence_.Item.itis_chosen:
+                     if (e.item.hasItis())
+                        workZone_chosen.sequence.add(new CodeOrText(e.item.getItis().intValue(), null));
+                     break;
+                  case WorkZone.Sequence_.Item.text_chosen:
+                     if (e.item.hasText())
+                        workZone_chosen.sequence.add(new CodeOrText(null, e.item.getText().stringValue()));
+                     break;
+                  }
                }
             }
             break;
@@ -204,28 +230,30 @@ public class OdeAdvisoryDataFrame extends OdeObject {
    private String url;
 
    public OdeAdvisoryDataFrame(Sequence_ element) {
-      setCommonAnchor(new OdePosition3D(element.getCommonAnchor()));
-      if (element.getCommonDirectionality() != null)
+      if (element.hasCommonAnchor())
+         setCommonAnchor(new OdePosition3D(element.getCommonAnchor()));
+      if (element.hasCommonDirectionality())
          setCommonDirectionality(OdeDirectionOfUse.valueOf(element.getCommonDirectionality().name()));
-      if (element.getCommonLaneWidth() != null)
+      if (element.hasCommonLaneWidth())
          setCommonLaneWidth(element.getCommonLaneWidth().intValue());
-      if (element.getContent() != null)
-         setMessageContent(new MessageContent(element.getContent()));
-      if (element.getDuratonTime() != null)
-         setDuratonTime(element.getDuratonTime().intValue());
-      if (element.getFrameType() != null)
-         setFrameType(TravelerInfoType.valueOf(element.getFrameType().name()));
-      setMessageId(new MessageId(element.getMsgId()));
-      if (element.getPriority() != null)
-         setPriority(element.getPriority().intValue());
-      if (element.getRegions() != null)
-         setRegions(OdeValidRegion.getRegions(element.getRegions().elements));
-      if (element.getStartTime() != null)
-         setStartTime(element.getStartTime().intValue());
-      if (element.getStartYear() != null)
+      if (element.content != null)
+         setMessageContent(new MessageContent(element.content));
+      if (element.duratonTime != null)
+         setDuratonTime(element.duratonTime.intValue());
+      if (element.frameType != null)
+         setFrameType(TravelerInfoType.valueOf(element.frameType.name()));
+      if (element.msgId != null)
+         setMessageId(new MessageId(element.msgId));
+      if (element.priority != null)
+         setPriority(element.priority.intValue());
+      if (element.regions != null)
+         setRegions(OdeValidRegion.createList(element.regions));
+      if (element.startTime != null)
+         setStartTime(element.startTime.intValue());
+      if (element.hasStartYear())
          setStartYear(element.getStartYear().intValue());
-      if (element.getUrl() != null)
-         setUrl(element.getUrl().stringValue());
+      if (element.url != null)
+         setUrl(element.url.stringValue());
    }
 
    public TravelerInfoType getFrameType() {

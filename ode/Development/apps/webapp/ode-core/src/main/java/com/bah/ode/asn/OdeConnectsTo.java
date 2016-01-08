@@ -20,50 +20,92 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bah.ode.asn.oss.dsrc.ConnectsTo;
+import com.bah.ode.model.OdeObject;
 
-public class OdeConnectsTo {
-	private Integer laneNumber;
-	private OdeLaneManeuverCode laneManeuverCode;
-	
-	public OdeConnectsTo() {
-	   super();
+public class OdeConnectsTo extends OdeObject {
+   private static final long serialVersionUID = -6187876493611955973L;
+
+   public enum LaneManeuverCode {
+      UNKNOWN, U_TURN, LEFT_TURN, RIGHT_TURN, STRAIGHT_AHEAD, SOFT_LEFT_TURN, SOFT_RIGHT_TURN;
+
+      public static final LaneManeuverCode[] values = values();
    }
 
-	public OdeConnectsTo(Integer laneNumber, OdeLaneManeuverCode laneManeuverCode) {
-	   super();
-	   this.laneNumber = laneNumber;
-	   this.laneManeuverCode = laneManeuverCode;
+   private Integer laneNumber;
+   private LaneManeuverCode laneManeuverCode;
+
+   public OdeConnectsTo() {
+      super();
    }
 
-	public static List<OdeConnectsTo> createList(ConnectsTo connectsTo) {
-		byte[] bytes = connectsTo.byteArrayValue();
-		ArrayList<OdeConnectsTo> odeConnectsTos = new ArrayList<OdeConnectsTo>();
-		
-		for (int i = 0; i < bytes.length; i += 2) {
-			odeConnectsTos.add(
-					new OdeConnectsTo((int) bytes[i], OdeLaneManeuverCode.values[bytes[i+1]]));
-		}
-		
-		return odeConnectsTos;
+   public OdeConnectsTo(Integer laneNumber, LaneManeuverCode laneManeuverCode) {
+      super();
+      this.laneNumber = laneNumber;
+      this.laneManeuverCode = laneManeuverCode;
    }
 
-	public Integer getLaneNumber() {
-		return laneNumber;
-	}
+   public static List<OdeConnectsTo> createList(ConnectsTo connectsTo) {
+      if (connectsTo == null)
+         return null;
+      
+      byte[] bytes = connectsTo.byteArrayValue();
+      ArrayList<OdeConnectsTo> odeConnectsTos = new ArrayList<OdeConnectsTo>();
 
-	public OdeConnectsTo setLaneNumber(Integer laneNumber) {
-		this.laneNumber = laneNumber;
-		return this;
-	}
+      for (int i = 0; i < bytes.length; i += 2) {
+         odeConnectsTos.add(new OdeConnectsTo((int) bytes[i],
+               LaneManeuverCode.values[bytes[i + 1]]));
+      }
 
-	public OdeLaneManeuverCode getLaneManeuverCode() {
-		return laneManeuverCode;
-	}
+      return odeConnectsTos;
+   }
 
-	public OdeConnectsTo setLaneManeuverCode(OdeLaneManeuverCode laneManeuverCode) {
-		this.laneManeuverCode = laneManeuverCode;
-		return this;
-	}
-	
-	
+   public Integer getLaneNumber() {
+      return laneNumber;
+   }
+
+   public OdeConnectsTo setLaneNumber(Integer laneNumber) {
+      this.laneNumber = laneNumber;
+      return this;
+   }
+
+   public LaneManeuverCode getLaneManeuverCode() {
+      return laneManeuverCode;
+   }
+
+   public OdeConnectsTo setLaneManeuverCode(
+         LaneManeuverCode laneManeuverCode) {
+      this.laneManeuverCode = laneManeuverCode;
+      return this;
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result
+            + ((laneManeuverCode == null) ? 0 : laneManeuverCode.hashCode());
+      result = prime * result
+            + ((laneNumber == null) ? 0 : laneNumber.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      OdeConnectsTo other = (OdeConnectsTo) obj;
+      if (laneManeuverCode != other.laneManeuverCode)
+         return false;
+      if (laneNumber == null) {
+         if (other.laneNumber != null)
+            return false;
+      } else if (!laneNumber.equals(other.laneNumber))
+         return false;
+      return true;
+   }
+
 }
