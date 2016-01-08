@@ -94,10 +94,10 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 							tempSerialId = test[0] + "." + test[1];
 							int index = Integer.parseInt(test[2]);
 
-							/* 
-							 * vList is an array with the recordId as the index 
+							/*
+							 * vList is an array with the recordId as the index
 							 * that way there is no need to loop twice through arrays
-							 * 
+							 *
 							 * uses map as to not lose records if multiple record Ids
 							 * come in scrambled
 							 */
@@ -116,7 +116,8 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 								records.get(tempSerialId).set(index, msg);
 							}
 						}catch(Exception e){
-							logger.info("ERROR IN CODE : ", e);
+							logger.info("ERROR IN CODE. Sending message as is : ", e);
+							processor.process(msg);
 						}
 
 					}// End of serial ID is not blank
@@ -126,12 +127,6 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 
 		logger.info("Shutting down Thread: " + m_threadNumber);
 		return null;
-	}
-
-	public class BatchSend implements Runnable {
-
-		public synchronized void run() {
-		}
 	}
 
 }
