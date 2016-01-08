@@ -16,30 +16,73 @@
  *******************************************************************************/
 package com.bah.ode.asn;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.bah.ode.asn.oss.dsrc.Approach.Barriers;
+import com.bah.ode.asn.oss.dsrc.BarrierLane;
 
 public class OdeBarrierLane extends OdeLane {
+   private static final long serialVersionUID = -1396239437559684194L;
+
    private Integer barrierAttributes;
 
-   
-	public OdeBarrierLane() {
-	   super();
+   public OdeBarrierLane() {
+      super();
    }
 
-	public OdeBarrierLane(byte[] laneNumber, Integer laneWidthCm,
-			List<OdeLaneOffsets> nodeList, Integer barrierAttributes) {
-	   super(laneNumber, laneWidthCm, nodeList, null);
-	   this.barrierAttributes = barrierAttributes;
+   public OdeBarrierLane(BarrierLane bl) {
+      super(bl.getLaneNumber(), bl.getLaneWidth(), bl.getNodeList(), null);
+      if (bl.barrierAttributes != null)
+         setBarrierAttributes(bl.barrierAttributes.intValue());
    }
 
-	public Integer getBarrierAttributes() {
-		return barrierAttributes;
-	}
+   public Integer getBarrierAttributes() {
+      return barrierAttributes;
+   }
 
-	public OdeLane setBarrierAttributes(Integer barrierAttributes) {
-		this.barrierAttributes = barrierAttributes;
-		return this;
-	}
+   public OdeLane setBarrierAttributes(Integer barrierAttributes) {
+      this.barrierAttributes = barrierAttributes;
+      return this;
+   }
+
+   public static List<OdeBarrierLane> createList(Barriers barriers) {
+      ArrayList<OdeBarrierLane> bls = null;
+      if (barriers != null) {
+         bls = new ArrayList<OdeBarrierLane>();
+         for (BarrierLane bl : barriers.elements) {
+            if (bl != null) {
+               bls.add(new OdeBarrierLane(bl));
+            }
+         }
+      }
+      return bls;
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = prime * result
+            + ((barrierAttributes == null) ? 0 : barrierAttributes.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (!super.equals(obj))
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      OdeBarrierLane other = (OdeBarrierLane) obj;
+      if (barrierAttributes == null) {
+         if (other.barrierAttributes != null)
+            return false;
+      } else if (!barrierAttributes.equals(other.barrierAttributes))
+         return false;
+      return true;
+   }
 
 }

@@ -3,6 +3,7 @@ package com.bah.ode.asn;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bah.ode.asn.oss.dsrc.TravelerInformation.DataFrames.Sequence_.Regions;
 import com.bah.ode.asn.oss.dsrc.ValidRegion;
 import com.bah.ode.model.OdeObject;
 
@@ -29,9 +30,11 @@ public class OdeValidRegion extends OdeObject {
    private OdeArea area;
    
    public OdeValidRegion(ValidRegion element) {
-      setArea(new OdeArea(element.getArea()));;
-      setDirections(OdeHeadingSlice.SliceMask.getByHeadingSlices(element.getDirection()));
-      if (element.getExtent() != null)
+      if (element.area != null)
+         setArea(new OdeArea(element.area));
+      if (element.direction != null)
+         setDirections(OdeHeadingSlice.SliceMask.getByHeadingSlices(element.direction));
+      if (element.hasExtent())
          setExtent(OdeExtent.valueOf(element.getExtent().name()));
    }
    public List<OdeHeadingSlice.SliceMask> getDirections() {
@@ -52,6 +55,20 @@ public class OdeValidRegion extends OdeObject {
    public void setArea(OdeArea area) {
       this.area = area;
    }
+   
+   public static ArrayList<OdeValidRegion> createList(Regions regions) {
+      if (regions == null)
+         return null;
+      
+      ArrayList<ValidRegion> elements = regions.elements;
+      ArrayList<OdeValidRegion> vrs = new ArrayList<OdeValidRegion>();
+      for (ValidRegion vr : elements) {
+         if (vr != null)
+            vrs.add(new OdeValidRegion(vr));
+      }
+      return vrs;
+   }
+
    @Override
    public int hashCode() {
       final int prime = 31;
@@ -84,14 +101,6 @@ public class OdeValidRegion extends OdeObject {
       if (extent != other.extent)
          return false;
       return true;
-   }
-   public static ArrayList<OdeValidRegion> getRegions(
-         ArrayList<ValidRegion> elements) {
-      ArrayList<OdeValidRegion> regions = new ArrayList<OdeValidRegion>();
-      for (ValidRegion element : elements) {
-         regions.add(new OdeValidRegion(element));
-      }
-      return regions;
    }
    
    

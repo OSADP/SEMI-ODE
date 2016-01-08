@@ -67,7 +67,7 @@ public class QueryDataPropagator extends BaseDataPropagator {
                      if (recordCount < limit) {
                         if (applyFilters((OdeFilterable)payload)) {
                            recordCount++;
-                           WebSocketUtils.send(clientSession, dataMsg.toJson());
+                           WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
                         }
 
                         if (recordCount >= limit) {
@@ -85,7 +85,7 @@ public class QueryDataPropagator extends BaseDataPropagator {
                   } else { // We DON'T have a limit
                      if (applyFilters((OdeFilterable)payload)) {
                         recordCount++;
-                        WebSocketUtils.send(clientSession, dataMsg.toJson());
+                        WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
                      }
 
                      if (stopRecord != null &&

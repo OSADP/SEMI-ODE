@@ -17,11 +17,86 @@
 package com.bah.ode.asn;
 
 import com.bah.ode.asn.oss.semi.SpatRecord;
+import com.bah.ode.model.OdeObject;
 
+public class OdeSpatData extends OdeObject {
 
-public class OdeSpatData {
+   private static final long serialVersionUID = 6674140338314980542L;
 
-	public OdeSpatData(SpatRecord spatData) {
+   private OdeDateTime dateTime;
+   private String timestamp;
+   private OdeIntersectionState intersections;
+
+   public OdeSpatData(SpatRecord spatData) {
+      if (spatData.timestamp != null) {
+         setDateTime(new OdeDateTime(spatData.timestamp));
+         setTimestamp(this.getDateTime().getISODateTime());
+      }
+      if (spatData.intersections != null)
+         setIntersections(new OdeIntersectionState(spatData.getIntersections()));
+   }
+
+   public OdeDateTime getDateTime() {
+      return dateTime;
+   }
+
+   public void setDateTime(OdeDateTime dateTime) {
+      this.dateTime = dateTime;
+   }
+
+   public String getTimestamp() {
+      return timestamp;
+   }
+
+   public void setTimestamp(String timestamp) {
+      this.timestamp = timestamp;
+   }
+
+   public OdeIntersectionState getIntersections() {
+      return intersections;
+   }
+
+   public void setIntersections(OdeIntersectionState intersections) {
+      this.intersections = intersections;
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((dateTime == null) ? 0 : dateTime.hashCode());
+      result = prime * result
+            + ((intersections == null) ? 0 : intersections.hashCode());
+      result = prime * result
+            + ((timestamp == null) ? 0 : timestamp.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      OdeSpatData other = (OdeSpatData) obj;
+      if (dateTime == null) {
+         if (other.dateTime != null)
+            return false;
+      } else if (!dateTime.equals(other.dateTime))
+         return false;
+      if (intersections == null) {
+         if (other.intersections != null)
+            return false;
+      } else if (!intersections.equals(other.intersections))
+         return false;
+      if (timestamp == null) {
+         if (other.timestamp != null)
+            return false;
+      } else if (!timestamp.equals(other.timestamp))
+         return false;
+      return true;
    }
 
 }

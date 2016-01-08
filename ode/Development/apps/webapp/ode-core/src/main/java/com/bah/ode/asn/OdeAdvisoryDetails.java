@@ -41,26 +41,26 @@ public class OdeAdvisoryDetails extends OdeObject {
    private OdeTravelerInfo travelerInfo;
    
    public OdeAdvisoryDetails(AdvisoryDetails asdmDetails) throws UnsupportedEncodingException {
-      if (asdmDetails.getAsdmID() != null)
-         setId(CodecUtils.toHex(asdmDetails.getAsdmID().byteArrayValue()));
+      if (asdmDetails.asdmID != null)
+         setId(CodecUtils.toHex(asdmDetails.asdmID.byteArrayValue()));
       
-      if (asdmDetails.getAsdmType() != null)
-         setType(OdeAdvisoryBroadcastType.valueOf(asdmDetails.getAsdmType().name()));
+      if (asdmDetails.asdmType != null)
+         setType(OdeAdvisoryBroadcastType.valueOf(asdmDetails.asdmType.name()));
       
-      if (asdmDetails.getDistType() != null)
-         setDistType(CodecUtils.toHex(asdmDetails.getDistType().byteArrayValue()));
+      if (asdmDetails.distType != null)
+         setDistType(CodecUtils.toHex(asdmDetails.distType.byteArrayValue()));
       
-      if (asdmDetails.getStartTime() != null) {
+      if (asdmDetails.hasStartTime()) {
          setStartTime(new OdeDateTime(asdmDetails.getStartTime()).getISODateTime());
       }
       
-      if (asdmDetails.getStopTime() != null) {
+      if (asdmDetails.hasStopTime()) {
          setStopTime(new OdeDateTime(asdmDetails.getStopTime()).getISODateTime());
       }
 
-      if (asdmDetails.getAdvisoryMessage() != null) {
+      if (asdmDetails.advisoryMessage != null) {
          TravelerInformation timPOJO = 
-               decodeAdvisoryMessage(asdmDetails.getAdvisoryMessage().byteArrayValue());
+               decodeAdvisoryMessage(asdmDetails.advisoryMessage.byteArrayValue());
          travelerInfo = new OdeTravelerInfo(timPOJO);
       }
       

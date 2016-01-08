@@ -17,13 +17,17 @@
 package com.bah.ode.asn;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.bah.ode.asn.oss.dsrc.DDateTime;
 import com.bah.ode.asn.oss.dsrc.DFullTime;
+import com.bah.ode.model.OdeObject;
 import com.bah.ode.util.DateTimeUtils;
 
-public class OdeDateTime {
+public class OdeDateTime extends OdeObject {
+
+   private static final long serialVersionUID = 2660375064468606589L;
 
    private Integer year;
    private Integer month;
@@ -47,35 +51,33 @@ public class OdeDateTime {
    }
 
    public OdeDateTime(DDateTime dDateTime) {
-      if (dDateTime != null) {
-         if (dDateTime.getYear() != null)
-            setYear(dDateTime.getYear().intValue());
-         
-         if (dDateTime.getMonth() != null)
-            setMonth(dDateTime.getMonth().intValue());
-         
-         if (dDateTime.getDay() != null)
-            setDay(dDateTime.getDay().intValue());
-         
-         if (dDateTime.getHour() != null)
-            setHour(dDateTime.getHour().intValue());
-         
-         if (dDateTime.getMinute() != null)
-         setMinute(dDateTime.getMinute().intValue());
-         
-         if (dDateTime.getSecond() != null) {
-            /*
-             * 7.36 Data Element: DE_DSecond Use: The DSRC style second is a simple
-             * value consisting of integer values from zero to 61000 representing
-             * the milliseconds within a minute. A leap second is represented by
-             * the value range 60001 to 61000. The value of 65535 SHALL represent
-             * an unknown value in the range of the minute, other values from 61001
-             * to 65534 are reserved.
-             */
-            int millisecs = dDateTime.getSecond().intValue();
-            if (millisecs <= 61000) {
-               setSecond(BigDecimal.valueOf(dDateTime.getSecond().intValue(), 3));
-            }
+      if (dDateTime.hasYear())
+         setYear(dDateTime.getYear().intValue());
+      
+      if (dDateTime.hasMonth())
+         setMonth(dDateTime.getMonth().intValue());
+      
+      if (dDateTime.hasDay())
+         setDay(dDateTime.getDay().intValue());
+      
+      if (dDateTime.hasHour())
+         setHour(dDateTime.getHour().intValue());
+      
+      if (dDateTime.hasMinute())
+      setMinute(dDateTime.getMinute().intValue());
+      
+      if (dDateTime.hasSecond()) {
+         /*
+          * 7.36 Data Element: DE_DSecond Use: The DSRC style second is a simple
+          * value consisting of integer values from zero to 61000 representing
+          * the milliseconds within a minute. A leap second is represented by
+          * the value range 60001 to 61000. The value of 65535 SHALL represent
+          * an unknown value in the range of the minute, other values from 61001
+          * to 65534 are reserved.
+          */
+         int millisecs = dDateTime.getSecond().intValue();
+         if (millisecs <= 61000) {
+            setSecond(BigDecimal.valueOf(dDateTime.getSecond().intValue(), 3));
          }
       }
    }
@@ -91,18 +93,20 @@ public class OdeDateTime {
       }
    }
 
-   public String getISODateTime() {
+   public ZonedDateTime getZonedDateTime() {
       if (second != null && second.intValue() != 0) {
          BigDecimal secFract = second.remainder(BigDecimal.valueOf(second.intValue()));
          BigDecimal millisec = secFract.multiply(BigDecimal.valueOf(1000));
          return DateTimeUtils.isoDateTime(getYear(), getMonth(),
-               getDay(), getHour(), getMinute(), second.intValue(), millisec.intValue())
-               .format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+               getDay(), getHour(), getMinute(), second.intValue(), millisec.intValue());
       } else {
          return DateTimeUtils.isoDateTime(getYear(), getMonth(),
-               getDay(), getHour(), getMinute(),0, 0)
-               .format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+               getDay(), getHour(), getMinute(),0, 0);
       }
+   }
+
+   public String getISODateTime() {
+      return getZonedDateTime().format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
    }
 
    public Integer getYear() {

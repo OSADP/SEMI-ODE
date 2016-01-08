@@ -30,8 +30,6 @@ import javax.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.asn.oss.semi.AdvisorySituationData;
-import com.bah.ode.asn.oss.semi.IntersectionSituationData;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.InternalDataMessage;
@@ -39,7 +37,7 @@ import com.bah.ode.model.OdeAdvisoryData;
 import com.bah.ode.model.OdeControlData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
-import com.bah.ode.model.OdeIntersectionDataRaw;
+import com.bah.ode.model.OdeIntersectionData;
 import com.bah.ode.model.OdeMsgPayload;
 import com.bah.ode.model.OdeStatus;
 import com.bah.ode.model.OdeStatus.Code;
@@ -175,19 +173,19 @@ public class TestUploadServer {
                            break;
          
                         case IntersectionData:
-                           IntersectionSituationData isd = 
-                           (IntersectionSituationData) JsonUtils.fromJson(
-                                 payload.toString(), IntersectionSituationData.class);
-                           OdeIntersectionDataRaw oidr = new OdeIntersectionDataRaw(isd);
-                           sendOdeMsgPayload(oidr, payloadType, oidr.getSerialId());
+                        case MapData:
+                        case SPaTData:
+                           OdeIntersectionData oisd = 
+                           (OdeIntersectionData) JsonUtils.fromJson(
+                                 payload.toString(), OdeIntersectionData.class);
+                           sendOdeMsgPayload(oisd, payloadType, oisd.getSerialId());
                            break;
          
                         case AdvisoryData:
-                           AdvisorySituationData asd = 
-                           (AdvisorySituationData) JsonUtils.fromJson(
-                                 payload.toString(), AdvisorySituationData.class);
-                            OdeAdvisoryData oadr = new OdeAdvisoryData(asd);
-                            sendOdeMsgPayload(oadr, payloadType, oadr.getSerialId());
+                           OdeAdvisoryData oasd = 
+                           (OdeAdvisoryData) JsonUtils.fromJson(
+                                 payload.toString(), OdeAdvisoryData.class);
+                            sendOdeMsgPayload(oasd, payloadType, oasd.getSerialId());
          
                            break;
          

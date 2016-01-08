@@ -15,12 +15,17 @@ public class OdeShapePointSet extends OdeObject {
    public List<OdeLaneOffsets> nodeList;
 
    public OdeShapePointSet(ShapePointSet shapePointSet) {
-      this.anchor = new OdePosition3D(shapePointSet.getAnchor());
-      if (shapePointSet.getLaneWidth() != null)
+      if (shapePointSet.hasAnchor())
+         this.anchor = new OdePosition3D(shapePointSet.getAnchor());
+      
+      if (shapePointSet.hasLaneWidth())
          this.laneWidth = shapePointSet.getLaneWidth().intValue();
-      if (shapePointSet.getDirectionality() != null)
+      
+      if (shapePointSet.hasDirectionality())
          this.directionality = OdeDirectionOfUse.valueOf(shapePointSet.getDirectionality().name());
-      this.nodeList = OdeLaneOffsets.createList(shapePointSet.getNodeList());
+      
+      if (shapePointSet.nodeList != null)
+         this.nodeList = OdeLaneOffsets.createList(shapePointSet.nodeList);
    }
 
 }

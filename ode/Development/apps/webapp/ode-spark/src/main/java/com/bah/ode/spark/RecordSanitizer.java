@@ -4,7 +4,6 @@ package com.bah.ode.spark;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.spark.api.java.function.PairFunction;
 
 import com.bah.ode.util.JsonUtils;

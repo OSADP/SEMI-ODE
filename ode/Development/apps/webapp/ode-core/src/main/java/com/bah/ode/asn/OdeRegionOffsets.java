@@ -27,8 +27,11 @@ public class OdeRegionOffsets extends OdeObject {
 
    public OdeRegionOffsets(RegionOffsets ofs) {
       this.xOffsetCm = ofs.getXOffset();
+      
       this.yOffsetCm = ofs.getYOffset();
-      this.zOffsetCm = ofs.getZOffset();
+      
+      if (ofs.hasZOffset())
+         this.zOffsetCm = ofs.getZOffset();
    }
 
    public Long getxOffsetCm() {
@@ -59,6 +62,9 @@ public class OdeRegionOffsets extends OdeObject {
    }
 
    public static List<OdeRegionOffsets> createList(RegionList regionList) {
+      if (regionList == null)
+         return null;
+      
       ArrayList<OdeRegionOffsets> nl = new ArrayList<OdeRegionOffsets>();
 
       for (RegionOffsets ofs : regionList.elements) {

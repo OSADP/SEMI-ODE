@@ -21,26 +21,26 @@ public class OdeTravelerInfo extends OdeObject {
 
    public OdeTravelerInfo(TravelerInformation tim) {
       super();
-      if (tim.getDataFrameCount() != null)
+      if (tim.hasDataFrameCount())
          setDataFrameCount(tim.getDataFrameCount().intValue());
-      setDataFrames2(tim.getDataFrames());
-      if (tim.getMsgID() != null)
-         setMsgID(OdeDSRCmsgID.valueOf(tim.getMsgID().name()));
-      if (tim.getPacketID() != null)
+      if (tim.dataFrames != null)
+         setDataFrames2(tim.dataFrames);
+      if (tim.msgID != null)
+         setMsgID(OdeDSRCmsgID.valueOf(tim.msgID.name()));
+      if (tim.hasPacketID())
          setPacketID(CodecUtils.toHex(tim.getPacketID().byteArrayValue()));
       setTypeName(tim.getTypeName());
-      if (tim.getUrlB() != null)
+      if (tim.hasUrlB())
          setUrlB(tim.getUrlB().stringValue());
    }
 
    private void setDataFrames2(DataFrames dataFrames2) {
-      if (dataFrames2 != null) {
-         dataFrames = new ArrayList<OdeAdvisoryDataFrame>();
-         ArrayList<Sequence_> elements = dataFrames2.elements;
-         
-         for (Sequence_ element : elements) {
+      dataFrames = new ArrayList<OdeAdvisoryDataFrame>();
+      ArrayList<Sequence_> elements = dataFrames2.elements;
+      
+      for (Sequence_ element : elements) {
+         if (element != null)
             dataFrames.add(new OdeAdvisoryDataFrame(element));
-         }
       }
    }
 
@@ -96,6 +96,60 @@ public class OdeTravelerInfo extends OdeObject {
    public OdeTravelerInfo setUrlB(String urlB) {
       this.urlB = urlB;
       return this;
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result
+            + ((dataFrameCount == null) ? 0 : dataFrameCount.hashCode());
+      result = prime * result
+            + ((dataFrames == null) ? 0 : dataFrames.hashCode());
+      result = prime * result + ((msgID == null) ? 0 : msgID.hashCode());
+      result = prime * result + ((packetID == null) ? 0 : packetID.hashCode());
+      result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
+      result = prime * result + ((urlB == null) ? 0 : urlB.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      OdeTravelerInfo other = (OdeTravelerInfo) obj;
+      if (dataFrameCount == null) {
+         if (other.dataFrameCount != null)
+            return false;
+      } else if (!dataFrameCount.equals(other.dataFrameCount))
+         return false;
+      if (dataFrames == null) {
+         if (other.dataFrames != null)
+            return false;
+      } else if (!dataFrames.equals(other.dataFrames))
+         return false;
+      if (msgID != other.msgID)
+         return false;
+      if (packetID == null) {
+         if (other.packetID != null)
+            return false;
+      } else if (!packetID.equals(other.packetID))
+         return false;
+      if (typeName == null) {
+         if (other.typeName != null)
+            return false;
+      } else if (!typeName.equals(other.typeName))
+         return false;
+      if (urlB == null) {
+         if (other.urlB != null)
+            return false;
+      } else if (!urlB.equals(other.urlB))
+         return false;
+      return true;
    }
 
    

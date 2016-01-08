@@ -2,6 +2,7 @@ package com.bah.ode.spark;
 
 import java.math.BigDecimal;
 import java.util.Iterator;
+import java.util.UUID;
 
 import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.broadcast.Broadcast;
@@ -18,6 +19,7 @@ public class AggregateDataDistributor extends BaseDistributor
    private static final long serialVersionUID = -4182433155035620976L;
    
    private String outputTopic;
+   private String streamId = UUID.randomUUID().toString();
    
    public AggregateDataDistributor(
          Broadcast<MQSerialazableProducerPool> producerPool,
@@ -30,11 +32,12 @@ public class AggregateDataDistributor extends BaseDistributor
    public void call(Iterator<Row> partitionOfRecords) throws Exception {
       MQProducer<String, String> producer = producerPool.value().checkOut();
       
+      long recordId = 0;
       while (partitionOfRecords.hasNext()) {
          Row record = partitionOfRecords.next();
          String tempId = record.getString(0);
 
-         OdeAggregateData payload = new OdeAggregateData();
+         OdeAggregateData payload = new OdeAggregateData(streamId, 0L, recordId++);
          payload.setKey(record.getString(0));
          payload.setCount(record.getLong(1));
          payload.setMinSpeed(BigDecimal.valueOf(record.getDouble(2)));

@@ -16,41 +16,20 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.DatatypeConverter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.bah.ode.asn.OdeDateTime;
 import com.bah.ode.asn.OdePosition3D;
 import com.bah.ode.asn.OdeVehicleSize;
-import com.bah.ode.asn.oss.Oss;
 import com.bah.ode.asn.oss.dsrc.AccelerationSet4Way;
 import com.bah.ode.asn.oss.dsrc.BrakeSystemStatus;
-import com.bah.ode.asn.oss.dsrc.DDateTime;
 import com.bah.ode.asn.oss.dsrc.Heading;
-import com.bah.ode.asn.oss.dsrc.Position3D;
 import com.bah.ode.asn.oss.dsrc.SteeringWheelAngle;
 import com.bah.ode.asn.oss.dsrc.TransmissionAndSpeed;
-import com.bah.ode.asn.oss.semi.FundamentalSituationalStatus;
 import com.bah.ode.asn.oss.semi.GroupID;
-import com.bah.ode.asn.oss.semi.VehSitDataMessage;
-import com.bah.ode.asn.oss.semi.VehSitDataMessage.Bundle;
-import com.bah.ode.asn.oss.semi.VehSitRecord;
 import com.bah.ode.asn.oss.semi.VsmEventFlag;
 import com.bah.ode.util.CodecUtils;
-import com.oss.asn1.Coder;
 
 public final class OdeVehicleData extends OdeData {
    private static final long serialVersionUID = 33889808649252185L;
-
-   private static Logger logger = LoggerFactory.getLogger(OdeVehicleData.class);
 
    private String groupId;
    private OdeDateTime dateTime;
@@ -64,14 +43,23 @@ public final class OdeVehicleData extends OdeData {
    private String vsmEventFlag;
 
    public OdeVehicleData() {
+      super();
    }
 
-   public OdeVehicleData(GroupID groupId, OdeDateTime dateTime,
+   public OdeVehicleData(String streamId, long bundleId, long recordId) {
+      super(streamId, bundleId, recordId);
+   }
+
+   public OdeVehicleData(String serialId) {
+      super(serialId);
+   }
+
+   public OdeVehicleData(String serialId, GroupID groupId, OdeDateTime dateTime,
          OdePosition3D location, TransmissionAndSpeed speed, Heading heading,
          SteeringWheelAngle steeringAngle, AccelerationSet4Way accelSet,
          BrakeSystemStatus brakes, OdeVehicleSize size,
          VsmEventFlag vsmEventFlag) {
-      super();
+      super(serialId);
       this.groupId = CodecUtils
             .toHex(groupId != null ? groupId.byteArrayValue() : "".getBytes());
       this.dateTime = dateTime;
@@ -170,65 +158,5 @@ public final class OdeVehicleData extends OdeData {
       this.vsmEventFlag = vsmEventFlag;
    }
 
-   public static List<OdeVehicleData> fromBase64(String base64) {
-      byte[] bytes = DatatypeConverter.parseBase64Binary(base64);
-      InputStream ins = new ByteArrayInputStream(bytes);
-      ArrayList<OdeVehicleData> odeDataBundle = new ArrayList<OdeVehicleData>();
-
-      Coder coder = Oss.getBERCoder();
-      try {
-         long decodeTime = System.currentTimeMillis();
-
-         do {
-            try {
-               VehSitDataMessage value = new VehSitDataMessage();
-               coder.decode(ins, value);
-
-               Bundle bundle = value.getBundle();
-
-               int bSize = bundle.getSize();
-
-               for (int i = 0; i < bSize; i++) {
-                  VehSitRecord vsr = bundle.get(i);
-                  DDateTime time = vsr.getTime();
-                  OdeDateTime dateTime = new OdeDateTime(
-                        time.getYear().intValue(), time.getMonth().intValue(),
-                        time.getDay().intValue(), time.getHour().intValue(),
-                        time.getMinute().intValue(),
-                        BigDecimal.valueOf(time.getSecond().intValue()));
-
-                  Position3D pos = vsr.getPos();
-                  OdePosition3D location = new OdePosition3D(pos);
-
-                  FundamentalSituationalStatus fund = vsr.getFundamental();
-
-                  OdeVehicleSize size = new OdeVehicleSize(
-                        fund.getVehSize().getWidth().intValue(),
-                        fund.getVehSize().getLength().intValue());
-
-                  OdeVehicleData vsd = new OdeVehicleData(value.getGroupID(),
-                        dateTime, location, fund.getSpeed(), fund.getHeading(),
-                        fund.getSteeringAngle(), fund.getAccelSet(),
-                        fund.getBrakes(), size, fund.getVsmEventFlag());
-                  odeDataBundle.add(vsd);
-               }
-            } catch (Exception e) {
-               System.out.println("Decode complete.\n" + e.getMessage());
-               break;
-            }
-            break;
-         } while (true);
-         ins.close();
-
-         decodeTime = System.currentTimeMillis() - decodeTime;
-
-         logger.info("Decode Time: " + decodeTime + " ms");
-
-      } catch (Exception e) {
-         logger.error("", e);
-      } finally {
-      }
-      return odeDataBundle;
-   }
 
 }

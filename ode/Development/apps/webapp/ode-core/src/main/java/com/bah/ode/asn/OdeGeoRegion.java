@@ -39,8 +39,11 @@ public class OdeGeoRegion extends OdeObject{
    }
 
    public OdeGeoRegion(GeoRegion serviceRegion) {
-      this.setNwCorner(new OdePosition3D(serviceRegion.getNwCorner()));
-      this.setSeCorner(new OdePosition3D(serviceRegion.getSeCorner()));
+      if (serviceRegion.nwCorner != null)
+         this.setNwCorner(new OdePosition3D(serviceRegion.nwCorner));
+      
+      if (serviceRegion.seCorner != null)
+         this.setSeCorner(new OdePosition3D(serviceRegion.seCorner));
    }
 
    public OdePosition3D getNwCorner() {

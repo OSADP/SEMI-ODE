@@ -276,7 +276,8 @@ $( document ).ready(function() {
 
 
       /* reset connection */
-      if(ws == null || token == null){
+       disconnect();
+      if(token == null){
           dialog.dialog("open");
       }
 
@@ -344,13 +345,14 @@ $( document ).ready(function() {
 
       $("input[name=data]:radio").attr('checked', false);
       if(token != null)
-      updateRequestUri();
+        updateRequestUri();
       else {
         document.getElementById('requestUri').value = "";
       }
     });
 
     $("input[name=data]:radio").change(function () {
+      disconnect();
       dataType = $(this).val();
 
       if(dataType == 0){

@@ -19,64 +19,104 @@ package com.bah.ode.asn;
 import java.util.List;
 
 import com.bah.ode.asn.oss.dsrc.MapData;
+import com.bah.ode.model.OdeObject;
 
-public class OdeMapData {
-	private String name;
-	private OdeLayerType layerType;
-	private Integer layerId;
-	private List<OdeIntersection> intersections;
+public class OdeMapData extends OdeObject {
 
-	public OdeMapData(String name, OdeLayerType layerType, Integer layerId,
-         List<OdeIntersection> intersections) {
-	   super();
-	   this.name = name;
-	   this.layerType = layerType;
-	   this.layerId = layerId;
-	   this.intersections = intersections;
+   private static final long serialVersionUID = -3064674155859566724L;
+
+   public enum OdeLayerType {
+      NONE, MIXED_CONTENT, GENERAL_MAP_DATA, INTERSECTION_DATA, CURVE_DATA, ROADWAY_SECTION_DATA, PARKING_AREA_DATA, SHARED_LANE_DATA;
+
+      public static final OdeLayerType[] values = values();
+   }
+   
+   private OdeDSRCmsgID msgID;
+   private Integer msgCnt; 
+   private String name;
+   private OdeLayerType layerType;
+   private Integer layerId;
+   private List<OdeIntersection> intersections;
+   private OdeDataParameters dataParameters; 
+
+   public OdeMapData(MapData mapData) {
+      if (mapData.getDataParameters() != null)
+         this.setDataParameters(new OdeDataParameters(mapData.getDataParameters()));
+      
+      if (mapData.getMsgCnt() != null)
+         this.setMsgCnt(mapData.getMsgCnt().intValue());
+      
+      if (mapData.getName() != null)
+         this.setName(mapData.getName().stringValue());
+      
+      if (mapData.getLayerType() != null)
+         this.setLayerType(OdeLayerType.values[(int) mapData.getLayerType().longValue()]);
+      
+      if (mapData.getLayerID() != null)
+         this.setLayerId(mapData.getLayerID().intValue());
+      
+      if (mapData.getIntersections() != null)
+         this.setIntersections(OdeIntersection.createList(mapData.getIntersections()));
    }
 
-	public OdeMapData(MapData mapData) {
-		this.setName(mapData.getName() != null ? mapData.getName().stringValue() : null);
-		this.setLayerType(mapData.getLayerType() != null ? OdeLayerType.values[(int) mapData.getLayerType().longValue()] : null);
-		this.setLayerId(mapData.getLayerID() != null ? mapData.getLayerID().intValue() : null);
-		this.intersections = mapData.getIntersections() != null ? OdeIntersection.create(mapData.getIntersections()) : null;
+   public OdeDSRCmsgID getMsgID() {
+      return msgID;
    }
 
-	public String getName() {
-		return name;
-	}
+   public void setMsgID(OdeDSRCmsgID msgID) {
+      this.msgID = msgID;
+   }
 
-	public OdeMapData setName(String name) {
-		this.name = name;
-		return this;
-	}
+   public Integer getMsgCnt() {
+      return msgCnt;
+   }
 
-	public OdeLayerType getLayerType() {
-		return layerType;
-	}
+   public void setMsgCnt(Integer msgCnt) {
+      this.msgCnt = msgCnt;
+   }
 
-	public OdeMapData setLayerType(OdeLayerType layerType) {
-		this.layerType = layerType;
-		return this;
-	}
+   public OdeDataParameters getDataParameters() {
+      return dataParameters;
+   }
 
-	public Integer getLayerId() {
-		return layerId;
-	}
+   public void setDataParameters(OdeDataParameters dataParameters) {
+      this.dataParameters = dataParameters;
+   }
 
-	public OdeMapData setLayerId(Integer layerId) {
-		this.layerId = layerId;
-		return this;
-	}
+   public String getName() {
+      return name;
+   }
 
-	public List<OdeIntersection> getIntersections() {
-		return intersections;
-	}
+   public OdeMapData setName(String name) {
+      this.name = name;
+      return this;
+   }
 
-	public OdeMapData setIntersections(List<OdeIntersection> intersections) {
-		this.intersections = intersections;
-		return this;
-	}
+   public OdeLayerType getLayerType() {
+      return layerType;
+   }
 
-	
+   public OdeMapData setLayerType(OdeLayerType layerType) {
+      this.layerType = layerType;
+      return this;
+   }
+
+   public Integer getLayerId() {
+      return layerId;
+   }
+
+   public OdeMapData setLayerId(Integer layerId) {
+      this.layerId = layerId;
+      return this;
+   }
+
+   public List<OdeIntersection> getIntersections() {
+      return intersections;
+   }
+
+   public OdeMapData setIntersections(List<OdeIntersection> intersections) {
+      this.intersections = intersections;
+      return this;
+   }
+
 }

@@ -63,6 +63,9 @@ public class OdeLaneOffsets extends OdeRegionOffsets {
    }
 
    public static List<OdeLaneOffsets> createList(NodeList nodeList) {
+      if (nodeList == null)
+         return null;
+
       ArrayList<OdeLaneOffsets> nl = new ArrayList<OdeLaneOffsets>();
 
       for (Offsets ofs : nodeList.elements) {

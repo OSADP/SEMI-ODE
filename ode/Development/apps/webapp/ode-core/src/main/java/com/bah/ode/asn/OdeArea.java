@@ -16,15 +16,58 @@ public class OdeArea extends OdeChoice {
       int flag = area.getChosenFlag();
       switch (flag) {
       case Area.circle_chosen:
-         this.circle_chosen = new OdeCircle(area.getCircle());
+         if (area.hasCircle())
+            this.circle_chosen = new OdeCircle(area.getCircle());
          break;
       case Area.regionPointSet_chosen:
-         this.regionPointSet_chosen = new OdeRegionPointSet(area.getRegionPointSet());
+         if (area.hasRegionPointSet())
+            this.regionPointSet_chosen = new OdeRegionPointSet(area.getRegionPointSet());
          break;
       case Area.shapePointSet_chosen:
-         this.shapePointSet_chosen = new OdeShapePointSet(area.getShapePointSet());
+         if (area.hasShapePointSet())
+            this.shapePointSet_chosen = new OdeShapePointSet(area.getShapePointSet());
          break;
       }
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result
+            + ((circle_chosen == null) ? 0 : circle_chosen.hashCode());
+      result = prime * result + ((regionPointSet_chosen == null) ? 0
+            : regionPointSet_chosen.hashCode());
+      result = prime * result + ((shapePointSet_chosen == null) ? 0
+            : shapePointSet_chosen.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      OdeArea other = (OdeArea) obj;
+      if (circle_chosen == null) {
+         if (other.circle_chosen != null)
+            return false;
+      } else if (!circle_chosen.equals(other.circle_chosen))
+         return false;
+      if (regionPointSet_chosen == null) {
+         if (other.regionPointSet_chosen != null)
+            return false;
+      } else if (!regionPointSet_chosen.equals(other.regionPointSet_chosen))
+         return false;
+      if (shapePointSet_chosen == null) {
+         if (other.shapePointSet_chosen != null)
+            return false;
+      } else if (!shapePointSet_chosen.equals(other.shapePointSet_chosen))
+         return false;
+      return true;
    }
 
 

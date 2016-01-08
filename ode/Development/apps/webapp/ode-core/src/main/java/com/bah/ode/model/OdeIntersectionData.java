@@ -16,102 +16,109 @@
  *******************************************************************************/
 package com.bah.ode.model;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.time.ZonedDateTime;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.bah.ode.asn.OdeGeoRegion;
 import com.bah.ode.asn.OdeMapData;
 import com.bah.ode.asn.OdeSpatData;
-import com.bah.ode.asn.oss.Oss;
+import com.bah.ode.asn.oss.semi.GeoRegion;
+import com.bah.ode.asn.oss.semi.GroupID;
 import com.bah.ode.asn.oss.semi.IntersectionSituationData;
-import com.bah.ode.util.CodecUtils;
-import com.oss.asn1.Coder;
+import com.bah.ode.asn.oss.semi.TimeToLive;
+import com.bah.ode.util.DateTimeUtils;
 
-public final class OdeIntersectionData extends OdeData {
+public final class OdeIntersectionData extends DotWarehouseData
+      implements HasTimestamp {
    private static final long serialVersionUID = -8672926422209668605L;
 
-   private static Logger logger = LoggerFactory.getLogger(OdeIntersectionData.class);
+   private OdeMapData mapData;
+   private OdeSpatData spatData;
 
-	private String groupId;
-	private OdeGeoRegion serviceRegion;
-	private OdeMapData mapData;
-	private OdeSpatData spatData;
-
-	public OdeIntersectionData() {
-	}
-
-	public OdeIntersectionData(String groupId, OdeGeoRegion serviceRegion,
-         OdeMapData mapData, OdeSpatData spatData) {
-	   super();
-	   this.groupId = groupId;
-	   this.serviceRegion = serviceRegion;
-	   this.mapData = mapData;
-	   this.spatData = spatData;
+   public OdeIntersectionData() {
+      super();
    }
 
-	public OdeIntersectionData(IntersectionSituationData isd) {
-		this.setGroupId(CodecUtils.toHex(isd.getGroupID().byteArrayValue()));
-		this.setServiceRegion(new OdeGeoRegion(isd.getServiceRegion()));
-		this.setMapData(new OdeMapData(isd.getIntersectionRecord().getMapData()));
-		this.setSpatData(new OdeSpatData(isd.getIntersectionRecord().getSpatData()));
+   public OdeIntersectionData(String serialId, GroupID groupID,
+         TimeToLive timeToLive, GeoRegion serviceRegion) {
+      super(serialId, groupID, timeToLive, serviceRegion);
    }
 
-	public String getGroupId() {
-		return groupId;
-	}
+   public OdeIntersectionData(String streamId, long bundleId, long recordId) {
+      super(streamId, bundleId, recordId);
+   }
 
-	public OdeIntersectionData setGroupId(String groupId) {
-		this.groupId = groupId;
-		return this;
-	}
+   public OdeIntersectionData(String serialId) {
+      super(serialId);
+   }
 
-	public OdeGeoRegion getServiceRegion() {
-		return serviceRegion;
-	}
+   public OdeIntersectionData(String serialId, IntersectionSituationData isd) {
 
-	public OdeIntersectionData setServiceRegion(OdeGeoRegion serviceRegion) {
-		this.serviceRegion = serviceRegion;
-		return this;
-	}
+      super(serialId, isd.getGroupID(), isd.getTimeToLive(), isd.getServiceRegion());
 
-	public OdeMapData getMapData() {
-		return mapData;
-	}
+      if (isd.intersectionRecord != null) {
+         if (isd.intersectionRecord.mapData != null)
+            this.setMapData(new OdeMapData(isd.intersectionRecord.mapData));
+         if (isd.intersectionRecord.spatData != null)
+            this.setSpatData(new OdeSpatData(isd.intersectionRecord.spatData));
+      }
+   }
 
-	public OdeIntersectionData setMapData(OdeMapData mapData) {
-		this.mapData = mapData;
-		return this;
-	}
+   public OdeMapData getMapData() {
+      return mapData;
+   }
 
-	public OdeSpatData getSpatData() {
-		return spatData;
-	}
+   public OdeIntersectionData setMapData(OdeMapData mapData) {
+      this.mapData = mapData;
+      return this;
+   }
 
-	public OdeIntersectionData setSpatData(OdeSpatData spatData) {
-		this.spatData = spatData;
-		return this;
-	}
+   public OdeSpatData getSpatData() {
+      return spatData;
+   }
 
-	public static OdeIntersectionData create(byte[] intersectionData) {
-		InputStream ins = new ByteArrayInputStream(intersectionData);
-		OdeIntersectionData intData = null;
-		
-		Coder coder = Oss.getBERCoder();
-		try {
-			IntersectionSituationData isd = new IntersectionSituationData();
-			coder.decode(ins, isd);
-			ins.close();
-			
-			intData = new OdeIntersectionData(isd);
-			
-		} catch (Exception e) {
-			logger.error("Error decoding ", e);
-		} finally {
-		}
-		return intData;		
-	}
+   public OdeIntersectionData setSpatData(OdeSpatData spatData) {
+      this.spatData = spatData;
+      return this;
+   }
+
+   @Override
+   public ZonedDateTime getTimestamp() {
+      return spatData.getDateTime().getZonedDateTime();
+   }
+
+   @Override
+   public boolean isOnTime(ZonedDateTime start, ZonedDateTime end) {
+      return DateTimeUtils.isBetweenTimesInclusive(getTimestamp(), start, end);
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = prime * result + ((mapData == null) ? 0 : mapData.hashCode());
+      result = prime * result + ((spatData == null) ? 0 : spatData.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (!super.equals(obj))
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      OdeIntersectionData other = (OdeIntersectionData) obj;
+      if (mapData == null) {
+         if (other.mapData != null)
+            return false;
+      } else if (!mapData.equals(other.mapData))
+         return false;
+      if (spatData == null) {
+         if (other.spatData != null)
+            return false;
+      } else if (!spatData.equals(other.spatData))
+         return false;
+      return true;
+   }
 
 }
