@@ -48,6 +48,13 @@
 
       <!-- Test -->
       <junit.version>4.11</junit.version>
+	  <!-- 
+	     Username and Password required to access CNSI Nexus Repo.
+	     In order to pass the credentials on to the repo you must use a settings file
+	     or have the remote artifacts installed to you local repo manually.   
+	   -->
+	  <cnsi.repo.username></cnsi.repo.username>
+	  <cnsi.repo.password></cnsi.repo.password>
 
       <finalLocation>${project.build.directory}/${project.artifactId}-${project.version}</finalLocation>
       <timestamp>${maven.build.timestamp}</timestamp>
