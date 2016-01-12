@@ -1,8 +1,8 @@
 package com.bah.ode.wrapper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
@@ -23,14 +23,14 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 	private KafkaStream<K, V> m_stream;
 	private int m_threadNumber;
 	private DataProcessor<V, R> processor;
-	private HashMap<String, ArrayList<V>> records;
+	private TreeMap<Integer, ArrayList<V>> records;
 
 	public MQConsumer(KafkaStream<K, V> a_stream, int a_threadNumber,
 			DataProcessor<V, R> a_processor) {
 		this.m_threadNumber = a_threadNumber;
 		this.m_stream = a_stream;
 		this.processor = a_processor;
-		records = new HashMap<String, ArrayList<V>>();
+		records = new TreeMap<Integer, ArrayList<V>>();
 	}
 
 	@Override
@@ -52,11 +52,11 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 				 */
 				if (records.size() != 0) {
 					try {
-						HashMap<String, ArrayList<V>> sendMap = new HashMap<String, ArrayList<V>>(records);
+						TreeMap<Integer, ArrayList<V>> sendMap = new TreeMap<Integer, ArrayList<V>>(records);
 						records.clear();
-						Iterator<String> iter = sendMap.keySet().iterator();
+						Iterator<Integer> iter = sendMap.navigableKeySet().iterator();
 						while (iter.hasNext()) {
-							String key = iter.next();
+							int key = iter.next();
 							ArrayList<V> vList = sendMap.get(key);
 							for (int i = 0; i < vList.size(); i++) {
 								V msg = vList.get(i);
@@ -70,7 +70,7 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 					}
 				}
 			}
-		}, 1000, 1000);
+		}, 1000, 3500);
 
 		while (it.hasNext()) {
 			V msg = it.next().message();
@@ -89,10 +89,10 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 						processor.process(msg);
 					} else {
 						try{
-							String[] test = tempSerialId
+							String[] splitId = tempSerialId
 									.split("[^\\w-]+"); /* Non-alphanumerics and hyphen */
-							tempSerialId = test[0] + "." + test[1];
-							int index = Integer.parseInt(test[2]);
+							int bundleId = Integer.parseInt(splitId[1]);
+							int recordId = Integer.parseInt(splitId[2]);
 
 							/*
 							 * vList is an array with the recordId as the index
@@ -101,19 +101,19 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
 							 * uses map as to not lose records if multiple record Ids
 							 * come in scrambled
 							 */
-							ArrayList<V> vList = records.get(tempSerialId);
+							ArrayList<V> vList = records.get(bundleId);
 							if(vList == null){
 								vList = new ArrayList<V>();
-								while(index + 1 > vList.size()){
+								while(recordId + 1 > vList.size()){
 									vList.add(vList.size(), null);
 								}
-								vList.set(index, msg);
-								records.put(tempSerialId, vList);
+								vList.set(recordId, msg);
+								records.put(bundleId, vList);
 							}else{
-								while(index + 1 > vList.size()){
+								while(recordId + 1 > vList.size()){
 									vList.add(vList.size(), null);
 								}
-								records.get(tempSerialId).set(index, msg);
+								records.get(bundleId).set(recordId, msg);
 							}
 						}catch(Exception e){
 							logger.info("ERROR IN CODE. Sending message as is : ", e);
