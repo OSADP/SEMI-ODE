@@ -1,5 +1,8 @@
 package com.bah.ode.asn;
 
+import java.util.List;
+
+import com.bah.ode.asn.OdeHeadingSlice.SliceMask;
 import com.bah.ode.asn.oss.dsrc.RoadSignID;
 import com.bah.ode.model.OdeObject;
 
@@ -8,17 +11,11 @@ public class OdeRoadSignId extends OdeObject {
    private static final long serialVersionUID = 5729514080285088635L;
    
    public enum OdeMUTCDCode {
-      none, 
-      regulatory, 
-      warning, 
-      maintenance, 
-      motoristService, 
-      guide, 
-      rec
+      none, regulatory, warning, maintenance, motoristService, guide, rec
    }
    
    private OdePosition3D position;
-   private OdeHeadingSlice viewAngle;
+   private List<SliceMask> viewAngles;
    private OdeMUTCDCode mutcdCode;
    
    public OdeRoadSignId() {
@@ -29,7 +26,7 @@ public class OdeRoadSignId extends OdeObject {
       if (roadSignID.position != null)
          setPosition(new OdePosition3D(roadSignID.position));
       if (roadSignID.viewAngle != null)
-         setViewAngle(new OdeHeadingSlice(roadSignID.viewAngle));
+         setViewAngles(OdeHeadingSlice.SliceMask.getHeadingSlices(roadSignID.viewAngle));
       
       if (roadSignID.hasMutcdCode())
          setMutcdCode(OdeMUTCDCode.valueOf(roadSignID.getMutcdCode().name()));
@@ -41,12 +38,14 @@ public class OdeRoadSignId extends OdeObject {
    public void setPosition(OdePosition3D position) {
       this.position = position;
    }
-   public OdeHeadingSlice getViewAngle() {
-      return viewAngle;
+   public List<SliceMask> getViewAngles() {
+      return viewAngles;
    }
-   public void setViewAngle(OdeHeadingSlice viewAngle) {
-      this.viewAngle = viewAngle;
+
+   public void setViewAngles(List<SliceMask> viewAngles) {
+      this.viewAngles = viewAngles;
    }
+
    public OdeMUTCDCode getMutcdCode() {
       return mutcdCode;
    }
@@ -61,7 +60,7 @@ public class OdeRoadSignId extends OdeObject {
             + ((mutcdCode == null) ? 0 : mutcdCode.hashCode());
       result = prime * result + ((position == null) ? 0 : position.hashCode());
       result = prime * result
-            + ((viewAngle == null) ? 0 : viewAngle.hashCode());
+            + ((viewAngles == null) ? 0 : viewAngles.hashCode());
       return result;
    }
    @Override
@@ -80,7 +79,10 @@ public class OdeRoadSignId extends OdeObject {
             return false;
       } else if (!position.equals(other.position))
          return false;
-      if (viewAngle != other.viewAngle)
+      if (viewAngles == null) {
+         if (other.viewAngles != null)
+            return false;
+      } else if (!viewAngles.equals(other.viewAngles))
          return false;
       return true;
    }

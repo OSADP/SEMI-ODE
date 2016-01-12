@@ -16,7 +16,6 @@ public class OdeTravelerInfo extends OdeObject {
    private ArrayList<OdeAdvisoryDataFrame> dataFrames;
    private OdeDSRCmsgID msgID;
    private String packetID;
-   private String typeName;
    private String urlB;
 
    public OdeTravelerInfo(TravelerInformation tim) {
@@ -29,7 +28,6 @@ public class OdeTravelerInfo extends OdeObject {
          setMsgID(OdeDSRCmsgID.valueOf(tim.msgID.name()));
       if (tim.hasPacketID())
          setPacketID(CodecUtils.toHex(tim.getPacketID().byteArrayValue()));
-      setTypeName(tim.getTypeName());
       if (tim.hasUrlB())
          setUrlB(tim.getUrlB().stringValue());
    }
@@ -80,15 +78,6 @@ public class OdeTravelerInfo extends OdeObject {
       return this;
    }
 
-   public String getTypeName() {
-      return typeName;
-   }
-
-   public OdeTravelerInfo setTypeName(String typeName) {
-      this.typeName = typeName;
-      return this;
-   }
-
    public String getUrlB() {
       return urlB;
    }
@@ -108,7 +97,6 @@ public class OdeTravelerInfo extends OdeObject {
             + ((dataFrames == null) ? 0 : dataFrames.hashCode());
       result = prime * result + ((msgID == null) ? 0 : msgID.hashCode());
       result = prime * result + ((packetID == null) ? 0 : packetID.hashCode());
-      result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
       result = prime * result + ((urlB == null) ? 0 : urlB.hashCode());
       return result;
    }
@@ -138,11 +126,6 @@ public class OdeTravelerInfo extends OdeObject {
          if (other.packetID != null)
             return false;
       } else if (!packetID.equals(other.packetID))
-         return false;
-      if (typeName == null) {
-         if (other.typeName != null)
-            return false;
-      } else if (!typeName.equals(other.typeName))
          return false;
       if (urlB == null) {
          if (other.urlB != null)

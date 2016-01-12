@@ -28,7 +28,6 @@ public enum OdeDataType {
    Control("control", OdeControlData.class),
    Authorization("auth", OdeAuthorization.class),
    VehicleData("veh", OdeVehicleDataFlat.class),
-   VehicleSituationData("vsd", OdeVehicleData.class),
    IntersectionData("int", OdeIntersectionData.class),
    AdvisoryData("adv", OdeAdvisoryData.class),
    MapData("map", OdeMapData.class), 

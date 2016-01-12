@@ -41,7 +41,7 @@ public class OdeHeadingSlice {
       public void setSliceMask(int sliceMask) {
          this.sliceMask = sliceMask;
       }
-      public static List<SliceMask> getByHeadingSlices(HeadingSlice headingSlice2) {
+      public static List<SliceMask> getHeadingSlices(HeadingSlice headingSlice2) {
          ArrayList<SliceMask> result = new ArrayList<SliceMask>();
          int hs = ByteUtils.unsignedByteArrayToInt(headingSlice2.byteArrayValue());
          

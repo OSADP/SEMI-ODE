@@ -33,7 +33,7 @@ public class OdeValidRegion extends OdeObject {
       if (element.area != null)
          setArea(new OdeArea(element.area));
       if (element.direction != null)
-         setDirections(OdeHeadingSlice.SliceMask.getByHeadingSlices(element.direction));
+         setDirections(OdeHeadingSlice.SliceMask.getHeadingSlices(element.direction));
       if (element.hasExtent())
          setExtent(OdeExtent.valueOf(element.getExtent().name()));
    }
