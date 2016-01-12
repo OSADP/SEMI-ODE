@@ -17,15 +17,15 @@ public class OdeArea extends OdeChoice {
       switch (flag) {
       case Area.circle_chosen:
          if (area.hasCircle())
-            this.circle_chosen = new OdeCircle(area.getCircle());
+            setChosenField("circle_chosen", new OdeCircle(area.getCircle()));
          break;
       case Area.regionPointSet_chosen:
          if (area.hasRegionPointSet())
-            this.regionPointSet_chosen = new OdeRegionPointSet(area.getRegionPointSet());
+            setChosenField("regionPointSet_chosen", new OdeRegionPointSet(area.getRegionPointSet()));
          break;
       case Area.shapePointSet_chosen:
          if (area.hasShapePointSet())
-            this.shapePointSet_chosen = new OdeShapePointSet(area.getShapePointSet());
+            setChosenField("shapePointSet_chosen", new OdeShapePointSet(area.getShapePointSet()));
          break;
       }
    }

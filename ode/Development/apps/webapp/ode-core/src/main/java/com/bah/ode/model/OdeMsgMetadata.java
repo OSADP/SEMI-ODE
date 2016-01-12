@@ -10,23 +10,23 @@ public class OdeMsgMetadata extends OdeMessage {
 	private static final long serialVersionUID = 3979762143291085955L;
 
 	private String payloadType;
-	private List<OdeViolation> violations;
+	private List<OdePayloadViolation> violations;
 
 	public OdeMsgMetadata(OdeMsgPayload payload) {
 		this.payloadType = OdeDataType.getByClazz(payload.getClass()).getShortName();
 		if(this.payloadType.equals("veh")) // to only display violations on vehicle records
-			this.violations = new ArrayList<OdeViolation>();
+			this.violations = new ArrayList<OdePayloadViolation>();
 	}
 
 	public OdeMsgMetadata(OdeMsgPayload payload, JsonNode violations) {
 		this.payloadType = OdeDataType.getByClazz(payload.getClass()).getShortName();
 
 		if(this.payloadType.equals("veh")){ // to only display violations on vehicle records
-			this.violations = new ArrayList<OdeViolation>();
+			this.violations = new ArrayList<OdePayloadViolation>();
 			if (violations.isArray()) {
 				for (final JsonNode objNode : violations) {
 					if(objNode.get("fieldName") != null && objNode.get("validMin") != null && objNode.get("validMax") != null)
-						this.violations.add(new OdeViolation(objNode.get("fieldName").asText(), objNode.get("validMin").asDouble(), objNode.get("validMax").asDouble()));
+						this.violations.add(new OdePayloadViolation(objNode.get("fieldName").asText(), objNode.get("validMin").asDouble(), objNode.get("validMax").asDouble()));
 				}
 			}
 		}
@@ -46,11 +46,11 @@ public class OdeMsgMetadata extends OdeMessage {
 		return this;
 	}
 
-	public List<OdeViolation> getViolations() {
+	public List<OdePayloadViolation> getPayloadViolations() {
 		return violations;
 	}
 
-	public OdeMsgMetadata setViolations(List<OdeViolation> violations) {
+	public OdeMsgMetadata setPayloadViolations(List<OdePayloadViolation> violations) {
 		this.violations = violations;
 		return this;
 	}

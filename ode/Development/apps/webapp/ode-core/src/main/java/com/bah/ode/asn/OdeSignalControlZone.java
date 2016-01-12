@@ -125,7 +125,7 @@ public class OdeSignalControlZone extends OdeObject {
          switch (flag) {
          case com.bah.ode.asn.oss.dsrc.SignalControlZone.Data.laneSet_chosen:
             if (data.hasLaneSet()) {
-               this.laneSet_chosen = new ArrayList<Integer>();
+               setChosenField("laneSet_chosen", new ArrayList<Integer>());
                
                com.bah.ode.asn.oss.dsrc.SignalControlZone.Data.LaneSet laneSet = data.getLaneSet();
                for (LaneNumber laneNum : laneSet.elements) {
@@ -138,7 +138,7 @@ public class OdeSignalControlZone extends OdeObject {
             
          case com.bah.ode.asn.oss.dsrc.SignalControlZone.Data.zones_chosen:
             if (data.hasZones()) {
-               this.zones_chosen = new ArrayList<Zone>();
+               setChosenField("zones_chosen", new ArrayList<Zone>());
                com.bah.ode.asn.oss.dsrc.SignalControlZone.Data.Zones zones = data
                      .getZones();
                for (Sequence_ zone : zones.elements) {
