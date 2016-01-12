@@ -1,19 +1,19 @@
 package com.bah.ode.model;
 
-public class OdeViolation {
+public class OdePayloadViolation {
 
 	private String fieldName;
 	private double validMin;
 	private double validMax;
 
-	public OdeViolation() {
+	public OdePayloadViolation() {
 		super();
 		fieldName = null;
 		validMin = Double.NaN;
 		validMax = Double.NaN;
 	}
 	
-	public OdeViolation(String fieldName, double validMin, double validMax) {
+	public OdePayloadViolation(String fieldName, double validMin, double validMax) {
 		super();
 		this.fieldName = fieldName;
 		this.validMin = validMin;
@@ -24,7 +24,7 @@ public class OdeViolation {
 		return fieldName;
 	}
 
-	public OdeViolation setFieldName(String fieldName){
+	public OdePayloadViolation setFieldName(String fieldName){
 		this.fieldName = fieldName;
 		return this;
 	}
@@ -33,7 +33,7 @@ public class OdeViolation {
 		return validMin;
 	}
 
-	public OdeViolation setValidMin(double validMin){
+	public OdePayloadViolation setValidMin(double validMin){
 		this.validMin = validMin;
 		return this;
 	}
@@ -42,7 +42,7 @@ public class OdeViolation {
 		return validMax;
 	}
 
-	public OdeViolation setValidMax(double validMax){
+	public OdePayloadViolation setValidMax(double validMax){
 		this.validMax = validMax;
 		return this;
 	}
@@ -67,7 +67,7 @@ public class OdeViolation {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		OdeViolation other = (OdeViolation) obj;
+		OdePayloadViolation other = (OdePayloadViolation) obj;
 		if (fieldName == null) {
 			if (other.fieldName != null)
 				return false;
