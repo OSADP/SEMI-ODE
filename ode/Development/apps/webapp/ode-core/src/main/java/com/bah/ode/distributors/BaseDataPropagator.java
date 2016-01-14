@@ -77,6 +77,9 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
             break;
          }
       }
+      
+      dataMsg.getMetadata().setLatency(dataMsg.getPayload());
+      
       return dataMsg.toJson();
    }
 

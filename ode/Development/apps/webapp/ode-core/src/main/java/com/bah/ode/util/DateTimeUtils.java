@@ -49,4 +49,12 @@ public class DateTimeUtils {
          }
       }
    }
+
+   public static long difference(ZonedDateTime t1, ZonedDateTime t2) {
+      return t2.toInstant().toEpochMilli() - t1.toInstant().toEpochMilli();
+   }
+
+   public static Long elapsedTime(ZonedDateTime zonedDateTime) {
+      return difference(zonedDateTime, ZonedDateTime.now());
+   }
 }
