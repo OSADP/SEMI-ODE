@@ -17,6 +17,7 @@ import com.bah.ode.api.sec.AccessToken;
 import com.bah.ode.api.sec.SecurityService;
 import com.bah.ode.api.sec.TokenAuthenticationService;
 import com.bah.ode.api.sec.TokenRepository;
+import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeAuthorization;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeStatus;
@@ -38,7 +39,14 @@ public class Authentication {
    @Path("/login")
    public Response userLogin() throws Exception {
 
-      AccessToken token = tokenProvider.generateToken((long) crc.getProperty("userId"));
+      AccessToken token;
+      if (!AppContext.loopbackTest()) {
+         token = tokenProvider
+               .generateToken((long) crc.getProperty("userId"));
+      } else {
+         token = tokenProvider.generateToken(1234);
+      }
+      
       OdeDataMessage dm;
       if (null != token) {
          tokenRepository.addToken(token);
