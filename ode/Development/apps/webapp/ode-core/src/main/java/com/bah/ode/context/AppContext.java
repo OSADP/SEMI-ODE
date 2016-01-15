@@ -42,7 +42,7 @@ public class AppContext {
    public static final String ODE_HOSTNAME = "ODE_HOSTNAME";
    public static final String PAYLOAD_STRING = "payload";
    public static final String METADATA_STRING = "metadata";
-   public static final String METADATA_VIOLATIONS_STRING = "violations";
+   public static final String METADATA_VIOLATIONS_STRING = "payloadViolations";
    public static final String PAYLOAD_TYPE_STRING = "payloadType";
    public static final String DATA_TYPE_STRING = "dataType";
    public static final String SERIAL_ID_STRING = "serialId";

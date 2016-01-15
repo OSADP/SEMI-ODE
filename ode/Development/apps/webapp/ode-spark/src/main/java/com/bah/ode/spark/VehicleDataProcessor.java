@@ -120,12 +120,11 @@ public class VehicleDataProcessor extends OdeObject {
          /*
           * Road Segment Integration
           */
-         JavaPairDStream<String, Tuple2<String, String>> withRoadSegment = 
-               payloadAndMetadata.mapToPair(new RoadSegmentIntegrator(
+         payloadAndMetadata = payloadAndMetadata.mapToPair(new RoadSegmentIntegrator(
                      Double.valueOf(conf.get(AppContext.SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE, "20.0"))));
 
          JavaPairDStream<String, Tuple2<String, String>> windowedPnM = 
-               withRoadSegment.window(
+               payloadAndMetadata.window(
                      Durations.milliseconds(microbatchDuration
                            * windowDuration),
                      Durations.milliseconds(microbatchDuration
@@ -145,7 +144,7 @@ public class VehicleDataProcessor extends OdeObject {
              List<String> sanitizationData = sanitizationFrame.toJavaRDD()
                    .map(new DataFrameMapper(sanitizationFrame.columns())).toArray();
              
-             withRoadSegment =  withRoadSegment.mapToPair(new RecordSanitizer(sanitizationData));
+             payloadAndMetadata =  payloadAndMetadata.mapToPair(new RecordSanitizer(sanitizationData));
 
          }
          
@@ -164,7 +163,7 @@ public class VehicleDataProcessor extends OdeObject {
              List<String> validationData = validationFrame.toJavaRDD()
                    .map(new DataFrameMapper(validationFrame.columns())).toArray();
 
-             withRoadSegment =  withRoadSegment.mapToPair(new RecordValidator(validationData));
+             payloadAndMetadata =  payloadAndMetadata.mapToPair(new RecordValidator(validationData));
          }
          
          
@@ -211,16 +210,15 @@ public class VehicleDataProcessor extends OdeObject {
             List<String> weatherData = weatherFrame.toJavaRDD()
                   .map(new DataFrameMapper(weatherFrame.columns())).toArray();
 
-            JavaPairDStream<String, Tuple2<String, String>> withWeatherData = 
-                  withRoadSegment.mapToPair(new WeatherIntegrator(weatherData));
+            payloadAndMetadata = payloadAndMetadata.mapToPair(new WeatherIntegrator(weatherData));
 
-            withWeatherData.foreachRDD(new PayloadDistributor(producerPool));
+            payloadAndMetadata.foreachRDD(new PayloadDistributor(producerPool));
          }else{
         	 
              /*
               * Vehicle data Distribution
               */
-             withRoadSegment.foreachRDD(new PayloadDistributor(producerPool));
+            payloadAndMetadata.foreachRDD(new PayloadDistributor(producerPool));
          }
       } catch (Exception e) {
          logger.info("Error in Spark Job {}", e);

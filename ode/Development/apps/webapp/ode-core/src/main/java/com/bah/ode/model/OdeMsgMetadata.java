@@ -4,9 +4,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.bah.ode.util.DateTimeUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -14,30 +11,19 @@ public class OdeMsgMetadata extends OdeMessage {
 
    private static final long serialVersionUID = 3979762143291085955L;
 
-   private static final Logger logger = LoggerFactory.getLogger(OdeMsgMetadata.class);
-
    private String payloadType;
    private List<OdePayloadViolation> payloadViolations;
    private Long latency; 
    
    public OdeMsgMetadata(OdeMsgPayload payload) {
-      this.payloadType = OdeDataType.getByClazz(payload.getClass())
-            .getShortName();
-      if (this.payloadType.equals("veh")) // to only display violations on
-                                          // vehicle records
-         this.payloadViolations = new ArrayList<OdePayloadViolation>();
-      
-      setLatency(payload);
+      this(payload, null);
    }
 
    public OdeMsgMetadata(OdeMsgPayload payload, JsonNode violations) {
       this.payloadType = OdeDataType.getByClazz(payload.getClass())
             .getShortName();
 
-      setLatency(payload);
-
-      if (this.payloadType.equals("veh")) { // to only display violations on
-                                            // vehicle records
+      if (violations != null) {
          this.payloadViolations = new ArrayList<OdePayloadViolation>();
          if (violations.isArray()) {
             for (final JsonNode objNode : violations) {
@@ -78,6 +64,7 @@ public class OdeMsgMetadata extends OdeMessage {
    }
 
    
+
    public Long getLatency() {
       return latency;
    }
@@ -86,15 +73,9 @@ public class OdeMsgMetadata extends OdeMessage {
       this.latency = latency;
    }
 
-   public void setLatency(OdeMsgPayload payload) {
-      if (payload instanceof OdeData) {
-         OdeData odeData = (OdeData) payload;
-         try {
-            this.setLatency(DateTimeUtils.elapsedTime(
-                  DateTimeUtils.isoDateTime(odeData.getReceivedAt())));
-         } catch (ParseException e) {
-            logger.error("Error parsing receivedAt field", e);
-         }
+   public void recordLatency(String timestamp) throws ParseException {
+      if (timestamp != null) {
+         setLatency(DateTimeUtils.elapsedTime(DateTimeUtils.isoDateTime(timestamp)));
       }
    }
 
