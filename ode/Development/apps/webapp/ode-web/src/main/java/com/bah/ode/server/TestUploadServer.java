@@ -17,6 +17,7 @@
 package com.bah.ode.server;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
@@ -35,6 +36,7 @@ import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeAdvisoryData;
 import com.bah.ode.model.OdeControlData;
+import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeIntersectionData;
@@ -42,6 +44,7 @@ import com.bah.ode.model.OdeMsgPayload;
 import com.bah.ode.model.OdeStatus;
 import com.bah.ode.model.OdeStatus.Code;
 import com.bah.ode.model.OdeVehicleDataFlat;
+import com.bah.ode.util.DateTimeUtils;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.util.WebSocketUtils;
 import com.bah.ode.wrapper.DataProcessor.DataProcessorException;
@@ -246,6 +249,11 @@ public class TestUploadServer {
       // set it here based on payloadType
       if (msgPayload.getDataType() == null || msgPayload.getDataType() == OdeDataType.Unknown)
          msgPayload.setDataType(payloadType);
+      
+      if (msgPayload instanceof OdeData) {
+         OdeData odeData = (OdeData) msgPayload;
+         odeData.setReceivedAt(DateTimeUtils.isoDateTime(ZonedDateTime.now()));
+      }
       
       InternalDataMessage idm = new InternalDataMessage();
       idm.setMetadata(testMgr.getMetadata());

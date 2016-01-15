@@ -1,5 +1,6 @@
 package com.bah.ode.distributors;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.filter.OdeFilter;
 import com.bah.ode.model.InternalDataMessage;
+import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeFilterable;
@@ -59,7 +61,7 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
        return null;
     }
 
-   protected String updateDataMsg(OdeDataMessage dataMsg) {
+   protected String updateDataMsg(OdeDataMessage dataMsg) throws ParseException {
       if (dataMsg.getPayload() instanceof OdeIntersectionData) {
          OdeIntersectionData isectData = (OdeIntersectionData) dataMsg.getPayload();
          OdeDataType dtype = metadata.getOdeRequest().getDataType();
@@ -78,8 +80,10 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
          }
       }
       
-      dataMsg.getMetadata().setLatency(dataMsg.getPayload());
-      
+      if (dataMsg.getPayload() instanceof OdeData) {
+         OdeData odeData = (OdeData) dataMsg.getPayload();
+         dataMsg.getMetadata().recordLatency(odeData.getReceivedAt());
+      }
       return dataMsg.toJson();
    }
 
@@ -89,16 +93,17 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
          ObjectNode idm = InternalDataMessage.jsonStringToObjectNode(data);
          if (idm != null) {
             JsonNode payloadNode = idm.get(AppContext.PAYLOAD_STRING);
-            if (payloadNode != null) {
-               JsonNode payloadTypeNode = idm.get(AppContext.METADATA_STRING).get(AppContext.PAYLOAD_TYPE_STRING);
-               JsonNode violations = idm.get(AppContext.METADATA_STRING).withArray(AppContext.METADATA_VIOLATIONS_STRING);
+            JsonNode metadataNode = idm.get(AppContext.METADATA_STRING);
+            if (payloadNode != null && metadataNode != null) {
+               JsonNode payloadTypeNode = metadataNode.get(AppContext.PAYLOAD_TYPE_STRING);
                if (payloadTypeNode != null) {
                   OdeDataType payloadType = OdeDataType.getByShortName(payloadTypeNode.textValue());
                   if (payloadType != null) {
                      OdeMsgPayload payload = (OdeMsgPayload) JsonUtils.fromJson(payloadNode
                            .toString(), payloadType.getClazz());
                      if (payload != null) {
-                        return new OdeDataMessage(payload, violations);
+                        return new OdeDataMessage(payload, 
+                              metadataNode.get(AppContext.METADATA_VIOLATIONS_STRING));
                      } else {
                         throw new DataProcessorException(
                               "Unsupported payload type: " + payloadType);
