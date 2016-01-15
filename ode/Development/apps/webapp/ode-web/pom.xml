@@ -173,6 +173,26 @@
    <build>
       <directory>${project.basedir}/target</directory>
       <finalName>${project.parent.artifactId}</finalName>
+<!-- 
+    <resources>
+   	
+<resource>
+	    <directory>src/main/webapp</directory>
+	    <filtering>true</filtering>
+	    <includes>
+	      <include>**/version.txt</include>
+	    </includes>
+    </resource>
+  <resource>
+    <directory>src/main/webapp</directory>
+    <filtering>false</filtering>
+    <excludes>
+      <exclude>**/version.txt</exclude>
+    </excludes>
+  </resource>
+      </resources>
+     -->
+      
       <plugins>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -182,6 +202,16 @@
                <archiveClasses>true</archiveClasses>
                <attachClasses>true</attachClasses>
                <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+            <webResources>
+            <resource>
+              <directory>src/main/webapp</directory>            
+              <includes>
+                <include>**/version.txt</include>
+              </includes>
+              <filtering>true</filtering>
+            </resource>
+          </webResources>
+               
             </configuration>
          </plugin>
 
@@ -212,10 +242,11 @@
                         <resource>
                            <directory>${project.basedir}</directory>
                            <include>log4j.properties</include>
-                        </resource>
+                        </resource>                              
                      </resources>
-                  </configuration>
-               </execution>
+         </configuration>
+ 	         </execution>
+               
             </executions>
          </plugin>
       </plugins>

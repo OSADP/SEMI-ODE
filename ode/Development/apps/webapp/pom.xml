@@ -55,10 +55,12 @@
 	   -->
 	  <cnsi.repo.username></cnsi.repo.username>
 	  <cnsi.repo.password></cnsi.repo.password>
+	  <bamboo.build.number>Localbuild</bamboo.build.number>
+	  <bamboo.git.revsion>Localbuild</bamboo.git.revsion>
 
       <finalLocation>${project.build.directory}/${project.artifactId}-${project.version}</finalLocation>
       <timestamp>${maven.build.timestamp}</timestamp>
-      <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+      <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
 
    </properties>
 
