@@ -12,7 +12,7 @@ public class OdeMsgMetadata extends OdeMessage {
    private static final long serialVersionUID = 3979762143291085955L;
 
    private String payloadType;
-   private List<OdePayloadViolation> payloadViolations;
+   private List<OdePayloadViolation> violations;
    private Long latency; 
    
    public OdeMsgMetadata(OdeMsgPayload payload) {
@@ -24,13 +24,13 @@ public class OdeMsgMetadata extends OdeMessage {
             .getShortName();
 
       if (violations != null) {
-         this.payloadViolations = new ArrayList<OdePayloadViolation>();
+         this.violations = new ArrayList<OdePayloadViolation>();
          if (violations.isArray()) {
             for (final JsonNode objNode : violations) {
                if (objNode.get("fieldName") != null
                      && objNode.get("validMin") != null
                      && objNode.get("validMax") != null)
-                  this.payloadViolations.add(new OdePayloadViolation(
+                  this.violations.add(new OdePayloadViolation(
                         objNode.get("fieldName").asText(),
                         objNode.get("validMin").asDouble(),
                         objNode.get("validMax").asDouble()));
@@ -53,13 +53,13 @@ public class OdeMsgMetadata extends OdeMessage {
       return this;
    }
 
-   public List<OdePayloadViolation> getPayloadViolations() {
-      return payloadViolations;
+   public List<OdePayloadViolation> getViolations() {
+      return violations;
    }
 
-   public OdeMsgMetadata setPayloadViolations(
+   public OdeMsgMetadata setViolations(
          List<OdePayloadViolation> violations) {
-      this.payloadViolations = violations;
+      this.violations = violations;
       return this;
    }
 
@@ -86,7 +86,7 @@ public class OdeMsgMetadata extends OdeMessage {
       result = prime * result
             + ((payloadType == null) ? 0 : payloadType.hashCode());
       result = prime * result
-            + ((payloadViolations == null) ? 0 : payloadViolations.hashCode());
+            + ((violations == null) ? 0 : violations.hashCode());
       return result;
    }
 
@@ -104,10 +104,10 @@ public class OdeMsgMetadata extends OdeMessage {
             return false;
       } else if (!payloadType.equals(other.payloadType))
          return false;
-      if (payloadViolations == null) {
-         if (other.payloadViolations != null)
+      if (violations == null) {
+         if (other.violations != null)
             return false;
-      } else if (!payloadViolations.equals(other.payloadViolations))
+      } else if (!violations.equals(other.violations))
          return false;
       return true;
    }

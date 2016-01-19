@@ -44,7 +44,7 @@ public class Authentication {
          token = tokenProvider
                .generateToken((long) crc.getProperty("userId"));
       } else {
-         token = tokenProvider.generateToken(1234);
+         token = tokenProvider.generateToken(System.getenv("username").hashCode());
       }
       
       OdeDataMessage dm;

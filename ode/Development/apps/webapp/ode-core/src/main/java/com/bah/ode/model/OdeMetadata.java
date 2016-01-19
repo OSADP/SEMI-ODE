@@ -9,7 +9,7 @@ public class OdeMetadata extends OdeObject {
 
    private String  key;
    private String payloadType;
-   private List<OdePayloadViolation> payloadViolations;
+   private List<OdePayloadViolation> violations;
    private MQTopic inputTopic;
    private MQTopic outputTopic;
    private OdeRequest odeRequest;
@@ -64,12 +64,12 @@ public class OdeMetadata extends OdeObject {
       return this;
    }
    
-   public List<OdePayloadViolation> getPayloadViolations(){
-	   return payloadViolations;
+   public List<OdePayloadViolation> getViolations(){
+	   return violations;
    }
    
-   public OdeMetadata setPayloadViolations(List<OdePayloadViolation> violations){
-	   this.payloadViolations = violations;
+   public OdeMetadata setViolations(List<OdePayloadViolation> violations){
+	   this.violations = violations;
 	   return this;
    }
    
