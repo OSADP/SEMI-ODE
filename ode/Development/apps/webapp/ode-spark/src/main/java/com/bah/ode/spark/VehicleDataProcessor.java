@@ -123,13 +123,6 @@ public class VehicleDataProcessor extends OdeObject {
          payloadAndMetadata = payloadAndMetadata.mapToPair(new RoadSegmentIntegrator(
                      Double.valueOf(conf.get(AppContext.SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE, "20.0"))));
 
-         JavaPairDStream<String, Tuple2<String, String>> windowedPnM = 
-               payloadAndMetadata.window(
-                     Durations.milliseconds(microbatchDuration
-                           * windowDuration),
-                     Durations.milliseconds(microbatchDuration
-                           * slideDuration));
-
          /*
           * Bounding Box Sanitization ODE-38
           */
@@ -167,13 +160,6 @@ public class VehicleDataProcessor extends OdeObject {
          }
          
          
-         /*
-          * Vehicle Data Aggregation and Distribution
-          */
-         windowedPnM.foreachRDD(new Aggregator(producerPool, ssc
-               .sparkContext().getConf()
-               .get("spark.topics."+AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC)));
-            
          /*
           * Weather data integration
           */
@@ -213,6 +199,20 @@ public class VehicleDataProcessor extends OdeObject {
             payloadAndMetadata = payloadAndMetadata.mapToPair(new WeatherIntegrator(weatherData));
 
             payloadAndMetadata.foreachRDD(new PayloadDistributor(producerPool));
+
+            /*
+             * Vehicle Data Aggregation and Distribution
+             */
+            if (windowDuration > 0) {
+               payloadAndMetadata.window(
+                     Durations.milliseconds(microbatchDuration
+                           * windowDuration),
+                     Durations.milliseconds(microbatchDuration
+                           * slideDuration))
+               .foreachRDD(new Aggregator(producerPool, ssc
+                     .sparkContext().getConf()
+                     .get("spark.topics."+AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC)));
+            }               
          }else{
         	 
              /*

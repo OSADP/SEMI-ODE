@@ -1,10 +1,11 @@
 package com.bah.ode.asn;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.bah.ode.asn.oss.dsrc.HeadingSlice;
-import com.bah.ode.util.ByteUtils;
 
 public class OdeHeadingSlice {
    public enum SliceMask {
@@ -43,7 +44,7 @@ public class OdeHeadingSlice {
       }
       public static List<SliceMask> getHeadingSlices(HeadingSlice headingSlice2) {
          ArrayList<SliceMask> result = new ArrayList<SliceMask>();
-         int hs = ByteUtils.unsignedByteArrayToInt(headingSlice2.byteArrayValue());
+         short hs = ByteBuffer.wrap(headingSlice2.byteArrayValue()).order(ByteOrder.BIG_ENDIAN).getShort();
          
          if (hs == allHeadings.getSliceMask()) {
             result.add(allHeadings);
@@ -61,17 +62,17 @@ public class OdeHeadingSlice {
       }
    }
    
-   private int headingSlice;
+   private short headingSlice;
 
    public OdeHeadingSlice(HeadingSlice headingSlice) {
-      this.headingSlice = ByteUtils.unsignedByteArrayToInt(headingSlice.byteArrayValue());
+      this.headingSlice = ByteBuffer.wrap(headingSlice.byteArrayValue()).order(ByteOrder.BIG_ENDIAN).getShort();
    }
 
    public int getHeadingSlice() {
       return headingSlice;
    }
 
-   public void setHeadingSlice(int headingSlice) {
+   public void setHeadingSlice(short headingSlice) {
       this.headingSlice = headingSlice;
    }
 

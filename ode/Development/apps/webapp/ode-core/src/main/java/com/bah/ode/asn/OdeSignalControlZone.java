@@ -24,7 +24,6 @@ import com.bah.ode.asn.oss.dsrc.Offsets;
 import com.bah.ode.asn.oss.dsrc.SignalControlZone;
 import com.bah.ode.asn.oss.dsrc.SignalControlZone.Data.Zones.Sequence_;
 import com.bah.ode.model.OdeObject;
-import com.bah.ode.util.ByteUtils;
 import com.bah.ode.util.CodecUtils;
 
 public class OdeSignalControlZone extends OdeObject {
@@ -44,7 +43,7 @@ public class OdeSignalControlZone extends OdeObject {
          if (zone.hasEnclosed()) {
             for (LaneNumber laneNum : zone.getEnclosed().elements) {
                if (laneNum != null && laneNum.byteArrayValue() != null)
-                  this.enclosed.add(ByteUtils.unsignedByteArrayToInt(laneNum.byteArrayValue()));
+                  this.enclosed.add((int) laneNum.byteArrayValue()[0]);
             }
          }
          
@@ -130,7 +129,7 @@ public class OdeSignalControlZone extends OdeObject {
                com.bah.ode.asn.oss.dsrc.SignalControlZone.Data.LaneSet laneSet = data.getLaneSet();
                for (LaneNumber laneNum : laneSet.elements) {
                   if (laneNum != null && laneNum.byteArrayValue() != null) {
-                     this.laneSet_chosen.add(ByteUtils.unsignedByteArrayToInt(laneNum.byteArrayValue()));
+                     this.laneSet_chosen.add((int) laneNum.byteArrayValue()[0]);
                   }
                }
             }

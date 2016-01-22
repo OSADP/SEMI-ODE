@@ -51,6 +51,7 @@ public class RecordSanitizer implements  PairFunction<Tuple2<String, Tuple2<Stri
 					for(String excludedID : groupIDs){
 						if(excludedID.contains(record_groupID)){
 							exempted = true;
+							break;
 						}
 					}
 				}

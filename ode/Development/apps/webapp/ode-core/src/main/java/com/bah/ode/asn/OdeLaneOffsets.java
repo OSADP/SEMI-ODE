@@ -16,12 +16,13 @@
  *******************************************************************************/
 package com.bah.ode.asn;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.bah.ode.asn.oss.dsrc.NodeList;
 import com.bah.ode.asn.oss.dsrc.Offsets;
-import com.bah.ode.util.ByteUtils;
 
 //   -- xOffset  INTEGER (-32767..32767), 
 //   -- yOffset  INTEGER (-32767..32767),
@@ -49,17 +50,19 @@ public class OdeLaneOffsets extends OdeRegionOffsets {
    }
 
    public OdeLaneOffsets(Offsets ofs) {
+      ByteBuffer bb = ByteBuffer.wrap(ofs.byteArrayValue()).order(ByteOrder.BIG_ENDIAN);
+      
       if (ofs.byteArrayValue().length >= 2)
-         setxOffsetCm(ByteUtils.unsignedByteArrayToLong(ofs.byteArrayValue(), 0, 2));
+         setxOffsetCm((long) bb.getShort());
 
       if (ofs.byteArrayValue().length >= 4)
-         setyOffsetCm(ByteUtils.unsignedByteArrayToLong(ofs.byteArrayValue(), 2, 2));
+         setyOffsetCm((long) bb.getShort());
 
       if (ofs.byteArrayValue().length >= 6)
-         setzOffsetCm(ByteUtils.unsignedByteArrayToLong(ofs.byteArrayValue(), 4, 2));
+         setzOffsetCm((long) bb.getShort());
 
       if (ofs.byteArrayValue().length >= 8)
-         setLaneWidthCm(ByteUtils.unsignedByteArrayToInt(ofs.byteArrayValue(), 6, 2));
+         setLaneWidthCm((int) bb.getShort());
    }
 
    public static List<OdeLaneOffsets> createList(NodeList nodeList) {

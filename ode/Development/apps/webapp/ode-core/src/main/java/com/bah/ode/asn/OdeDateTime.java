@@ -17,6 +17,7 @@
 package com.bah.ode.asn;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -91,6 +92,16 @@ public class OdeDateTime extends OdeObject {
          setMinute(dFullTime.getMinute().intValue());
          setSecond(BigDecimal.ZERO);
       }
+   }
+
+   public OdeDateTime(String dateTime) throws ParseException {
+      ZonedDateTime zdt = DateTimeUtils.isoDateTime(dateTime);
+      setYear(zdt.getYear());
+      setMonth(zdt.getMonthValue());
+      setDay(zdt.getDayOfMonth());
+      setHour(zdt.getHour());
+      setMinute(zdt.getMinute());
+      setSecond(BigDecimal.valueOf(zdt.getSecond() + (double)zdt.getNano()/1000000000D));
    }
 
    public ZonedDateTime getZonedDateTime() {

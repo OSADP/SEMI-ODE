@@ -19,6 +19,9 @@ package com.bah.ode.model;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -48,7 +51,6 @@ import com.bah.ode.asn.oss.semi.VsmEventFlag;
 import com.bah.ode.asn.oss.semi.Weather;
 import com.bah.ode.asn.oss.semi.Weather.WeatherReport;
 import com.bah.ode.asn.oss.semi.Weather.Wipers;
-import com.bah.ode.util.ByteUtils;
 import com.bah.ode.util.CodecUtils;
 import com.bah.ode.util.DateTimeUtils;
 import com.bah.ode.util.GeoUtils;
@@ -447,18 +449,17 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
          //            --                      -x- 2 bits
          //            --   }
          
-         int i = ByteUtils.unsignedByteToInt(brakes.byteArrayValue()[0]);
-         byte b = (byte) (i >> 4);
-         if ( b != 0) {
-            //       BrakeAppliedStatus ::= BIT STRING {
-            //          allOff      (0), -- B'0000  The condition All Off 
-            //          leftFront   (1), -- B'0001  Left Front Active
-            //          leftRear    (2), -- B'0010  Left Rear Active
-            //          rightFront  (4), -- B'0100  Right Front Active
-            //          rightRear   (8)  -- B'1000  Right Rear Active
-            //      } -- to fit in 4 bits
-            setBrakesApplied(b);
-         }
+         int i = brakes.byteArrayValue()[0];
+         byte b = (byte) ((i >> 4) & 0x0F);
+         //       BrakeAppliedStatus ::= BIT STRING {
+         //          allOff      (0), -- B'0000  The condition All Off 
+         //          leftFront   (1), -- B'0001  Left Front Active
+         //          leftRear    (2), -- B'0010  Left Rear Active
+         //          rightFront  (4), -- B'0100  Right Front Active
+         //          rightRear   (8)  -- B'1000  Right Rear Active
+         //      } -- to fit in 4 bits
+         setBrakesApplied(b);
+
          //      TractionControlState ::= ENUMERATED {
          //         unavailable (0), -- B'00  Not Equipped with tracton control 
          //                          -- or tracton control status is unavailable
@@ -478,8 +479,8 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
          //         engaged     (3)  -- B'11  Vehicle's ABS is Engaged
          //         } 
          //         -- Encoded as a 2 bit value
-         i = ByteUtils.unsignedByteToInt(brakes.byteArrayValue()[1]);
-         b = (byte) (i >> 6);
+         i = brakes.byteArrayValue()[1];
+         b = (byte) ((i >> 6) & 0x03);
          if ( b != 0) {
             setBrakesABS(b);
          }
@@ -538,11 +539,12 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
          //   -- the value 2000 shall be used for values greater than 2000     
          //   -- the value -2000 shall be used for values less than -2000  
          //   -- a value of 2001 shall be used for Unavailable
-         int accel = ByteUtils.unsignedByteArrayToInt(accelSet.byteArrayValue(), 0, 2);
+         ByteBuffer bb = ByteBuffer.wrap(accelSet.byteArrayValue()).order(ByteOrder.BIG_ENDIAN);
+         short accel = bb.getShort();
          if (accel != 2001)
             setAccelLong(BigDecimal.valueOf(accel, 2));
-         
-         accel = ByteUtils.unsignedByteArrayToInt(accelSet.byteArrayValue(), 2, 2);
+
+         accel = bb.getShort();
          if (accel != 2001)
             setAccelLat(BigDecimal.valueOf(accel, 2));
          
@@ -559,13 +561,13 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
          //    -- value -125 for ranges -7.4 to -8.4G
          //    -- value -126 for ranges larger than -8.4G
          //    -- value -127 for unavailable data
-         accel = ByteUtils.unsignedByteToInt(accelSet.byteArrayValue()[4]);
-         if (accel != 127)
-            setAccelVert(BigDecimal.valueOf((accel - 50) * 2, 2));
+         byte accelV = bb.get();
+         if (accelV != -127)
+            setAccelVert(BigDecimal.valueOf((accelV - 50) * 2, 2));
          
          //YawRate ::= INTEGER (-32767..32767) 
          //    -- LSB units of 0.01 degrees per second (signed)
-         accel = ByteUtils.unsignedByteArrayToInt(accelSet.byteArrayValue(), 5, 2);
+         accel = bb.getShort();
          setAccellYaw(BigDecimal.valueOf(accel, 2));
 
       }
@@ -646,7 +648,7 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
 //      }
    private void setTransmissionAndSpeed(TransmissionAndSpeed tm) {
       if (tm != null && tm.getSize() >= 2) {
-         int i = ByteUtils.unsignedByteArrayToInt(tm.byteArrayValue());
+         char i = ByteBuffer.wrap(tm.byteArrayValue()).order(ByteOrder.BIG_ENDIAN).getChar();
          int t = i >> 13;
          if (t != TransmissionState.unavailable.ordinal())
             setTransmission(TransmissionState.values()[t]);
@@ -663,6 +665,21 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
 
    public void setDateTime(String dateTime) {
       this.dateTime = dateTime;
+
+      if (year == null || month == null || day == null || 
+          hour == null || minute == null || second == null) {
+         try {
+            OdeDateTime odt = new OdeDateTime(dateTime);
+            setYear(odt.getYear());
+            setMonth(odt.getMonth());
+            setDay(odt.getDay());
+            setHour(odt.getHour());
+            setMinute(odt.getMinute());
+            setSecond(odt.getSecond());
+         } catch (ParseException e) {
+            e.printStackTrace();
+         }
+      }
    }
 
    public String getGroupId() {
@@ -1478,10 +1495,25 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
 
    @Override
    public ZonedDateTime getTimestamp() {
-      int sec = second.intValue();
-      int milli = second.remainder(BigDecimal.ONE).multiply(BigDecimal.valueOf(1000)).intValue();
-      
-      return DateTimeUtils.isoDateTime(year, month, day, hour, minute, sec, milli);
+      ZonedDateTime zdt = null;
+      try {
+         if (year != null &&
+             month != null &&
+             day != null &&
+             hour != null &&
+             minute != null && 
+             second != null) {
+            int sec = second.intValue();
+            int milli = second.remainder(BigDecimal.ONE).multiply(BigDecimal.valueOf(1000)).intValue();
+            
+            zdt = DateTimeUtils.isoDateTime(year, month, day, hour, minute, sec, milli);
+         } else if (dateTime != null) {
+            zdt = DateTimeUtils.isoDateTime(dateTime);
+         }
+      } catch (ParseException e) {
+         e.printStackTrace();
+      }
+      return zdt;
    }
 
    @Override

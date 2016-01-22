@@ -99,14 +99,14 @@ public class DataSourceConnector {
       testMgr = new TestRequestManager(metadata);
       //FOR TEST ONLY
       if (AppContext.loopbackTest())
-         testMgr.setDistributor(distributor);
+         testMgr.setLoopbackTestPropagator(distributor);
    }
    private void connectToDDS(OdeMetadata metadata)
          throws DdsRequestManagerException {
       ddsMgr = new DdsRequestManager(metadata);
       //FOR TEST ONLY
       if (AppContext.loopbackTest()) {
-         ddsMgr.setDistributor(distributor);
+         ddsMgr.setLoopbackTestPropagator(distributor);
          DdsMessageHandler handler = (DdsMessageHandler) 
                ddsMgr.getDdsClient().getHandler();
          handler.setDistributor(distributor);
