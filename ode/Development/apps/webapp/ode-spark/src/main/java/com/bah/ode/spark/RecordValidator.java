@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.spark.api.java.function.PairFunction;
 
 import com.bah.ode.util.JsonUtils;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -38,22 +39,26 @@ public class RecordValidator implements  PairFunction<Tuple2<String, Tuple2<Stri
 				double minValue = validationCheck.get("minValue").asDouble(Double.NaN);
 				double maxValue = validationCheck.get("maxValue").asDouble(Double.NaN);
 
-
-				double vehicleField = vehicledata.get(fieldName).asDouble(Double.NaN);
-
-				if(!fieldName.equals("") && vehicleField != Double.NaN && minValue != Double.NaN && maxValue != Double.NaN){
-					if(vehicleField > maxValue || vehicleField < minValue){
-						ObjectNode node = JsonNodeFactory.instance.objectNode();
-						node.put("fieldName", fieldName);
-						node.put("validMin", minValue);
-						node.put("validMax", maxValue);
-
-						violations.add(node);
-					}
+				JsonNode temp = vehicledata.get(fieldName);
+				
+				if (temp != null) {
+   				double vehicleField = temp.asDouble(Double.NaN);
+   
+   				if(!fieldName.equals("") && vehicleField != Double.NaN && minValue != Double.NaN && maxValue != Double.NaN){
+   					if(vehicleField < minValue || maxValue < vehicleField){
+   						ObjectNode node = JsonNodeFactory.instance.objectNode();
+   						node.put("fieldName", fieldName);
+   						node.put("validMin", minValue);
+   						node.put("validMax", maxValue);
+   
+   						violations.add(node);
+   					}
+   				}
 				}
 			}
 
-			metadata.putArray("violations").addAll(violations);
+			if (violations.size() > 0)
+			   metadata.putArray("violations").addAll(violations);
 
 			return new Tuple2<String, Tuple2<String, String>>(record._1(), new Tuple2<String,String>(record._2()._1(), metadata.toString()));
 

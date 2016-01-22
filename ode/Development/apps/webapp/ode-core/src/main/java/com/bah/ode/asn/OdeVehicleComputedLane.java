@@ -21,7 +21,6 @@ import java.util.List;
 
 import com.bah.ode.asn.oss.dsrc.Approach.ComputedLanes;
 import com.bah.ode.asn.oss.dsrc.VehicleComputedLane;
-import com.bah.ode.util.ByteUtils;
 
 public class OdeVehicleComputedLane extends OdeLane {
    private static final long serialVersionUID = 2620159885524160754L;
@@ -43,7 +42,7 @@ public class OdeVehicleComputedLane extends OdeLane {
          setLaneAttributes(new OdeVehicleLaneAttributes(vcl.getLaneAttributes()));
       
       if (vcl.refLaneNum != null)
-         setRefLaneNum(ByteUtils.unsignedByteArrayToInt(vcl.refLaneNum.byteArrayValue()));
+         setRefLaneNum((int) vcl.refLaneNum.byteArrayValue()[0]);
       
       if (vcl.lineOffset != null)
          setLineOffset(vcl.lineOffset.intValue());

@@ -23,7 +23,6 @@ import com.bah.ode.asn.oss.dsrc.LaneNumber;
 import com.bah.ode.asn.oss.dsrc.LaneWidth;
 import com.bah.ode.asn.oss.dsrc.NodeList;
 import com.bah.ode.model.OdeObject;
-import com.bah.ode.util.ByteUtils;
 
 public class OdeLane extends OdeObject {
    
@@ -42,7 +41,7 @@ public class OdeLane extends OdeObject {
          NodeList nodeList2, ConnectsTo connectsTo2) {
       super();
       if (laneNumber2 != null)
-         this.laneNumber = ByteUtils.unsignedByteArrayToInt(laneNumber2.byteArrayValue());
+         this.laneNumber = (int) laneNumber2.byteArrayValue()[0];
       
       if (laneWidth2 != null)
          this.laneWidth = laneWidth2.intValue();

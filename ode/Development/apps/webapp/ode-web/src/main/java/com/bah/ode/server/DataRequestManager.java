@@ -14,13 +14,13 @@ public abstract class DataRequestManager {
    protected OdeMetadata metadata;
    
    // FOR LOOPBACK TEST ONLY
-   private BaseDataPropagator distributor;
+   private BaseDataPropagator loopbackTestPropagator;
    
-   public BaseDataPropagator getDistributor() {
-      return distributor;
+   public BaseDataPropagator getLoopbackTestPropagator() {
+      return loopbackTestPropagator;
    }
-   public void setDistributor(BaseDataPropagator distributor) {
-      this.distributor = distributor;
+   public void setLoopbackTestPropagator(BaseDataPropagator distributor) {
+      this.loopbackTestPropagator = distributor;
    }
    // FOR LOOPBACK TEST ONLY
 

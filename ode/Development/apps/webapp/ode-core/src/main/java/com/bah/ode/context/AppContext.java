@@ -256,12 +256,8 @@ public void init(ServletContext context) {
             } else {
                sparkContext = getOrSetSparkContext();
             }
-
-            logger.info("Creating Spark Context...");
-
-
          } catch (Throwable t) {
-            logger.error("Error creating spark contexts.", t);
+            logger.error("Error setting sparkConf.", t);
          }
 
       } else {

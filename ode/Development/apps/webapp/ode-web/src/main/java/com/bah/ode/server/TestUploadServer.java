@@ -270,7 +270,7 @@ public class TestUploadServer {
       
       //FOR TEST ONLY
       if (AppContext.loopbackTest()) {
-         testMgr.getDistributor().process(new OdeDataMessage(msgPayload).toJson());
+         testMgr.getLoopbackTestPropagator().process(new OdeDataMessage(msgPayload).toJson());
       }
    }
 

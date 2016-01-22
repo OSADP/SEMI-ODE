@@ -17,10 +17,11 @@
 package com.bah.ode.asn;
 
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import com.bah.ode.asn.oss.dsrc.Position3D;
 import com.bah.ode.model.OdeObject;
-import com.bah.ode.util.ByteUtils;
 
 public class OdePosition3D extends OdeObject {
    
@@ -64,8 +65,7 @@ public class OdePosition3D extends OdeObject {
          setLongitude(pos._long != null ? BigDecimal.valueOf(
                pos._long.longValue(), 7) : null);
          if (pos.elevation != null) {
-            int elev = ByteUtils.unsignedByteArrayToInt(pos.elevation
-                  .byteArrayValue());
+            int elev = ByteBuffer.wrap(pos.elevation.byteArrayValue()).order(ByteOrder.BIG_ENDIAN).getShort();
             if (elev == 0xF000) {
                setElevation(null);
             } else if (elev >= 0x0000 && elev <= 0xEFFF) {
