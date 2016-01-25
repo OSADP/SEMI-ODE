@@ -203,15 +203,16 @@ public class VehicleDataProcessor extends OdeObject {
             /*
              * Vehicle Data Aggregation and Distribution
              */
-            if (windowDuration > 0) {
+            boolean enabled = conf.getBoolean(AppContext.SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED, true);
+            
+            if (enabled) {
                payloadAndMetadata.window(
                      Durations.milliseconds(microbatchDuration
                            * windowDuration),
                      Durations.milliseconds(microbatchDuration
                            * slideDuration))
-               .foreachRDD(new Aggregator(producerPool, ssc
-                     .sparkContext().getConf()
-                     .get("spark.topics."+AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC)));
+               .foreachRDD(new Aggregator(producerPool,
+                     conf.get("spark.topics."+AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC)));
             }               
          }else{
         	 
