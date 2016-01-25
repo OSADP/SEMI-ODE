@@ -95,7 +95,7 @@
 </context-param>
 <context-param>
   <param-name>spark.master</param-name>
-  <!-- <param-value>yarn-client</param-value> -->
+  <!--param-value>yarn-client OR local[2]</param-value-->
   <param-value>local[2]</param-value>
 </context-param>
 <context-param>
@@ -113,15 +113,21 @@
 
 <context-param>
   <param-name>spark.static.weather.file.location</param-name>
-  <param-value></param-value> <!-- CAN BE HDFS OR LOCAL <param-value>hdfs://localhost.localdomain:8020/tmp/weather.csv</param-value>  -->
+  <!-- CAN BE HDFS OR LOCAL -->
+  <param-value>hdfs://ip-10-0-16-10.ec2.internal:8020/user/tomcat/semi-weather.csv</param-value>
+  <!--param-value>/home/centos/semi-weather.csv</param-value-->
 </context-param>
 <context-param>
+  <!-- CAN BE HDFS OR LOCAL -->
   <param-name>spark.static.sanitization.file.location</param-name>
-  <param-value></param-value> <!-- CAN BE HDFS OR LOCAL <param-value>hdfs://localhost.localdomain:8020/tmp/sanitization.json</param-value>-->
+  <param-value>hdfs://ip-10-0-16-10.ec2.internal:8020/user/tomcat/sanitization.json</param-value>
+  <!--param-value>/home/centos/sanitization.json</param-value-->
 </context-param>
 <context-param>
+  <!-- CAN BE HDFS OR LOCAL -->
    <param-name>spark.static.validation.file.location</param-name>
-   <param-value></param-value> <!-- CAN BE HDFS OR LOCAL -->
+   <param-value>hdfs://ip-10-0-16-10.ec2.internal:8020/user/tomcat/validation.json</param-value>
+   <!--param-value>/home/centos/validation.json</param-value-->
 </context-param>
 <context-param>
   <param-name>spark.road.segment.snapping.tolerance</param-name>
@@ -135,7 +141,7 @@ This param specifies the name based on HDP naming convention
 -->
 <context-param>
   <param-name>spark.assembly.jar</param-name>
-  <param-value>spark-assembly-${apache.spark.version}.${hdp.stack.version}.${hdp.release.increment}-${hdp.build.version}-hadoop${apache.hadoop.version}.${hdp.stack.version}.${hdp.release.increment}-${hdp.build.version}.jar</param-value>
+  <param-value>spark-assembly-1.3.1.2.3.0.0-2557-hadoop2.7.1.2.3.0.0-2557.jar</param-value>
 </context-param>
 
 <context-param>

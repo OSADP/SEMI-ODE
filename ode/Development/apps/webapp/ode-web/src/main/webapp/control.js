@@ -620,7 +620,8 @@ $( document ).ready(function() {
         }
 
         var s1 = {};
-        s1["id"] = "LarnedShelbyGriswold";
+        s1["id"] = document.getElementById('n1Sub').value + '-' +
+                   document.getElementById('n2Sub').value;
         s1["startPoint"] = {
           "latitude":document.getElementById('n1LatSub').value,
           "longitude":document.getElementById('n1LngSub').value
@@ -631,8 +632,9 @@ $( document ).ready(function() {
         };//W. Larned and Griswold
 
         var s2 = {};
-        s2["id"] = "LarnedGriswoldRandolph";
-        s2["prevSegment"] = "LarnedShelbyGriswold";
+        s2["id"] = document.getElementById('n2Sub').value + '-' +
+                   document.getElementById('n3Sub').value;
+        s2["prevSegment"] = s1["id"];
         s2["endPoint"] = {
           "latitude":document.getElementById('n3LatSub').value,
           "longitude":document.getElementById('n3LngSub').value
@@ -666,7 +668,8 @@ $( document ).ready(function() {
         request["limit"] = $("#limitQuery").val();
 
         var s1 = {};
-        s1["id"] = "LarnedShelbyGriswold";
+        s1["id"] = document.getElementById('n1Query').value + '-' +
+                   document.getElementById('n2Query').value;
         s1["startPoint"] = {
           "latitude":document.getElementById('n1LatQuery').value,
           "longitude":document.getElementById('n1LngQuery').value
@@ -677,8 +680,9 @@ $( document ).ready(function() {
         };//W. Larned and Griswold
 
         var s2 = {};
-        s2["id"] = "LarnedGriswoldRandolph";
-        s2["prevSegment"] = "LarnedShelbyGriswold";
+        s2["id"] = document.getElementById('n2Query').value + '-' +
+                   document.getElementById('n3Query').value;
+        s2["prevSegment"] = s1["id"];
         s2["endPoint"] = {
           "latitude":document.getElementById('n3LatQuery').value,
           "longitude":document.getElementById('n3LngQuery').value
