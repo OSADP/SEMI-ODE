@@ -171,12 +171,23 @@ This param specifies the name based on HDP naming convention
   <param-value>mykey.pem</param-value>
 </context-param>
 
-<context-param>
-<!-- Param value can be empty. Must be located within Servelet context, such as in /WEB-INF  -->
- <param-name>spark.yarn.configuration.file</param-name>
- <!--  <param-value>/WEB-INF/spark-yarn.properties</param-value> -->
- <param-value></param-value>
+<!-- 
+  Param value can be empty. 
+  Must be located within Servelet context, such as in /WEB-INF
+  only used in yarn-client or yarn-master modes 
+ -->
+ <context-param>
+ <param-name>spark.yarn.vehicle.configuration.file</param-name>
+ <param-value>/WEB-INF/spark-yarn.properties</param-value>
 </context-param>
+<context-param>
+ <param-name>spark.yarn.aggregator.configuration.file</param-name>
+ <param-value></param-value>
+ <!-- <param-value>/WEB-INF/spark-yarn-aggregator.properties</param-value> -->
+</context-param>
+
+
+
 <listener>
   <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 </listener>
