@@ -346,7 +346,7 @@ public void init(ServletContext context) {
         	sparkConf.set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED,Boolean.toString(false));
             
         	streamingContextStarted = true;           
-        	yarnManager = new YarnClientManager(sparkConf);
+        	yarnManager = new YarnClientManager(sparkConf.clone());
             yarnManager.setKafkaMetaDataBrokerList(getParam(KAFKA_METADATA_BROKER_LIST))
                .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
                .setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
@@ -361,7 +361,7 @@ public void init(ServletContext context) {
             	yarnManager.setSparkConfPropertyFile(this.servletContext.getResourceAsStream(sparkConfigFilePath));
             }
             
-            YarnClientManager aggregatorManager = new YarnClientManager(sparkConf);
+            YarnClientManager aggregatorManager = new YarnClientManager(sparkConf.clone());
             aggregatorManager.setKafkaMetaDataBrokerList(getParam(KAFKA_METADATA_BROKER_LIST))
             		.setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
             		.setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
