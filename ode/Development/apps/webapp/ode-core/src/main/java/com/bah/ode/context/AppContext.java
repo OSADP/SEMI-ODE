@@ -1,5 +1,5 @@
 /*******************************************************************************
-an * Copyright (c) 2015 US DOT - Joint Program Office
+ * Copyright (c) 2015 US DOT - Joint Program Office
  *
  * The Government has unlimited rights to all documents/material produced under
  * this task order. All documents and materials, to include the source code of
@@ -18,7 +18,6 @@ package com.bah.ode.context;
 
 //import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Properties;
 //import java.util.List;
 import java.util.UUID;
 
@@ -337,16 +336,16 @@ public void init(ServletContext context) {
    public synchronized void startSparkOnYarn() {
       if (!streamingContextStarted && null==yarnManager) {
          try {
-        	/*
-        	 * Disable Aggregator function in Vehicle Data Proccessor by Default when running on Yarn 
-        	 * Can be re-enabled by setting "spark.ode.vehicle.aggrator.enabled" to true in 
-        	 * a properties file in order for it to run on yarn mode. 
-        	 */ 
-        	 
-        	sparkConf.set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED,Boolean.toString(false));
+         /*
+          * Disable Aggregator function in Vehicle Data Proccessor by Default when running on Yarn 
+          * Can be re-enabled by setting "spark.ode.vehicle.aggrator.enabled" to true in 
+          * a properties file in order for it to run on yarn mode. 
+          */ 
+          
+         sparkConf.set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED,Boolean.toString(false));
             
-        	streamingContextStarted = true;           
-        	yarnManager = new YarnClientManager(sparkConf.clone());
+         streamingContextStarted = true;           
+         yarnManager = new YarnClientManager(sparkConf.clone());
             yarnManager.setKafkaMetaDataBrokerList(getParam(KAFKA_METADATA_BROKER_LIST))
                .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
                .setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
@@ -363,12 +362,12 @@ public void init(ServletContext context) {
             
             YarnClientManager aggregatorManager = new YarnClientManager(sparkConf.clone());
             aggregatorManager.setKafkaMetaDataBrokerList(getParam(KAFKA_METADATA_BROKER_LIST))
-            		.setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
-            		.setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
-            		.setDataProcessorInputTopic(getParam(DATA_PROCESSOR_INPUT_TOPIC))
-            		.setSparkStreamingMicrobatchDuration(getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
-            		.setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR))
-            		.setClass("com.bah.ode.spark.VehicleDataAggregatorWrapper");
+               .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
+               .setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
+               .setDataProcessorInputTopic(getParam(DATA_PROCESSOR_INPUT_TOPIC))
+               .setSparkStreamingMicrobatchDuration(getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
+               .setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR))
+               .setClass("com.bah.ode.spark.VehicleDataAggregatorWrapper");
             
             String sparkAggregatorConfigFilePath =  getParam(SPARK_YARN_AGGREGATOR_CONFIGURATION_FILE);
             

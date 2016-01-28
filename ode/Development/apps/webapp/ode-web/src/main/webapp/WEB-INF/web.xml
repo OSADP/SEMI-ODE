@@ -1,264 +1,246 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://java.sun.com/xml/ns/javaee"
-  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-  id="WebApp_ID" version="2.5">
-  <display-name>ode</display-name>
+   xmlns="http://java.sun.com/xml/ns/javaee"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+   id="WebApp_ID" version="2.5">
+   <display-name>ode</display-name>
 
-  <context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>classpath:spring/application-config.xml</param-value>
-  </context-param>
+   <context-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:spring/application-config.xml</param-value>
+   </context-param>
 
-  <context-param>
-    <param-name>web.server.root</param-name>
-    <param-value></param-value>
-  </context-param>
-  <context-param>
-    <param-name>liferay.ws.serverhost</param-name>
-    <param-value>http://localhost:8080/liferay</param-value>
-  </context-param>
-  <context-param>
-    <param-name>liferay.ws.companyId</param-name>
-    <param-value>10157</param-value> <!-- Will vary based on Destination installation 20155 -->
-    <!--
-    <param-value>10157</param-value>
-  -->
-</context-param>
-<context-param>
-  <param-name>liferay.db.name</param-name>
-  <param-value>lportal</param-value>
-</context-param>
-<context-param>
-  <param-name>liferay.db.host</param-name>
-  <param-value>localhost</param-value>
-</context-param>
-<context-param>
-  <param-name>mail.smtp.host</param-name>
-  <param-value></param-value>
-</context-param>
-<context-param>
-  <param-name>mail.smtp.port</param-name>
-  <param-value>25</param-value>
-</context-param>
-<context-param>
-  <param-name>mail.smtp.socketFactory.port</param-name>
-  <param-value>25</param-value>
-</context-param>
-<context-param>
-  <param-name>mail.from</param-name>
-  <param-value></param-value>
-</context-param>
-<context-param>
-  <param-name>mail.user</param-name>
-  <param-value></param-value>
-</context-param>
-<context-param>
-  <param-name>mail.password</param-name>
-  <param-value></param-value>
-</context-param>
-<context-param>
-  <param-name>dds.domain</param-name>
-  <param-value>ec2-54-211-216-181.compute-1.amazonaws.com</param-value>
-</context-param>
-<context-param>
-  <param-name>dds.port</param-name>
-  <param-value>443</param-value>
-</context-param>
-<context-param>
-  <param-name>dds.resource.identifier</param-name>
-  <param-value>/whtools22/websocket</param-value>
-</context-param>
-<context-param>
-  <param-name>dds.keystore.file.path</param-name>
-  <param-value>keystore-all</param-value>
-</context-param>
-<context-param>
-  <param-name>dds.keystore.password</param-name>
-  <param-value>password</param-value>
-</context-param>
-<context-param>
-  <param-name>dds.cas.url</param-name>
-  <param-value>https://ec2-54-211-88-131.compute-1.amazonaws.com/accounts/v1/tickets</param-value>
-</context-param>
-<context-param>
-  <param-name>dds.cas.username</param-name>
-  <param-value>Musavi_hamid@bah.com</param-value>
-</context-param>
-<context-param>
-  <param-name>dds.cas.password</param-name>
-  <param-value>CV2015</param-value>
-</context-param>
-<context-param>
-  <param-name>send.latest.vsr.in.vsd.bundle</param-name>
-  <param-value>false</param-value>
-</context-param>
-<context-param>
-  <param-name>spark.master</param-name>
-  <!--param-value>yarn-client OR local[2]</param-value-->
-  <param-value>local[2]</param-value>
-</context-param>
-<context-param>
-  <param-name>spark.streaming.microbatch.duration.ms</param-name>
-  <param-value>1000</param-value>
-</context-param>
-<context-param>
-  <param-name>spark.streaming.window.microbatches</param-name>
-  <param-value>60</param-value>
-</context-param>
-<context-param>
-  <param-name>spark.streaming.slide.microbatches</param-name>
-  <param-value>30</param-value>
-</context-param>
+   <context-param>
+      <param-name>web.server.root</param-name>
+      <param-value></param-value>
+   </context-param>
+   <context-param>
+      <param-name>liferay.ws.serverhost</param-name>
+      <param-value>http://localhost:8080/liferay</param-value>
+   </context-param>
+   <context-param>
+      <param-name>liferay.ws.companyId</param-name>
+      <param-value>10157</param-value> <!-- Will vary based on Destination installation 20155 -->
+      <!-- <param-value>10157</param-value> -->
+   </context-param>
+   <context-param>
+      <param-name>liferay.db.name</param-name>
+      <param-value>lportal</param-value>
+   </context-param>
+   <context-param>
+      <param-name>liferay.db.host</param-name>
+      <param-value>localhost</param-value>
+   </context-param>
+   <context-param>
+      <param-name>mail.smtp.host</param-name>
+      <param-value></param-value>
+   </context-param>
+   <context-param>
+      <param-name>mail.smtp.port</param-name>
+      <param-value>25</param-value>
+   </context-param>
+   <context-param>
+      <param-name>mail.smtp.socketFactory.port</param-name>
+      <param-value>25</param-value>
+   </context-param>
+   <context-param>
+      <param-name>mail.from</param-name>
+      <param-value></param-value>
+   </context-param>
+   <context-param>
+      <param-name>mail.user</param-name>
+      <param-value></param-value>
+   </context-param>
+   <context-param>
+      <param-name>mail.password</param-name>
+      <param-value></param-value>
+   </context-param>
+   <context-param>
+      <param-name>dds.domain</param-name>
+      <param-value>ec2-54-211-216-181.compute-1.amazonaws.com</param-value>
+   </context-param>
+   <context-param>
+      <param-name>dds.port</param-name>
+      <param-value>443</param-value>
+   </context-param>
+   <context-param>
+      <param-name>dds.resource.identifier</param-name>
+      <param-value>/whtools22/websocket</param-value>
+   </context-param>
+   <context-param>
+      <param-name>dds.keystore.file.path</param-name>
+      <param-value>keystore-all</param-value>
+   </context-param>
+   <context-param>
+      <param-name>dds.keystore.password</param-name>
+      <param-value>password</param-value>
+   </context-param>
+   <context-param>
+      <param-name>dds.cas.url</param-name>
+      <param-value>https://ec2-54-211-88-131.compute-1.amazonaws.com/accounts/v1/tickets</param-value>
+   </context-param>
+   <context-param>
+      <param-name>dds.cas.username</param-name>
+      <param-value>Musavi_hamid@bah.com</param-value>
+   </context-param>
+   <context-param>
+      <param-name>dds.cas.password</param-name>
+      <param-value>CV2015</param-value>
+   </context-param>
+   <context-param>
+      <param-name>send.latest.vsr.in.vsd.bundle</param-name>
+      <param-value>false</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.master</param-name>
+      <!--param-value>yarn-client OR local[2]</param-value -->
+      <param-value>local[2]</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.streaming.microbatch.duration.ms</param-name>
+      <param-value>1000</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.streaming.window.microbatches</param-name>
+      <param-value>60</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.streaming.slide.microbatches</param-name>
+      <param-value>30</param-value>
+   </context-param>
 
-<context-param>
-  <param-name>spark.static.weather.file.location</param-name>
-  <!-- CAN BE HDFS OR LOCAL -->
-  <param-value>hdfs://ip-10-0-16-10.ec2.internal:8020/user/hdfs/semi-weather.csv</param-value>
-  <!--param-value>/home/centos/semi-weather.csv</param-value-->
-</context-param>
-<context-param>
-  <!-- CAN BE HDFS OR LOCAL -->
-  <param-name>spark.static.sanitization.file.location</param-name>
-  <param-value>hdfs://ip-10-0-16-10.ec2.internal:8020/user/hdfs/sanitization.json</param-value>
-  <!--param-value>/home/centos/sanitization.json</param-value-->
-</context-param>
-<context-param>
-  <!-- CAN BE HDFS OR LOCAL -->
-   <param-name>spark.static.validation.file.location</param-name>
-   <param-value>hdfs://ip-10-0-16-10.ec2.internal:8020/user/hdfs/validation.json</param-value>
-   <!--param-value>/home/centos/validation.json</param-value-->
-</context-param>
-<context-param>
-  <param-name>spark.road.segment.snapping.tolerance</param-name>
-  <param-value>20</param-value>
-</context-param>
+   <context-param>
+      <param-name>spark.static.weather.file.location</param-name>
+      <!-- CAN BE HDFS OR LOCAL -->
+      <param-value>hdfs://ip-10-0-16-10.ec2.internal:8020/user/hdfs/semi-weather.csv</param-value>
+      <!--param-value>/home/centos/semi-weather.csv</param-value -->
+   </context-param>
+   <context-param>
+      <!-- CAN BE HDFS OR LOCAL -->
+      <param-name>spark.static.sanitization.file.location</param-name>
+      <param-value>hdfs://ip-10-0-16-10.ec2.internal:8020/user/hdfs/sanitization.json</param-value>
+      <!--param-value>/home/centos/sanitization.json</param-value -->
+   </context-param>
+   <context-param>
+      <!-- CAN BE HDFS OR LOCAL -->
+      <param-name>spark.static.validation.file.location</param-name>
+      <param-value>hdfs://ip-10-0-16-10.ec2.internal:8020/user/hdfs/validation.json</param-value>
+      <!--param-value>/home/centos/validation.json</param-value -->
+   </context-param>
+   <context-param>
+      <param-name>spark.road.segment.snapping.tolerance</param-name>
+      <param-value>20</param-value>
+   </context-param>
 
 
-<!--	Spark Assembly to be uploaded to Yarn Cluster
-Assumed to be installed on the Web application Server
-This param specifies the name based on HDP naming convention
--->
-<context-param>
-  <param-name>spark.assembly.jar</param-name>
-  <param-value>spark-assembly-1.3.1.2.3.0.0-2557-hadoop2.7.1.2.3.0.0-2557.jar</param-value>
-</context-param>
+   <!-- Spark Assembly to be uploaded to Yarn Cluster Assumed to be installed 
+      on the Web application Server This param specifies the name based on HDP 
+      naming convention -->
+   <context-param>
+      <param-name>spark.assembly.jar</param-name>
+      <param-value>spark-assembly-1.3.1.2.3.0.0-2557-hadoop2.7.1.2.3.0.0-2557.jar</param-value>
+   </context-param>
 
-<context-param>
-  <param-name>metadata.broker.list</param-name>
-  <!-- HDP 2.2 Stack -->
-  <!--<param-value>ip-10-0-16-12.ec2.internal:6667,ip-10-0-16-91.ec2.internal:6667,ip-10-0-16-97.ec2.internal:6667</param-value> -->
-  <!-- HDP 2.3 Stack -->
-  <param-value>ip-10-0-16-115.ec2.internal:6667,ip-10-0-16-143.ec2.internal:6667</param-value>
-  <!--  Local Dev
-  <param-value>localhost.localdomain:6667</param-value>
--->
-</context-param>
-<context-param>
-  <param-name>default.consumer.threads</param-name>
-  <param-value>1</param-value>
-</context-param>
-<context-param>
-  <param-name>zk.connection.strings</param-name>
-  <!-- HDP 2.2 Stack -->
-  <!-- <param-value>ip-10-0-16-12.ec2.internal:2181,ip-10-0-16-89.ec2.internal:2181,ip-10-0-16-97.ec2.internal:2181</param-value> -->
-  <!-- HDP 2.3 stack -->
-  <param-value>ip-10-0-16-115.ec2.internal:2181,ip-10-0-16-10.ec2.internal:2181,ip-10-0-16-143.ec2.internal:2181</param-value>
-  <!-- Local Dev
-  <param-value>localhost.localdomain:2181</param-value>
--->
-</context-param>
-<context-param>
-  <param-name>ode.spark.jar</param-name>
-  <param-value>ode-spark-0.0.1-SNAPSHOT.jar</param-value>
-</context-param>
-<context-param>
-  <param-name>token.key.rsa.pem</param-name>
-  <param-value>mykey.pem</param-value>
-</context-param>
+   <context-param>
+      <param-name>metadata.broker.list</param-name>
+      <!-- HDP 2.2 Stack -->
+      <!--<param-value>ip-10-0-16-12.ec2.internal:6667,ip-10-0-16-91.ec2.internal:6667,ip-10-0-16-97.ec2.internal:6667</param-value> -->
+      <!-- HDP 2.3 Stack -->
+      <param-value>ip-10-0-16-115.ec2.internal:6667,ip-10-0-16-143.ec2.internal:6667</param-value>
+      <!-- Local Dev <param-value>localhost.localdomain:6667</param-value> -->
+   </context-param>
+   <context-param>
+      <param-name>default.consumer.threads</param-name>
+      <param-value>1</param-value>
+   </context-param>
+   <context-param>
+      <param-name>zk.connection.strings</param-name>
+      <!-- HDP 2.2 Stack -->
+      <!-- <param-value>ip-10-0-16-12.ec2.internal:2181,ip-10-0-16-89.ec2.internal:2181,ip-10-0-16-97.ec2.internal:2181</param-value> -->
+      <!-- HDP 2.3 stack -->
+      <param-value>ip-10-0-16-115.ec2.internal:2181,ip-10-0-16-10.ec2.internal:2181,ip-10-0-16-143.ec2.internal:2181</param-value>
+      <!-- Local Dev <param-value>localhost.localdomain:2181</param-value> -->
+   </context-param>
+   <context-param>
+      <param-name>ode.spark.jar</param-name>
+      <param-value>ode-spark-0.0.1-SNAPSHOT.jar</param-value>
+   </context-param>
+   <context-param>
+      <param-name>token.key.rsa.pem</param-name>
+      <param-value>mykey.pem</param-value>
+   </context-param>
 
-<!-- 
-  Param value can be empty. 
-  Must be located within Servelet context, such as in /WEB-INF
-  only used in yarn-client or yarn-master modes 
- -->
- <context-param>
- <param-name>spark.yarn.vehicle.configuration.file</param-name>
- <param-value>/WEB-INF/spark-yarn.properties</param-value>
-</context-param>
-<context-param>
- <param-name>spark.yarn.aggregator.configuration.file</param-name>
- <param-value></param-value>
- <!-- <param-value>/WEB-INF/spark-yarn-aggregator.properties</param-value> -->
-</context-param>
+   <!-- Param value can be empty. Must be located within Servelet context, 
+      such as in /WEB-INF only used in yarn-client or yarn-master modes -->
+   <context-param>
+      <param-name>spark.yarn.vehicle.configuration.file</param-name>
+      <param-value>/WEB-INF/spark-yarn.properties</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.yarn.aggregator.configuration.file</param-name>
+      <param-value></param-value>
+      <!-- <param-value>/WEB-INF/spark-yarn-aggregator.properties</param-value> -->
+   </context-param>
 
 
 
-<listener>
-  <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-</listener>
-<listener>
-  <listener-class>com.bah.ode.server.InitServeletListener</listener-class>
-</listener>
+   <listener>
+      <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+   </listener>
+   <listener>
+      <listener-class>com.bah.ode.server.InitServeletListener</listener-class>
+   </listener>
 
-<servlet>
-  <servlet-name>dispatcherServlet</servlet-name>
-  <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-  <init-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/mvc-config.xml</param-value>
-  </init-param>
-  <load-on-startup>1</load-on-startup>
-</servlet>
-<servlet-mapping>
-  <servlet-name>dispatcherServlet</servlet-name>
-  <url-pattern>/web/*</url-pattern>
-</servlet-mapping>
-<!--
-<servlet>
-<description>InitServlet is intended to perform eager initializations for ODE application.</description>
-<display-name>InitServlet</display-name>
-<servlet-name>InitServlet</servlet-name>
-<servlet-class>com.bah.ode.server.InitServlet</servlet-class>
-<load-on-startup>0</load-on-startup>
-</servlet>
-<servlet-mapping>
-<servlet-name>InitServlet</servlet-name>
-<url-pattern>/api/sample/javax/*</url-pattern>
-</servlet-mapping>
--->
-<servlet>
-  <servlet-name>RESTfulServices</servlet-name>
-  <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-  <init-param>
-    <param-name>javax.ws.rs.Application</param-name>
-    <param-value>com.bah.ode.api.OdeResourceConfig</param-value>
-  </init-param>
+   <servlet>
+      <servlet-name>dispatcherServlet</servlet-name>
+      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+      <init-param>
+         <param-name>contextConfigLocation</param-name>
+         <param-value>/WEB-INF/mvc-config.xml</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>dispatcherServlet</servlet-name>
+      <url-pattern>/web/*</url-pattern>
+   </servlet-mapping>
+   <!-- <servlet> <description>InitServlet is intended to perform eager initializations 
+      for ODE application.</description> <display-name>InitServlet</display-name> 
+      <servlet-name>InitServlet</servlet-name> <servlet-class>com.bah.ode.server.InitServlet</servlet-class> 
+      <load-on-startup>0</load-on-startup> </servlet> <servlet-mapping> <servlet-name>InitServlet</servlet-name> 
+      <url-pattern>/api/sample/javax/*</url-pattern> </servlet-mapping> -->
+   <servlet>
+      <servlet-name>RESTfulServices</servlet-name>
+      <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+      <init-param>
+         <param-name>javax.ws.rs.Application</param-name>
+         <param-value>com.bah.ode.api.OdeResourceConfig</param-value>
+      </init-param>
 
-  <init-param>
-    <param-name>jersey.config.server.provider.packages</param-name>
-    <param-value>com.bah.ode.api</param-value>
-  </init-param>
-  <init-param>
-    <!-- Default value is true for Jersery -->
-    <param-name>jersey.config.server.provider.scanning.recursive</param-name>
-    <param-value>true</param-value>
-  </init-param>
-  <load-on-startup>1</load-on-startup>
-</servlet>
+      <init-param>
+         <param-name>jersey.config.server.provider.packages</param-name>
+         <param-value>com.bah.ode.api</param-value>
+      </init-param>
+      <init-param>
+         <!-- Default value is true for Jersery -->
+         <param-name>jersey.config.server.provider.scanning.recursive</param-name>
+         <param-value>true</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup>
+   </servlet>
 
-<servlet-mapping>
-  <servlet-name>RESTfulServices</servlet-name>
-  <url-pattern>/api/*</url-pattern>
-</servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>RESTfulServices</servlet-name>
+      <url-pattern>/api/*</url-pattern>
+   </servlet-mapping>
 
-<servlet>
-  <servlet-name>ViewStatusMessages</servlet-name>
-  <servlet-class>ch.qos.logback.classic.ViewStatusMessagesServlet</servlet-class>
-</servlet>
+   <servlet>
+      <servlet-name>ViewStatusMessages</servlet-name>
+      <servlet-class>ch.qos.logback.classic.ViewStatusMessagesServlet</servlet-class>
+   </servlet>
 
-<servlet-mapping>
-  <servlet-name>ViewStatusMessages</servlet-name>
-  <url-pattern>/lbClassicStatus</url-pattern>
-</servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>ViewStatusMessages</servlet-name>
+      <url-pattern>/lbClassicStatus</url-pattern>
+   </servlet-mapping>
 </web-app>

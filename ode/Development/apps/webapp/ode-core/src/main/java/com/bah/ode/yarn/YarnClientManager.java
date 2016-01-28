@@ -87,16 +87,15 @@ public class YarnClientManager {
 
    public YarnClientManager setSparkConfPropertyFile(InputStream file) throws IOException
    {
-	   
-	   Properties sparkYarnPropertyFile = new Properties();
-	   sparkYarnPropertyFile.load(file);
-       Enumeration<?> sparkYarnProperties =  sparkYarnPropertyFile.propertyNames();	               
+      Properties sparkYarnPropertyFile = new Properties();
+      sparkYarnPropertyFile.load(file);
+      Enumeration<?> sparkYarnProperties =  sparkYarnPropertyFile.propertyNames();	               
        
        while (sparkYarnProperties.hasMoreElements()){
-    	   String key =  (String) sparkYarnProperties.nextElement();
-    	   sparkConf.set(key,sparkYarnPropertyFile.getProperty(key));
+          String key =  (String) sparkYarnProperties.nextElement();
+          sparkConf.set(key,sparkYarnPropertyFile.getProperty(key));
        }
-	   return this;
+       return this;
    }
    
    public ApplicationId submitSparkJob() throws Throwable {
