@@ -1,5 +1,10 @@
 package com.bah.ode.yarn;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.Properties;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
@@ -80,6 +85,20 @@ public class YarnClientManager {
       return this;
    }
 
+   public YarnClientManager setSparkConfPropertyFile(InputStream file) throws IOException
+   {
+	   
+	   Properties sparkYarnPropertyFile = new Properties();
+	   sparkYarnPropertyFile.load(file);
+       Enumeration<?> sparkYarnProperties =  sparkYarnPropertyFile.propertyNames();	               
+       
+       while (sparkYarnProperties.hasMoreElements()){
+    	   String key =  (String) sparkYarnProperties.nextElement();
+    	   sparkConf.set(key,sparkYarnPropertyFile.getProperty(key));
+       }
+	   return this;
+   }
+   
    public ApplicationId submitSparkJob() throws Throwable {
 
       logger.info("*** Reading Hadoop Config Files ***");

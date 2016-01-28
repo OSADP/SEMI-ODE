@@ -54,7 +54,7 @@
       <cnsi.repo.username></cnsi.repo.username>
       <cnsi.repo.password></cnsi.repo.password>
       <bamboo.build.number>Localbuild</bamboo.build.number>
-      <bamboo.git.revsion>Localbuild</bamboo.git.revsion>
+      <bamboo.git.revision>Localbuild</bamboo.git.revision>
 
       <finalLocation>${project.build.directory}/${project.artifactId}-${project.version}</finalLocation>
       <timestamp>${maven.build.timestamp}</timestamp>
