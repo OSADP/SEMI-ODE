@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 US DOT - Joint Program Office
+an * Copyright (c) 2015 US DOT - Joint Program Office
  *
  * The Government has unlimited rights to all documents/material produced under
  * this task order. All documents and materials, to include the source code of
@@ -65,7 +65,6 @@ public class AppContext {
    public static final String HADOOP_CONF_DIR = HADOOP_HOME+"/conf";
    public static final String HADOOP_YARN_HOME = "/usr/hdp/current/hadoop-yarn-client";
    public static final String YARN_CONF_DIR = HADOOP_YARN_HOME+"/conf";
-   public static final String SPARK_YARN_CONFIGURATION_FILE = "spark.yarn.configuration.file";
 
    //web.xml config parameter keys
    public static final String WEB_SERVER_ROOT = "web.server.root";
@@ -104,6 +103,10 @@ public class AppContext {
    public static final String SPARK_STATIC_WEATHER_FILE_LOCATION = "spark.static.weather.file.location";
    public static final String SPARK_STATIC_SANITIZATION_FILE_LOCATION = "spark.static.sanitization.file.location";
    public static final String SPARK_STATIC_VALIDATION_FILE_LOCATION = "spark.static.validation.file.location";
+   
+   public static final String SPARK_YARN_CONFIGURATION_FILE = "spark.yarn.vehicle.configuration.file";
+   public static final String SPARK_YARN_AGGREGATOR_CONFIGURATION_FILE = "spark.yarn.aggregator.configuration.file";
+   public static final String SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED = "spark.ode.vehicle.aggrator.enabled";
 
    public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
    public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
@@ -125,6 +128,7 @@ public class AppContext {
    private boolean streamingContextStarted = false;
    private  YarnClientManager yarnManager = null;
    private ApplicationId sparkAppId = null;
+   private ApplicationId sparkVehicleAggregatorAppId = null;
 
    public static String getServletBaseUrl(HttpServletRequest request) {
       String proto = request.getScheme();
@@ -178,8 +182,9 @@ public void init(ServletContext context) {
       .set(SPARK_STATIC_VALIDATION_FILE_LOCATION, getParam(SPARK_STATIC_VALIDATION_FILE_LOCATION))
       .set(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE, getParam(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE))
       .set("spark.topics."+ DATA_PROCESSOR_INPUT_TOPIC, getParam(DATA_PROCESSOR_INPUT_TOPIC))
-      .set("spark.topics."+ DATA_PROCESSOR_AGGREGATES_TOPIC, getParam(DATA_PROCESSOR_AGGREGATES_TOPIC));
-
+      .set("spark.topics."+ DATA_PROCESSOR_AGGREGATES_TOPIC, getParam(DATA_PROCESSOR_AGGREGATES_TOPIC))
+      .set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED,Boolean.toString(true));
+     
       // DEBUG ONLY
       // For debugging only and running the app on local machine
       // without Spark
@@ -236,22 +241,23 @@ public void init(ServletContext context) {
 //            // cleared automatically.  But it comes at the cost of higher memory usage in Spark.)
 //            // http://spark.apache.org/docs/1.1.0/configuration.html#spark-streaming
 //            .set("spark.streaming.unpersist", "true")
+//              .set("spark.metrics.conf", "/usr/hdp/current/spark-client/conf/metrics.properties")
                         ;
                
                // Load external Spark Yarn Properties
-               Properties sparkYarnPropertyFile = new Properties();
-               String sparkConfigFilePath =  getParam(SPARK_YARN_CONFIGURATION_FILE);
-               
-               if( null != sparkConfigFilePath && !sparkConfigFilePath.equals(""))
-               {   
-	               sparkYarnPropertyFile.load(this.servletContext.getResourceAsStream(sparkConfigFilePath));   
-	               Enumeration<?> sparkYarnProperties =  sparkYarnPropertyFile.propertyNames();	               
-	               
-	               while (sparkYarnProperties.hasMoreElements()){
-	            	   String key =  (String) sparkYarnProperties.nextElement();
-	            	   sparkConf.set(key,sparkYarnPropertyFile.getProperty(key));
-	               }
-               }
+//               Properties sparkYarnPropertyFile = new Properties();
+//               String sparkConfigFilePath =  getParam(SPARK_YARN_CONFIGURATION_FILE);
+//               
+//               if( null != sparkConfigFilePath && !sparkConfigFilePath.equals(""))
+//               {   
+//	               sparkYarnPropertyFile.load(this.servletContext.getResourceAsStream(sparkConfigFilePath));   
+//	               Enumeration<?> sparkYarnProperties =  sparkYarnPropertyFile.propertyNames();	               
+//	               
+//	               while (sparkYarnProperties.hasMoreElements()){
+//	            	   String key =  (String) sparkYarnProperties.nextElement();
+//	            	   sparkConf.set(key,sparkYarnPropertyFile.getProperty(key));
+//	               }
+//               }
                startSparkOnYarn();
             } else {
                sparkContext = getOrSetSparkContext();
@@ -331,8 +337,16 @@ public void init(ServletContext context) {
    public synchronized void startSparkOnYarn() {
       if (!streamingContextStarted && null==yarnManager) {
          try {
-            streamingContextStarted = true;
-            yarnManager = new YarnClientManager(sparkConf);
+        	/*
+        	 * Disable Aggregator function in Vehicle Data Proccessor by Default when running on Yarn 
+        	 * Can be re-enabled by setting "spark.ode.vehicle.aggrator.enabled" to true in 
+        	 * a properties file in order for it to run on yarn mode. 
+        	 */ 
+        	 
+        	sparkConf.set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED,Boolean.toString(false));
+            
+        	streamingContextStarted = true;           
+        	yarnManager = new YarnClientManager(sparkConf.clone());
             yarnManager.setKafkaMetaDataBrokerList(getParam(KAFKA_METADATA_BROKER_LIST))
                .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
                .setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
@@ -340,9 +354,36 @@ public void init(ServletContext context) {
                .setSparkStreamingMicrobatchDuration(getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
                .setClass("com.bah.ode.spark.VehicleDataProcessorWrapper")
                .setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR));
+            String sparkConfigFilePath =  getParam(SPARK_YARN_CONFIGURATION_FILE);
+          
+            if( null != sparkConfigFilePath && !sparkConfigFilePath.equals(""))
+            {
+            	yarnManager.setSparkConfPropertyFile(this.servletContext.getResourceAsStream(sparkConfigFilePath));
+            }
+            
+            YarnClientManager aggregatorManager = new YarnClientManager(sparkConf.clone());
+            aggregatorManager.setKafkaMetaDataBrokerList(getParam(KAFKA_METADATA_BROKER_LIST))
+            		.setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
+            		.setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
+            		.setDataProcessorInputTopic(getParam(DATA_PROCESSOR_INPUT_TOPIC))
+            		.setSparkStreamingMicrobatchDuration(getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
+            		.setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR))
+            		.setClass("com.bah.ode.spark.VehicleDataAggregatorWrapper");
+            
+            String sparkAggregatorConfigFilePath =  getParam(SPARK_YARN_AGGREGATOR_CONFIGURATION_FILE);
+            
+            if( null != sparkAggregatorConfigFilePath && !sparkAggregatorConfigFilePath.equals(""))
+            {
+            	aggregatorManager.setSparkConfPropertyFile(this.servletContext.getResourceAsStream(sparkAggregatorConfigFilePath));
+            }
+            
             logger.info("Starting Spark ...");
+            
             sparkAppId = yarnManager.submitSparkJob();
-            logger.info("Spark ApplicationID: {}", sparkAppId.toString());
+            sparkVehicleAggregatorAppId = aggregatorManager.submitSparkJob();
+            
+            logger.info("Spark Vehicle Processor    ApplicationID: {}", sparkAppId.toString());
+            logger.info("Spark Aggregator Processor ApplicationID: {}", sparkVehicleAggregatorAppId.toString());
 
 
             logger.info("*** Spark Streaming Context Started ***");
@@ -367,7 +408,10 @@ public void init(ServletContext context) {
    public synchronized void stopSparkOnYarn() {
       if (streamingContextStarted || null != yarnManager) {
          try {
-            yarnManager.stopSparkJob();
+            
+        	yarnManager.stopSparkJob();
+            YarnClientManager.killApplication(sparkVehicleAggregatorAppId);
+            
             yarnManager = null;
             sparkAppId = null;
             streamingContextStarted = false;
