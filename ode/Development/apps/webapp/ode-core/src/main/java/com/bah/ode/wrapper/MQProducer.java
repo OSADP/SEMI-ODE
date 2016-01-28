@@ -1,7 +1,6 @@
 package com.bah.ode.wrapper;
 
 import java.util.Properties;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +13,6 @@ public class MQProducer<K, V> {
    private static Logger logger = LoggerFactory.getLogger(MQProducer.class);
 
    Producer<K, V> producer;
-   String sanitizationTopic;
 
    public MQProducer(String brokers) {
       // TODO
@@ -51,8 +49,6 @@ public class MQProducer<K, V> {
 
       producer = new Producer<K, V>(config);
 
-      sanitizationTopic = "Santized-Records-" + UUID.randomUUID().toString();
-      logger.info("Sanitization Topic = " + sanitizationTopic);
       logger.info("Producer Created");
    }
 
@@ -62,13 +58,6 @@ public class MQProducer<K, V> {
          data = new KeyedMessage<K, V>(topic, value);
       else
          data = new KeyedMessage<K, V>(topic, key, value);
-
-      producer.send(data);
-   }
-
-   public void logSanitizedData(V msg) {
-
-      KeyedMessage<K, V> data = new KeyedMessage<K, V>(sanitizationTopic, msg);
 
       producer.send(data);
    }

@@ -45,6 +45,7 @@ public class AppContext {
    public static final String PAYLOAD_TYPE_STRING = "payloadType";
    public static final String DATA_TYPE_STRING = "dataType";
    public static final String SERIAL_ID_STRING = "serialId";
+   public static final String SANITIZED_STRING = "Sanitized-";
 
    /////////////////////////////////////////////////////////////////////////////
    //Topics used by the Data Processor (Spark) 
