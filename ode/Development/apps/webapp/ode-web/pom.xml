@@ -209,6 +209,14 @@
                      </includes>
                      <filtering>true</filtering>
                   </resource>
+                  <resource>
+                  	<directory>src/main/webapp/WEB-INF</directory>
+                  	<filtering>true</filtering>
+            	    <includes>
+                        <include>**/*.properties</include>
+                     </includes>   
+                  	<targetPath>WEB-INF</targetPath>               
+                  </resource>
                </webResources>
 
             </configuration>
