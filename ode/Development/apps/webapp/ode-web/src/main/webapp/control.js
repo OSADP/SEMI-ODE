@@ -276,7 +276,7 @@ $( document ).ready(function() {
 
 
       /* reset connection */
-       disconnect();
+      disconnect();
       if(token == null){
           dialog.dialog("open");
       }
@@ -292,7 +292,6 @@ $( document ).ready(function() {
         createRoads(1);
       }
 
-      $('#requestId').hide();
       $("input[name=data]:radio").attr('disabled', false);
       $("#selectDataForm").show();
 
@@ -335,7 +334,6 @@ $( document ).ready(function() {
         $('#spatRadio').hide();
         $('#aggRadio').hide();
         $('#advisoryRadio').hide();
-        $('#requestId').show();
         $('#intersectionRadio').hide();
         $('#vehicleRadio').hide();
         $('#testUploadOnly').show();
@@ -477,7 +475,6 @@ $( document ).ready(function() {
     $('.deposit').hide();
     $('#mapRadio').show();
     $('#spatRadio').show();
-    $('#requestId').hide();
 
     if(clazz != clear){
       $(clazz).show();
@@ -560,9 +557,17 @@ $( document ).ready(function() {
       }
       log(1, event.data);
       updateClusters(event.data);
-      if(isTest){
-        openTestUpload(event.data);
+      
+      var pl = getPayload(event.data);
+      var haveRequestId = pl !== undefined && pl !== false && pl !== null && pl.requestId !== undefined;
+      if(haveRequestId){
+        $('#requestId').val(pl.requestId);
+        
+        if(isTest){
+           window.open("deposit.xhtml#"+$('#requestId').val()+"#"+dataType,'_blank');
+        }
       }
+
     };
     ws.onclose = function (event) {
       setConnectionState(false, false);
@@ -587,6 +592,7 @@ $( document ).ready(function() {
     clearInterval(intervalFunc);
     setConnectionState(false, false);
     setButtonHoverOver('send',false);
+    $('#requestId').val("");
   }
 
   function send() {
@@ -922,14 +928,6 @@ function getPayload(str) {
     return JSON.parse(str).payload;
   } catch (e) {
     return false;
-  }
-}
-
-function openTestUpload(str){
-  var pl = getPayload(str);
-  if(pl !== undefined && pl !== false && pl !== null && pl.requestId !== undefined){
-    $('#requestId').val(pl.requestId);
-    window.open("deposit.xhtml#"+$('#requestId').val()+"#"+dataType,'_blank');
   }
 }
 
