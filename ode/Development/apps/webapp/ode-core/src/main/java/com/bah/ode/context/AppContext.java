@@ -103,10 +103,15 @@ public class AppContext {
    public static final String SPARK_STATIC_SANITIZATION_FILE_LOCATION = "spark.static.sanitization.file.location";
    public static final String SPARK_STATIC_VALIDATION_FILE_LOCATION = "spark.static.validation.file.location";
    
+   public static final String SPARK_CONFIGURATION_DIRECTORY_HOME = "spark.configuration.file.directory";
    public static final String SPARK_YARN_CONFIGURATION_FILE = "spark.yarn.vehicle.configuration.file";
    public static final String SPARK_YARN_AGGREGATOR_CONFIGURATION_FILE = "spark.yarn.aggregator.configuration.file";
-   public static final String SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED = "spark.ode.vehicle.aggrator.enabled";
 
+   public static final String SPARK_METRICS_VEHICLE_CONFIGURATION_FILE = "spark.metrics.vehicle.configuration.file";
+   public static final String SPARK_METRICS_AGGREGATOR_CONFIGURATION_FILE = "spark.metrics.aggregator.configuration.file";
+   
+   public static final String SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED = "spark.ode.vehicle.aggrator.enabled";
+   
    public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
    public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
    public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
@@ -259,6 +264,10 @@ public void init(ServletContext context) {
 //               }
                startSparkOnYarn();
             } else {
+            	
+               String absolutePath = this.servletContext.getRealPath(getParam(SPARK_CONFIGURATION_DIRECTORY_HOME));
+              
+               sparkConf.set("spark.metrics.conf",absolutePath+"/"+ getParam(SPARK_METRICS_VEHICLE_CONFIGURATION_FILE));
                sparkContext = getOrSetSparkContext();
             }
          } catch (Throwable t) {
@@ -336,13 +345,10 @@ public void init(ServletContext context) {
    public synchronized void startSparkOnYarn() {
       if (!streamingContextStarted && null==yarnManager) {
          try {
-         /*
-          * Disable Aggregator function in Vehicle Data Proccessor by Default when running on Yarn 
-          * Can be re-enabled by setting "spark.ode.vehicle.aggrator.enabled" to true in 
-          * a properties file in order for it to run on yarn mode. 
-          */ 
-          
-         sparkConf.set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED,Boolean.toString(false));
+        	String absolutePath = this.servletContext.getRealPath(getParam(SPARK_CONFIGURATION_DIRECTORY_HOME));
+        	logger.info("Spark Properties File Directory Path: {} ", absolutePath);
+        	
+        	
             
          streamingContextStarted = true;           
          yarnManager = new YarnClientManager(sparkConf.clone());
@@ -352,7 +358,9 @@ public void init(ServletContext context) {
                .setDataProcessorInputTopic(getParam(DATA_PROCESSOR_INPUT_TOPIC))
                .setSparkStreamingMicrobatchDuration(getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
                .setClass("com.bah.ode.spark.VehicleDataProcessorWrapper")
+               .addFiles("file://"+absolutePath+"/"+ getParam(SPARK_METRICS_VEHICLE_CONFIGURATION_FILE))
                .setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR));
+           
             String sparkConfigFilePath =  getParam(SPARK_YARN_CONFIGURATION_FILE);
           
             if( null != sparkConfigFilePath && !sparkConfigFilePath.equals(""))
@@ -362,12 +370,13 @@ public void init(ServletContext context) {
             
             YarnClientManager aggregatorManager = new YarnClientManager(sparkConf.clone());
             aggregatorManager.setKafkaMetaDataBrokerList(getParam(KAFKA_METADATA_BROKER_LIST))
-               .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
-               .setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
-               .setDataProcessorInputTopic(getParam(DATA_PROCESSOR_INPUT_TOPIC))
-               .setSparkStreamingMicrobatchDuration(getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
-               .setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR))
-               .setClass("com.bah.ode.spark.VehicleDataAggregatorWrapper");
+            		.setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
+            		.setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
+            		.setDataProcessorInputTopic(getParam(DATA_PROCESSOR_INPUT_TOPIC))
+            		.setSparkStreamingMicrobatchDuration(getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
+            		.setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR))
+	                .addFiles("file://"+absolutePath+"/"+ getParam(SPARK_METRICS_AGGREGATOR_CONFIGURATION_FILE))
+            		.setClass("com.bah.ode.spark.VehicleDataAggregatorWrapper");
             
             String sparkAggregatorConfigFilePath =  getParam(SPARK_YARN_AGGREGATOR_CONFIGURATION_FILE);
             
