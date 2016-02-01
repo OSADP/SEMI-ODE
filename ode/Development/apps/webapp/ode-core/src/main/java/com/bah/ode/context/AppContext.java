@@ -111,7 +111,7 @@ public class AppContext {
    public static final String SPARK_METRICS_VEHICLE_CONFIGURATION_FILE = "spark.metrics.vehicle.configuration.file";
    public static final String SPARK_METRICS_AGGREGATOR_CONFIGURATION_FILE = "spark.metrics.aggregator.configuration.file";
    
-   public static final String SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED = "spark.ode.vehicle.aggrator.enabled";
+   public static final String SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED = "spark.ode.vehicle.aggregator.enabled";
    
    public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
    public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
@@ -265,9 +265,7 @@ public void init(ServletContext context) {
 //               }
                startSparkOnYarn();
             } else {
-            	
                String absolutePath = this.servletContext.getRealPath(getParam(SPARK_CONFIGURATION_DIRECTORY_HOME));
-              
                sparkConf.set("spark.metrics.conf",absolutePath+"/"+ getParam(SPARK_METRICS_VEHICLE_CONFIGURATION_FILE));
                sparkContext = getOrSetSparkContext();
             }
@@ -349,7 +347,13 @@ public void init(ServletContext context) {
         	String absolutePath = this.servletContext.getRealPath(getParam(SPARK_CONFIGURATION_DIRECTORY_HOME));
         	logger.info("Spark Properties File Directory Path: {} ", absolutePath);
         	
-        	
+        	/*
+             * Disable Aggregator function in Vehicle Data Proccessor by Default when running on Yarn 
+             * Can be re-enabled by setting "spark.ode.vehicle.aggregator.enabled" to true in 
+             * a properties file in order for it to run on yarn mode. 
+             */ 
+             
+            sparkConf.set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED,Boolean.toString(false));
             
          streamingContextStarted = true;           
          yarnManager = new YarnClientManager(sparkConf.clone());

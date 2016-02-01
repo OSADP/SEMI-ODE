@@ -170,18 +170,36 @@
       <param-value>mykey.pem</param-value>
    </context-param>
 
-   <!-- Param value can be empty. Must be located within Servelet context, 
-      such as in /WEB-INF only used in yarn-client or yarn-master modes -->
+   <!-- Param value can be empty to disable the inclusion of external properties files.
+        Must be located within Servelet context, such as in 
+        /WEB-INF only used in yarn-client or yarn-master modes
+   -->
    <context-param>
       <param-name>spark.yarn.vehicle.configuration.file</param-name>
       <param-value>/WEB-INF/spark-yarn.properties</param-value>
    </context-param>
    <context-param>
       <param-name>spark.yarn.aggregator.configuration.file</param-name>
-      <param-value></param-value>
-      <!-- <param-value>/WEB-INF/spark-yarn-aggregator.properties</param-value> -->
+      <param-value>/WEB-INF/spark-yarn-aggregator.properties</param-value>
    </context-param>
 
+<context-param>
+<param-name>spark.configuration.file.directory</param-name>
+<param-value>/WEB-INF</param-value>
+   </context-param>
+
+<!-- 
+	Properties Value set in the Parent POM
+	since the values are used in more than one file
+ -->
+<context-param>
+	<param-name>spark.metrics.vehicle.configuration.file</param-name>
+	<param-value>${spark.metrics.ode.file}</param-value>
+</context-param>
+<context-param>
+	<param-name>spark.metrics.aggregator.configuration.file</param-name>
+	<param-value>${spark.metrics.aggregator.file}</param-value>
+</context-param>
 
 
    <listener>
