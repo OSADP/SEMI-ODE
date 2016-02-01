@@ -5,6 +5,7 @@ import org.apache.spark.api.java.function.Function;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.storage.StorageLevel;
 
 import scala.Tuple2;
 
@@ -25,14 +26,17 @@ public class Aggregator extends BaseDistributor
    @Override
    public Void call(JavaPairRDD<String, Tuple2<String, String>> rdd)
          throws Exception {
-      
-      if (rdd.count() == 0)
+      rdd.cache();
+      if (rdd.count() == 0){
+    	 rdd.unpersist();
          return null;
-
+      }
+      
       SQLContext sqlContext = SqlContextSingleton.getInstance(rdd.context());
 
       DataFrame ovdfDataFrame = sqlContext.jsonRDD(rdd.values().map(t -> t._1));
 //      ovdfDataFrame.show(10);
+      rdd.unpersist(false);
       
       // Register as table
       ovdfDataFrame.registerTempTable("OVDF");

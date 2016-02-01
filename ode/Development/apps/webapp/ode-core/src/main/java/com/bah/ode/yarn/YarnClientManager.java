@@ -2,6 +2,7 @@ package com.bah.ode.yarn;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -34,7 +35,8 @@ public class YarnClientManager {
    private String userJar;
    private Client client;
    private ApplicationId appId;
-
+   private ArrayList<String> filesList;
+   
    public YarnClientManager(SparkConf conf) {
       this(conf, "com.bah.ode.spark.VehicleDataProcessorWrapper");
    }
@@ -42,6 +44,7 @@ public class YarnClientManager {
    public YarnClientManager(SparkConf conf, String className) {
       this.sparkConf = conf;
       this.className = className;
+      this.filesList = new ArrayList<String>();
    }
 
    public YarnClientManager setNumPartitions(String numPartitions) {
@@ -84,6 +87,13 @@ public class YarnClientManager {
       this.userJar = args;
       return this;
    }
+   
+   public YarnClientManager addFiles(String filePath)
+   {
+	   filesList.add(filePath);
+	   return this;
+   }
+   
 
    public YarnClientManager setSparkConfPropertyFile(InputStream file) throws IOException
    {
@@ -124,15 +134,16 @@ public class YarnClientManager {
       String[] args = new String[] { "--class", className, "--jar", userJar,
             "--arg", numPartitions, "--arg", dataProcessorInputTopic, "--arg",
             zkConnectionString, "--arg", kafkaMetaDataBrokerList, "--arg",
-            sparkStreamingMicrobatchDurationMs, };
+            sparkStreamingMicrobatchDurationMs,"--files", String.join(",",filesList)};
 
-      logger.info("**** Spark Streaming Arguments ****"
+      logger.info("**** Spark Yarn Streaming Arguments ****"
             + "\nApplication Jar: {} " + "\nPartition count: {} "
             + "\nInput Topic: {}" + "\nZookeeper Connection String: {}"
             + "\nkafka Broker Connection String {}"
-            + "\nSpark Streamin Duration (ms): {}", userJar,
+            + "\nSpark Streamin Duration (ms): {}"
+            + "\nFiles: {}", userJar,
             numPartitions.toString(), dataProcessorInputTopic, zkConnectionString,
-            kafkaMetaDataBrokerList, sparkStreamingMicrobatchDurationMs);
+            kafkaMetaDataBrokerList, sparkStreamingMicrobatchDurationMs, String.join(",",filesList));
 
       ClientArguments cArgs = new ClientArguments(args, sparkConf);
       // create an instance of yarn Client

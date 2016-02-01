@@ -46,6 +46,11 @@
       <hdp.release.increment>0</hdp.release.increment>
       <hdp.build.version>2557</hdp.build.version>
 
+	  <spark.metrics.ode.file>spark-ode-metrics.properties</spark.metrics.ode.file>
+	  <spark.metrics.aggregator.file>spark-aggregator-metrics.properties</spark.metrics.aggregator.file>
+	  <spark.metrics.server.host>ip-10-0-8-41.ec2.internal</spark.metrics.server.host>
+	  <spark.metrics.server.port>2003</spark.metrics.server.port>
+	 
       <!-- Test -->
       <junit.version>4.11</junit.version>
       <!-- Username and Password required to access CNSI Nexus Repo. In order 
