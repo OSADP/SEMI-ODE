@@ -110,17 +110,7 @@ public class YarnClientManager {
    
    public ApplicationId submitSparkJob() throws Throwable {
 
-      logger.info("*** Reading Hadoop Config Files ***");
-      Configuration config = new Configuration();
-      try {
-         config.addResource(new Path(HADOOP_CONF_DIR + "/yarn-site.xml"));
-         config.addResource(new Path(HADOOP_CONF_DIR + "/core-site.xml"));
-         config.addResource(new Path(HADOOP_CONF_DIR + "/hdfs-site.xml"));
-
-      } catch (Throwable t1) {
-         logger.warn("*** Error reading Hadoop Config Files***", t1);
-         throw t1;
-      }
+      Configuration config = getHadoopConfiguration();
 
       // identify that you will be using Spark as YARN mode
       System.setProperty("SPARK_YARN_MODE", "true");
@@ -134,7 +124,7 @@ public class YarnClientManager {
       String[] args = new String[] { "--class", className, "--jar", userJar,
             "--arg", numPartitions, "--arg", dataProcessorInputTopic, "--arg",
             zkConnectionString, "--arg", kafkaMetaDataBrokerList, "--arg",
-            sparkStreamingMicrobatchDurationMs,"--files", String.join(",",filesList)};
+            sparkStreamingMicrobatchDurationMs,"--files", String.join(",", filesList)};
 
       logger.info("**** Spark Yarn Streaming Arguments ****"
             + "\nApplication Jar: {} " + "\nPartition count: {} "
@@ -143,7 +133,7 @@ public class YarnClientManager {
             + "\nSpark Streamin Duration (ms): {}"
             + "\nFiles: {}", userJar,
             numPartitions.toString(), dataProcessorInputTopic, zkConnectionString,
-            kafkaMetaDataBrokerList, sparkStreamingMicrobatchDurationMs, String.join(",",filesList));
+            kafkaMetaDataBrokerList, sparkStreamingMicrobatchDurationMs, String.join(",", filesList));
 
       ClientArguments cArgs = new ClientArguments(args, sparkConf);
       // create an instance of yarn Client
@@ -155,27 +145,35 @@ public class YarnClientManager {
 
    }
 
+   private static Configuration getHadoopConfiguration() {
+      logger.info("*** Reading Hadoop Config Files ***");
+      Configuration config = new Configuration();
+
+      config.addResource(new Path(HADOOP_CONF_DIR, "yarn-site.xml"));
+      config.addResource(new Path(HADOOP_CONF_DIR, "core-site.xml"));
+      config.addResource(new Path(HADOOP_CONF_DIR, "hdfs-site.xml"));
+
+      return config;
+   }
+
    public void stopSparkJob() {
       this.client.stop();
+      killApplication();
+   }
+
+   public void killApplication() {
       killApplication(this.appId);
    }
 
    public static void killApplication(ApplicationId appId) {
       YarnClient yc = YarnClient.createYarnClient();
-      logger.info("*** Reading Hadoop Config Files ***");
-      Configuration config = new Configuration();
+      
+      Configuration config = getHadoopConfiguration();
       try {
-         config.addResource(new Path(HADOOP_CONF_DIR + "/yarn-site.xml"));
-         config.addResource(new Path(HADOOP_CONF_DIR + "/core-site.xml"));
-         config.addResource(new Path(HADOOP_CONF_DIR + "/hdfs-site.xml"));
-
          yc.init(config);
          yc.killApplication(appId);
       } catch (Throwable t1) {
-         logger.warn("*** Error reading Hadoop Config Files***", t1);
-         logger.warn("*** Unable to Kill {}", appId.toString());
+         logger.warn("*** Unable to Kill " + appId.toString(), t1);
       }
-      ;
-
    }
 }

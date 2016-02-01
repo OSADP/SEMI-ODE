@@ -5,11 +5,10 @@ import org.apache.spark.api.java.function.Function;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
-import org.apache.spark.storage.StorageLevel;
-
-import scala.Tuple2;
 
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
+
+import scala.Tuple2;
 
 public class Aggregator extends BaseDistributor
    implements Function<JavaPairRDD<String, Tuple2<String, String>>, Void> {

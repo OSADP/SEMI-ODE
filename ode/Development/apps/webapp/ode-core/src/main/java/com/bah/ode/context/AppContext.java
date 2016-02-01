@@ -16,9 +16,8 @@
  *******************************************************************************/
 package com.bah.ode.context;
 
-//import java.util.ArrayList;
+import java.io.File;
 import java.util.Enumeration;
-//import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.ServletContext;
@@ -37,7 +36,7 @@ import com.bah.ode.yarn.YarnClientManager;
 public class AppContext {
    private static Logger logger = LoggerFactory.getLogger(AppContext.class);
 
-   //CONSTANTS
+   // CONSTANTS
    public static final String ODE_HOSTNAME = "ODE_HOSTNAME";
    public static final String PAYLOAD_STRING = "payload";
    public static final String METADATA_STRING = "metadata";
@@ -48,25 +47,25 @@ public class AppContext {
    public static final String SANITIZED_STRING = "Sanitized-";
 
    /////////////////////////////////////////////////////////////////////////////
-   //Topics used by the Data Processor (Spark) 
+   // Topics used by the Data Processor (Spark)
    public static final String DATA_PROCESSOR_INPUT_TOPIC = "DPIT";
    public static final String DATA_PROCESSOR_AGGREGATES_TOPIC = "DPAT";
-   // If you are adding a new DP topic, you must also add code set the host 
-   // specific config parameter in the init method 
+   // If you are adding a new DP topic, you must also add code set the host
+   // specific config parameter in the init method
    /////////////////////////////////////////////////////////////////////////////
-   
+
    public static final String LOOPBACK_TEST = "loopback.test";
-   
+
    // SparkConf related Constants
    public static final String ODE_SPARK_JAR = "ode.spark.jar";
-   public static final String DEPLOY_HOME = "/opt/bitnami/apache-tomcat/webapps/ode/WEB-INF/lib"; //TODO Same as Web Server root?
+   public static final String DEPLOY_HOME = "/opt/bitnami/apache-tomcat/webapps/ode/WEB-INF/lib"; // TODO Same as Web Server root?
    public static final String SPARK_HOME = "/usr/hdp/current/spark-client";
    public static final String HADOOP_HOME = "/usr/hdp/current/hadoop-client";
-   public static final String HADOOP_CONF_DIR = HADOOP_HOME+"/conf";
+   public static final String HADOOP_CONF_DIR = HADOOP_HOME + "/conf";
    public static final String HADOOP_YARN_HOME = "/usr/hdp/current/hadoop-yarn-client";
-   public static final String YARN_CONF_DIR = HADOOP_YARN_HOME+"/conf";
+   public static final String YARN_CONF_DIR = HADOOP_YARN_HOME + "/conf";
 
-   //web.xml config parameter keys
+   // web.xml config parameter keys
    public static final String WEB_SERVER_ROOT = "web.server.root";
    public static final String LIFERAY_DB_NAME = "liferay.db.name";
    public static final String LIFERAY_DB_HOST = "liferay.db.host";
@@ -103,16 +102,16 @@ public class AppContext {
    public static final String SPARK_STATIC_WEATHER_FILE_LOCATION = "spark.static.weather.file.location";
    public static final String SPARK_STATIC_SANITIZATION_FILE_LOCATION = "spark.static.sanitization.file.location";
    public static final String SPARK_STATIC_VALIDATION_FILE_LOCATION = "spark.static.validation.file.location";
-   
+
    public static final String SPARK_CONFIGURATION_DIRECTORY_HOME = "spark.configuration.file.directory";
    public static final String SPARK_YARN_CONFIGURATION_FILE = "spark.yarn.vehicle.configuration.file";
    public static final String SPARK_YARN_AGGREGATOR_CONFIGURATION_FILE = "spark.yarn.aggregator.configuration.file";
 
    public static final String SPARK_METRICS_VEHICLE_CONFIGURATION_FILE = "spark.metrics.vehicle.configuration.file";
    public static final String SPARK_METRICS_AGGREGATOR_CONFIGURATION_FILE = "spark.metrics.aggregator.configuration.file";
-   
+
    public static final String SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED = "spark.ode.vehicle.aggregator.enabled";
-   
+
    public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
    public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
    public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
@@ -121,7 +120,6 @@ public class AppContext {
 
    public static final String SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE = "spark.road.segment.snapping.tolerance";
 
-
    private static AppContext instance = null;
 
    private ServletContext servletContext;
@@ -129,11 +127,10 @@ public class AppContext {
    private String sparkMaster;
    private SparkConf sparkConf;
    private JavaSparkContext sparkContext;
-//   private SQLContext sqlContext;
+   // private SQLContext sqlContext;
    private boolean streamingContextStarted = false;
-   private  YarnClientManager yarnManager = null;
-   private ApplicationId sparkAppId = null;
-   private ApplicationId sparkVehicleAggregatorAppId = null;
+   private YarnClientManager vehicleProcessorManager = null;
+   private YarnClientManager aggregatorManager = null;
 
    public static String getServletBaseUrl(HttpServletRequest request) {
       String proto = request.getScheme();
@@ -146,127 +143,161 @@ public class AppContext {
    private AppContext() {
    }
 
-   
-public void init(ServletContext context) {
+   public void init(ServletContext context) {
       this.servletContext = context;
-      this.sparkMaster = getParam(SPARK_MASTER);
       String hostname = System.getenv("HOSTNAME");
       /*
-       *  If running on windows host, HOSTNAME environment variable is usually 
-       *  not defined. So we'll assume that the software should be run in 
-       *  loopbackTest mode. 
+       * If running on windows host, HOSTNAME environment variable is usually
+       * not defined. So we'll assume that the software should be run in
+       * loopbackTest mode.
        */
       if (hostname == null) {
+         this.sparkMaster = "local[2]";
+         this.servletContext.setInitParameter(SPARK_MASTER, this.sparkMaster);
          this.servletContext.setInitParameter(LOOPBACK_TEST, "true");
          hostname = UUID.randomUUID().toString();
       } else {
+         this.sparkMaster = getParam(SPARK_MASTER);
          this.servletContext.setInitParameter(LOOPBACK_TEST, "false");
       }
-      
+
       this.servletContext.setInitParameter(ODE_HOSTNAME, hostname);
       // Create host-specific topic names and add to init parameters
       //////////////////////////////////////////////////////////////////////////
-      this.servletContext.setInitParameter(DATA_PROCESSOR_INPUT_TOPIC, 
+      this.servletContext.setInitParameter(DATA_PROCESSOR_INPUT_TOPIC,
             DATA_PROCESSOR_INPUT_TOPIC + hostname);
-      
-      this.servletContext.setInitParameter(DATA_PROCESSOR_AGGREGATES_TOPIC, 
+
+      this.servletContext.setInitParameter(DATA_PROCESSOR_AGGREGATES_TOPIC,
             DATA_PROCESSOR_AGGREGATES_TOPIC + hostname);
       //////////////////////////////////////////////////////////////////////////
 
-      sparkConf = new SparkConf()
-      .setMaster(sparkMaster)
-      .setAppName(context.getServletContextName())
-      .set("spark.shuffle.manager", "SORT")
-      .set(ODE_HOSTNAME, getParam(ODE_HOSTNAME))
-      .set(LOOPBACK_TEST, getParam(LOOPBACK_TEST))
-      .set(SPARK_STREAMING_MICROBATCH_DURATION_MS, getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
-      .set(SPARK_STREAMING_WINDOW_MICROBATCHES, getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
-      .set(SPARK_STREAMING_SLIDE_MICROBATCHES, getParam(SPARK_STREAMING_SLIDE_MICROBATCHES))
-      .set(SPARK_STATIC_WEATHER_FILE_LOCATION, getParam(SPARK_STATIC_WEATHER_FILE_LOCATION))
-      .set(SPARK_STATIC_SANITIZATION_FILE_LOCATION, getParam(SPARK_STATIC_SANITIZATION_FILE_LOCATION))
-      .set(SPARK_STATIC_VALIDATION_FILE_LOCATION, getParam(SPARK_STATIC_VALIDATION_FILE_LOCATION))
-      .set(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE, getParam(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE))
-      .set("spark.topics."+ DATA_PROCESSOR_INPUT_TOPIC, getParam(DATA_PROCESSOR_INPUT_TOPIC))
-      .set("spark.topics."+ DATA_PROCESSOR_AGGREGATES_TOPIC, getParam(DATA_PROCESSOR_AGGREGATES_TOPIC))
-      .set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED,Boolean.toString(true));
-     
+      sparkConf = new SparkConf().setMaster(sparkMaster)
+            .setAppName(context.getServletContextName())
+            .set("spark.shuffle.manager", "SORT")
+            .set(ODE_HOSTNAME, getParam(ODE_HOSTNAME))
+            .set(LOOPBACK_TEST, getParam(LOOPBACK_TEST))
+            .set(SPARK_STREAMING_MICROBATCH_DURATION_MS,
+                  getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
+            .set(SPARK_STREAMING_WINDOW_MICROBATCHES,
+                  getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
+            .set(SPARK_STREAMING_SLIDE_MICROBATCHES,
+                  getParam(SPARK_STREAMING_SLIDE_MICROBATCHES))
+            .set(SPARK_STATIC_WEATHER_FILE_LOCATION,
+                  getParam(SPARK_STATIC_WEATHER_FILE_LOCATION))
+            .set(SPARK_STATIC_SANITIZATION_FILE_LOCATION,
+                  getParam(SPARK_STATIC_SANITIZATION_FILE_LOCATION))
+            .set(SPARK_STATIC_VALIDATION_FILE_LOCATION,
+                  getParam(SPARK_STATIC_VALIDATION_FILE_LOCATION))
+            .set(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE,
+                  getParam(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE))
+            .set("spark.topics." + DATA_PROCESSOR_INPUT_TOPIC,
+                  getParam(DATA_PROCESSOR_INPUT_TOPIC))
+            .set("spark.topics." + DATA_PROCESSOR_AGGREGATES_TOPIC,
+                  getParam(DATA_PROCESSOR_AGGREGATES_TOPIC))
+            .set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED, Boolean.toString(true));
+
       // DEBUG ONLY
       // For debugging only and running the app on local machine
       // without Spark
-      //FOR TEST ONLY
+      // FOR TEST ONLY
       if (!loopbackTest()) {
          try {
             if (sparkMaster.startsWith("yarn")) {
-               sparkConf.set("spark.yarn.jar", SPARK_HOME+"/lib/"+ getParam(SPARK_ASSEMBLY_JAR))
-                  .setExecutorEnv("CLASSPATH", "$CLASSPATH:"+SPARK_HOME+"/lib/*:"
-                       + "/usr/hdp/current/hadoop-client/*:"
-                       + "/usr/hdp/current/hadoop-client/lib/*:"
-                       + "/usr/hdp/current/hadoop-hdfs-client/*:"
-                       + "/usr/hdp/current/hadoop-hdfs-client/lib/*:"
-                       + "/usr/hdp/current/hadoop-yarn-client/*:"
-                       + "/usr/hdp/current/hadoop-yarn-client/lib/*")
-//               .setSparkHome(SPARK_HOME)
-//               .setExecutorEnv("SPARK_HOME",		SPARK_HOME)
-//               .setExecutorEnv("HADOOP_CONF_DIR", 	HADOOP_CONF_DIR)
-//               .setExecutorEnv("YARN_CONF_DIR",  	YARN_CONF_DIR)
-//               .setExecutorEnv("HADOOP_HOME",		HADOOP_HOME)
-//               .setExecutorEnv("HADOOP_YARN_HOME",	HADOOP_YARN_HOME )
-//               .setExecutorEnv("SPARK_YARN_MODE", "true")
-//               .set("spark.yarn.appMasterEnv.SPARK_YARN_MODE","true")
+               sparkConf
+                     .set("spark.yarn.jar",
+                           SPARK_HOME + "/lib/" + getParam(SPARK_ASSEMBLY_JAR))
+                     .setExecutorEnv("CLASSPATH",
+                           "$CLASSPATH:" + SPARK_HOME + "/lib/*:"
+                                 + "/usr/hdp/current/hadoop-client/*:"
+                                 + "/usr/hdp/current/hadoop-client/lib/*:"
+                                 + "/usr/hdp/current/hadoop-hdfs-client/*:"
+                                 + "/usr/hdp/current/hadoop-hdfs-client/lib/*:"
+                                 + "/usr/hdp/current/hadoop-yarn-client/*:"
+                                 + "/usr/hdp/current/hadoop-yarn-client/lib/*")
+                     // .setSparkHome(SPARK_HOME)
+                     // .setExecutorEnv("SPARK_HOME", SPARK_HOME)
+                     // .setExecutorEnv("HADOOP_CONF_DIR", HADOOP_CONF_DIR)
+                     // .setExecutorEnv("YARN_CONF_DIR", YARN_CONF_DIR)
+                     // .setExecutorEnv("HADOOP_HOME", HADOOP_HOME)
+                     // .setExecutorEnv("HADOOP_YARN_HOME", HADOOP_YARN_HOME )
+                     // .setExecutorEnv("SPARK_YARN_MODE", "true")
+                     // .set("spark.yarn.appMasterEnv.SPARK_YARN_MODE","true")
 
-//               .set("spark.yarn.appMasterEnv.SPARK_HOME",SPARK_HOME)
-//               .set("spark.yarn.appMasterEnv.SPARK_YARN_MODE", "false")
-//               .set("spark.yarn.appMasterEnv.HADOOP_CONF_DIR", HADOOP_CONF_DIR)
-//               .set("spark.yarn.appMasterEnv.YARN_CONF_DIR",  YARN_CONF_DIR)
-//               .set("spark.yarn.appMasterEnv.HADOOP_HOME", HADOOP_HOME)
-//               .set("spark.yarn.appMasterEnv.HADOOP_YARN_HOME",HADOOP_YARN_HOME)
-                  .set("spark.yarn.application.classpath","$CLASSPATH:$HADOOP_CONF_DIR:"
-                        + "/usr/hdp/current/hadoop-client/*:"
-                        + "/usr/hdp/current/hadoop-client/lib/*:"
-                        + "/usr/hdp/current/hadoop-hdfs-client/*:"
-                        + "/usr/hdp/current/hadoop-hdfs-client/lib/*:"
-                        + "/usr/hdp/current/hadoop-yarn-client/*:"
-                        + "/usr/hdp/current/hadoop-yarn-client/lib/*")
-//
-//          .set("spark.yarn.access.namenodes","hdfs://localhost.localdomain:8020")
-//          .set("spark.yarn.am.extraJavaOptions","-Dhdp.version=2.3.0.0-2557") // TODO If required for cluster use,
-//          .set("spark.driver.extraJavaOptions" ,"-Dhdp.version=2.3.0.0-2557")// TODO  add these variables to web.xml
+                     // .set("spark.yarn.appMasterEnv.SPARK_HOME",SPARK_HOME)
+                     // .set("spark.yarn.appMasterEnv.SPARK_YARN_MODE", "false")
+                     // .set("spark.yarn.appMasterEnv.HADOOP_CONF_DIR",
+                     // HADOOP_CONF_DIR)
+                     // .set("spark.yarn.appMasterEnv.YARN_CONF_DIR",
+                     // YARN_CONF_DIR)
+                     // .set("spark.yarn.appMasterEnv.HADOOP_HOME", HADOOP_HOME)
+                     // .set("spark.yarn.appMasterEnv.HADOOP_YARN_HOME",HADOOP_YARN_HOME)
+                     .set("spark.yarn.application.classpath",
+                           "$CLASSPATH:$HADOOP_CONF_DIR:"
+                                 + "/usr/hdp/current/hadoop-client/*:"
+                                 + "/usr/hdp/current/hadoop-client/lib/*:"
+                                 + "/usr/hdp/current/hadoop-hdfs-client/*:"
+                                 + "/usr/hdp/current/hadoop-hdfs-client/lib/*:"
+                                 + "/usr/hdp/current/hadoop-yarn-client/*:"
+                                 + "/usr/hdp/current/hadoop-yarn-client/lib/*")
+                                 //
+                                 // .set("spark.yarn.access.namenodes","hdfs://localhost.localdomain:8020")
+                                 // .set("spark.yarn.am.extraJavaOptions","-Dhdp.version=2.3.0.0-2557")
+                                 // // TODO If required for cluster use,
+                                 // .set("spark.driver.extraJavaOptions"
+                                 // ,"-Dhdp.version=2.3.0.0-2557")// TODO add
+                                 // these variables to web.xml
 
-//           .set("spark.yarn.appMasterEnv.hdp.version","2.3.0.0-2557")
-//            // Use Kryo to speed up serialization, recommended as default setup for Spark Streaming
-//            // http://spark.apache.org/docs/1.1.0/tuning.html#data-serialization
-//            .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-//            .set("spark.kryo.registrator", .class.getName);
-               // Enable experimental sort-based shuffle manager that is more memory-efficient in environments with small
-               // executors, such as YARN.  Will most likely become the default in future Spark versions.
+               // .set("spark.yarn.appMasterEnv.hdp.version","2.3.0.0-2557")
+               // // Use Kryo to speed up serialization, recommended as default
+               // setup for Spark Streaming
+               // //
+               // http://spark.apache.org/docs/1.1.0/tuning.html#data-serialization
+               // .set("spark.serializer",
+               // "org.apache.spark.serializer.KryoSerializer")
+               // .set("spark.kryo.registrator", .class.getName);
+               // Enable experimental sort-based shuffle manager that is more
+               // memory-efficient in environments with small
+               // executors, such as YARN. Will most likely become the default
+               // in future Spark versions.
                // https://spark.apache.org/docs/1.1.0/configuration.html#shuffle-behavior
-//            // Force RDDs generated and persisted by Spark Streaming to be automatically unpersisted from Spark's memory.
-//            // The raw input data received by Spark Streaming is also automatically cleared.  (Setting this to false will
-//            // allow the raw data and persisted RDDs to be accessible outside the streaming application as they will not be
-//            // cleared automatically.  But it comes at the cost of higher memory usage in Spark.)
-//            // http://spark.apache.org/docs/1.1.0/configuration.html#spark-streaming
-//            .set("spark.streaming.unpersist", "true")
-//              .set("spark.metrics.conf", "/usr/hdp/current/spark-client/conf/metrics.properties")
-                        ;
-               
+               // // Force RDDs generated and persisted by Spark Streaming to be
+               // automatically unpersisted from Spark's memory.
+               // // The raw input data received by Spark Streaming is also
+               // automatically cleared. (Setting this to false will
+               // // allow the raw data and persisted RDDs to be accessible
+               // outside the streaming application as they will not be
+               // // cleared automatically. But it comes at the cost of higher
+               // memory usage in Spark.)
+               // //
+               // http://spark.apache.org/docs/1.1.0/configuration.html#spark-streaming
+               // .set("spark.streaming.unpersist", "true")
+               // .set("spark.metrics.conf",
+               // "/usr/hdp/current/spark-client/conf/metrics.properties")
+               ;
+
                // Load external Spark Yarn Properties
-//               Properties sparkYarnPropertyFile = new Properties();
-//               String sparkConfigFilePath =  getParam(SPARK_YARN_CONFIGURATION_FILE);
-//               
-//               if( null != sparkConfigFilePath && !sparkConfigFilePath.equals(""))
-//               {   
-//	               sparkYarnPropertyFile.load(this.servletContext.getResourceAsStream(sparkConfigFilePath));   
-//	               Enumeration<?> sparkYarnProperties =  sparkYarnPropertyFile.propertyNames();	               
-//	               
-//	               while (sparkYarnProperties.hasMoreElements()){
-//	            	   String key =  (String) sparkYarnProperties.nextElement();
-//	            	   sparkConf.set(key,sparkYarnPropertyFile.getProperty(key));
-//	               }
-//               }
+               // Properties sparkYarnPropertyFile = new Properties();
+               // String sparkConfigFilePath =
+               // getParam(SPARK_YARN_CONFIGURATION_FILE);
+               //
+               // if( null != sparkConfigFilePath &&
+               // !sparkConfigFilePath.equals(""))
+               // {
+               // sparkYarnPropertyFile.load(this.servletContext.getResourceAsStream(sparkConfigFilePath));
+               // Enumeration<?> sparkYarnProperties =
+               // sparkYarnPropertyFile.propertyNames();
+               //
+               // while (sparkYarnProperties.hasMoreElements()){
+               // String key = (String) sparkYarnProperties.nextElement();
+               // sparkConf.set(key,sparkYarnPropertyFile.getProperty(key));
+               // }
+               // }
                startSparkOnYarn();
             } else {
-               String absolutePath = this.servletContext.getRealPath(getParam(SPARK_CONFIGURATION_DIRECTORY_HOME));
-               sparkConf.set("spark.metrics.conf",absolutePath+"/"+ getParam(SPARK_METRICS_VEHICLE_CONFIGURATION_FILE));
+               String absolutePath = this.servletContext
+                     .getRealPath(getParam(SPARK_CONFIGURATION_DIRECTORY_HOME));
+               sparkConf.set("spark.metrics.conf", absolutePath + File.separator
+                     + getParam(SPARK_METRICS_VEHICLE_CONFIGURATION_FILE));
                sparkContext = getOrSetSparkContext();
             }
          } catch (Throwable t) {
@@ -282,13 +313,14 @@ public void init(ServletContext context) {
       while (parmNames.hasMoreElements()) {
          String key = parmNames.nextElement();
          logger.info("Configuration Parameter {}:{}", key,
-               key.contains("password")?"********":context.getInitParameter(key));
+               key.contains("password") ? "********"
+                     : context.getInitParameter(key));
       }
    }
 
    public static AppContext getInstance() {
       if (null == instance) {
-         synchronized(AppContext.class) {
+         synchronized (AppContext.class) {
             if (null == instance)
                instance = new AppContext();
          }
@@ -314,7 +346,7 @@ public void init(ServletContext context) {
    }
 
    public JavaSparkContext getOrSetSparkContext() {
-      if (sparkContext == null){
+      if (sparkContext == null) {
          logger.info("Creating Spark Context...");
          sparkContext = new JavaSparkContext(sparkConf);
       }
@@ -329,104 +361,138 @@ public void init(ServletContext context) {
       this.sparkContext = sparkContext;
    }
 
-//   public SQLContext getSparkSQLContext() {
-//	   return sqlContext;
-//   }
+   // public SQLContext getSparkSQLContext() {
+   // return sqlContext;
+   // }
 
    public void shutDown() {
       stopSparkOnYarn();
    }
 
-   public  ApplicationId getApplicationId(){
-	   return sparkAppId;
-   }
-
    public synchronized void startSparkOnYarn() {
-      if (!streamingContextStarted && null==yarnManager) {
-         try {
-        	String absolutePath = this.servletContext.getRealPath(getParam(SPARK_CONFIGURATION_DIRECTORY_HOME));
-        	logger.info("Spark Properties File Directory Path: {} ", absolutePath);
-        	
-        	/*
-             * Disable Aggregator function in Vehicle Data Proccessor by Default when running on Yarn 
-             * Can be re-enabled by setting "spark.ode.vehicle.aggregator.enabled" to true in 
-             * a properties file in order for it to run on yarn mode. 
-             */ 
-             
-            sparkConf.set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED,Boolean.toString(false));
-            
-         streamingContextStarted = true;           
-         yarnManager = new YarnClientManager(sparkConf.clone());
-            yarnManager.setKafkaMetaDataBrokerList(getParam(KAFKA_METADATA_BROKER_LIST))
-               .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
-               .setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
-               .setDataProcessorInputTopic(getParam(DATA_PROCESSOR_INPUT_TOPIC))
-               .setSparkStreamingMicrobatchDuration(getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
-               .setClass("com.bah.ode.spark.VehicleDataProcessorWrapper")
-               .addFiles("file://"+absolutePath+"/"+ getParam(SPARK_METRICS_VEHICLE_CONFIGURATION_FILE))
-               .setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR));
-           
-            String sparkConfigFilePath =  getParam(SPARK_YARN_CONFIGURATION_FILE);
-          
-            if( null != sparkConfigFilePath && !sparkConfigFilePath.equals(""))
-            {
-            	yarnManager.setSparkConfPropertyFile(this.servletContext.getResourceAsStream(sparkConfigFilePath));
-            }
-            
-            YarnClientManager aggregatorManager = new YarnClientManager(sparkConf.clone());
-            aggregatorManager.setKafkaMetaDataBrokerList(getParam(KAFKA_METADATA_BROKER_LIST))
-            		.setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
-            		.setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
-            		.setDataProcessorInputTopic(getParam(DATA_PROCESSOR_INPUT_TOPIC))
-            		.setSparkStreamingMicrobatchDuration(getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
-            		.setUserJar(DEPLOY_HOME+"/"+getParam(ODE_SPARK_JAR))
-	                .addFiles("file://"+absolutePath+"/"+ getParam(SPARK_METRICS_AGGREGATOR_CONFIGURATION_FILE))
-            		.setClass("com.bah.ode.spark.VehicleDataAggregatorWrapper");
-            
-            String sparkAggregatorConfigFilePath =  getParam(SPARK_YARN_AGGREGATOR_CONFIGURATION_FILE);
-            
-            if( null != sparkAggregatorConfigFilePath && !sparkAggregatorConfigFilePath.equals(""))
-            {
-            	aggregatorManager.setSparkConfPropertyFile(this.servletContext.getResourceAsStream(sparkAggregatorConfigFilePath));
-            }
-            
-            logger.info("Starting Spark ...");
-            
-            sparkAppId = yarnManager.submitSparkJob();
-            sparkVehicleAggregatorAppId = aggregatorManager.submitSparkJob();
-            
-            logger.info("Spark Vehicle Processor    ApplicationID: {}", sparkAppId.toString());
-            logger.info("Spark Aggregator Processor ApplicationID: {}", sparkVehicleAggregatorAppId.toString());
+      if (!streamingContextStarted) {
+         streamingContextStarted = true;
+         String absolutePath = this.servletContext
+               .getRealPath(getParam(SPARK_CONFIGURATION_DIRECTORY_HOME));
+         logger.info("Spark Properties File Directory Path: {} ", absolutePath);
 
+         try {
+            if (null == vehicleProcessorManager) {
+               vehicleProcessorManager = new YarnClientManager(
+                     sparkConf.clone());
+
+               /*
+                * Disable Aggregator function in Vehicle Data Processor by
+                * Default when running on Yarn Can be re-enabled by setting
+                * "spark.ode.vehicle.aggregator.enabled" to true in a properties
+                * file in order for it to run on yarn mode.
+                */
+
+               sparkConf.set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED,
+                     Boolean.toString(false));
+
+               vehicleProcessorManager
+                     .setKafkaMetaDataBrokerList(
+                           getParam(KAFKA_METADATA_BROKER_LIST))
+                     .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
+                     .setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
+                     .setDataProcessorInputTopic(
+                           getParam(DATA_PROCESSOR_INPUT_TOPIC))
+                     .setSparkStreamingMicrobatchDuration(
+                           getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
+                     .setClass("com.bah.ode.spark.VehicleDataProcessorWrapper")
+                     .addFiles("file://" + absolutePath + "/"
+                           + getParam(SPARK_METRICS_VEHICLE_CONFIGURATION_FILE))
+                     .setUserJar(DEPLOY_HOME + File.separator
+                           + getParam(ODE_SPARK_JAR));
+
+               String sparkConfigFilePath = getParam(
+                     SPARK_YARN_CONFIGURATION_FILE);
+
+               if (null != sparkConfigFilePath
+                     && !sparkConfigFilePath.equals("")) {
+                  vehicleProcessorManager
+                        .setSparkConfPropertyFile(this.servletContext
+                              .getResourceAsStream(sparkConfigFilePath));
+               }
+            }
+
+            if (null == aggregatorManager) {
+               aggregatorManager = new YarnClientManager(sparkConf.clone());
+               aggregatorManager
+                     .setKafkaMetaDataBrokerList(
+                           getParam(KAFKA_METADATA_BROKER_LIST))
+                     .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
+                     .setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
+                     .setDataProcessorInputTopic(
+                           getParam(DATA_PROCESSOR_INPUT_TOPIC))
+                     .setSparkStreamingMicrobatchDuration(
+                           getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
+                     .setUserJar(DEPLOY_HOME + File.separator
+                           + getParam(ODE_SPARK_JAR))
+                     .addFiles("file://" + absolutePath + "/"
+                           + getParam(
+                                 SPARK_METRICS_AGGREGATOR_CONFIGURATION_FILE))
+                     .setClass(
+                           "com.bah.ode.spark.VehicleDataAggregatorWrapper");
+
+               String sparkAggregatorConfigFilePath = getParam(
+                     SPARK_YARN_AGGREGATOR_CONFIGURATION_FILE);
+
+               if (null != sparkAggregatorConfigFilePath
+                     && !sparkAggregatorConfigFilePath.equals("")) {
+                  aggregatorManager.setSparkConfPropertyFile(this.servletContext
+                        .getResourceAsStream(sparkAggregatorConfigFilePath));
+               }
+            }
+
+            logger.info("Starting Spark Jobs ...");
+
+            ApplicationId vehicleProcessorAppId = vehicleProcessorManager
+                  .submitSparkJob();
+            logger.info("Spark Vehicle Processor ApplicationID: {}",
+                  vehicleProcessorAppId.toString());
+
+            ApplicationId aggregatorAppId = aggregatorManager.submitSparkJob();
+            logger.info("Spark Aggregator ApplicationID: {}",
+                  aggregatorAppId.toString());
 
             logger.info("*** Spark Streaming Context Started ***");
          } catch (Throwable t1) {
-            logger.warn("*** Error starting Spark Streaming Context. Stopping... ***", t1);
+            logger.warn(
+                  "*** Error starting Spark Streaming Context. Stopping... ***",
+                  t1);
             try {
                logger.info("*** Spark Streaming Context Stopped ***");
             } catch (Throwable t2) {
-               logger.warn("*** Error stopping Spark Streaming Context. Starting... ***", t2);
+               logger.warn(
+                     "*** Error stopping Spark Streaming Context. Starting... ***",
+                     t2);
             }
             try {
                logger.info("*** Restarting Spark Streaming Context. ***");
                streamingContextStarted = true;
                logger.info("*** Spark Streaming Context Restarted ***");
             } catch (Throwable t3) {
-               logger.error("*** Unable to start Spark Streaming Context ***", t3);
+               logger.error("*** Unable to start Spark Streaming Context ***",
+                     t3);
             }
          }
       }
    }
 
    public synchronized void stopSparkOnYarn() {
-      if (streamingContextStarted || null != yarnManager) {
+      if (streamingContextStarted) {
          try {
-            
-        	yarnManager.stopSparkJob();
-            YarnClientManager.killApplication(sparkVehicleAggregatorAppId);
-            
-            yarnManager = null;
-            sparkAppId = null;
+
+            if (null != vehicleProcessorManager) {
+               vehicleProcessorManager.stopSparkJob();
+            }
+
+            if (null != aggregatorManager) {
+               aggregatorManager.stopSparkJob();
+            }
+
             streamingContextStarted = false;
             logger.info("*** Spark Streaming Context Stopped ***");
          } catch (Throwable t) {
@@ -436,6 +502,7 @@ public void init(ServletContext context) {
    }
 
    public static boolean loopbackTest() {
-     return Boolean.parseBoolean(AppContext.getInstance().getSparkConf().get(LOOPBACK_TEST, "false"));
+      return Boolean.parseBoolean(AppContext.getInstance().getSparkConf()
+            .get(LOOPBACK_TEST, "false"));
    }
 }
