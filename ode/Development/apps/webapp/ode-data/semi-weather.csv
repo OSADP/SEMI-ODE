@@ -1,0 +1,13 @@
+SourceId,ObsTypeID,ObsTypeName,SensorID,SensorIndex,Latitude,Longitude,Elevation,Observation,Units
+1,ot1,essAtmosphericPressure,s1,0,42.329113,-83.047211,473,1001,mbar
+1,ot2,essAirTemperature,s1,1,42.329113,-83.047211,473,21,C
+1,ot1,essAtmosphericPressure,s2,0,42.33049,-83.043919,473,1002,mbar
+1,ot2,essAirTemperature,s2,1,42.33049,-83.043919,473,22,C
+1,ot1,essAtmosphericPressure,s3,0,42.332092,-83.044724,473,1003,mbar
+1,ot2,essAirTemperature,s3,1,42.332092,-83.044724,473,23,C
+1,ot1,essAtmosphericPressure,s4,0,42.501169,-83.285516,473,1004,mbar
+1,ot2,essAirTemperature,s4,1,42.501169,-83.285516,473,24,C
+1,ot1,essAtmosphericPressure,s5,0,42.479669,-83.285406,473,1005,mbar
+1,ot2,essAirTemperature,s5,1,42.479669,-83.285406,473,25,C
+1,ot1,essAtmosphericPressure,s6,0,42.465519,-83.279015,473,1006,mbar
+1,ot2,essAirTemperature,s6,1,42.465519,-83.279015,473,26,C

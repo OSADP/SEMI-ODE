@@ -1,0 +1,3 @@
+{"id":"Geofence1Detroit","nwLat":"42.330244","nwLon":"-83.046288","seLat":"42.329459","seLon":"-83.044797","minSpeed":"20","maxSpeed":"100","exemptions":"DeadBeef"}
+{"id":"Geofence2TelegraphRd","nwLat":"42.496214","nwLon":"-83.290542","seLat":"42.484362","seLon":"-83.280644","minSpeed":"20","maxSpeed":"100","exemptions":"DeadBeef"}
+{"id":"Rogue1","nwLat":"42.328793566859616","nwLon":"-83.04898459464312","seLat":"42.32876828439791","seLon": "-83.04890597239137"}
