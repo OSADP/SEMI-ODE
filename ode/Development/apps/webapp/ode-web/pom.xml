@@ -173,25 +173,11 @@
    <build>
       <directory>${project.basedir}/target</directory>
       <finalName>${project.parent.artifactId}</finalName>
-<!--  
-      <resources>
-
-         <resource>
-            <directory>src/main/webapp</directory>
-            <filtering>true</filtering>
-            <includes>
-               <include>**/version.txt</include>
-            </includes>
-         </resource>
-         <resource>
-            <directory>src/main/webapp</directory>
-            <filtering>false</filtering>
-            <excludes>
-               <exclude>**/version.txt</exclude>
-            </excludes>
-         </resource>
-      </resources>
--->
+      <!-- <resources> <resource> <directory>src/main/webapp</directory> 
+         <filtering>true</filtering> <includes> <include>**/version.txt</include> 
+         </includes> </resource> <resource> <directory>src/main/webapp</directory> 
+         <filtering>false</filtering> <excludes> <exclude>**/version.txt</exclude> 
+         </excludes> </resource> </resources> -->
       <plugins>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -210,12 +196,12 @@
                      <filtering>true</filtering>
                   </resource>
                   <resource>
-                  	<directory>src/main/webapp/WEB-INF</directory>
-                  	<filtering>true</filtering>
-            	    <includes>
+                     <directory>src/main/webapp/WEB-INF</directory>
+                     <filtering>true</filtering>
+                     <includes>
                         <include>**/*.properties</include>
-                     </includes>   
-                  	<targetPath>WEB-INF</targetPath>               
+                     </includes>
+                     <targetPath>WEB-INF</targetPath>
                   </resource>
                </webResources>
 
