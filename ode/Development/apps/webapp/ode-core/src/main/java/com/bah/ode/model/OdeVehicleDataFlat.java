@@ -82,7 +82,7 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
    private BigDecimal accelLat;
    private BigDecimal accelLong;
    private BigDecimal accelVert;
-   private BigDecimal accellYaw;
+   private BigDecimal accelYaw;
    
    private Byte brakesApplied;
    private Byte brakesTraction;
@@ -568,7 +568,7 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
          //YawRate ::= INTEGER (-32767..32767) 
          //    -- LSB units of 0.01 degrees per second (signed)
          accel = bb.getShort();
-         setAccellYaw(BigDecimal.valueOf(accel, 2));
+         setAccelYaw(BigDecimal.valueOf(accel, 2));
 
       }
    }
@@ -762,12 +762,12 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
       this.accelVert = accelVert;
    }
 
-   public BigDecimal getAccellYaw() {
-      return accellYaw;
+   public BigDecimal getAccelYaw() {
+      return accelYaw;
    }
 
-   public void setAccellYaw(BigDecimal accellYaw) {
-      this.accellYaw = accellYaw;
+   public void setAccelYaw(BigDecimal accellYaw) {
+      this.accelYaw = accellYaw;
    }
 
    public Byte getBrakesApplied() {
@@ -1115,7 +1115,7 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
       result = prime * result
             + ((accelVert == null) ? 0 : accelVert.hashCode());
       result = prime * result
-            + ((accellYaw == null) ? 0 : accellYaw.hashCode());
+            + ((accelYaw == null) ? 0 : accelYaw.hashCode());
       result = prime * result
             + ((brakesABS == null) ? 0 : brakesABS.hashCode());
       result = prime * result
@@ -1240,10 +1240,10 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
             return false;
       } else if (!accelVert.equals(other.accelVert))
          return false;
-      if (accellYaw == null) {
-         if (other.accellYaw != null)
+      if (accelYaw == null) {
+         if (other.accelYaw != null)
             return false;
-      } else if (!accellYaw.equals(other.accellYaw))
+      } else if (!accelYaw.equals(other.accelYaw))
          return false;
       if (brakesABS == null) {
          if (other.brakesABS != null)
