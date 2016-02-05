@@ -27,7 +27,6 @@ public class Aggregator extends BaseDistributor
          throws Exception {
       rdd.cache();
       if (rdd.count() == 0){
-    	 rdd.unpersist();
          return null;
       }
       
