@@ -68,7 +68,7 @@ class ODE_Validation_With_Test_Upload(unittest.TestCase):
         self.run_validation_test()
 
     def run_validation_test(self):
-        valid_ode_output = testRunnerHelper.extract_payload_expected_records(self.config['VALIDATION_FILE'])
+        valid_ode_output = testRunnerHelper.extract_payload_expected_records(self.config['VALIDATION_FILE'],subkey=None)
 
         while not self.client.is_buffer_empty() and self.config['TEST_REQUEST'] is None:
             responses = self.client.get_messages(2)
@@ -112,21 +112,36 @@ class ODE_Validation_With_Test_Upload(unittest.TestCase):
 
                     # Should be one and only one record in the expected result file that matches with the
                     # output from the ode.
-                    expected_record = [r for r in valid_ode_output if r[key] == msg.payload[key]]
+                    try:
+                        msg.payload[key]
+                    except:
+                        self.logger.info(msg)
 
+                    expected_record = [r for r in valid_ode_output if r['payload'][key] == msg.payload[key]]
+                    expected_record_obj = BaseResponse(json.dumps(expected_record[0]))
                     self.assertEquals(len(expected_record), 1,
                                       msg="Could not find record with serial Id {} in expected results file".format(
                                           msg.get_payload_value('serialId')))
 
                     # Filter records to remove empty Key/Value pairs prior to evaluation
-                    actual_record = {k: v for k, v in msg.payload.items() if v != ""}
-                    filtered_expected_record = {k: v for k, v in expected_record[0].items() if v != ""}
+                    actual_record = {k: v for k, v in msg.payload.items() if k not in (u"receivedAt",u"version",u"roadSeg")}
+                    filtered_expected_record = {k: v for k, v in expected_record[0]['payload'].items() if k not in (u"receivedAt",u"version",u"roadSeg")}
+
+                    if msg.get_metadata_value('violations') or expected_record_obj.get_metadata_value('violations'):
+                        actual_violations = [x['fieldName'] for x in msg.get_metadata_value('violations',[])]
+                        expected_violations = [x['fieldName'] for x in expected_record_obj.get_metadata_value('violations',[])]
+                        violations_delta = set(expected_violations) - set(actual_violations)
+                        actual_violations_delta = set(actual_violations) - set(expected_violations)
+                        common_violations_elements  = set(actual_violations)& set(expected_violations)
+                        self.assertTrue( (len(violations_delta) == 0 and len(actual_violations_delta) == 0 ),
+                                        msg="Error validating Violations Metadata for Serial ID: {0}\nActual Violations {1}\nExpected Violations {2}".format(
+                                            msg.get_payload_value('serialId'),sorted(actual_violations),sorted(expected_violations)))
 
                     if expected_record is not None:
                         record_delta = set(filtered_expected_record.items()) - set(actual_record.items())
                         actual_record_delta = set(actual_record.items()) - set(filtered_expected_record.items())
 
-                        self.assertTrue((len(record_delta) == 0 or len(actual_record_delta) == 0),
+                        self.assertTrue((len(record_delta) == 0 and len(actual_record_delta) == 0),
                                         msg="No matching record found. Found similar record Serial Id: {0}.\nExpected: {1}\nActual:   {2}".format(
                                             msg.get_payload_value('serialId'), sorted(record_delta),
                                             sorted(actual_record_delta)))
@@ -136,7 +151,7 @@ class ODE_Validation_With_Test_Upload(unittest.TestCase):
 
             time.sleep(.5)
 
-        self.logger.info("Valid number of vehicle records received: %d", record_count)
+        self.logger.info("Valid number of records received: %d", record_count)
         self.logger.info("Total number of records receive %d", total_records_received)
         self.logger.info("Total number of expected records %d", len(valid_ode_output))
 

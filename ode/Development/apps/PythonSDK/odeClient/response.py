@@ -16,6 +16,11 @@ class BaseResponse(object):
             self.payload = payload
 
     def get_payload_type(self):
+        """
+        Returns metadata:{payloadType: <value> }
+        Short code that could be 'veh', 'status', int' etcetera.
+        :return: String
+        """
         return self.metaData.get(_PAYLOAD_TYPE,None)
     
     def get_data_type(self):
@@ -24,8 +29,8 @@ class BaseResponse(object):
     def get_payload_value(self, key,default=None):
         return self.payload.get(key,default)
     
-    def get_metadata_value(self, key):
-        return self.metaData.get(key,None)
+    def get_metadata_value(self, key,default=None):
+        return self.metaData.get(key,default)
 
     def toJson(self):
         ode_msg = {
