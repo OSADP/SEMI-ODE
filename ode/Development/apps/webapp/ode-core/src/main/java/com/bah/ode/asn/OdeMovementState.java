@@ -29,7 +29,7 @@ public class OdeMovementState extends OdeObject {
       unKnownEstimate, 
       minTime, 
       maxTime, 
-      timeLikeklyToChange
+      timeLikelyToChange
    }
 
    public enum PedestrianDetect {
@@ -83,8 +83,17 @@ public class OdeMovementState extends OdeObject {
       if (state.hasSpecialState())
          setSpecialState(SpecialSignalState.valueOf(state.getSpecialState().name()));
       
-      if (state.hasStateConfidence())
-         setStateConfidence(StateConfidence.valueOf(state.getStateConfidence().name()));
+      if (state.hasStateConfidence()) {
+         /*
+          * Due to a typo in the DSRC schema definition (DSRC_R36_Source.asn),
+          * we need to do this.
+          */
+         com.bah.ode.asn.oss.dsrc.StateConfidence sc = state.getStateConfidence();
+         if (sc.longValue() == com.bah.ode.asn.oss.dsrc.StateConfidence.timeLikeklyToChange.longValue())
+            setStateConfidence(StateConfidence.timeLikelyToChange);
+         else
+            setStateConfidence(StateConfidence.valueOf(sc.name()));
+      }
       
       if (state.timeToChange != null)
          setTimeToChange(state.timeToChange.intValue());
