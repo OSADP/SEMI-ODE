@@ -34,6 +34,10 @@ public class YarnClientManager {
    private String className;
    private String userJar;
    private Client client;
+   private String driverMemory = "512m"; //MB
+   private String driverCores = "1";
+   private String executorMemory = "1024m"; //MB
+   private String executorCores = "1";
    private ApplicationId appId;
    private ArrayList<String> filesList;
    
@@ -94,6 +98,30 @@ public class YarnClientManager {
 	   return this;
    }
    
+   public YarnClientManager setDriverMemory(String arg)
+   {
+	   driverMemory = arg;
+	   return this;
+   }
+   
+   public YarnClientManager setDriverCores(String arg)
+   {
+	   driverCores = arg;
+	   return this;
+   }
+
+   public YarnClientManager setExecutorMemory(String arg)
+   {
+	   executorMemory = arg;
+	   return this; 
+   }
+   
+   public YarnClientManager setExectorsCores(String arg)
+   {
+	   executorCores = arg;
+	   return this; 
+   }
+   
 
    public YarnClientManager setSparkConfPropertyFile(InputStream file) throws IOException
    {
@@ -124,7 +152,10 @@ public class YarnClientManager {
       String[] args = new String[] { "--class", className, "--jar", userJar,
             "--arg", numPartitions, "--arg", dataProcessorInputTopic, "--arg",
             zkConnectionString, "--arg", kafkaMetaDataBrokerList, "--arg",
-            sparkStreamingMicrobatchDurationMs,"--files", String.join(",", filesList)};
+            sparkStreamingMicrobatchDurationMs,"--files", String.join(",", filesList),
+            "--driver-memory", driverMemory, "--driver-cores", driverCores,
+            "--executor-memory", executorMemory,"--executor-cores", executorCores
+      		};
 
       logger.info("**** Spark Yarn Streaming Arguments ****"
             + "\nApplication Jar: {} " + "\nPartition count: {} "
