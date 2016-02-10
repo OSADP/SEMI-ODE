@@ -185,8 +185,11 @@ def validate_violations_metadata(ode_output,validation_record):
     '''
 
     result = False
-    actual_list = [ValidationRule(name=x['fieldName'],min=x['validMin'],max=x['validMax']) for x in ode_output.get_payload_value('violations')]
-    expected_list  = [ValidationRule(name=x['fieldName'],min=x['validMin'],max=x['validMax']) for x in validation_record.get_payload_value('violations')]
+    empty_dict= {"fieldName": None,
+               "validMin" : None,
+               "validMax": None}
+    actual_list = [ValidationRule(fieldName=x['fieldName'],minValue=x['validMin'],maxValue=x['validMax']) for x in ode_output.get_payload_value('violations', [empty_dict])]
+    expected_list = [ValidationRule(fieldName=x['fieldName'],minValue=x['validMin'],maxValue=x['validMax']) for x in validation_record.get_payload_value('violations',[empty_dict])]
 
 
     violations_delta = set(expected_list) - set(actual_list)
