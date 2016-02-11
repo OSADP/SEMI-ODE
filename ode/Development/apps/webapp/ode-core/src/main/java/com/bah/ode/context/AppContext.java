@@ -106,7 +106,19 @@ public class AppContext {
    public static final String SPARK_CONFIGURATION_DIRECTORY_HOME = "spark.configuration.file.directory";
    public static final String SPARK_YARN_CONFIGURATION_FILE = "spark.yarn.vehicle.configuration.file";
    public static final String SPARK_YARN_AGGREGATOR_CONFIGURATION_FILE = "spark.yarn.aggregator.configuration.file";
-
+   
+   // SPARK ON YARN Cluster Resource Params
+   // Can be used to override defaults
+   public static final String SPARK_YARN_VEHICLE_DRIVER_CORES = "spark.yarn.vehicle.driver.cores";
+   public static final String SPARK_YARN_VEHICLE_DRIVER_MEMORY = "spark.yarn.vehicle.driver.memory";
+   public static final String SPARK_YARN_VEHICLE_EXECUTOR_CORES = "spark.yarn.vehicle.executor.cores";
+   public static final String SPARK_YARN_VEHICLE_EXECUTOR_MEMORY = "spark.yarn.vehicle.executor.memory";
+   public static final String SPARK_YARN_AGGREGATOR_DRIVER_CORES = "spark.yarn.aggregator.driver.cores";
+   public static final String SPARK_YARN_AGGREGATOR_DRIVER_MEMORY = "spark.yarn.aggregator.driver.memory";
+   public static final String SPARK_YARN_AGGREGATOR_EXECUTOR_CORES = "spark.yarn.aggregator.executor.cores";
+   public static final String SPARK_YARN_AGGREGATOR_EXECUTOR_MEMORY = "spark.yarn.aggregator.executor.memory";
+   
+   
    public static final String SPARK_METRICS_VEHICLE_CONFIGURATION_FILE = "spark.metrics.vehicle.configuration.file";
    public static final String SPARK_METRICS_AGGREGATOR_CONFIGURATION_FILE = "spark.metrics.aggregator.configuration.file";
 
@@ -405,7 +417,25 @@ public class AppContext {
                            + getParam(SPARK_METRICS_VEHICLE_CONFIGURATION_FILE))
                      .setUserJar(DEPLOY_HOME + File.separator
                            + getParam(ODE_SPARK_JAR));
-
+              
+              // Default Parameters are provided in the Yarn Client Manager Class
+              if  (null !=getParam(SPARK_YARN_VEHICLE_DRIVER_CORES) && !getParam(SPARK_YARN_VEHICLE_DRIVER_CORES).equals(""))
+              {
+            	  vehicleProcessorManager.setDriverCores(getParam(SPARK_YARN_VEHICLE_DRIVER_CORES));
+              }
+              if  (null !=getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY) && !getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY).equals(""))
+              {
+            	  vehicleProcessorManager.setDriverMemory(getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY));
+              } 
+              if  (null !=getParam(SPARK_YARN_VEHICLE_EXECUTOR_CORES) && !getParam(SPARK_YARN_VEHICLE_EXECUTOR_CORES).equals(""))
+              {
+            	  vehicleProcessorManager.setExectorsCores(getParam(SPARK_YARN_VEHICLE_EXECUTOR_CORES));
+              }
+              if  (null !=getParam(SPARK_YARN_VEHICLE_EXECUTOR_MEMORY) && !getParam(SPARK_YARN_VEHICLE_EXECUTOR_MEMORY).equals(""))
+              {
+            	  vehicleProcessorManager.setExecutorMemory(getParam(SPARK_YARN_VEHICLE_EXECUTOR_MEMORY));
+              } 
+             
                String sparkConfigFilePath = getParam(
                      SPARK_YARN_CONFIGURATION_FILE);
 
@@ -435,6 +465,23 @@ public class AppContext {
                                  SPARK_METRICS_AGGREGATOR_CONFIGURATION_FILE))
                      .setClass(
                            "com.bah.ode.spark.VehicleDataAggregatorWrapper");
+               // Default Parameters are provided in the Yarn Client Manager Class
+               if  (null !=getParam(SPARK_YARN_AGGREGATOR_DRIVER_CORES) && !getParam(SPARK_YARN_AGGREGATOR_DRIVER_CORES).equals(""))
+               {
+            	   aggregatorManager.setDriverCores(getParam(SPARK_YARN_AGGREGATOR_DRIVER_CORES));
+               }
+               if  (null !=getParam(SPARK_YARN_AGGREGATOR_DRIVER_MEMORY) && !getParam(SPARK_YARN_AGGREGATOR_DRIVER_MEMORY).equals(""))
+               {
+            	   aggregatorManager.setDriverMemory(getParam(SPARK_YARN_AGGREGATOR_DRIVER_MEMORY));
+               } 
+               if  (null !=getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_CORES) && !getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_CORES).equals(""))
+               {
+            	   aggregatorManager.setExectorsCores(getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_CORES));
+               }
+               if  (null !=getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_MEMORY) && !getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_MEMORY).equals(""))
+               {
+            	   aggregatorManager.setExecutorMemory(getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_MEMORY));
+               } 
 
                String sparkAggregatorConfigFilePath = getParam(
                      SPARK_YARN_AGGREGATOR_CONFIGURATION_FILE);
