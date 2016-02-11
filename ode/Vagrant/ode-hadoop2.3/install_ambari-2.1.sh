@@ -8,6 +8,6 @@ sudo wget -nv http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.
 sudo yum install -y ambari-server
 sudo echo "client.api.port=9080" >> /etc/ambari-server/conf/ambari.properties
 sudo ambari-server setup --silent
-sudo ambari-server start
+sudo ambari-server restart
 sudo chkconfig ambari-server on  
 echo "Ambari Server Setup Complete"
