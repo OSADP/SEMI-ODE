@@ -15,7 +15,9 @@ export YARN_CONF_DIR=/usr/hdp/current/hadoop-client/conf
 #JAVA_HOME=/opt/bitnami/java
 JRE_HOME=$JAVA_HOME
 JAVA_OPTS="-Djava.awt.headless=true -XX:+UseG1GC -Dfile.encoding=UTF8 -Duser.timezone=GMT $JAVA_OPTS "
-JAVA_OPTS="-XX:MaxPermSize=512M -Xss128M -Xms1024M -Xmx1536M -Dfile.encoding=UTF8 -Duser.timezone=GMT $JAVA_OPTS " # java-memory-settings
+JAVA_OPTS="-Xss128M -Xms1024M -Xmx1536M -Dfile.encoding=UTF8 -Duser.timezone=GMT $JAVA_OPTS "
+
+# java-memory-settings
 export JAVA_HOME
 export JRE_HOME
 export JAVA_OPTS
