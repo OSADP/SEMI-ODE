@@ -97,69 +97,53 @@ class ODE_Validation_With_Test_Upload(unittest.TestCase):
                     self.assertIsNotNone(msg.get_payload_value('code', None))
                     self.assertEqual(msg.get_payload_value('code'), 'SUCCESS')
                     time.sleep(2)
+                elif msg.get_payload_type() in('veh','agg','spat','map','int'):
 
-                # if msg.get_payload_type() in dataType.VehicleData:
-                #     self.assertEqual(msg.get_payload_value('dataType', None), 'veh')
-
-                try:
-                    # self.assertTrue(testRunnerHelper.validate_location(msg.payload, self.config),
-                    #                 msg="Error Validating Spatial Region in  Record SerialID: {2}  Lat: {0} Long: {1}".format(
-                    #                     msg.get_payload_value("latitude"), msg.get_payload_value("longitude"),
-                    #                     msg.get_payload_value("serialId")))
-
-                    # Continue testing if record is within Spatial region
-                    key = 'serialId'
-
-                    # Should be one and only one record in the expected result file that matches with the
-                    # output from the ode.
                     try:
-                        msg.payload[key]
-                    except:
-                        self.logger.info(msg)
 
-                    expected_record = [r for r in valid_ode_output if r['payload'][key] == msg.payload[key]]
-                    expected_record_obj = BaseResponse(json.dumps(expected_record[0]))
-                    self.assertEquals(len(expected_record), 1,
-                                      msg="Could not find record with serial Id {} in expected results file".format(
-                                          msg.get_payload_value('serialId')))
+                        key = 'serialId'
+                        try:
+                            msg.payload[key]
+                        except:
+                            self.logger.info(msg)
 
-                    # Filter records to remove empty Key/Value pairs prior to evaluation
-                    actual_record = {k: v for k, v in msg.payload.items() if k not in (u"receivedAt",u"version",u"roadSeg")}
-                    filtered_expected_record = {k: v for k, v in expected_record[0]['payload'].items() if k not in (u"receivedAt",u"version",u"roadSeg")}
+                        expected_record = [r for r in valid_ode_output if r['payload'][key] == msg.payload[key]]
+                        expected_record_obj = BaseResponse(json.dumps(expected_record[0]))
+                        self.assertEquals(len(expected_record), 1,
+                                          msg="Could not find record with serial Id {} in expected results file".format(
+                                              msg.get_payload_value('serialId')))
 
-                    if msg.get_metadata_value('violations') or expected_record_obj.get_metadata_value('violations'):
-                        actual_violations = [x['fieldName'] for x in msg.get_metadata_value('violations',[])]
-                        expected_violations = [x['fieldName'] for x in expected_record_obj.get_metadata_value('violations',[])]
-                        violations_delta = set(expected_violations) - set(actual_violations)
-                        actual_violations_delta = set(actual_violations) - set(expected_violations)
-                        common_violations_elements  = set(actual_violations)& set(expected_violations)
-                        self.assertTrue( (len(violations_delta) == 0 and len(actual_violations_delta) == 0 ),
-                                        msg="Error validating Violations Metadata for Serial ID: {0}\nActual Violations {1}\nExpected Violations {2}".format(
-                                            msg.get_payload_value('serialId'),sorted(actual_violations),sorted(expected_violations)))
 
-                    if expected_record is not None:
-                        record_delta = set(filtered_expected_record.items()) - set(actual_record.items())
-                        actual_record_delta = set(actual_record.items()) - set(filtered_expected_record.items())
+                        # TODO filter road segments if empty string only.
+                        actual_record = {k: v for k, v in msg.payload.items() if k not in (u"receivedAt",u"version")}
+                        filtered_expected_record = {k: v for k, v in expected_record[0]['payload'].items() if k not in (u"receivedAt",u"version")}
 
-                        self.assertTrue((len(record_delta) == 0 and len(actual_record_delta) == 0),
-                                        msg="No matching record found. Found similar record Serial Id: {0}.\nExpected: {1}\nActual:   {2}".format(
-                                            msg.get_payload_value('serialId'), sorted(record_delta),
-                                            sorted(actual_record_delta)))
-                        record_count += 1
-                except AssertionError as e:
-                    self.logger.warn(e.message)
+                        # TODO try to output the min/max w/ actual in the error messaging if failure.
 
-            time.sleep(.5)
+                        result, error_msg = testRunnerHelper.validate_violations_metadata(msg,expected_record_obj)
+                        self.assertTrue(result,msg=error_msg)
+
+                        if expected_record is not None:
+                            record_delta = set(filtered_expected_record.items()) - set(actual_record.items())
+                            actual_record_delta = set(actual_record.items()) - set(filtered_expected_record.items())
+
+                            self.assertTrue((len(record_delta) == 0 and len(actual_record_delta) == 0),
+                                            msg="No matching record found. Found similar record Serial Id: {0}.\nExpected: {1}\nActual:   {2}".format(
+                                                msg.get_payload_value('serialId'), sorted(record_delta),
+                                                sorted(actual_record_delta)))
+                            record_count += 1
+                    except AssertionError as e:
+                        self.logger.warn(e.message)
+
+                time.sleep(.5)
 
         self.logger.info("Valid number of records received: %d", record_count)
-        self.logger.info("Total number of records receive %d", total_records_received)
+        self.logger.info("Total number of records received %d", total_records_received)
         self.logger.info("Total number of expected records %d", len(valid_ode_output))
 
         self.assertEquals(record_count, len(valid_ode_output),
                           msg="Received {} more(less) record(s) than expected ".format(
                               record_count - len(valid_ode_output)))
-
-
 
 if __name__ == '__main__':
     suite = unittest.TestSuite()

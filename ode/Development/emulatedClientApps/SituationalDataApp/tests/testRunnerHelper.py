@@ -4,8 +4,10 @@ import json
 import sys
 import os
 import ConfigParser
-
 import dateutil.parser
+
+import collections
+ValidationRule = collections.namedtuple('ValidationRule', ['name', 'min','max'])
 
 try:
     import odeClient
@@ -21,6 +23,8 @@ except:
     print "Error Importing ODE Client. Please install the odeClient Package"
     sys.exit(-1)
 
+# Named Tuple to make Comparison of Validation Rules simpler
+ValidationRule = collections.namedtuple('ValidationRule', ['fieldName', 'minValue','maxValue'])
 
 def build_region(regionValues):
     return client.GeographicRegion(regionValues["nwLat"],
@@ -167,6 +171,36 @@ def validate_datetime(msg_payload, config):
     else:
         return False
 
+def validate_violations_metadata(ode_output,validation_record):
+    '''
+    Will convert violations metadata into NamedTuple to prior to set comparison
+    Return True if violations lists match, or False with message describing
+    the differences between the two lists
+
+    :type ode_output: odeClient.response.BaseResponse
+    :type validation_record: odeClient.response.BaseResponse
+    :param ode_output:
+    :param validation_record:
+    :return:(Boolean,String)
+    '''
+
+    result = False
+    empty_dict= {"fieldName": None,
+               "validMin" : None,
+               "validMax": None}
+    actual_list = [ValidationRule(fieldName=x['fieldName'],minValue=x['validMin'],maxValue=x['validMax']) for x in ode_output.get_payload_value('violations', [empty_dict])]
+    expected_list = [ValidationRule(fieldName=x['fieldName'],minValue=x['validMin'],maxValue=x['validMax']) for x in validation_record.get_payload_value('violations',[empty_dict])]
+
+
+    violations_delta = set(expected_list) - set(actual_list)
+    actual_violations_delta = set(actual_list) - set(expected_list)
+    common_violations_elements  = set(expected_list)& set(actual_list)
+
+    if (len(violations_delta) == 0 and len(actual_violations_delta) == 0 ):
+        return True, None
+    else:
+        return False,"Error validating Violations Metadata for Serial ID: {0}\nActual Violations {1}\nExpected Violations {2}".format(
+                                            ode_output.get_payload_value('serialId'),sorted(actual_violations_delta),sorted(expected_list))
 
 def extract_payload_expected_records(json_file, subkey='payload'):
     json_file_data = []
