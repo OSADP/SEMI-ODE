@@ -19,5 +19,5 @@ sudo yum install -y nano
 echo "Update Open SSL Library"
 sudo yum upgrade -y openssl  
 
-sudo cat /vagrant/common/public_key.txt >> /home/vagrant/.ssh/authorized_keys
+sudo cat /ode-common/public_key.txt >> /home/vagrant/.ssh/authorized_keys
 

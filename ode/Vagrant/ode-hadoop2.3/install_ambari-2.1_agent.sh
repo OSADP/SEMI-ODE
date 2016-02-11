@@ -11,4 +11,4 @@ sudo yum install -y ambari-agent
 ambari_agent=/etc/ambari-agent/conf/ambari-agent.ini
 #sudo sed -i 's/hostname=.*/hostname=ambari-server.local/g' $ambari_agent
 sudo chkconfig ambari-agent on
-sudo ambari-agent start
+sudo ambari-agent restart
