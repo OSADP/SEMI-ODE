@@ -24,15 +24,16 @@ public class LocalSparkProcessor {
       if (appContext.getParam(AppContext.SPARK_MASTER).startsWith("local") &&
           !streamingContextStarted) {
          int numParitions = 
-         Integer.parseInt(appContext.getParam(AppContext.KAFKA_DEFAULT_CONSUMER_THREADS));
+               appContext.getInt(AppContext.KAFKA_CONSUMER_THREADS, 
+                     AppContext.DEFAULT_KAFKA_CONSUMER_THREADS);
 
          if (ssc == null) {
             logger.info("Creating Spark Streaming Context...");
             ssc = new JavaStreamingContext(
                   appContext.getOrSetSparkContext(),
-                  Durations.milliseconds(Integer.parseInt(
-                        AppContext.getInstance().getParam(
-                              AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS))));
+                  Durations.milliseconds(AppContext.getInstance().getInt(
+                              AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS,
+                              AppContext.DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS)));
          }
          
          if (ovdfProcessor == null) {
@@ -40,7 +41,7 @@ public class LocalSparkProcessor {
             ovdfProcessor = new VehicleDataProcessor();
             ovdfProcessor.setup(ssc,
                   MQTopic.create(appContext.getParam(
-                        AppContext.DATA_PROCESSOR_INPUT_TOPIC), numParitions),
+                        AppContext.SPARK_DATA_PROCESSOR_INPUT_TOPIC), numParitions),
                   appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
                   appContext.getParam(AppContext.KAFKA_METADATA_BROKER_LIST));
          }

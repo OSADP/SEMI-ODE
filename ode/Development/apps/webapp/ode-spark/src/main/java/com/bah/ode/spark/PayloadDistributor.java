@@ -15,9 +15,12 @@ public class PayloadDistributor extends BaseDistributor
    implements Function<JavaPairRDD<String, Tuple2<String, String>>, Void> {
 
    private static final long serialVersionUID = 7013169090076266460L;
+   private String aggregatorInputTopic;
    
-   public PayloadDistributor(Broadcast<MQSerialazableProducerPool> producerPool) {
+   public PayloadDistributor(Broadcast<MQSerialazableProducerPool> producerPool,
+         String aggregatorInputTopic) {
       super(producerPool);
+      this.aggregatorInputTopic = aggregatorInputTopic;
    }
 
    @Override
@@ -25,7 +28,7 @@ public class PayloadDistributor extends BaseDistributor
          throws Exception {
       
       VoidFunction<Iterator<Tuple2<String, Tuple2<String, String>>>> 
-         partitionOutputer = new PartitionDistributor(producerPool);
+         partitionOutputer = new PartitionDistributor(producerPool, aggregatorInputTopic);
       
       rdd.foreachPartition(partitionOutputer);
       return null;

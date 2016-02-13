@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e       # Exit script on error
-#set -x      # Print commands and arguments
+set -x      # Print commands and arguments
 
 echo ""
 echo "Done with Spark Install"

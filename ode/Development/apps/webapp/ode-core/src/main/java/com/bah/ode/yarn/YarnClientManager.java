@@ -27,7 +27,7 @@ public class YarnClientManager {
    private SparkConf sparkConf;
 
    private String numPartitions;
-   private String dataProcessorInputTopic;
+   private String inputTopic;
    private String zkConnectionString;
    private String kafkaMetaDataBrokerList;
    private String sparkStreamingMicrobatchDurationMs;
@@ -56,12 +56,12 @@ public class YarnClientManager {
       return this;
    }
 
-   public String getDataProcessorInputTopic() {
-      return dataProcessorInputTopic;
+   public String getInputTopic() {
+      return inputTopic;
    }
 
-   public YarnClientManager setDataProcessorInputTopic(String dataProcessorInputTopic) {
-      this.dataProcessorInputTopic = dataProcessorInputTopic;
+   public YarnClientManager setInputTopic(String dataProcessorInputTopic) {
+      this.inputTopic = dataProcessorInputTopic;
       return this;
    }
 
@@ -150,7 +150,7 @@ public class YarnClientManager {
       // String sparkStreamingDefaultDuration = args[4];
       //
       String[] args = new String[] { "--class", className, "--jar", userJar,
-            "--arg", numPartitions, "--arg", dataProcessorInputTopic, "--arg",
+            "--arg", numPartitions, "--arg", inputTopic, "--arg",
             zkConnectionString, "--arg", kafkaMetaDataBrokerList, "--arg",
             sparkStreamingMicrobatchDurationMs,"--files", String.join(",", filesList),
             "--driver-memory", driverMemory, "--driver-cores", driverCores,
@@ -163,7 +163,7 @@ public class YarnClientManager {
             + "\nkafka Broker Connection String {}"
             + "\nSpark Streamin Duration (ms): {}"
             + "\nFiles: {}", userJar,
-            numPartitions.toString(), dataProcessorInputTopic, zkConnectionString,
+            numPartitions.toString(), inputTopic, zkConnectionString,
             kafkaMetaDataBrokerList, sparkStreamingMicrobatchDurationMs, String.join(",", filesList));
 
       ClientArguments cArgs = new ClientArguments(args, sparkConf);

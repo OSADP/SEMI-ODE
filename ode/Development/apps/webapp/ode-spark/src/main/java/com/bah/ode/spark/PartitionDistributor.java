@@ -10,6 +10,7 @@ import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
+import com.bah.ode.model.OdePayloadViolation;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQProducer;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
@@ -20,10 +21,13 @@ public class PartitionDistributor extends BaseDistributor implements
       VoidFunction<Iterator<Tuple2<String, Tuple2<String, String>>>> {
 
    private static final long serialVersionUID = -5994663995916421920L;
+   private String aggregatorInputTopic;
 
    public PartitionDistributor(
-         Broadcast<MQSerialazableProducerPool> producerPool) {
+         Broadcast<MQSerialazableProducerPool> producerPool,
+         String aggregatorInputTopic) {
       super(producerPool);
+      this.aggregatorInputTopic = aggregatorInputTopic;
    }
 
    @Override
@@ -37,16 +41,9 @@ public class PartitionDistributor extends BaseDistributor implements
             Tuple2<String, Tuple2<String, String>> record = partitionOfRecords
                   .next();
             String key = record._1();
-            if (key.startsWith(AppContext.SANITIZED_STRING)) {
-               OdeMetadata metadata = (OdeMetadata) JsonUtils.fromJson(record._2()._2(), 
-                     OdeMetadata.class);
-               if (metadata != null &&
-                   metadata.getOdeRequest() != null && 
-                   metadata.getOdeRequest().getId() != null) {
-                  String sanitizationTopic = "Sanitized-" + metadata.getOdeRequest().getId();
-                  producer.send(sanitizationTopic, key, record._2()._1());
-               }
-            } else {
+            OdeMetadata metadata = (OdeMetadata) JsonUtils.fromJson(record._2()._2(), 
+                  OdeMetadata.class);
+            if (metadata != null) {
                String dataType = JsonUtils
                      .getJsonNode(record._2()._1(), AppContext.DATA_TYPE_STRING)
                      .textValue();
@@ -54,13 +51,38 @@ public class PartitionDistributor extends BaseDistributor implements
                   OdeData payload = (OdeData) JsonUtils.fromJson(
                         record._2()._1(),
                         OdeDataType.valueOf(dataType).getClazz());
-                  OdeMetadata metadata = (OdeMetadata) JsonUtils
-                        .fromJson(record._2()._2(), OdeMetadata.class);
                   InternalDataMessage idm = new InternalDataMessage(key,
                         payload, metadata);
-                  producer.send(metadata.getOutputTopic().getName(), key,
-                        idm.toJson());
+                  if (key.startsWith(AppContext.SANITIZED_STRING)) {
+                     if (metadata.getOdeRequest() != null && 
+                         metadata.getOdeRequest().getId() != null) {
+                        String sanitizationTopic = "Sanitized-" + metadata.getOdeRequest().getId();
+                        producer.send(sanitizationTopic, key, record._2()._1());
+                     }
+                  } else {
+                     producer.send(metadata.getOutputTopic().getName(), key,
+                           idm.toJson());
+                  }
+                  
+                  if (aggregatorInputTopic != null) {
+                     if (metadata.getViolations() != null) {
+                        boolean hasSpeedViolation = false;
+                        for (OdePayloadViolation violation : metadata.getViolations()) {
+                           if (violation.getFieldName().equals("speed")) {
+                              hasSpeedViolation = true;
+                              break;
+                           }
+                        }
+                        
+                        if (!hasSpeedViolation) {
+                           producer.send(aggregatorInputTopic, key, idm.toJson());
+                        }
+                     } else {
+                        producer.send(aggregatorInputTopic, key,idm.toJson());
+                     }
+                  }
                }
+                  
             }
          }
       } finally {

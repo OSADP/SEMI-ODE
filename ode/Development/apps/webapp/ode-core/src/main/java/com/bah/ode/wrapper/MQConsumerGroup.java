@@ -29,11 +29,14 @@ public class MQConsumerGroup<K, V, R> {
    private DataProcessor<V, R> processor;
    private Decoder<K> keyDecoder;
    private Decoder<V> valueDecoder;
+   private long reOrderDelay;
+   private long reOrderPeriod;
 
    public MQConsumerGroup(String zookeepers, String a_groupId, 
          MQTopic topic, Decoder<K> keyDecoder,
          Decoder<V> valueDecoder,
-         DataProcessor<V, R> a_processor) {
+         DataProcessor<V, R> a_processor, 
+         long reOrderDelay, long reOrderPeriod) {
       
       consumerConnector = Consumer.createJavaConsumerConnector(
             createConsumerConfig(zookeepers, a_groupId));
@@ -42,6 +45,8 @@ public class MQConsumerGroup<K, V, R> {
       this.keyDecoder = keyDecoder;
       this.valueDecoder = valueDecoder;
       this.processor = a_processor;
+      this.reOrderDelay = reOrderDelay;
+      this.reOrderPeriod = reOrderPeriod;
    }
 
    public void shutDown() {
@@ -74,7 +79,7 @@ public class MQConsumerGroup<K, V, R> {
          for (final KafkaStream<K, V> stream : streams) {
             @SuppressWarnings("unused")
             Future<Object> future = executor.submit(new MQConsumer<K, V, R>(
-                  stream, threadNumber, processor));
+                  stream, threadNumber, processor, reOrderDelay, reOrderPeriod));
             threadNumber++;
          }
       }

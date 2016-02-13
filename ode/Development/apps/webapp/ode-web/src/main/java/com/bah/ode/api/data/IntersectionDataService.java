@@ -50,7 +50,7 @@ public class IntersectionDataService extends AbstractService {
 	      @QueryParam("nwLat") double nwLat, @QueryParam("nwLon") double nwLon,
 	      @QueryParam("seLat") double seLat, @QueryParam("seLon") double seLon) {
 		
-		logger.info("Received {}", getUriInfo());
+		logger.info("Received {}", getUriInfo().getAbsolutePath());
 		try {
 //			request = (DdsRequest) DdsRequest.create()
 //					.setDialogID(DdsRequest.Dialog.ISD.getId())

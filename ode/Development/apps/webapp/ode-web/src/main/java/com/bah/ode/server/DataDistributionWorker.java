@@ -51,7 +51,7 @@ public class DataDistributionWorker implements Runnable {
       if (this.metadata.getOdeRequest().getDataType() == OdeDataType.AggregateData) {
          consumerTopic = MQTopic.create(
                AppContext.getInstance().getParam(
-                     AppContext.DATA_PROCESSOR_AGGREGATES_TOPIC), 
+                     AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC), 
                      MQTopic.defaultPartitions());
       }
       else {
@@ -65,7 +65,11 @@ public class DataDistributionWorker implements Runnable {
                consumerTopic,
                new StringDecoder(null),
                new StringDecoder(null),
-               processor);
+               processor,
+               appContext.getInt(AppContext.DATA_SEQUENCE_REORDER_DELAY, 
+                     AppContext.DEFAULT_DATA_SEQUENCE_REORDER_DELAY),
+               appContext.getInt(AppContext.DATA_SEQUENCE_REORDER_PERIOD, 
+                     AppContext.DEFAULT_DATA_SEQUENCE_REORDER_PERIOD));
       }
    }
 

@@ -101,9 +101,9 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                topicName = metadata.getInputTopic().getName();
                VehSitDataMessage vsd = ddsData.getVsd();
                List<OdeVehicleDataFlat> ovdfList;
-               if (Boolean.valueOf(
-                     appContext.getParam(
-                           AppContext.DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE))) {
+               if (appContext.getBoolean(
+                           AppContext.DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE,
+                           AppContext.DEFAULT_DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE)) {
                   ovdfList = getLatestOvdfFromVsd(vsd, 1,
                         streamId.toString(), bundleId++);
                } else {
