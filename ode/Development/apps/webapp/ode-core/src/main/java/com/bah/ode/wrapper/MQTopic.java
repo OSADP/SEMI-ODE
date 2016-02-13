@@ -1,7 +1,11 @@
 package com.bah.ode.wrapper;
 
+import org.I0Itec.zkclient.ZkClient;
+
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeObject;
+
+import kafka.admin.AdminUtils;
 
 public class MQTopic extends OdeObject {
 
@@ -26,7 +30,7 @@ public class MQTopic extends OdeObject {
 //      // Create a ZooKeeper client
 //      int sessionTimeoutMs = 10000;
 //      int connectionTimeoutMs = 10000;
-//      String zkClientUrl = appContext.getParam(AppContext.ZOOKEEPER_CLIENT_URL);
+//      String zkClientUrl = AppContext.getInstance().getParam(AppContext.ZK_CONNECTION_STRINGS);
 //      ZkClient zkClient = new ZkClient(zkClientUrl);
 //      
 //      // Create a topic named "myTopic" with 8 partitions and a replication factor of 3
@@ -51,9 +55,8 @@ public class MQTopic extends OdeObject {
    }
    
    public static int defaultPartitions() {
-      return Integer.valueOf(
-            AppContext.getInstance().getParam(
-                  AppContext.KAFKA_DEFAULT_CONSUMER_THREADS));
+      return AppContext.getInstance().getInt(AppContext.KAFKA_CONSUMER_THREADS, 
+            AppContext.DEFAULT_KAFKA_CONSUMER_THREADS);
    }
 
    public MQTopic setPartitions(Integer partitions) {
@@ -61,6 +64,13 @@ public class MQTopic extends OdeObject {
       return this;
    }
 
+   public void delete() {
+      String zkClientUrl = AppContext.getInstance().getParam(AppContext.ZK_CONNECTION_STRINGS);
+      ZkClient zkClient = new ZkClient(zkClientUrl);
+      
+      AdminUtils.deleteTopic(zkClient, name);
+   }
+   
    @Override
    public int hashCode() {
       final int prime = 31;

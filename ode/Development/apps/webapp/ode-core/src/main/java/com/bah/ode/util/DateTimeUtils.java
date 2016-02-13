@@ -7,6 +7,10 @@ import java.time.format.DateTimeFormatter;
 
 public class DateTimeUtils {
 
+   public static String now() {
+      return ZonedDateTime.now().format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+   }
+   
    public static String isoDateTime(ZonedDateTime zonedDateTime) {
       return zonedDateTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
    }

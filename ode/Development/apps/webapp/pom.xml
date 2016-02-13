@@ -65,6 +65,12 @@
       <timestamp>${maven.build.timestamp}</timestamp>
       <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
 
+      <dropwizard.metrics.version>3.1.0</dropwizard.metrics.version>
+      
+      <!-- Spark logging parameters -->
+      <spark.executor.logs.rolling.strategy>size</spark.executor.logs.rolling.strategy>
+      <spark.executor.logs.rolling.maxSize>64MB</spark.executor.logs.rolling.maxSize>
+      <spark.executor.logs.rolling.maxRetainedFiles>10</spark.executor.logs.rolling.maxRetainedFiles>
    </properties>
 
    <dependencies>

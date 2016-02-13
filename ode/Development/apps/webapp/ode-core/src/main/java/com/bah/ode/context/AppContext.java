@@ -29,6 +29,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.metrics.OdeMetrics;
 import com.bah.ode.yarn.YarnClientManager;
 
 //import com.bah.ode.wrapper.MQTopic;
@@ -45,14 +46,21 @@ public class AppContext {
    public static final String DATA_TYPE_STRING = "dataType";
    public static final String SERIAL_ID_STRING = "serialId";
    public static final String SANITIZED_STRING = "Sanitized-";
+   public static final boolean DEFAULT_DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE = false;
+   public static final int DEFAULT_DATA_SEQUENCE_REORDER_DELAY = 1000;
+   public static final int DEFAULT_DATA_SEQUENCE_REORDER_PERIOD = 3500;
+   public static final int DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS = 1000;
+   public static final int DEFAULT_SPARK_STREAMING_WINDOW_MICROBATCHES = 60;
+   public static final int DEFAULT_SPARK_STREAMING_SLIDE_MICROBATCHES = 30;
+   public static final int DEFAULT_KAFKA_CONSUMER_THREADS = 1;
+   public static final int DEFAULT_SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE = 20;
+   public static final int DEFAULT_METRICS_GRAPHITE_PORT = 2003;
+   public static final int DEFAULT_METRICS_POLLING_RATE_SECONDS = 10;
 
-   /////////////////////////////////////////////////////////////////////////////
-   // Topics used by the Data Processor (Spark)
-   public static final String DATA_PROCESSOR_INPUT_TOPIC = "DPIT";
-   public static final String DATA_PROCESSOR_AGGREGATES_TOPIC = "DPAT";
-   // If you are adding a new DP topic, you must also add code set the host
-   // specific config parameter in the init method
-   /////////////////////////////////////////////////////////////////////////////
+
+
+   private static final String HOST_SPECIFIC_UID = "HOST_SPECIFIC_UID";
+
 
    public static final String LOOPBACK_TEST = "loopback.test";
 
@@ -89,8 +97,13 @@ public class AppContext {
    public static final String DDS_CAS_USERNAME = "dds.cas.username";
    public static final String DDS_CAS_PASSWORD = "dds.cas.password";
    public static final String DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE = "send.latest.vsr.in.vsd.bundle";
+   public static final String DATA_SEQUENCE_REORDER_DELAY = "data.sequence.reorder.delay";
+   public static final String DATA_SEQUENCE_REORDER_PERIOD = "data.sequence.reorder.period";
 
    // Spark parameters
+   /* 
+    * All spark parameters must start with "spark." for Spark to recognize them.
+    */
    public static final String SPARK_MASTER = "spark.master";
    public static final String SPARK_STREAMING_MICROBATCH_DURATION_MS = "spark.streaming.microbatch.duration.ms";
    public static final String SPARK_STREAMING_WINDOW_MICROBATCHES = "spark.streaming.window.microbatches";
@@ -123,14 +136,29 @@ public class AppContext {
    public static final String SPARK_METRICS_AGGREGATOR_CONFIGURATION_FILE = "spark.metrics.aggregator.configuration.file";
 
    public static final String SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED = "spark.ode.vehicle.aggregator.enabled";
+   public static final String SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE = "spark.road.segment.snapping.tolerance";
 
-   public static final String KAFKA_METADATA_BROKER_LIST = "metadata.broker.list";
-   public static final String KAFKA_DEFAULT_CONSUMER_THREADS = "default.consumer.threads";
+   // Kafka Parameters
+   public static final String KAFKA_METADATA_BROKER_LIST = "kafka.metadata.broker.list";
+   public static final String KAFKA_CONSUMER_THREADS = "kafka.consumer.threads";
    public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
 
+   /////////////////////////////////////////////////////////////////////////////
+   // Topics used by the Data Processor (Spark)
+   public static final String SPARK_DATA_PROCESSOR_INPUT_TOPIC = "spark.data.processor.input.topic";
+   public static final String SPARK_AGGREGATOR_INPUT_TOPIC = "spark.aggregator.input.topic";
+   public static final String SPARK_AGGREGATOR_OUTPUT_TOPIC = "spark.aggregator.output.topic";
+   // If you are adding a new spark.*.topic, you must also add code set the host
+   // specific config parameter in the init method
+   /////////////////////////////////////////////////////////////////////////////
+   
    public static final String TOKEN_KEY_RSA_PEM = "token.key.rsa.pem";
 
-   public static final String SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE = "spark.road.segment.snapping.tolerance";
+   public static final String METRICS_PREFIX = "metrics.prefix";
+   public static final String METRICS_POLLING_RATE_SECONDS = "metrics.polling.rate.seconds";
+   public static final String METRICS_GRAPHITE_HOST = "metrics.graphite.host";
+   public static final String METRICS_GRAPHITE_PORT = "metrics.graphite.port";
+
 
    private static AppContext instance = null;
 
@@ -163,12 +191,15 @@ public class AppContext {
        * not defined. So we'll assume that the software should be run in
        * loopbackTest mode.
        */
+      String hostSpecificUid;
       if (hostname == null) {
          this.sparkMaster = "local[2]";
          this.servletContext.setInitParameter(SPARK_MASTER, this.sparkMaster);
          this.servletContext.setInitParameter(LOOPBACK_TEST, "true");
          hostname = UUID.randomUUID().toString();
+         hostSpecificUid = hostname;
       } else {
+         hostSpecificUid = hostname + "-" + System.currentTimeMillis();
          this.sparkMaster = getParam(SPARK_MASTER);
          this.servletContext.setInitParameter(LOOPBACK_TEST, "false");
       }
@@ -176,24 +207,35 @@ public class AppContext {
       this.servletContext.setInitParameter(ODE_HOSTNAME, hostname);
       // Create host-specific topic names and add to init parameters
       //////////////////////////////////////////////////////////////////////////
-      this.servletContext.setInitParameter(DATA_PROCESSOR_INPUT_TOPIC,
-            DATA_PROCESSOR_INPUT_TOPIC + hostname);
+      
+      this.servletContext.setInitParameter(HOST_SPECIFIC_UID,
+            hostSpecificUid );
+      
+      this.servletContext.setInitParameter(SPARK_DATA_PROCESSOR_INPUT_TOPIC,
+            SPARK_DATA_PROCESSOR_INPUT_TOPIC + "-" + hostSpecificUid);
 
-      this.servletContext.setInitParameter(DATA_PROCESSOR_AGGREGATES_TOPIC,
-            DATA_PROCESSOR_AGGREGATES_TOPIC + hostname);
+      this.servletContext.setInitParameter(SPARK_AGGREGATOR_OUTPUT_TOPIC,
+            SPARK_AGGREGATOR_OUTPUT_TOPIC + "-" + hostSpecificUid);
+
+      this.servletContext.setInitParameter(SPARK_AGGREGATOR_INPUT_TOPIC,
+            SPARK_AGGREGATOR_INPUT_TOPIC + "-" + hostSpecificUid);
+
       //////////////////////////////////////////////////////////////////////////
 
-      sparkConf = new SparkConf().setMaster(sparkMaster)
+      sparkConf = new SparkConf()
+            .setMaster(sparkMaster)
             .setAppName(context.getServletContextName())
             .set("spark.shuffle.manager", "SORT")
-            .set(ODE_HOSTNAME, getParam(ODE_HOSTNAME))
-            .set(LOOPBACK_TEST, getParam(LOOPBACK_TEST))
             .set(SPARK_STREAMING_MICROBATCH_DURATION_MS,
-                  getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
+                  getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS,
+                        String.valueOf(
+                        AppContext.DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS)))
             .set(SPARK_STREAMING_WINDOW_MICROBATCHES,
-                  getParam(SPARK_STREAMING_WINDOW_MICROBATCHES))
+                  getParam(SPARK_STREAMING_WINDOW_MICROBATCHES,
+                        String.valueOf(DEFAULT_SPARK_STREAMING_WINDOW_MICROBATCHES)))
             .set(SPARK_STREAMING_SLIDE_MICROBATCHES,
-                  getParam(SPARK_STREAMING_SLIDE_MICROBATCHES))
+                  getParam(SPARK_STREAMING_SLIDE_MICROBATCHES,
+                        String.valueOf(DEFAULT_SPARK_STREAMING_SLIDE_MICROBATCHES)))
             .set(SPARK_STATIC_WEATHER_FILE_LOCATION,
                   getParam(SPARK_STATIC_WEATHER_FILE_LOCATION))
             .set(SPARK_STATIC_SANITIZATION_FILE_LOCATION,
@@ -201,11 +243,15 @@ public class AppContext {
             .set(SPARK_STATIC_VALIDATION_FILE_LOCATION,
                   getParam(SPARK_STATIC_VALIDATION_FILE_LOCATION))
             .set(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE,
-                  getParam(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE))
-            .set("spark.topics." + DATA_PROCESSOR_INPUT_TOPIC,
-                  getParam(DATA_PROCESSOR_INPUT_TOPIC))
-            .set("spark.topics." + DATA_PROCESSOR_AGGREGATES_TOPIC,
-                  getParam(DATA_PROCESSOR_AGGREGATES_TOPIC))
+                  getParam(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE,
+                        String.valueOf(
+                        AppContext.DEFAULT_SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE)))
+            .set(SPARK_DATA_PROCESSOR_INPUT_TOPIC,
+                  getParam(SPARK_DATA_PROCESSOR_INPUT_TOPIC))
+            .set(SPARK_AGGREGATOR_OUTPUT_TOPIC,
+                  getParam(SPARK_AGGREGATOR_OUTPUT_TOPIC))
+            .set(SPARK_AGGREGATOR_INPUT_TOPIC,
+                  getParam(SPARK_AGGREGATOR_INPUT_TOPIC))
             .set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED, Boolean.toString(true));
 
       // DEBUG ONLY
@@ -214,6 +260,10 @@ public class AppContext {
       // FOR TEST ONLY
       if (!loopbackTest()) {
          try {
+            //Start Metrics Reporter
+            logger.info("Starting Graphite Metrics Reporter...");
+            OdeMetrics.getInstance().startGraphiteReport();
+
             if (sparkMaster.startsWith("yarn")) {
                sparkConf
                      .set("spark.yarn.jar",
@@ -286,7 +336,8 @@ public class AppContext {
                // .set("spark.metrics.conf",
                // "/usr/hdp/current/spark-client/conf/metrics.properties")
                ;
-
+               
+               
                // Load external Spark Yarn Properties
                // Properties sparkYarnPropertyFile = new Properties();
                // String sparkConfigFilePath =
@@ -305,7 +356,7 @@ public class AppContext {
                // }
                // }
                startSparkOnYarn();
-            } else {
+            } else { // Spark Master = local
                String absolutePath = this.servletContext
                      .getRealPath(getParam(SPARK_CONFIGURATION_DIRECTORY_HOME));
                sparkConf.set("spark.metrics.conf", absolutePath + File.separator
@@ -317,7 +368,11 @@ public class AppContext {
          }
 
       } else {
-         logger.info("*** SPARK DISABLED FOR DEBUG ***");
+         logger.info("*** RUNNING WITHOUT HADOOP STACK ***");
+         
+//         //Start Metrics Reporter
+//         logger.info("Starting Console Metrics Reporter...");
+//         OdeMetrics.getInstance().startConsoleReport();
       }
 
       Enumeration<String> parmNames = context.getInitParameterNames();
@@ -347,6 +402,51 @@ public class AppContext {
       }
 
       return result;
+   }
+
+   public String getParam(String key, String defaultValue) {
+      String result = getParam(key);
+      if (result != null) {
+         return result;
+      } else {
+         return defaultValue;
+      }
+   }
+
+   public int getInt(String key, int defaultValue) {
+      String result = getParam(key);
+      if (result != null) {
+         return Integer.parseInt(result);
+      } else {
+         return defaultValue;
+      }
+   }
+
+   public long getLong(String key, long defaultValue) {
+      String result = getParam(key);
+      if (result != null) {
+         return Long.parseLong(result);
+      } else {
+         return defaultValue;
+      }
+   }
+
+   public double getDouble(String key, double defaultValue) {
+      String result = getParam(key);
+      if (result != null) {
+         return Double.parseDouble(result);
+      } else {
+         return defaultValue;
+      }
+   }
+
+   public boolean getBoolean(String key, boolean defaultValue) {
+      String result = getParam(key);
+      if (result != null) {
+         return Boolean.parseBoolean(result);
+      } else {
+         return defaultValue;
+      }
    }
 
    public ServletContext getServletContext() {
@@ -391,27 +491,28 @@ public class AppContext {
          try {
             if (null == vehicleProcessorManager) {
                vehicleProcessorManager = new YarnClientManager(
-                     sparkConf.clone());
-
-               /*
-                * Disable Aggregator function in Vehicle Data Processor by
-                * Default when running on Yarn Can be re-enabled by setting
-                * "spark.ode.vehicle.aggregator.enabled" to true in a properties
-                * file in order for it to run on yarn mode.
-                */
-
-               sparkConf.set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED,
-                     Boolean.toString(false));
+                     sparkConf.clone()
+                     .set("spark.app.name", getParam(HOST_SPECIFIC_UID) + "-VDP")
+                     /*
+                      * Disable Aggregator function in Vehicle Data Processor by
+                      * Default when running on Yarn. Can be re-enabled by setting
+                      * "spark.ode.vehicle.aggregator.enabled" to true in a properties
+                      * file in order for it to run on yarn mode.
+                      */
+                     .set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED, Boolean.toString(false))
+                     );
 
                vehicleProcessorManager
                      .setKafkaMetaDataBrokerList(
                            getParam(KAFKA_METADATA_BROKER_LIST))
                      .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
-                     .setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
-                     .setDataProcessorInputTopic(
-                           getParam(DATA_PROCESSOR_INPUT_TOPIC))
+                     .setNumPartitions(getParam(KAFKA_CONSUMER_THREADS,
+                           String.valueOf(DEFAULT_KAFKA_CONSUMER_THREADS)))
+                     .setInputTopic(
+                           getParam(SPARK_DATA_PROCESSOR_INPUT_TOPIC))
                      .setSparkStreamingMicrobatchDuration(
-                           getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
+                           getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS,
+                                 String.valueOf(DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS)))
                      .setClass("com.bah.ode.spark.VehicleDataProcessorWrapper")
                      .addFiles("file://" + absolutePath + "/"
                            + getParam(SPARK_METRICS_VEHICLE_CONFIGURATION_FILE))
@@ -448,16 +549,20 @@ public class AppContext {
             }
 
             if (null == aggregatorManager) {
-               aggregatorManager = new YarnClientManager(sparkConf.clone());
+               aggregatorManager = new YarnClientManager(sparkConf.clone()
+                     .set("spark.app.name", getParam(HOST_SPECIFIC_UID) + "-VDA")
+                     );
                aggregatorManager
                      .setKafkaMetaDataBrokerList(
                            getParam(KAFKA_METADATA_BROKER_LIST))
                      .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
-                     .setNumPartitions(getParam(KAFKA_DEFAULT_CONSUMER_THREADS))
-                     .setDataProcessorInputTopic(
-                           getParam(DATA_PROCESSOR_INPUT_TOPIC))
+                     .setNumPartitions(getParam(KAFKA_CONSUMER_THREADS,
+                           String.valueOf(DEFAULT_KAFKA_CONSUMER_THREADS)))
+                     .setInputTopic(
+                           getParam(SPARK_AGGREGATOR_INPUT_TOPIC))
                      .setSparkStreamingMicrobatchDuration(
-                           getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS))
+                           getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS,
+                                 String.valueOf(DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS)))
                      .setUserJar(DEPLOY_HOME + File.separator
                            + getParam(ODE_SPARK_JAR))
                      .addFiles("file://" + absolutePath + "/"
@@ -549,7 +654,7 @@ public class AppContext {
    }
 
    public static boolean loopbackTest() {
-      return Boolean.parseBoolean(AppContext.getInstance().getSparkConf()
-            .get(LOOPBACK_TEST, "false"));
+      return Boolean.parseBoolean(AppContext.getInstance()
+            .getParam(LOOPBACK_TEST, "false"));
    }
 }

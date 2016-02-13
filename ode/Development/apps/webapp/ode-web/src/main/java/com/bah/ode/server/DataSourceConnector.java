@@ -44,26 +44,16 @@ public class DataSourceConnector {
          OdeRequest odeRequest = metadata.getOdeRequest();
                
          OdeDataType dataType = odeRequest.getDataType();
-         int partitions = Integer.parseInt(appContext.getParam(
-               AppContext.KAFKA_DEFAULT_CONSUMER_THREADS));
+         int partitions = appContext.getInt(
+               AppContext.KAFKA_CONSUMER_THREADS,
+               AppContext.DEFAULT_KAFKA_CONSUMER_THREADS);
          switch (dataType) {
             case VehicleData:
-               if (!OdeRequestManager.isPassThrough(odeRequest.getDataType())) {
-                  MQTopic ovdfTopic = MQTopic.create(appContext.getParam(
-                        AppContext.DATA_PROCESSOR_INPUT_TOPIC), partitions);
-                  metadata.setInputTopic(ovdfTopic);
-               }
-               if (odeRequest.getRequestType() == OdeRequestType.Test) {
-                  connectToTestDataSource(metadata);
-               } else {
-                  connectToDDS(metadata);
-               }
-               break;
             case AggregateData:
                if (!OdeRequestManager.isPassThrough(odeRequest.getDataType())) {
-                  MQTopic inputTopic = MQTopic.create(appContext.getParam(
-                        AppContext.DATA_PROCESSOR_INPUT_TOPIC), partitions);
-                  metadata.setInputTopic(inputTopic);
+                  MQTopic ovdfTopic = MQTopic.create(appContext.getParam(
+                        AppContext.SPARK_DATA_PROCESSOR_INPUT_TOPIC), partitions);
+                  metadata.setInputTopic(ovdfTopic);
                }
                if (odeRequest.getRequestType() == OdeRequestType.Test) {
                   connectToTestDataSource(metadata);

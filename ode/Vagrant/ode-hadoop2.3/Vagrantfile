@@ -56,7 +56,7 @@ Vagrant.configure(2) do |config|
 		hdp2.vm.provider "virtualbox" do |vb|
 			# Customize the amount of memory on the VM:
 			# 12 GB RAM
-			# 2 CPUs
+			# 4 CPUs
 			vb.memory = "12288"
 			vb.customize ["modifyvm", :id, "--cpus", "4"]
 		end
@@ -72,13 +72,13 @@ Vagrant.configure(2) do |config|
 		hdp2.vm.provision "shell", path: "../ode-common/update_host_file.sh"
 		# Install Ambari Agent, Ambari Server
 		# Create Single Node Hadoop Cluster based on Blue Print
-		# Install and configure Liferay :
 		hdp2.vm.provision "shell", path: "./install_ambari-2.1.sh"
 		hdp2.vm.provision "shell", path: "./install_ambari-2.1_agent.sh"
 		hdp2.vm.provision "shell", path: "./create_cluster_blueprint.sh"
-		hdp2.vm.provision "shell", path: "./install_liferay.sh"
-		hdp2.vm.provision "shell", path: "./update_liferay_config.sh"
-		hdp2.vm.provision "shell", path: "./set_tomcat_hdfs_wrapper.sh"
+		# Install and configure Liferay :
+#		hdp2.vm.provision "shell", path: "./install_liferay.sh"
+#		hdp2.vm.provision "shell", path: "./update_liferay_config.sh"
+#		hdp2.vm.provision "shell", path: "./set_tomcat_hdfs_wrapper.sh"
 	end
 
 	config.vm.post_up_message = "Ambari server: http://192.168.22.12:9080 \nUserName: admin \nPassword: admin\nLiferay App server: http://192.168.22.12 or http://192.168.22.12:8080\nUser:user@liferay.com \nPassword: test"
