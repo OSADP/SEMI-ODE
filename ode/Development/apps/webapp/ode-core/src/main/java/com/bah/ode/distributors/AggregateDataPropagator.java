@@ -8,10 +8,14 @@ import javax.websocket.Session;
 
 import com.bah.ode.filter.KeyFilter;
 import com.bah.ode.filter.OdeFilter;
+import com.bah.ode.metrics.OdeMetrics;
+import com.bah.ode.metrics.OdeMetrics.Meter;
 import com.bah.ode.model.OdeMetadata;
 
 public class AggregateDataPropagator extends BaseDataPropagator {
 
+   private Meter aggMeter = OdeMetrics.getInstance().meter("AggregateDataPropagated");
+   
    public AggregateDataPropagator(Session clientSession,
          OdeMetadata metadata) {
       super(clientSession, metadata);
@@ -20,6 +24,7 @@ public class AggregateDataPropagator extends BaseDataPropagator {
    @Override
    public Future<String> process(String data)
          throws com.bah.ode.wrapper.DataProcessor.DataProcessorException {
+      aggMeter.mark();
       return super.process(data);
    }
    

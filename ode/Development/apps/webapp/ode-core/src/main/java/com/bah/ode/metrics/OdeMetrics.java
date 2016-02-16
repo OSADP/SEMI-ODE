@@ -5,11 +5,24 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import com.bah.ode.context.AppContext;
+import com.codahale.metrics.ConsoleReporter;
+import com.codahale.metrics.MetricRegistry;
 
 
 public class OdeMetrics {
-   private com.codahale.metrics.MetricRegistry registry = null; 
    private static OdeMetrics instance = null;
+
+   private com.codahale.metrics.MetricRegistry registry = null; 
+   
+   private Counter cacheCounter;
+   
+   public void cacheIn() {
+      cacheCounter.inc();
+   }
+
+   public void cacheOut() {
+      cacheCounter.dec();
+   }
 
    public static OdeMetrics getInstance() {
       if (null == instance) {
@@ -23,6 +36,7 @@ public class OdeMetrics {
 
    private OdeMetrics() {
       registry = new com.codahale.metrics.MetricRegistry();   
+      cacheCounter = counter("CacheCounter");
    }
 
    public class Meter {
@@ -41,20 +55,7 @@ public class OdeMetrics {
       }
    }
 
-   public abstract class Gauge<T> {
-      private com.codahale.metrics.Gauge<T> gauge;
-      
-      public Gauge() {
-         super();
-         this.gauge = new com.codahale.metrics.Gauge<T>() {
-            @Override
-            public T getValue() {
-                return this.getValue();
-            }
-        };
-      }
-
-      public abstract T getValue();
+   public interface Gauge<T> extends com.codahale.metrics.Gauge<T> {
    }
 
    public class Counter {
@@ -101,6 +102,19 @@ public class OdeMetrics {
       }
    }
    
+
+   public class Context {
+      private com.codahale.metrics.Timer.Context context;
+      
+      private Context(com.codahale.metrics.Timer.Context context) {
+         this.context= context;
+      }
+      
+      public long stop() {
+         return context.stop();
+      }
+   }
+   
    public class Timer {
       private com.codahale.metrics.Timer timer;
       
@@ -127,8 +141,8 @@ public class OdeMetrics {
        * @return a new {@link Context}
        * @see Context
        */
-      public com.codahale.metrics.Timer.Context time() {
-         return timer.time();
+      public Context time() {
+         return new Context(timer.time());
       }
 
    }
@@ -139,7 +153,7 @@ public class OdeMetrics {
    }
 
    public void registerGauge(Gauge<?> odeGauge, String className, String... names) {
-      registry.register(com.codahale.metrics.MetricRegistry.name(className, names), odeGauge.gauge);
+      registry.register(com.codahale.metrics.MetricRegistry.name(className, names), odeGauge);
    }
    
    public Counter counter(String name) {
@@ -158,9 +172,18 @@ public class OdeMetrics {
    }
 
    public static void main(String args[]) {
-      OdeMetrics.getInstance().startConsoleReport();
-      Meter requests = OdeMetrics.getInstance().meter("requests");
-      requests.mark();
+      MetricRegistry metrics = new com.codahale.metrics.MetricRegistry();
+      ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics)
+            .convertRatesTo(TimeUnit.SECONDS)
+            .convertDurationsTo(TimeUnit.MILLISECONDS)
+            .build();
+      reporter.start(1, TimeUnit.SECONDS);
+      com.codahale.metrics.Meter requestsMeter = metrics.meter("requests");
+      requestsMeter.mark();
+      
+      com.codahale.metrics.Counter requestsCounter = metrics.counter("requestsCounter");
+      requestsCounter.inc();
+      
       wait5Seconds();
    }
 
