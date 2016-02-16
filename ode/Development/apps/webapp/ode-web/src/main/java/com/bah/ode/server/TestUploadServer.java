@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.exception.OdeException;
+import com.bah.ode.metrics.OdeMetrics;
+import com.bah.ode.metrics.OdeMetrics.Meter;
 import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeAdvisoryData;
 import com.bah.ode.model.OdeControlData;
@@ -63,6 +65,11 @@ public class TestUploadServer {
    
    private MQProducer<String, String> producer;
    private TestRequestManager testMgr;
+
+   private Meter meter = OdeMetrics.getInstance().meter("TotalRecordsReceived");
+   private Meter vsdMeter = OdeMetrics.getInstance().meter("VSD_BundlesReceived");
+   private Meter isdMeter = OdeMetrics.getInstance().meter("ISD_RecordsReceived");
+   private Meter asdMeter = OdeMetrics.getInstance().meter("ASD_RecordsReceived");
 
    /**
     * Allows us to intercept the creation of a new session. The session class
@@ -169,6 +176,9 @@ public class TestUploadServer {
                      if (payloadType != null) {
                         switch (payloadType) {
                         case VehicleData:
+                           meter.mark();
+                           vsdMeter.mark();
+
                            OdeVehicleDataFlat ovdf = 
                                  (OdeVehicleDataFlat) JsonUtils.fromJson(
                                        payload.toString(), OdeVehicleDataFlat.class);
@@ -178,6 +188,9 @@ public class TestUploadServer {
                         case IntersectionData:
                         case MapData:
                         case SPaTData:
+                           meter.mark();
+                           isdMeter.mark();
+
                            OdeIntersectionData oisd = 
                            (OdeIntersectionData) JsonUtils.fromJson(
                                  payload.toString(), OdeIntersectionData.class);
@@ -185,6 +198,9 @@ public class TestUploadServer {
                            break;
          
                         case AdvisoryData:
+                           meter.mark();
+                           asdMeter.mark();
+
                            OdeAdvisoryData oasd = 
                            (OdeAdvisoryData) JsonUtils.fromJson(
                                  payload.toString(), OdeAdvisoryData.class);
@@ -251,6 +267,8 @@ public class TestUploadServer {
          msgPayload.setDataType(payloadType);
       
       if (msgPayload instanceof OdeData) {
+         OdeMetrics.getInstance().cacheIn();
+         
          OdeData odeData = (OdeData) msgPayload;
          odeData.setReceivedAt(DateTimeUtils.isoDateTime(ZonedDateTime.now()));
       }

@@ -29,6 +29,8 @@ import com.bah.ode.asn.oss.semi.VehSitDataMessage.Bundle;
 import com.bah.ode.asn.oss.semi.VehSitRecord;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.distributors.BaseDataPropagator;
+import com.bah.ode.metrics.OdeMetrics;
+import com.bah.ode.metrics.OdeMetrics.Meter;
 import com.bah.ode.model.DdsData;
 import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeAdvisoryData;
@@ -62,6 +64,13 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    private OdeMetadata metadata;
    private static AppContext appContext = AppContext.getInstance(); 
    
+
+   private Meter meter = OdeMetrics.getInstance().meter("TotalRecordsReceived");
+   private Meter vsdMeter = OdeMetrics.getInstance().meter("VSD_BundlesReceived");
+   private Meter isdMeter = OdeMetrics.getInstance().meter("ISD_RecordsReceived");
+   private Meter asdMeter = OdeMetrics.getInstance().meter("ASD_RecordsReceived");
+   
+
    // FOR LOOPBACK TEST ONLY
    private BaseDataPropagator distributor;
    
@@ -113,6 +122,11 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                }
                
                for (OdeVehicleDataFlat ovdf : ovdfList) {
+
+                  meter.mark();
+                  vsdMeter.mark();
+                  OdeMetrics.getInstance().cacheIn();
+                  
                   if (checkSkipAndLimit())
                      sendVehicleData(idm, topicName, ovdf);
                }
@@ -125,6 +139,11 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                   odeData = new OdeIntersectionData(
                         OdeData.buildSerialId(streamId, bundleId++, 0),
                         ddsData.getIsd());
+
+                  meter.mark();
+                  isdMeter.mark();
+                  OdeMetrics.getInstance().cacheIn();
+                  
                   idm.setKey(odeData.getSerialId());
                   idm.setPayload(odeData);
                   sendRecord = checkSkipAndLimit();
@@ -133,6 +152,11 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                   odeData = new OdeAdvisoryData(
                         OdeData.buildSerialId(streamId, bundleId++, 0),
                         ddsData.getAsd());
+                  
+                  meter.mark();
+                  asdMeter.mark();
+                  OdeMetrics.getInstance().cacheIn();
+                  
                   idm.setKey(odeData.getSerialId());
                   idm.setPayload(odeData);
                   sendRecord = checkSkipAndLimit();

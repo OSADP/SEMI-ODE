@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.filter.OdeFilter;
 import com.bah.ode.filter.SpatialFilter;
 import com.bah.ode.filter.TemporalFilter;
+import com.bah.ode.metrics.OdeMetrics;
+import com.bah.ode.metrics.OdeMetrics.Meter;
 import com.bah.ode.model.OdeControlData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
@@ -27,6 +29,7 @@ public class QueryDataPropagator extends BaseDataPropagator {
    private long recordCount;
    private Integer limit;
    private OdeControlData stopRecord;
+   private Meter queryMeter = OdeMetrics.getInstance().meter("QueryDataPropagated");
 
    public QueryDataPropagator(Session clientSession, OdeMetadata metadata) {
       super(clientSession, metadata);
@@ -44,6 +47,9 @@ public class QueryDataPropagator extends BaseDataPropagator {
 
    @Override
    public Future<String> process(String data) throws DataProcessorException {
+      queryMeter.mark();
+      baseMeter.mark();
+      
       try {
          OdeDataMessage dataMsg = getDataMsg(data);
          if (dataMsg != null) {
