@@ -84,15 +84,7 @@ public class OdeMovementState extends OdeObject {
          setSpecialState(SpecialSignalState.valueOf(state.getSpecialState().name()));
       
       if (state.hasStateConfidence()) {
-         /*
-          * Due to a typo in the DSRC schema definition (DSRC_R36_Source.asn),
-          * we need to do this.
-          */
-         com.bah.ode.asn.oss.dsrc.StateConfidence sc = state.getStateConfidence();
-         if (sc.longValue() == com.bah.ode.asn.oss.dsrc.StateConfidence.timeLikeklyToChange.longValue())
-            setStateConfidence(StateConfidence.timeLikelyToChange);
-         else
-            setStateConfidence(StateConfidence.valueOf(sc.name()));
+         setStateConfidence(correctSpelling(state.getStateConfidence()));
       }
       
       if (state.timeToChange != null)
@@ -107,11 +99,23 @@ public class OdeMovementState extends OdeObject {
       if (state.hasYellState())
          setYellState(String.format("%4X", state.getYellState().intValue()));
       
-      if (state.hasYellStateConfidence())
-         setYellStateConfidence(StateConfidence.valueOf(state.getYellStateConfidence().name()));
+      if (state.hasYellStateConfidence()) {
+         setYellStateConfidence(correctSpelling(state.getYellStateConfidence()));
+      }
       
       if (state.hasYellTimeToChange())
          setYellTimeToChange(state.getYellTimeToChange().intValue());
+   }
+
+   private StateConfidence correctSpelling(com.bah.ode.asn.oss.dsrc.StateConfidence sc) {
+      /*
+       * Due to a typo in the DSRC schema definition (DSRC_R36_Source.asn),
+       * we need to do this.
+       */
+      if (sc.longValue() == com.bah.ode.asn.oss.dsrc.StateConfidence.timeLikeklyToChange.longValue())
+         return StateConfidence.timeLikelyToChange;
+      else
+         return StateConfidence.valueOf(sc.name());
    }
 
    public String getMovementName() {

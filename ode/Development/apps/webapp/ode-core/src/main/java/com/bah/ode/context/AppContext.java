@@ -17,6 +17,8 @@
 package com.bah.ode.context;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.UUID;
 
@@ -185,19 +187,29 @@ public class AppContext {
 
    public void init(ServletContext context) {
       this.servletContext = context;
+
       String hostname = System.getenv("HOSTNAME");
-      /*
-       * If running on windows host, HOSTNAME environment variable is usually
-       * not defined. So we'll assume that the software should be run in
-       * loopbackTest mode.
-       */
       String hostSpecificUid;
       if (hostname == null) {
+         /*
+          * If running on windows host, HOSTNAME environment variable is usually
+          * not defined. So we'll assume that the software should be run in
+          * local loopbackTest mode.
+          */
          this.sparkMaster = "local[2]";
          this.servletContext.setInitParameter(SPARK_MASTER, this.sparkMaster);
          this.servletContext.setInitParameter(LOOPBACK_TEST, "true");
-         hostname = UUID.randomUUID().toString();
-         hostSpecificUid = hostname;
+         
+         //Let's get the hostname a different way
+         try {
+            hostname = InetAddress.getLocalHost().getHostName();
+            hostSpecificUid = hostname + "-" + System.currentTimeMillis();
+         } catch (UnknownHostException e) {
+            // Let's just use a random hostname
+            hostname = UUID.randomUUID().toString();
+            hostSpecificUid = hostname;
+         }
+
       } else {
          hostSpecificUid = hostname + "-" + System.currentTimeMillis();
          this.sparkMaster = getParam(SPARK_MASTER);
@@ -370,7 +382,7 @@ public class AppContext {
       } else {
          logger.info("*** RUNNING WITHOUT HADOOP STACK ***");
          
-//         //Start Metrics Reporter
+//         //Start Console Metrics Reporter
 //         logger.info("Starting Console Metrics Reporter...");
 //         OdeMetrics.getInstance().startConsoleReport();
       }
