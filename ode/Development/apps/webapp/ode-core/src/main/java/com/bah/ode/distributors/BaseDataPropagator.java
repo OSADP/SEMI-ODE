@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.filter.OdeFilter;
+import com.bah.ode.metrics.LongGauge;
+import com.bah.ode.metrics.OdeMetrics;
+import com.bah.ode.metrics.OdeMetrics.Meter;
 import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
@@ -32,6 +35,20 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
    protected Session clientSession;
    protected OdeMetadata metadata;
    protected List<OdeFilter> filters;
+   
+   //Metrics
+   protected Meter baseMeter = OdeMetrics.getInstance().meter("TotalRecordsPropagated");
+   private static final LongGauge vsdLatency = new LongGauge();
+   private static final LongGauge isdLatency = new LongGauge();
+   private static final LongGauge asdLatency = new LongGauge();
+   private static final LongGauge aggLatency = new LongGauge();
+
+   static {
+      OdeMetrics.getInstance().registerGauge(aggLatency, "AGG_Latency");
+      OdeMetrics.getInstance().registerGauge(asdLatency, "ASD_Latency");
+      OdeMetrics.getInstance().registerGauge(isdLatency, "ISD_Latency");
+      OdeMetrics.getInstance().registerGauge(vsdLatency, "VSD_Latency");
+   }
 
    public BaseDataPropagator(Session clientSession, OdeMetadata metadata) {
       super();
@@ -45,6 +62,9 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
    @Override
     public Future<String> process(String data)
           throws DataProcessorException {
+      
+      baseMeter.mark();
+      
       try {
          OdeDataMessage dataMsg = getDataMsg(data);
          if (dataMsg != null && dataMsg.getPayload() instanceof OdeFilterable) {
@@ -62,28 +82,44 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
     }
 
    protected String updateDataMsg(OdeDataMessage dataMsg) throws ParseException {
-      if (dataMsg.getPayload() instanceof OdeIntersectionData) {
-         OdeIntersectionData isectData = (OdeIntersectionData) dataMsg.getPayload();
-         OdeDataType dtype = metadata.getOdeRequest().getDataType();
-         
-         switch(dtype) {
-         case MapData:
-            dataMsg.getMetadata().setPayloadType(OdeDataType.MapData);
-            isectData.setSpatData(null);
-            break;
-         case SPaTData:
-            dataMsg.getMetadata().setPayloadType(OdeDataType.SPaTData);
-            isectData.setMapData(null);
-            break;
-         default:
-            break;
-         }
-      }
-      
       if (dataMsg.getPayload() instanceof OdeData) {
+         OdeMetrics.getInstance().cacheOut();
+
          OdeData odeData = (OdeData) dataMsg.getPayload();
          dataMsg.getMetadata().recordLatency(odeData.getReceivedAt());
       }
+
+      OdeDataType dtype = metadata.getOdeRequest().getDataType();
+      
+      switch(dtype) {
+      case MapData:
+         isdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
+         dataMsg.getMetadata().setPayloadType(OdeDataType.MapData);
+         OdeIntersectionData mapData = (OdeIntersectionData) dataMsg.getPayload();
+         mapData.setSpatData(null);
+         break;
+      case SPaTData:
+         isdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
+         dataMsg.getMetadata().setPayloadType(OdeDataType.SPaTData);
+         OdeIntersectionData spatData = (OdeIntersectionData) dataMsg.getPayload();
+         spatData.setMapData(null);
+         break;
+      case VehicleData:
+         vsdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
+         break;
+      case IntersectionData:
+         isdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
+         break;
+      case AdvisoryData:
+         asdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
+         break;
+      case AggregateData:
+         aggLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
+         break;
+      default:
+         break;
+      }
+      
       return dataMsg.toJson();
    }
 

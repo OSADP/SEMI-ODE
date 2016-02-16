@@ -35,17 +35,17 @@ public class DataDistributionWorker implements Runnable {
    private OdeMetadata metadata;
    private String groupId;
    private MQConsumerGroup<String, String, String> consumerGroup;
-   private BaseDataPropagator distributor;
+   private BaseDataPropagator propagator;
 
    public DataDistributionWorker(
          final Session clientSession, 
          OdeMetadata metadata,
-         BaseDataPropagator processor) {
+         BaseDataPropagator propagator) {
       super();
       this.clientSession = clientSession;
       this.metadata = metadata;
       this.groupId = clientSession.getId();
-      this.distributor = processor;
+      this.propagator = propagator;
       //ODE-169 - Aggregate Query Data Results also contain Vehicle Data Records
       MQTopic consumerTopic = null;
       if (this.metadata.getOdeRequest().getDataType() == OdeDataType.AggregateData) {
@@ -65,7 +65,7 @@ public class DataDistributionWorker implements Runnable {
                consumerTopic,
                new StringDecoder(null),
                new StringDecoder(null),
-               processor,
+               propagator,
                appContext.getInt(AppContext.DATA_SEQUENCE_REORDER_DELAY, 
                      AppContext.DEFAULT_DATA_SEQUENCE_REORDER_DELAY),
                appContext.getInt(AppContext.DATA_SEQUENCE_REORDER_PERIOD, 
@@ -91,12 +91,12 @@ public class DataDistributionWorker implements Runnable {
       return this;
    }
 
-   public BaseDataPropagator getDistributor() {
-      return distributor;
+   public BaseDataPropagator getPropagator() {
+      return propagator;
    }
 
-   public void setDistributor(BaseDataPropagator distributor) {
-      this.distributor = distributor;
+   public void setPropagator(BaseDataPropagator propagator) {
+      this.propagator = propagator;
    }
 
    @Override

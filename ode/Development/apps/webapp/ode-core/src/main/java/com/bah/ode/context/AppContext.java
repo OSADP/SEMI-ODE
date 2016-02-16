@@ -370,7 +370,7 @@ public class AppContext {
       } else {
          logger.info("*** RUNNING WITHOUT HADOOP STACK ***");
          
-//         //Start Metrics Reporter
+//         //Start Console Metrics Reporter
 //         logger.info("Starting Console Metrics Reporter...");
 //         OdeMetrics.getInstance().startConsoleReport();
       }

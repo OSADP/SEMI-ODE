@@ -8,9 +8,13 @@ import javax.websocket.Session;
 
 import com.bah.ode.filter.OdeFilter;
 import com.bah.ode.filter.SpatialFilter;
+import com.bah.ode.metrics.OdeMetrics;
+import com.bah.ode.metrics.OdeMetrics.Meter;
 import com.bah.ode.model.OdeMetadata;
 
 public class SubscriptionDataPropagator extends BaseDataPropagator {
+
+   private Meter subMeter = OdeMetrics.getInstance().meter("SubscriptionDataPropagated");
 
    public SubscriptionDataPropagator(Session clientSession,
          OdeMetadata metadata) {
@@ -20,6 +24,7 @@ public class SubscriptionDataPropagator extends BaseDataPropagator {
    @Override
    public Future<String> process(String data)
          throws com.bah.ode.wrapper.DataProcessor.DataProcessorException {
+      subMeter.mark();
       return super.process(data);
    }
    
