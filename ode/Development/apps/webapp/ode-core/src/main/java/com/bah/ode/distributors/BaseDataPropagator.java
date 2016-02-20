@@ -89,32 +89,39 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
          dataMsg.getMetadata().recordLatency(odeData.getReceivedAt());
       }
 
-      OdeDataType dtype = metadata.getOdeRequest().getDataType();
+      OdeDataType dtype = OdeDataType.getByShortName(
+            dataMsg.getMetadata().getPayloadType());
       
       switch(dtype) {
       case MapData:
-         isdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
+         if (dataMsg.getMetadata().getLatency() != null)
+            isdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
          dataMsg.getMetadata().setPayloadType(OdeDataType.MapData);
          OdeIntersectionData mapData = (OdeIntersectionData) dataMsg.getPayload();
          mapData.setSpatData(null);
          break;
       case SPaTData:
-         isdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
+         if (dataMsg.getMetadata().getLatency() != null)
+            isdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
          dataMsg.getMetadata().setPayloadType(OdeDataType.SPaTData);
          OdeIntersectionData spatData = (OdeIntersectionData) dataMsg.getPayload();
          spatData.setMapData(null);
          break;
       case VehicleData:
-         vsdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
+         if (dataMsg.getMetadata().getLatency() != null)
+            vsdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
          break;
       case IntersectionData:
-         isdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
+         if (dataMsg.getMetadata().getLatency() != null)
+            isdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
          break;
       case AdvisoryData:
-         asdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
+         if (dataMsg.getMetadata().getLatency() != null)
+            asdLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
          break;
       case AggregateData:
-         aggLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
+         if (dataMsg.getMetadata().getLatency() != null)
+            aggLatency.setValue(dataMsg.getMetadata().getLatency().longValue());
          break;
       default:
          break;
