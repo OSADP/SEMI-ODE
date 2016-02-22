@@ -78,8 +78,8 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
          throw new DataProcessorException(
                "Error processing data.", e);
       }
-       return null;
-    }
+      return null;
+   }
 
    protected String updateDataMsg(OdeDataMessage dataMsg) throws ParseException {
       if (dataMsg.getPayload() instanceof OdeData) {

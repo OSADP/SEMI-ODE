@@ -210,10 +210,15 @@ public class WebSocketServer {
          String requestId = odeRequest.getId();
          if (outputTopic == null) {
             // Note: requestId should not be null. So if we get a NPE, we have an internal error
-            logger.info("Creating new request ID: {}", requestId );
+            logger.info("Creating new request: {}", requestId );
             // No client topic exists, create a new one
             
             outputTopic = OdeRequestManager.getOrCreateTopic(requestId);
+            
+            /* By default inputTopic is the same as outputTopic. Non-default
+             * happens when data has to go to the spark processor which 
+             * currently only processes vehicle data.
+             */
             
             OdeMetadata metadata = new OdeMetadata(
                   requestId, outputTopic, outputTopic, odeRequest);
@@ -356,15 +361,22 @@ public class WebSocketServer {
 
          // Do this after rqstMgr.requesterDisconnected()
          if (connector != null) {
+            logger.info("Cancelling data request {}", 
+                  connector.getMetadata().getOdeRequest().getId());
             connector.cancelDataRequest();
+            logger.info("Removing connector {}", 
+                  connector.getMetadata().getOdeRequest().getId());
             connectors.remove(connector.getMetadata().getOutputTopic().getName());
          }
          
          if (distroWorker != null) {
+            logger.info("Shutting down distribution worker {}", 
+                  distroWorker.getMetadata().getOdeRequest().getId());
             distroWorker.shutDown();
          }
 
          if (odeRequest != null) {
+            logger.info("Removing subscriber {}", odeRequest.getId());
             OdeRequestManager.removeSubscriber(
                   odeRequest.getId(),
                   odeRequest.getDataType());

@@ -32,8 +32,6 @@ public class DdsRequestManager extends DataRequestManager {
    
    private static InboundTopicManagerSingleton itms = 
          InboundTopicManagerSingleton.getInstance();
-   private static OutboundTopicManagerSingleton otms = 
-         OutboundTopicManagerSingleton.getInstance();
    
    private DdsRequest ddsRequest;
    private WebSocketClient<?> ddsClient;
@@ -41,11 +39,14 @@ public class DdsRequestManager extends DataRequestManager {
    @SuppressWarnings("unchecked")
    public DdsRequestManager(OdeMetadata metadata) 
          throws DdsRequestManagerException {
-      super(metadata, itms, otms);
+      super(metadata.getInputTopic().getName(), 
+            metadata.getOdeRequest().getDataType(), 
+            itms);
       OdeRequest odeRequest = metadata.getOdeRequest();
       try {
          // get a data manager to start the data flow
          ddsRequest = buildDdsRequest(odeRequest);
+         setTopicName(itms.buildTopicName(ddsRequest));
          
          Class<?> decoder = null;
          if (odeRequest.getDataType() == OdeDataType.VehicleData) {
@@ -184,23 +185,34 @@ public class DdsRequestManager extends DataRequestManager {
 
 
    public void sendDdsDataRequest() throws DdsRequestManagerException {
-      try {
-         ddsClient.connect();
-         
-         // Send the new request
-         String sDdsRequest = ddsRequest.toString();
-         logger.info("Sending request: {}", sDdsRequest);
-   
-         addSubscriber();
-         
-         if (ddsClient.getWsSession() != null)
-            ddsClient.send(sDdsRequest);
-         else
-            throw new DdsRequestManagerException("DDS Client Session is null, probably NOT CONNECTED.");
+      if (itms.getTopic(topicName) == null) {
+         logger.info("Sending new DDS request: {}", topicName);
+         itms.getOrCreateTopic(topicName);
+         try {
+            ddsClient.connect();
             
+            if (ddsClient.getWsSession() != null) {
+               // Send the new request
+               String sDdsRequest = ddsRequest.toString();
          
-      } catch (Exception e) {
-         throw new DdsRequestManagerException("Error sending Data Request.", e);
+               logger.info("Sending request: {}", sDdsRequest);
+               ddsClient.send(sDdsRequest);
+            }
+            else
+               throw new DdsRequestManagerException("DDS Client Session is null, probably NOT CONNECTED.");
+            
+            addSubscriber();
+            
+         } catch (Exception e) {
+            try {
+               ddsClient.close();
+            } catch (WebSocketException e1) {
+               logger.error("Error Closing DDS Client.", e1);
+            }
+            throw new DdsRequestManagerException("Error sending Data Request.", e);
+         }
+      } else {
+         logger.info("Existing DDS Request: {}", topicName);
       }
    }
 
@@ -225,8 +237,15 @@ public class DdsRequestManager extends DataRequestManager {
 
 
    public void cancelDdsSubscription() throws DdsRequestManagerException {
+      try {
+         removeSubscriber();
+      } catch (DataRequestManagerException e1) {
+         throw new DdsRequestManagerException("Error Removing Subscriber: ", e1);
+      }
+      
       if (ddsClient != null) {
          try {
+            logger.info("Closing WebSocket Client for Request {}", topicName);
             ddsClient.close();
          } catch (WebSocketException e) {
             throw new DdsRequestManagerException("Error closing DDS Client: ", e);
