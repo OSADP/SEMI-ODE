@@ -326,9 +326,10 @@ public class WebSocketClient<T> extends Endpoint {
     */
    public void close() throws WebSocketException {
       try {
-         if (null != wsSession)
+         if (null != wsSession) {
             logger.info("Closing WebSocket session {}", wsSession.getId());
             wsSession.close();
+         }
       } catch (IOException e) {
          throw new WebSocketException(e);
       }
