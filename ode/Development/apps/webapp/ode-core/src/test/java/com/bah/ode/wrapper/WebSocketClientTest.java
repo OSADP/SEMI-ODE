@@ -172,6 +172,7 @@ public class WebSocketClientTest {
          container.connectToServer(
                wsClient, wsClient.getWsConfig(), wsClient.getUri());
          wsSession.addMessageHandler(handler);
+         wsSession.getId(); result = "Test WebSocket Session";
          wsSession.close();
       }};
       
