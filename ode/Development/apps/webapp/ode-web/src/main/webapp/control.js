@@ -644,11 +644,34 @@ $( document ).ready(function() {
         s2["endPoint"] = {
           "latitude":document.getElementById('n3LatSub').value,
           "longitude":document.getElementById('n3LngSub').value
-        };//Larned and Randolph
+        };//W. Larned and Randolph
+
+        var s3 = {};
+        s3["id"] = document.getElementById('n4Sub').value + '-' +
+                   document.getElementById('n5Sub').value;
+        s3["startPoint"] = {
+              "latitude":document.getElementById('n4LatSub').value,
+              "longitude":document.getElementById('n4LngSub').value
+            };//TelegraphBingham
+        s3["endPoint"] = {
+          "latitude":document.getElementById('n5LatSub').value,
+          "longitude":document.getElementById('n5LngSub').value
+        };//TelegraphW12Mile
+
+        var s4 = {};
+        s4["id"] = document.getElementById('n5Sub').value + '-' +
+                   document.getElementById('n6Sub').value;
+        s4["prevSegment"] = s3["id"];
+        s4["endPoint"] = {
+          "latitude":document.getElementById('n6LatSub').value,
+          "longitude":document.getElementById('n6LngSub').value
+        };//TelegraphCivicCtr
 
         var polyline = [];
         polyline.push(s1);
         polyline.push(s2);
+        polyline.push(s3);
+        polyline.push(s4);
 
         request["polyline"] = {"segments":polyline};
 
@@ -694,9 +717,32 @@ $( document ).ready(function() {
           "longitude":document.getElementById('n3LngQuery').value
         };//Larned and Randolph
 
+        var s3 = {};
+        s3["id"] = document.getElementById('n4Query').value + '-' +
+                   document.getElementById('n5Query').value;
+        s3["startPoint"] = {
+              "latitude":document.getElementById('n4LatQuery').value,
+              "longitude":document.getElementById('n4LngQuery').value
+            };//TelegraphBingham
+        s3["endPoint"] = {
+          "latitude":document.getElementById('n5LatQuery').value,
+          "longitude":document.getElementById('n5LngQuery').value
+        };//TelegraphW12Mile
+
+        var s4 = {};
+        s4["id"] = document.getElementById('n5Query').value + '-' +
+                   document.getElementById('n6Query').value;
+        s4["prevSegment"] = s3["id"];
+        s4["endPoint"] = {
+          "latitude":document.getElementById('n6LatQuery').value,
+          "longitude":document.getElementById('n6LngQuery').value
+        };//TelegraphCivicCtr
+
         var polyline = [];
         polyline.push(s1);
         polyline.push(s2);
+        polyline.push(s3);
+        polyline.push(s4);
 
         request["polyline"] = {"segments":polyline};
 
@@ -1046,29 +1092,19 @@ function createRoads(type){
 
   roadSegments = [];
   if(type === 0){
-    roadSegments.push([
-      $('#n1LatSub').val(), $('#n1LngSub').val()
-    ]);
-
-    roadSegments.push([
-      $('#n2LatSub').val(),$('#n2LngSub').val()
-    ]);
-
-    roadSegments.push([
-      $('#n3LatSub').val(), $('#n3LngSub').val()
-    ]);
+      roadSegments.push([ $('#n1LatSub').val(), $('#n1LngSub').val() ]);
+      roadSegments.push([ $('#n2LatSub').val(), $('#n2LngSub').val() ]);
+      roadSegments.push([ $('#n3LatSub').val(), $('#n3LngSub').val() ]);
+      roadSegments.push([ $('#n4LatSub').val(), $('#n4LngSub').val() ]);
+      roadSegments.push([ $('#n5LatSub').val(), $('#n5LngSub').val() ]);
+      roadSegments.push([ $('#n6LatSub').val(), $('#n6LngSub').val() ]);
   }else{
-    roadSegments.push([
-      $('#n1LatQuery').val(), $('#n1LngQuery').val()
-    ]);
-
-    roadSegments.push([
-      $('#n2LatQuery').val(),$('#n2LngQuery').val()
-    ]);
-
-    roadSegments.push([
-      $('#n3LatQuery').val(), $('#n3LngQuery').val()
-    ]);
+      roadSegments.push([ $('#n1LatQuery').val(), $('#n1LngQuery').val() ]);
+      roadSegments.push([ $('#n2LatQuery').val(), $('#n2LngQuery').val() ]);
+      roadSegments.push([ $('#n3LatQuery').val(), $('#n3LngQuery').val() ]);
+      roadSegments.push([ $('#n4LatQuery').val(), $('#n4LngQuery').val() ]);
+      roadSegments.push([ $('#n5LatQuery').val(), $('#n5LngQuery').val() ]);
+      roadSegments.push([ $('#n6LatQuery').val(), $('#n6LngQuery').val() ]);
   }
 
   layerMarkers = AddMarkers();
