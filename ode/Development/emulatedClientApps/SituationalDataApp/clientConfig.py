@@ -11,7 +11,7 @@ logger = logging.getLogger('simpleApp.clientConfig')
 # Command Line Parser Methods
 def get_parser():
     """
-    Creaates and returns Parser object with certain default values configured.
+    Creates and returns Parser object with certain default values configured.
     :return: optparse.OptionParser
     """
     parser = OptionParser(
