@@ -43,6 +43,7 @@ import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeQryRequest;
 import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.model.OdeVehicleDataFlat;
+import com.bah.ode.model.SerialId;
 import com.bah.ode.wrapper.DataProcessor.DataProcessorException;
 import com.bah.ode.wrapper.MQProducer;
 import com.bah.ode.wrapper.WebSocketMessageHandler;
@@ -90,7 +91,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
       }
       this.metadata = metadata;
       this.streamId = UUID.randomUUID().toString();
-      this.bundleId = new Long(0);
+      this.bundleId = 0;
       if (this.metadata.getOdeRequest().getRequestType() == OdeRequestType.Query) {
          OdeQryRequest queryReq = (OdeQryRequest) this.metadata.getOdeRequest();
          skip = queryReq.getSkip();
@@ -137,7 +138,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                if (ddsData.getIsd() != null) {
                   topicName = metadata.getInputTopic().getName();
                   odeData = new OdeIntersectionData(
-                        OdeData.buildSerialId(streamId, bundleId++, 0),
+                        new SerialId(streamId, 1, bundleId++, 0).toString(),
                         ddsData.getIsd());
 
                   meter.mark();
@@ -150,7 +151,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                } else if (ddsData.getAsd() != null) {
                   topicName = metadata.getInputTopic().getName();
                   odeData = new OdeAdvisoryData(
-                        OdeData.buildSerialId(streamId, bundleId++, 0),
+                        new SerialId(streamId, 1, bundleId++, 0).toString(),
                         ddsData.getAsd());
                   
                   meter.mark();
@@ -228,7 +229,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
          for (int i = count-1; i >= 0; i--) {
             VehSitRecord vsr = bundle.get(i);
             OdeVehicleDataFlat ovdf = new OdeVehicleDataFlat(
-                  OdeData.buildSerialId(streamId, bundleId, recordId++),
+                  new SerialId(streamId, bSize, bundleId, recordId++).toString(),
                   groupId, vsr);
             ovdfList.add(ovdf);
          }
