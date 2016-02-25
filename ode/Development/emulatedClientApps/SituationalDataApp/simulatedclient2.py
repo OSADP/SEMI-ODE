@@ -215,7 +215,8 @@ def parse_config_file(file_path):
         config['REQUEST_TYPE'] = config_file.get('ode', 'requestType')
         config['DATA'] = config_file.get('ode', 'dataType')
         config['UPLOAD_TEST_DATA'] = bool (config_file.getboolean('ode', 'uploadData'))
-        config['VALIDATION_FILE'] = config_file.get('ode', 'validationFile')
+        if config['UPLOAD_TEST_DATA']:
+          config['VALIDATION_FILE'] = config_file.get('ode', 'validationFile')
         if config['UPLOAD_TEST_DATA']:
             config['INPUT_FILE'] = config_file.get('ode', 'inputFile')
 
@@ -311,7 +312,10 @@ def _run_main(config,config_file=None):
 
     request = build_request(config)
 
-    extract_json_objects(config['VALIDATION_FILE'])
+    logger.info("Validation File: %s", config['VALIDATION_FILE'])
+    
+    if config['VALIDATION_FILE'] is not None:
+      extract_json_objects(config['VALIDATION_FILE'])
 
     logger.info("Subscriptions Params: %s", request.toJson() )
 
