@@ -45,11 +45,11 @@ public class SerialIdTest {
       // add additional test code here
       assertNotNull(result);
       assertEquals(0L, result.getSerialNumber());
-      assertEquals("RandomUUID_1.0.0", result.toString());
-      assertEquals(1L, result.incrementAndGet());
+      assertEquals("RandomUUID_1.0.0#0", result.toString());
+      assertEquals(1L, result.increment());
       assertEquals(1L, result.getBundleId());
       assertEquals(1L, result.getSerialNumber());
-      assertEquals(2L, result.incrementAndGet());
+      assertEquals(2L, result.increment());
       assertEquals(2L, result.getBundleId());
       assertEquals(0, result.nextRecordId());
       assertEquals(2L, result.getSerialNumber());
@@ -67,19 +67,19 @@ public class SerialIdTest {
     */
    @Test
    public void testSerialId_02() throws Exception {
-      String serialId = "";
+      String serialId = "StreamId_1.0.0#0";
 
       SerialId result = new SerialId(serialId);
 
       // add additional test code here
       assertNotNull(result);
-      assertEquals("_1.0.0", result.toString());
+      assertEquals("StreamId_1.0.0#0", result.toString());
       assertEquals(0L, result.getBundleId());
-      assertEquals("", result.getStreamId());
+      assertEquals("StreamId", result.getStreamId());
       assertEquals(0, result.getRecordId());
       assertEquals(1, result.getBundleSize());
       assertEquals(0L, result.getSerialNumber());
-      assertEquals(1L, result.incrementAndGet());
+      assertEquals(1L, result.increment());
       assertEquals(0, result.getRecordId());
       assertEquals(1L, result.getBundleId());
    }
@@ -93,19 +93,19 @@ public class SerialIdTest {
     */
    @Test
    public void testSerialId_03() throws Exception {
-      String serialId = "StreamId_5.6.3";
+      String serialId = "StreamId_5.6.3#33";
 
       SerialId result = new SerialId(serialId);
 
       // add additional test code here
       assertNotNull(result);
-      assertEquals("StreamId_5.6.3", result.toString());
+      assertEquals("StreamId_5.6.3#33", result.toString());
       assertEquals(6L, result.getBundleId());
       assertEquals("StreamId", result.getStreamId());
       assertEquals(3, result.getRecordId());
       assertEquals(5, result.getBundleSize());
       assertEquals(33L, result.getSerialNumber());
-      assertEquals(34L, result.incrementAndGet());
+      assertEquals(34L, result.increment());
       assertEquals(4, result.getRecordId());
       assertEquals(6L, result.getBundleId());
    }
@@ -125,13 +125,13 @@ public class SerialIdTest {
 
       // add additional test code here
       assertNotNull(result);
-      assertEquals("StreamId_5.6.4", result.toString());
+      assertEquals("StreamId_5.6.4#34", result.toString());
       assertEquals(6L, result.getBundleId());
       assertEquals("StreamId", result.getStreamId());
       assertEquals(4, result.getRecordId());
       assertEquals(5, result.getBundleSize());
       assertEquals(34L, result.getSerialNumber());
-      assertEquals(35L, result.incrementAndGet());
+      assertEquals(35L, result.increment());
       assertEquals(0, result.getRecordId());
       assertEquals(7L, result.getBundleId());
    }
@@ -151,7 +151,7 @@ public class SerialIdTest {
 
       // add additional test code here
       assertNotNull(result);
-      assertEquals("SerialId_5.0.0", result.toString());
+      assertEquals("SerialId_5.0.0#0", result.toString());
       assertEquals(0L, result.getBundleId());
       assertEquals("SerialId", result.getStreamId());
       assertEquals(0, result.getRecordId());
@@ -167,13 +167,13 @@ public class SerialIdTest {
     */
    @Test
    public void testSerialId_06() throws Exception {
-      String serialId = "SerialId_5.4";
+      String serialId = "SerialId_5.4#20";
 
       SerialId result = new SerialId(serialId);
 
       // add additional test code here
       assertNotNull(result);
-      assertEquals("SerialId_5.4.0", result.toString());
+      assertEquals("SerialId_5.4.0#20", result.toString());
       assertEquals(4L, result.getBundleId());
       assertEquals("SerialId", result.getStreamId());
       assertEquals(0, result.getRecordId());
@@ -189,7 +189,7 @@ public class SerialIdTest {
     */
    @Test
    public void testSerialId_17() throws Exception {
-      String streamId = "";
+      String streamId = "StreamId";
       int bundleSize = 1;
       long bundleId = 1L;
       int recordId = 1;
@@ -198,11 +198,11 @@ public class SerialIdTest {
 
       // add additional test code here
       assertNotNull(result);
-      assertEquals("_1.2.0", result.toString());
-      assertEquals(3L, result.incrementAndGet());
+      assertEquals("StreamId_1.2.0#2", result.toString());
+      assertEquals(3L, result.increment());
       assertEquals(3L, result.getBundleId());
       assertEquals(0, result.nextRecordId());
-      assertEquals("", result.getStreamId());
+      assertEquals("StreamId", result.getStreamId());
       assertEquals(0, result.getRecordId());
       assertEquals(1, result.getBundleSize());
    }
@@ -216,7 +216,7 @@ public class SerialIdTest {
     */
    @Test
    public void testSerialId_18() throws Exception {
-      String streamId = "";
+      String streamId = "StreamId";
       int bundleSize = 2;
       long bundleId = 1L;
       int recordId = 0;
@@ -225,11 +225,11 @@ public class SerialIdTest {
 
       // add additional test code here
       assertNotNull(result);
-      assertEquals("_2.1.0", result.toString());
-      assertEquals(3L, result.incrementAndGet());
+      assertEquals("StreamId_2.1.0#2", result.toString());
+      assertEquals(3L, result.increment());
       assertEquals(1L, result.getBundleId());
       assertEquals(0, result.nextRecordId());
-      assertEquals("", result.getStreamId());
+      assertEquals("StreamId", result.getStreamId());
       assertEquals(1, result.getRecordId());
       assertEquals(2, result.getBundleSize());
    }
@@ -243,17 +243,17 @@ public class SerialIdTest {
     */
    @Test
    public void testClone_1() throws Exception {
-      SerialId fixture = new SerialId("", 2, 1L, 1);
+      SerialId fixture = new SerialId("StreamId", 2, 1L, 1);
 
       SerialId result = fixture.clone();
 
       // add additional test code here
       assertNotNull(result);
-      assertEquals("_2.1.1", result.toString());
-      assertEquals(4L, result.incrementAndGet());
+      assertEquals("StreamId_2.1.1#3", result.toString());
+      assertEquals(4L, result.increment());
       assertEquals(2L, result.getBundleId());
       assertEquals(1, result.nextRecordId());
-      assertEquals("", result.getStreamId());
+      assertEquals("StreamId", result.getStreamId());
       assertEquals(0, result.getRecordId());
       assertEquals(2, result.getBundleSize());
    }
@@ -267,8 +267,8 @@ public class SerialIdTest {
     */
    @Test
    public void testEquals_1() throws Exception {
-      SerialId fixture = new SerialId("", 2, 1L, 1);
-      Object obj = new SerialId("", 2, 1L, 1);
+      SerialId fixture = new SerialId("StreamId", 2, 1L, 1);
+      Object obj = new SerialId("StreamId", 2, 1L, 1);
 
       boolean result = fixture.equals(obj);
 
@@ -285,7 +285,7 @@ public class SerialIdTest {
     */
    @Test
    public void testGetBundleId_1() throws Exception {
-      SerialId fixture = new SerialId("", 2, 1L, 1);
+      SerialId fixture = new SerialId("StreamId", 2, 1L, 1);
 
       long result = fixture.getBundleId();
 
@@ -302,7 +302,7 @@ public class SerialIdTest {
     */
    @Test
    public void testGetBundleSize_1() throws Exception {
-      SerialId fixture = new SerialId("", 2, 1L, 1);
+      SerialId fixture = new SerialId("StreamId", 2, 1L, 1);
 
       int result = fixture.getBundleSize();
 
@@ -319,7 +319,7 @@ public class SerialIdTest {
     */
    @Test
    public void testGetRecordId_1() throws Exception {
-      SerialId fixture = new SerialId("", 2, 1L, 1);
+      SerialId fixture = new SerialId("StreamId", 2, 1L, 1);
 
       int result = fixture.getRecordId();
 
@@ -353,12 +353,12 @@ public class SerialIdTest {
     */
    @Test
    public void testHashCode_1() throws Exception {
-      SerialId fixture = new SerialId("", 2, 1L, 1);
+      SerialId fixture = new SerialId("StreamId", 2, 1L, 1);
 
       int result = fixture.hashCode();
 
       // add additional test code here
-      assertEquals(955265, result);
+      assertEquals(1856532572, result);
    }
 
    /**
@@ -387,9 +387,9 @@ public class SerialIdTest {
     */
    @Test
    public void testIncrementAndGet_1() throws Exception {
-      SerialId fixture = new SerialId("", 2, 1L, 1);
+      SerialId fixture = new SerialId("StreamId", 2, 1L, 1);
 
-      long result = fixture.incrementAndGet();
+      long result = fixture.increment();
 
       // add additional test code here
       assertEquals(4L, result);
@@ -404,8 +404,8 @@ public class SerialIdTest {
     */
    @Test
    public void testIsRightAfter_1() throws Exception {
-      SerialId fixture = new SerialId("", 2, 2L, 1);
-      SerialId prev = new SerialId("", 2, 1L, 1);
+      SerialId fixture = new SerialId("StreamId", 2, 2L, 1);
+      SerialId prev = new SerialId("StreamId", 2, 1L, 1);
 
       boolean result = fixture.isRightAfter(prev);
 
@@ -422,8 +422,8 @@ public class SerialIdTest {
     */
    @Test
    public void testIsRightAfter_2() throws Exception {
-      SerialId fixture = new SerialId("", 2, 2L, 1);
-      SerialId prev = new SerialId("", 2, 2L, 0);
+      SerialId fixture = new SerialId("StreamId", 2, 2L, 1);
+      SerialId prev = new SerialId("StreamId", 2, 2L, 0);
 
       boolean result = fixture.isRightAfter(prev);
 
@@ -440,8 +440,8 @@ public class SerialIdTest {
     */
    @Test
    public void testIsRightAfter_3() throws Exception {
-      SerialId fixture = new SerialId("", 2, 3L, 0);
-      SerialId prev = new SerialId("", 2, 2L, 0);
+      SerialId fixture = new SerialId("StreamId", 2, 3L, 0);
+      SerialId prev = new SerialId("StreamId", 2, 2L, 0);
 
       boolean result = fixture.isRightAfter(prev);
 
@@ -458,8 +458,8 @@ public class SerialIdTest {
     */
    @Test
    public void testIsRightBefore_1() throws Exception {
-      SerialId fixture = new SerialId("", 2, 1L, 1);
-      SerialId next = new SerialId("", 2, 2L, 0);
+      SerialId fixture = new SerialId("StreamId", 2, 1L, 1);
+      SerialId next = new SerialId("StreamId", 2, 2L, 0);
 
       boolean result = fixture.isRightBefore(next);
 
@@ -476,8 +476,8 @@ public class SerialIdTest {
     */
    @Test
    public void testIsRightBefore_2() throws Exception {
-      SerialId fixture = new SerialId("", 2, 1L, 1);
-      SerialId next = new SerialId("", 2, 2L, 1);
+      SerialId fixture = new SerialId("StreamId", 2, 1L, 1);
+      SerialId next = new SerialId("StreamId", 2, 2L, 1);
 
       boolean result = fixture.isRightBefore(next);
 
@@ -494,8 +494,8 @@ public class SerialIdTest {
     */
    @Test
    public void testIsRightBefore_3() throws Exception {
-      SerialId fixture = new SerialId("", 2, 1L, 1);
-      SerialId next = new SerialId("", 2, 1L, 0);
+      SerialId fixture = new SerialId("StreamId", 2, 1L, 1);
+      SerialId next = new SerialId("StreamId", 2, 1L, 0);
 
       boolean result = fixture.isRightBefore(next);
 
@@ -512,7 +512,7 @@ public class SerialIdTest {
     */
    @Test
    public void testNextRecordId_1() throws Exception {
-      SerialId fixture = new SerialId("", 2, 1L, 0);
+      SerialId fixture = new SerialId("StreamId", 2, 1L, 0);
 
       int result = fixture.nextRecordId();
 
@@ -529,18 +529,18 @@ public class SerialIdTest {
     */
    @Test
    public void testSetStreamId_1() throws Exception {
-      SerialId fixture = new SerialId("", 2, 1L, 1);
-      String streamId = "New";
+      SerialId fixture = new SerialId("StreamId", 2, 1L, 1);
+      String streamId = "StreamId";
 
       SerialId result = fixture.setStreamId(streamId);
 
       // add additional test code here
       assertNotNull(result);
-      assertEquals("New_2.1.1", result.toString());
-      assertEquals(4L, result.incrementAndGet());
+      assertEquals("StreamId_2.1.1#3", result.toString());
+      assertEquals(4L, result.increment());
       assertEquals(2L, result.getBundleId());
       assertEquals(1, result.nextRecordId());
-      assertEquals("New", result.getStreamId());
+      assertEquals("StreamId", result.getStreamId());
       assertEquals(0, result.getRecordId());
       assertEquals(2, result.getBundleSize());
    }
@@ -554,12 +554,12 @@ public class SerialIdTest {
     */
    @Test
    public void testToString_1() throws Exception {
-      SerialId fixture = new SerialId("", 2, 1L, 1);
+      SerialId fixture = new SerialId("StreamId", 2, 1L, 1);
 
       String result = fixture.toString();
 
       // add additional test code here
-      assertEquals("_2.1.1", result);
+      assertEquals("StreamId_2.1.1#3", result);
    }
 
    /**

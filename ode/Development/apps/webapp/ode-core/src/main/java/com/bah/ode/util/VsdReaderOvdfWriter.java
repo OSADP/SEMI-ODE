@@ -7,7 +7,6 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -17,6 +16,7 @@ import com.bah.ode.asn.oss.semi.VehSitDataMessage;
 import com.bah.ode.dds.client.ws.DdsMessageHandler;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeVehicleDataFlat;
+import com.bah.ode.model.SerialId;
 import com.oss.asn1.Coder;
 
 public class VsdReaderOvdfWriter {
@@ -77,9 +77,7 @@ public class VsdReaderOvdfWriter {
          int numVSDs = 0;
          int numVSRs = 0;
          int numOVDFs = 0;
-         String streamId = UUID.randomUUID().toString();
-         int bundleId = 0;
-         
+         SerialId serialId = new SerialId();
 
          while (scanner.hasNext()) {
             try {
@@ -97,11 +95,9 @@ public class VsdReaderOvdfWriter {
                List<OdeVehicleDataFlat> ovdfList;
                if (allVSRs) {
                   ovdfList = DdsMessageHandler.getLatestOvdfFromVsd(
-                        vsd, vsd.getBundle().getSize(),
-                        streamId, bundleId++);
+                        vsd, vsd.getBundle().getSize(), serialId);
                } else {
-                  ovdfList = DdsMessageHandler.getLatestOvdfFromVsd(vsd, 1,
-                        streamId, bundleId++);
+                  ovdfList = DdsMessageHandler.getLatestOvdfFromVsd(vsd, 1, serialId);
                }
                
                for (OdeVehicleDataFlat ovdf : ovdfList) {

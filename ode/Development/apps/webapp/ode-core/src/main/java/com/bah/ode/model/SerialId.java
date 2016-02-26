@@ -4,12 +4,14 @@ import java.util.UUID;
 
 public class SerialId {
    private static final char UUID_DELIMITER = '_';
-   private static final char SERIAL_NUMBERS_DELIMITER = '.';
+   private static final char BUNDLE_RECORD_DELIMITER = '.';
+   private static final char SERIAL_NUMBER_DELIMITER = '#';
    
    private String streamId;
    private int bundleSize = 1;
    private long bundleId = 0;
    private int recordId = 0;
+   private long serialNumber = 0;
 
    
    public SerialId() {
@@ -28,40 +30,107 @@ public class SerialId {
       this.bundleSize = bundleSize;
       this.bundleId = bundleId + (recordId / this.bundleSize);
       this.recordId = recordId % bundleSize;
+      this.serialNumber = calculateSerialNumber();
    }
 
    public SerialId (String serialId) {
-      // Split on Non-alphanumerics and hyphen
       String[] splitId  = serialId.split(
-            "[" + UUID_DELIMITER + SERIAL_NUMBERS_DELIMITER +"]+");
-      
+            "[" + UUID_DELIMITER + SERIAL_NUMBER_DELIMITER +"]+");
       if (splitId.length >= 1)
          this.streamId     = splitId[0];
       else
          this.streamId     = serialId;
+
+      if (splitId.length >= 3)
+         this.serialNumber = Integer.parseInt(splitId[2]);
+      else
+         this.serialNumber = -1;
       
       if (splitId.length >= 2)
-         this.bundleSize   = Integer.parseInt(splitId[1]);
+         splitId  = splitId[1].split(
+            "[" + BUNDLE_RECORD_DELIMITER +"]+");
+      
+      if (splitId.length >= 1)
+         this.bundleSize   = Integer.parseInt(splitId[0]);
+      
+      if (splitId.length >= 2)
+         this.bundleId     = Long.parseLong(splitId[1]);
       
       if (splitId.length >= 3)
-         this.bundleId     = Long.parseLong(splitId[2]);
-      
-      if (splitId.length >= 4)
-         this.recordId     = Integer.parseInt(splitId[3]);
+         this.recordId     = Integer.parseInt(splitId[2]);
+
+      if (this.serialNumber == -1)
+         this.serialNumber = calculateSerialNumber();
    }
    
+   public SerialId(String streamId, 
+         int bundleSize, long bundleId, int recordId,
+         long serialNumber) {
+      super();
+      this.streamId = streamId;
+      this.bundleSize = bundleSize;
+      this.bundleId = bundleId;
+      this.recordId = recordId;
+      this.serialNumber = serialNumber;
+   }
+
+   private long calculateSerialNumber() {
+      return this.bundleId * this.bundleSize + this.recordId;
+   }
+
+   public static SerialId create(String serialIdStr) {
+      SerialId serialId = null;
+      try {
+         String[] splitId  = serialIdStr.split(
+               "[" + UUID_DELIMITER + SERIAL_NUMBER_DELIMITER +"]+");
+         
+         if (splitId.length == 3) {
+            String streamId = splitId[0];
+            long serialNumber = Integer.parseInt(splitId[2]);
+            splitId  = splitId[1].split(
+                  "[" + BUNDLE_RECORD_DELIMITER +"]+");
+            
+            if (splitId.length == 3) {
+               int bundleSize   = Integer.parseInt(splitId[0]);
+               long bundleId    = Long.parseLong(splitId[1]);
+               int recordId     = Integer.parseInt(splitId[2]);
+               
+               serialId = new SerialId(streamId, 
+                     bundleSize, bundleId, recordId, 
+                     serialNumber);
+            }
+         }
+      } catch (Exception e) {
+
+      }
+      
+      return serialId;
+   }
+
    public int nextRecordId() {
       return (recordId + 1) % bundleSize;
    }
    
-   synchronized public long incrementAndGet() {
+   public long nextSerialNumber() {
+      return serialNumber + 1;
+   }
+   
+   public SerialId nextSerialId() {
+      SerialId next = clone();
+      next.increment();
+      return next; 
+   }
+   
+   synchronized public long increment() {
       bundleId += (recordId + 1) / bundleSize;
       recordId = nextRecordId();
-      return getSerialNumber();
+      return ++serialNumber;
    }
    
    public SerialId clone() {
-      return new SerialId(streamId, bundleSize, bundleId, recordId);
+      SerialId clone = new SerialId(streamId, bundleSize, bundleId, recordId);
+      clone.serialNumber = this.serialNumber;
+      return clone;
    }
    
 
@@ -73,10 +142,6 @@ public class SerialId {
       return (this.getSerialNumber() + 1 == next.getSerialNumber());
    }
    
-   public long getSerialNumber() {
-      return (this.bundleId * this.bundleSize + this.recordId);
-   }
-
    public String getStreamId() {
       return streamId;
    }
@@ -86,23 +151,43 @@ public class SerialId {
       return this;
    }
 
+   public int getBundleSize() {
+      return bundleSize;
+   }
+
+   public SerialId setBundleSize(int bundleSize) {
+      this.bundleSize = bundleSize;
+      return this;
+   }
+
    public long getBundleId() {
       return bundleId;
+   }
+
+   public SerialId setBundleId(long bundleId) {
+      this.bundleId = bundleId;
+      return this;
    }
 
    public int getRecordId() {
       return recordId;
    }
 
-   public int getBundleSize() {
-      return bundleSize;
+   public SerialId setRecordId(int recordId) {
+      this.recordId = recordId;
+      return this;
+   }
+
+   public long getSerialNumber() {
+      return serialNumber;
    }
 
    @Override
    public String toString() {
       return streamId + UUID_DELIMITER + bundleSize + 
-            SERIAL_NUMBERS_DELIMITER + bundleId + 
-            SERIAL_NUMBERS_DELIMITER + recordId;
+            BUNDLE_RECORD_DELIMITER + bundleId + 
+            BUNDLE_RECORD_DELIMITER + recordId +
+            SERIAL_NUMBER_DELIMITER + serialNumber;
    }
 
    @Override
