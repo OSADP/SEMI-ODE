@@ -18,7 +18,6 @@ package com.bah.ode.dds.client.ws;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +52,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    private static final Logger logger = LoggerFactory
          .getLogger(DdsMessageHandler.class);
    
-   private String streamId;  
-   private long bundleId;
+   private SerialId serialId;
    private Integer limit;
    private Integer skip;
    private long skipCount = 0;
@@ -90,8 +88,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                            AppContext.KAFKA_METADATA_BROKER_LIST));
       }
       this.metadata = metadata;
-      this.streamId = UUID.randomUUID().toString();
-      this.bundleId = 0;
+      this.serialId = new SerialId();
       if (this.metadata.getOdeRequest().getRequestType() == OdeRequestType.Query) {
          OdeQryRequest queryReq = (OdeQryRequest) this.metadata.getOdeRequest();
          skip = queryReq.getSkip();
@@ -114,12 +111,10 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                if (appContext.getBoolean(
                            AppContext.DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE,
                            AppContext.DEFAULT_DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE)) {
-                  ovdfList = getLatestOvdfFromVsd(vsd, 1,
-                        streamId.toString(), bundleId++);
+                  ovdfList = getLatestOvdfFromVsd(vsd, 1, serialId);
                } else {
                   ovdfList = getLatestOvdfFromVsd(
-                        vsd, vsd.getBundle().getSize(),
-                        streamId.toString(), bundleId++);
+                        vsd, vsd.getBundle().getSize(), serialId);
                }
                
                for (OdeVehicleDataFlat ovdf : ovdfList) {
@@ -138,8 +133,9 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                if (ddsData.getIsd() != null) {
                   topicName = metadata.getInputTopic().getName();
                   odeData = new OdeIntersectionData(
-                        new SerialId(streamId, 1, bundleId++, 0).toString(),
+                        serialId.toString(),
                         ddsData.getIsd());
+                  serialId.increment();
 
                   meter.mark();
                   isdMeter.mark();
@@ -150,9 +146,9 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                   sendRecord = checkSkipAndLimit();
                } else if (ddsData.getAsd() != null) {
                   topicName = metadata.getInputTopic().getName();
-                  odeData = new OdeAdvisoryData(
-                        new SerialId(streamId, 1, bundleId++, 0).toString(),
+                  odeData = new OdeAdvisoryData(serialId.toString(),
                         ddsData.getAsd());
+                  serialId.increment();
                   
                   meter.mark();
                   asdMeter.mark();
@@ -218,19 +214,20 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    }
 
    public static List<OdeVehicleDataFlat> getLatestOvdfFromVsd(
-         VehSitDataMessage vsd, int count, String streamId, long bundleId) {
+         VehSitDataMessage vsd, int count, SerialId serialId) {
       ArrayList<OdeVehicleDataFlat> ovdfList = new ArrayList<OdeVehicleDataFlat>();
       Bundle bundle = vsd.getBundle();
       GroupID groupId = vsd.groupID;
       int bSize = bundle.getSize();
-      int recordId = 0;
+      serialId.setBundleSize(bSize);
       //data in the bundle appear to be in reverse chronological order
       if (bSize > 0 && count > 0 && count <= bSize) {
          for (int i = count-1; i >= 0; i--) {
             VehSitRecord vsr = bundle.get(i);
             OdeVehicleDataFlat ovdf = new OdeVehicleDataFlat(
-                  new SerialId(streamId, bSize, bundleId, recordId++).toString(),
+                  serialId.toString(),
                   groupId, vsr);
+            serialId.increment();
             ovdfList.add(ovdf);
          }
       }
