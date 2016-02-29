@@ -1,0 +1,14 @@
+QUERY:{
+   "systemQueryName":"SDW 2.2",
+   "dialogID":"156",
+   "startDateOperator":"GTE",
+   "endDateOperator":"LTE",
+   "nwLat":"43.652969118285434",
+   "nwLon":"-85.94707489013672",
+   "seLat":"40.96538194577475",
+   "seLon":"-81.03858947753906",
+   "orderByOrder":"-1",
+   "skip":"0",
+   "limit":"2500",
+   "resultEncoding":"full"
+}
