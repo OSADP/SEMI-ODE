@@ -1,6 +1,5 @@
 package com.bah.ode.wrapper;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -11,8 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.util.JsonUtils;
-import com.bah.ode.wrapper.DataProcessor.DataProcessorException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -29,9 +26,6 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
    private TreeMap<Integer, ArrayList<V>> records;
    private long reOrderDelay;
    private long reOrderPeriod;
-   private TreeMap<String, String> storedMessages;
-   private long prevBundleId;
-   private long prevRecordId;
    
 
    public MQConsumer(KafkaStream<K, V> a_stream, int a_threadNumber,
@@ -142,75 +136,4 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
       logger.info("Shutting down Thread: " + m_threadNumber);
       return null;
    }
-   
-   /**
-    *          § If prev is null or current is prev+1
-            □ Send
-            □ Set prev to current
-            □ If not live data
-               ® Remove msg from store
-            □ If store has value
-               ® Sendinorder (peek, false)
-         § Else
-            □ If store size LT maxStoreSize
-               ® Store msg
-            □ Else
-               ® Set prev to null
-               ® Sendinorder (peek, false)
-
-    * @param msg
-    * @return
-    * @throws IOException 
-    * @throws JsonProcessingException
-    * @throws DataProcessorException 
-    */
-   private String sendInOrder(V msg, boolean isStored) throws JsonProcessingException, IOException, DataProcessorException {
-      String storedMsg = null;
-      
-      ObjectNode bundleObject = JsonUtils.toObjectNode(msg.toString());
-
-      JsonNode payloadNode = bundleObject.get(AppContext.PAYLOAD_STRING);
-      if (payloadNode == null) {
-         processor.process(msg);
-      } else {
-         JsonNode serialIdNode = payloadNode
-               .get(AppContext.SERIAL_ID_STRING);
-         if (serialIdNode == null) {
-            processor.process(msg);
-         } else {
-            String tempSerialId = serialIdNode.asText();
-            if (tempSerialId == null || tempSerialId.equals("")) {
-               processor.process(msg);
-            } else {
-               try {
-                  
-                  String[] splitId = tempSerialId.split(
-                        "[^\\w-]+"); /* Non-alphanumerics and hyphen */
-                  long bundleId = Integer.parseInt(splitId[1]);
-                  long recordId = Integer.parseInt(splitId[2]);
-                  
-                  if (isNext(bundleId, recordId)) {
-                     processor.process(msg);
-                     prevBundleId = bundleId;
-                     prevRecordId = recordId;
-                     
-                  }
-
-               } catch (Exception e) {
-                  logger.info("ERROR IN CODE. Sending message as is : ", e);
-                  processor.process(msg);
-               }
-
-            } // End of serial ID is not blank
-         } // End of 'has serialId' block
-      } // End of 'has payload' block
-
-      return storedMsg;
-   }
-
-   private boolean isNext(long bundleId, long recordId) {
-      // TODO Auto-generated method stub
-      return false;
-   }
-
 }

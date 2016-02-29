@@ -52,6 +52,10 @@ public class OdeData extends OdeMsgPayload implements OdeFilterable {
       this.serialId = serialId;
    }
 
+   public static String buildSerialId(String streamId, long bundleId, long recordId) {
+      return streamId + "." + bundleId + "." + recordId;
+   }
+
    public String getReceivedAt() {
       return receivedAt;
    }
