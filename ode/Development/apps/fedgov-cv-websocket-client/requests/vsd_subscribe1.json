@@ -2,10 +2,10 @@ SUBSCRIBE:{
    "vsmType":31,
    "systemSubName": "SDC 2.2",
    "dialogID":"154",
-   "nwLat2":"43.652969118285434",
-   "nwLon2":"-85.94707489013672",
-   "seLat2":"36.4765153148293",
-   "seLon2":"-74.53468322753906",
+   "nwLat2":"42.53790",
+   "nwLon2":"-83.47790",
+   "seLat2":"42.30575",
+   "seLon2":"-82.84275",
    "resultEncoding":"base64"
 }
 

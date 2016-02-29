@@ -1,0 +1,10 @@
+SUBSCRIBE:{
+   "systemSubName": "SDC 2.2",
+   "dialogID": 154,
+   "vsmType": 31,
+   "nwLat2":"42.621328386255925",
+   "nwLon2":"-83.6612319946289",
+   "seLat2":"42.38948720168034",
+   "seLon2":"-83.02608489990234",
+   "resultEncoding": "base64"
+}
