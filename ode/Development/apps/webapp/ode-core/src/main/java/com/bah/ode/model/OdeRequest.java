@@ -19,11 +19,11 @@ package com.bah.ode.model;
 @SuppressWarnings("serial")
 public class OdeRequest extends BaseRequest {
    public enum DataSource {
-      SDC, SDW, SDPC
+      SDC, SDW, SDPC, TEST_UPLOAD, DEPOSIT_SDC, DEPOSIT_SDW
    }
 
    private String id;
-   private DataSource dataSource;
+   private String dataSource;
    private OdeRequestType requestType;
    private OdeDataType dataType;
    private OdePolyline polyline;
@@ -37,11 +37,11 @@ public class OdeRequest extends BaseRequest {
       return this;
    }
 
-public DataSource getDataSource() {
+public String getDataSource() {
       return dataSource;
    }
 
-   public OdeRequest setDataSource(DataSource dataSource) {
+   public OdeRequest setDataSource(String dataSource) {
       this.dataSource = dataSource;
       return this;
    }
@@ -80,6 +80,7 @@ public OdeRequestType getRequestType() {
       result = prime * result
             + ((dataSource == null) ? 0 : dataSource.hashCode());
       result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
+      result = prime * result + ((id == null) ? 0 : id.hashCode());
       result = prime * result + ((polyline == null) ? 0 : polyline.hashCode());
       result = prime * result
             + ((requestType == null) ? 0 : requestType.hashCode());
@@ -95,9 +96,17 @@ public OdeRequestType getRequestType() {
       if (getClass() != obj.getClass())
          return false;
       OdeRequest other = (OdeRequest) obj;
-      if (dataSource != other.dataSource)
+      if (dataSource == null) {
+         if (other.dataSource != null)
+            return false;
+      } else if (!dataSource.equals(other.dataSource))
          return false;
       if (dataType != other.dataType)
+         return false;
+      if (id == null) {
+         if (other.id != null)
+            return false;
+      } else if (!id.equals(other.id))
          return false;
       if (polyline == null) {
          if (other.polyline != null)

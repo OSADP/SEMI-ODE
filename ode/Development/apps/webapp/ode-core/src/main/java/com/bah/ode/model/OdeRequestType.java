@@ -17,9 +17,10 @@
 package com.bah.ode.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public enum OdeRequestType {
-   Subscription("sub"), Query("qry"), Test("tst");
+   Subscription("sub"), Query("qry"), Test("tst"), Deposit("dep");
 
    private static final String shortNames = shortNames();
    private final String shortName;
@@ -52,7 +53,7 @@ public enum OdeRequestType {
             result.add(value.getShortName());
          }
          
-         return result.toArray().toString();
+         return Arrays.toString(result.toArray());
       }
       return shortNames;
    }

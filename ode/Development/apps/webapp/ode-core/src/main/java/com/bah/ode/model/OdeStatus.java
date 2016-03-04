@@ -21,7 +21,9 @@ public class OdeStatus extends OdeMsgPayload {
    private static final long serialVersionUID = -8787345244306039604L;
 
    public static enum Code {
-      SUCCESS, FAILURE, SOURCE_CONNECTION_ERROR, INVALID_REQUEST_TYPE_ERROR, INVALID_DATA_TYPE_ERROR
+      SUCCESS, FAILURE, 
+      SOURCE_CONNECTION_ERROR, INVALID_REQUEST_TYPE_ERROR, 
+      INVALID_DATA_TYPE_ERROR, COMMENT, DATA_TYPE_NOT_SUPPORTED
    }
 
    Code code;

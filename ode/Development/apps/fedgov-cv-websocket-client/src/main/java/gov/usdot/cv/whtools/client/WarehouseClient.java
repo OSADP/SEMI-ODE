@@ -192,6 +192,7 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 				try {
 					ResponseHandler responseHandler = new ResponseHandler(wsConfig);
 					WarehouseClient wsClient = WarehouseClient.configure(wsConfig, responseHandler);
+					wsClient.connectBlocking();
 					String depositMessageFormat = "DEPOSIT: { \"systemDepositName\": \"%s\", \"encodeType\": \"%s\", \"encodedMsg\": \"%s\" }";
 					if (wsConfig.encodeType.equals(ENCODE_TYPE_HEX) || wsConfig.encodeType.equals(ENCODE_TYPE_BASE64)) {
 						List<String> fileLines = FileUtils.readLines(file);
