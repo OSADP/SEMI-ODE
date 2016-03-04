@@ -57,6 +57,10 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
       filters = createFilters();
    }
 
+   public BaseDataPropagator(Session session) {
+      this.clientSession = session;
+   }
+
    protected abstract List<OdeFilter> createFilters();
    
    @Override
@@ -170,15 +174,17 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
 
    protected boolean applyFilters(OdeFilterable payload) {
       boolean allPassed = true;
-       for (OdeFilter filter : filters) {
-          if (!filter.pass(payload)) {
-             allPassed = false;
-             logger.info("Filtered by {}: {}",
-                   filter.getClass().getSimpleName(),
-                   payload.toString());
-             break;
+      if (filters != null) {
+          for (OdeFilter filter : filters) {
+             if (!filter.pass(payload)) {
+                allPassed = false;
+                logger.info("Filtered by {}: {}",
+                      filter.getClass().getSimpleName(),
+                      payload.toString());
+                break;
+             }
           }
-       }
+      }
       return allPassed;
    }
    

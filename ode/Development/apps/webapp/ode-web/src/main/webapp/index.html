@@ -31,65 +31,75 @@
             <h1>Data Sources</h1>
             <form action="">
                <p class="radioText1">
-                  <input type="radio" name="source" value="0">
+                  <input type="radio" name="source" value="SDC">
                   SDC Subscription
                </p>
                <p class="radioText1">
-                  <input type="radio" name="source" value="1">
+                  <input type="radio" name="source" value="SDPC">
                   SDPC Query
                </p>
                <p class="radioText1">
-                  <input type="radio" name="source" value="2">
+                  <input type="radio" name="source" value="SDW">
                   SDW Query
                </p>
                <p class="radioText1">
-                  <input type="radio" name="source" value="3">
+                  <input type="radio" name="source" value="TEST_UPLOAD">
                   Test Upload
                </p>
             </form>
             <form action="" id="selectDataForm">
                <h1>Select Data</h1>
                <p class="radioText2" id="vehicleRadio">
-                  <input type="radio" name="data" value="0">
+                  <input type="radio" name="data" value="veh">
                   Vehicles
                </p>
                <p class="radioText2" id="intersectionRadio">
-                  <input type="radio" name="data" value="1">
+                  <input type="radio" name="data" value="int">
                   Intersections
                </p>
                <p class="radioText2" id="aggRadio">
-                  <input type="radio" name="data" value="2">
+                  <input type="radio" name="data" value="agg">
                   Aggregates
                </p>
                <p class="radioText2" id="mapRadio">
-                  <input type="radio" name="data" value="3">
+                  <input type="radio" name="data" value="map">
                   Map
                </p>
                <p class="radioText2" id="spatRadio">
-                  <input type="radio" name="data" value="4">
+                  <input type="radio" name="data" value="spat">
                   SPaT
                </p>
                <p class="radioText2" id="advisoryRadio">
-                  <input type="radio" name="data" value="5">
+                  <input type="radio" name="data" value="adv">
                   Advisory Messages
                </p>
                <p class="radioText2 testRadio">
-                  <input type="radio" name="data" value="6">
+                  <input type="radio" name="data" value="veh">
                   Test Vehicle Data
                </p>
                <p class="radioText2 testRadio">
-                  <input type="radio" name="data" value="7">
+                  <input type="radio" name="data" value="int">
                   Test Intersection Data
                </p>
                <p class="radioText2 testRadio">
-                  <input type="radio" name="data" value="8">
+                  <input type="radio" name="data" value="agg">
                   Test Aggregate Data
                </p>
 
                <div align="center">
                   <input id="requestUri" placeholder="Websocket URI">
-                  <br> <br> <input id="requestId"
+                  <br/> <br/> <input id="requestId"
                      placeholder="RequestID">
+               </div>
+               
+               <div>
+                  <br/> <br/>
+                  <!-- 
+                  <button id="deposit" onclick="openDeposit()">
+                     Deposit
+                  </button>
+                  -->
+                  <a href='deposit.html' target='_blank'>Deposit</a>
                </div>
             </form>
 
@@ -142,7 +152,7 @@
                <h3>Road Segment Nodes</h3>
                <p>Node One</p>
                <button id="s1set"
-                  onclick="setSegment('s1set', 'n1LatSub', 'n1LngSub')">
+                  onclick="setNode('s1set', 'n1LatSub', 'n1LngSub')">
                   Set Coordinates</button>
                <input id="n1Sub" type="text" value="LarnedShelby"
                   size="10" class="georegion-text" /> <br /> <input
@@ -153,7 +163,7 @@
                   
                <p>Node Two</p>
                <button id="s2set"
-                  onclick="setSegment('s2set', 'n2LatSub', 'n2LngSub')">
+                  onclick="setNode('s2set', 'n2LatSub', 'n2LngSub')">
                   Set Coordinates</button>
                <input id="n2Sub" type="text" value="LarnedGriswold"
                   size="10" class="georegion-text" /> <br /> <input
@@ -164,7 +174,7 @@
                   
                <p>Node Three</p>
                <button id="s3set"
-                  onclick="setSegment('s3set', 'n3LatSub', 'n3LngSub')">
+                  onclick="setNode('s3set', 'n3LatSub', 'n3LngSub')">
                   Set Coordinates</button>
                <input id="n3Sub" type="text" value="LarnedRandolph"
                   size="10" class="georegion-text" /> <br /> <input
@@ -175,7 +185,7 @@
 
                <p>Node Four</p>
                <button id="s4set"
-                  onclick="setSegment('s4set', 'n4LatSub', 'n4LngSub')">
+                  onclick="setNode('s4set', 'n4LatSub', 'n4LngSub')">
                   Set Coordinates</button>
                <input id="n4Sub" type="text" value="TelegraphBingham"
                   size="10" class="georegion-text" /> <br /> <input
@@ -186,7 +196,7 @@
 
                <p>Node Five</p>
                <button id="s5set"
-                  onclick="setSegment('s5set', 'n5LatSub', 'n5LngSub')">
+                  onclick="setNode('s5set', 'n5LatSub', 'n5LngSub')">
                   Set Coordinates</button>
                <input id="n5Sub" type="text" value="TelegraphW12Mile"
                   size="10" class="georegion-text" /> <br /> <input
@@ -197,7 +207,7 @@
 
                <p>Node Six</p>
                <button id="s6set"
-                  onclick="setSegment('s6set', 'n6LatSub', 'n6LngSub')">
+                  onclick="setNode('s6set', 'n6LatSub', 'n6LngSub')">
                   Set Coordinates</button>
                <input id="n6Sub" type="text" value="TelegraphCivicCtr"
                   size="10" class="georegion-text" /> <br /> <input
@@ -250,7 +260,7 @@
                <h3>Road Segment Nodes</h3>
                <p>Node One</p>
                <button id="q1set"
-                  onclick="setSegment('q1set', 'n1LatQuery', 'n1LngQuery')">
+                  onclick="setNode('q1set', 'n1LatQuery', 'n1LngQuery')">
                   Set Coordinates</button>
                <input id="n1Query" type="text" value="LarnedShelby"
                   size="10" class="georegion-text" /> <br /> <input
@@ -261,7 +271,7 @@
                   
                <p>Node Two</p>
                <button id="q2set"
-                  onclick="setSegment('q2set', 'n2LatQuery', 'n2LngQuery')">
+                  onclick="setNode('q2set', 'n2LatQuery', 'n2LngQuery')">
                   Set Coordinates</button>
                <input id="n2Query" type="text" value="LarnedGriswold"
                   size="10" class="georegion-text" /> <br /> <input
@@ -272,7 +282,7 @@
                   
                <p>Node Three</p>
                <button id="q3set"
-                  onclick="setSegment('q3set', 'n3LatQuery', 'n3LngQuery')">
+                  onclick="setNode('q3set', 'n3LatQuery', 'n3LngQuery')">
                   Set Coordinates</button>
                <input id="n3Query" type="text" value="LarnedRandolph"
                   size="10" class="georegion-text" /> <br /> <input
@@ -283,7 +293,7 @@
 
                <p>Node Four</p>
                <button id="q4set"
-                  onclick="setSegment('q4set', 'n4LatQuery', 'n4LngQuery')">
+                  onclick="setNode('q4set', 'n4LatQuery', 'n4LngQuery')">
                   Set Coordinates</button>
                <input id="n4Query" type="text" value="TelegraphBingham"
                   size="10" class="georegion-text" /> <br /> <input
@@ -294,7 +304,7 @@
 
                <p>Node Five</p>
                <button id="q5set"
-                  onclick="setSegment('q5set', 'n5LatQuery', 'n5LngQuery')">
+                  onclick="setNode('q5set', 'n5LatQuery', 'n5LngQuery')">
                   Set Coordinates</button>
                <input id="n5Query" type="text" value="TelegraphW12Mile"
                   size="10" class="georegion-text" /> <br /> <input
@@ -305,7 +315,7 @@
 
                <p>Node Six</p>
                <button id="q6set"
-                  onclick="setSegment('q6set', 'n6LatQuery', 'n6LngQuery')">
+                  onclick="setNode('q6set', 'n6LatQuery', 'n6LngQuery')">
                   Set Coordinates</button>
                <input id="n6Query" type="text" value="TelegraphCivicCtr"
                   size="10" class="georegion-text" /> <br /> <input
@@ -316,16 +326,6 @@
 
             </div>
 
-         </div>
-
-         <div class="deposit">
-            <div class="georegion">
-               <h2>Deposit Interface</h2>
-               <input type="file" id="files" name="files[]"
-                  multiple="multiple"
-                  onchange="handleFileSelect(this.files)" /> <br />
-               <output id="list"></output>
-            </div>
          </div>
 
       </div>
@@ -339,7 +339,7 @@
                onclick="connect();">Connect</button>
 
             <button class="input-button" id="send" onclick="send();">
-               Send <br> Request
+               Send <br/> Request
             </button>
 
             <button class="input-button" id="disconnect"
@@ -348,14 +348,14 @@
             <button class="input-button" id="get-token">Get
                Token</button>
 
-            <button class="input-button" onclick="clearMap();">
+            <button class="input-button" id ="clear-map" onclick="clearMap();">
                Clear Map</button>
          </div>
 
          <div id="sent-console"></div>
 
          <div class="clear-container">
-            <button class="clear-button" onclick="clearLog(0);">
+            <button class="clear-button" id ="clear-sent-console" onclick="clearLog('sent-console');">
                <div align="center">Clear</div>
             </button>
          </div>
@@ -363,7 +363,7 @@
          <div id="received-console"></div>
 
          <div class="clear-container">
-            <button class="clear-button" onclick="clearLog(1);">
+            <button class="clear-button"  id ="clear-received-console" onclick="clearLog('received-console');">
                <div align="center">Clear</div>
             </button>
             <input id="recordCounter" type="text"

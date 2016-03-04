@@ -21,28 +21,20 @@ public class DataSourceConnector {
    private DdsRequestManager ddsMgr;
    private TestRequestManager testMgr;
    
-   // FOR LOOPBACK TEST ONLY
-   private BaseDataPropagator distributor;
+   private BaseDataPropagator propagator;
    
-   public BaseDataPropagator getDistributor() {
-      return distributor;
-   }
-   public void setDistributor(BaseDataPropagator distributor) {
-      this.distributor = distributor;
-   }
-   // FOR LOOPBACK TEST ONLY
-
    
-   public DataSourceConnector(OdeMetadata metadata) {
+   public DataSourceConnector(OdeMetadata metadata, BaseDataPropagator propagator) {
       super();
       this.metadata = metadata;
+      this.propagator = propagator;
    }
    
-   public void connectToSource() 
+   public void sendRequest() 
          throws DataSourceConnectorException {
       try {
+         logger.info("Sending request for {}", metadata.getOutputTopic());
          OdeRequest odeRequest = metadata.getOdeRequest();
-               
          OdeDataType dataType = odeRequest.getDataType();
          int partitions = appContext.getInt(
                AppContext.KAFKA_CONSUMER_THREADS,
@@ -56,9 +48,9 @@ public class DataSourceConnector {
                   metadata.setInputTopic(ovdfTopic);
                }
                if (odeRequest.getRequestType() == OdeRequestType.Test) {
-                  connectToTestDataSource(metadata);
+                  connectToTestDataSource();
                } else {
-                  connectToDDS(metadata);
+                  sendRequestToDDS(odeRequest);
                }
                break;
             case IntersectionData:
@@ -66,56 +58,62 @@ public class DataSourceConnector {
             case MapData:
             case SPaTData:
                if (odeRequest.getRequestType() == OdeRequestType.Test) {
-                  connectToTestDataSource(metadata);
+                  connectToTestDataSource();
                } else {
-                  connectToDDS(metadata);
+                  sendRequestToDDS(odeRequest);
                }
                break;
             case WeatherData:
-               connectToWeatherDataSource(metadata);
+               connectToWeatherDataSource();
+               break;
+            case AsnBase64:
+            case AsnHex:
+               sendRequestToDDS(odeRequest);
                break;
             default:
             
-         }
+         } // End of switch statement
       } catch (Exception e) {
          throw new DataSourceConnectorException("Error sending data request.", e);
       }
    }
-   private void connectToWeatherDataSource(OdeMetadata metadata) {
+   
+   private void connectToWeatherDataSource() {
       // TODO Auto-generated method stub
       
    }
-   private void connectToTestDataSource(OdeMetadata metadata) {
-      testMgr = new TestRequestManager(metadata);
-      //FOR TEST ONLY
-      if (AppContext.loopbackTest())
-         testMgr.setLoopbackTestPropagator(distributor);
+   private void connectToTestDataSource() {
+      if (testMgr == null) {
+         testMgr = new TestRequestManager(metadata);
+         
+         //FOR TEST ONLY
+         if (AppContext.loopbackTest()) {
+            testMgr.setLoopbackTestPropagator(propagator);
+         }
+         //FOR TEST ONLY
+      }
    }
-   private void connectToDDS(OdeMetadata metadata)
+
+   private void sendRequestToDDS(OdeRequest odeRequest)
          throws DdsRequestManagerException {
-      ddsMgr = new DdsRequestManager(metadata);
+      if (ddsMgr == null)
+         ddsMgr = new DdsRequestManager(metadata);
+
       //FOR TEST ONLY
       if (AppContext.loopbackTest()) {
-         ddsMgr.setLoopbackTestPropagator(distributor);
          DdsMessageHandler handler = (DdsMessageHandler) 
                ddsMgr.getDdsClient().getHandler();
-         handler.setDistributor(distributor);
+         handler.setLoopbackTestPropagator(propagator);
       }
+      //FOR TEST ONLY
       
-      logger.info("Connecting to DDS");
-      ddsMgr.sendDdsDataRequest();
+      ddsMgr.sendDdsDataRequest(odeRequest);
    }
    
-   public int cancelDataRequest() throws DataSourceConnectorException {
+   public void cancelDataRequest() throws DataSourceConnectorException {
       try {
          if (ddsMgr != null) {
-            int requestersRmaining = ddsMgr.removeSubscriber();
-            if (requestersRmaining == 0) {
-               ddsMgr.cancelDdsSubscription();
-            }
-            return requestersRmaining;
-         } else {
-            return 0;
+            ddsMgr.cancelDdsSubscription();
          }
       } catch (Exception e) {
          throw new DataSourceConnectorException("Error canceling data request.", e);
@@ -137,11 +135,25 @@ public class DataSourceConnector {
    }
 
 
+   public BaseDataPropagator getPropagator() {
+      return propagator;
+   }
+
+   public void setPropagator(BaseDataPropagator propagator) {
+      this.propagator = propagator;
+   }
+
+
+
    public static class DataSourceConnectorException extends Exception {
       private static final long serialVersionUID = 1L;
 
       public DataSourceConnectorException(String message, Exception e) {
          super(message, e);
+      }
+
+      public DataSourceConnectorException(String string) {
+         super(string);
       }
       
    }

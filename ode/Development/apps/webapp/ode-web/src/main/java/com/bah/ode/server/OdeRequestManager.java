@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeDataType;
+import com.bah.ode.model.OdeDepRequest;
 import com.bah.ode.model.OdePolyline;
 import com.bah.ode.model.OdeQryRequest;
 import com.bah.ode.model.OdeRequest;
@@ -44,6 +45,9 @@ public class OdeRequestManager {
       } else if (requestType == OdeRequestType.Test) {
          odeRequest = (OdeRequest) JsonUtils.fromJson(message,
                OdeTstRequest.class);
+      } else if (requestType == OdeRequestType.Deposit) {
+         odeRequest = (OdeRequest) JsonUtils.fromJson(message,
+               OdeDepRequest.class);
       } else {
          OdeStatus status = new OdeStatus()
             .setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR)
@@ -54,7 +58,7 @@ public class OdeRequestManager {
          logger.error(status.toString());
          throw new WebSocketServerException(status.toString());
       }
-      odeRequest.setRequestType(OdeRequestType.getByShortName(rtype));
+      odeRequest.setRequestType(requestType);
 
       OdeDataType dataType = OdeDataType.getByShortName(dtype);
       if (dataType == null) {

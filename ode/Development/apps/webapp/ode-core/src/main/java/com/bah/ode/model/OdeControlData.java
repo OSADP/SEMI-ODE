@@ -6,32 +6,27 @@ public class OdeControlData extends OdeMsgPayload {
 
    private static final long serialVersionUID = 1L;
    
-   public enum Tag {
-      CONNECTED, START, STOP, ERROR
-   }
-
-   
    private Long dataSourceBundleCount; 
    private Long receivedRecordCount; 
    private Long sentRecordCount; 
-   private Tag tag;
+   private Long depositCount; 
+   private ControlTag tag;
    
    public OdeControlData() {
       super();
    }
 
-   public OdeControlData(Tag tag) {
+   public OdeControlData(ControlTag tag) {
       super();
       setTag(tag);
    }
 
    public OdeControlData(ControlMessage controlMessage) {
-      setDataSourceBundleCount(controlMessage.getRecordCount());
       setTag(controlMessage.getTag());
-   }
-
-   private void setTag(com.bah.ode.dds.client.ws.ControlMessage.Tag tag2) {
-      setTag(Tag.valueOf(tag2.name()));
+      if (controlMessage.getTag() == ControlTag.STOP)
+         setDataSourceBundleCount(controlMessage.getRecordCount());
+      else if (controlMessage.getTag() == ControlTag.DEPOSITED)
+         setDepositCount(controlMessage.getRecordCount());
    }
 
    public Long getDataSourceBundleCount() {
@@ -61,11 +56,19 @@ public class OdeControlData extends OdeMsgPayload {
       return this;
    }
 
-   public Tag getTag() {
+   public Long getDepositCount() {
+      return depositCount;
+   }
+
+   public void setDepositCount(Long depositCount) {
+      this.depositCount = depositCount;
+   }
+
+   public ControlTag getTag() {
       return tag;
    }
 
-   public void setTag(Tag tag) {
+   public void setTag(ControlTag tag) {
       this.tag = tag;
    }
 

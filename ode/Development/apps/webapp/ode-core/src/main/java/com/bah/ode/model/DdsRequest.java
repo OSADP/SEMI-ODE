@@ -63,21 +63,7 @@ public class DdsRequest extends BaseRequest {
       }
    }
 
-   public enum ResultEncoding {
-      BASE_64 ("base64"),
-      HEX ("hex"),
-      FULL ("full");
-
-      private final String enc;
-
-      ResultEncoding(String enc) {
-         this.enc = enc;
-      }
-
-      public String getEnc() {
-         return enc;
-      }
-   }
+   public enum EncodeType {base64, hex, json}
 
    private int dialogID;
    private String resultEncoding;

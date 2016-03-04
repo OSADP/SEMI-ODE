@@ -31,6 +31,7 @@ import com.bah.ode.context.AppContext;
 import com.bah.ode.distributors.BaseDataPropagator;
 import com.bah.ode.metrics.OdeMetrics;
 import com.bah.ode.metrics.OdeMetrics.Meter;
+import com.bah.ode.model.ControlTag;
 import com.bah.ode.model.DdsData;
 import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeAdvisoryData;
@@ -72,13 +73,13 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    
 
    // FOR LOOPBACK TEST ONLY
-   private BaseDataPropagator distributor;
+   private BaseDataPropagator loopbackTestPropagator;
    
-   public BaseDataPropagator getDistributor() {
-      return distributor;
+   public BaseDataPropagator getLoopbackTestPropagator() {
+      return loopbackTestPropagator;
    }
-   public void setDistributor(BaseDataPropagator distributor) {
-      this.distributor = distributor;
+   public void setLoopbackTestPropagator(BaseDataPropagator propagator) {
+      this.loopbackTestPropagator = propagator;
    }
    // FOR LOOPBACK TEST ONLY
 
@@ -163,7 +164,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                } else if (ddsData.getControlMessage() != null) {
                   topicName = metadata.getOutputTopic().getName();
                   OdeControlData controlData = new OdeControlData(ddsData.getControlMessage());
-                  if (controlData.getTag() == OdeControlData.Tag.STOP)
+                  if (controlData.getTag() == ControlTag.STOP)
                      controlData.setReceivedRecordCount(receivedRecordCount);
                   
                   idm.setPayload(controlData);
@@ -176,7 +177,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                   if (!AppContext.loopbackTest()) {
                      producer.send(topicName, idm.getKey(), idm.toJson());
                   } else {
-                     distributor.process(new OdeDataMessage(idm.getPayload()).toJson());
+                     loopbackTestPropagator.process(new OdeDataMessage(idm.getPayload()).toJson());
                   }
                }
             }
@@ -212,7 +213,7 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
       if (!AppContext.loopbackTest()) {
          producer.send(topicName, idm.getKey(), idm.toJson());
       } else {
-         distributor.process(new OdeDataMessage(ovdf).toJson());
+         loopbackTestPropagator.process(new OdeDataMessage(ovdf).toJson());
       }
    }
 

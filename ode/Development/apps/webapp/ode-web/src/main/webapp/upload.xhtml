@@ -261,25 +261,6 @@ var recordLoc = 0;
     }
   }
 
-  function getToken()  {
-    var url = window.location.protocol+'//'+ window.location.host + '/ode/api/auth/login';
-
-    var client = new XMLHttpRequest();
-    client.open("GET", url, true);
-    client.setRequestHeader('Authorization','Basic '+hash)
-    client.send();
-
-    client.onreadystatechange=function()
-    {
-      if (client.readyState==4 && client.status==200)
-      {
-        var message = JSON.parse(client.responseText);
-        token = message["message"];
-      }
-    }
-  }
-
-
   document.addEventListener("DOMContentLoaded", function() {
     // Remove elements with "noscript" class - <noscript> is not allowed in XHTML
     var noscripts = document.getElementsByClassName("noscript");
@@ -287,18 +268,17 @@ var recordLoc = 0;
       noscripts[i].parentNode.removeChild(noscripts[i]);
     }
     if(window.location.hash){
-      document.getElementById('requestId').value = window.location.hash.split("#")[1];
-      var dtype = parseInt(window.location.hash.split("#")[2]);
-      if(dtype == 6){
+      var parts = window.location.hash.split("#");
+      document.getElementById('requestId').value = parts[1];
+      var dtype = parts[2];
+      if(dtype == "veh"){
     	  $("#vsd").attr('checked', true);
-    	  updateRequestUri("/ode/tst/ws/veh/");
-      }else if(dtype == 7){
+      }else if(dtype == "int"){
     	  $("#isd").attr('checked', true);
-          updateRequestUri("/ode/tst/ws/int/");
-      }else if(dtype == 8){
-    	  $("#agg").attr('checked', true);
-          updateRequestUri("/ode/tst/ws/agg/");
+      }else if(dtype == "adv"){
+    	  $("#adv").attr('checked', true);
       }
+      updateRequestUri("/ode/tst/ws/"+dtype+"/");
     }
 
   }, false);
@@ -310,7 +290,7 @@ var recordLoc = 0;
 </script>
 </head>
 <body>
-  <h1>ODE Deposit</h1>
+  <h1>ODE Test Upload</h1>
   <div class="noscript">
     <h2 style="color: #ff0000">Seems your browser doesn't support
       Javascript! Websockets rely on Javascript being enabled. Please
