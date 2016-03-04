@@ -21,6 +21,7 @@ import com.bah.ode.model.OdeFilterable;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeMsgPayload;
 import com.bah.ode.model.OdeQryRequest;
+import com.bah.ode.model.ControlTag;
 import com.bah.ode.util.WebSocketUtils;
 
 public class QueryDataPropagator extends BaseDataPropagator {
@@ -35,6 +36,10 @@ public class QueryDataPropagator extends BaseDataPropagator {
       super(clientSession, metadata);
       OdeQryRequest queryReq = (OdeQryRequest) metadata.getOdeRequest();
       limit = queryReq.getLimit();
+   }
+
+   public QueryDataPropagator(Session session) {
+      super(session);
    }
 
    @Override
@@ -60,7 +65,7 @@ public class QueryDataPropagator extends BaseDataPropagator {
                // Tried using the above but it doesn't work, so I'm forced
                // to use the string representation
                OdeControlData controlRec = (OdeControlData) dataMsg.getPayload();
-               if (controlRec != null && controlRec.getTag() == OdeControlData.Tag.STOP) {
+               if (controlRec != null && controlRec.getTag() == ControlTag.STOP) {
                   stopRecord = controlRec;
                   OdeDataMessage stopMsg = new OdeDataMessage(stopRecord);
                   WebSocketUtils.send(clientSession, stopMsg.toJson());
@@ -81,7 +86,7 @@ public class QueryDataPropagator extends BaseDataPropagator {
                            if (stopRecord != null) {
                               stopRecord.setSentRecordCount(recordCount);
                            } else {
-                              stopRecord = new OdeControlData(OdeControlData.Tag.STOP)
+                              stopRecord = new OdeControlData(ControlTag.STOP)
                                     .setSentRecordCount(recordCount);
                            }
                            stopMsg = new OdeDataMessage(stopRecord);

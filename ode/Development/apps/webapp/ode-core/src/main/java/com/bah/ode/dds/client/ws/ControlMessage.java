@@ -16,14 +16,11 @@
  *******************************************************************************/
 package com.bah.ode.dds.client.ws;
 
+import com.bah.ode.model.ControlTag;
 import com.bah.ode.model.DdsRequest.Dialog;
 
 public class ControlMessage {
-   public enum Tag {
-      CONNECTED, START, STOP, ERROR
-   }
-
-   private Tag tag;
+   private ControlTag tag;
    private String encoding;
    private Dialog dialog;
    private long recordCount;
@@ -33,18 +30,18 @@ public class ControlMessage {
       super();
    }
 
-   public ControlMessage(Tag tag, String encoding, Dialog dialog) {
+   public ControlMessage(ControlTag tag, String encoding, Dialog dialog) {
       super();
       this.tag = tag;
       this.encoding = encoding;
       this.dialog = dialog;
    }
 
-   public Tag getTag() {
+   public ControlTag getTag() {
       return tag;
    }
 
-   public ControlMessage setTag(Tag tag) {
+   public ControlMessage setTag(ControlTag tag) {
       this.tag = tag;
       return this;
    }

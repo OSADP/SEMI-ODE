@@ -73,8 +73,10 @@ public class DdsClientFactory {
          ddsClient = new WebSocketClient<DdsData>(uri, sslContext, null,
                cookieHeader, new DdsMessageHandler(metadata),
                decoders);
-         logger.info("DDS Client created for input topic {} and output topic {}", 
-               metadata.getInputTopic().getName(), metadata.getOutputTopic().getName());
+         
+         if (metadata.getInputTopic() != null && metadata.getOutputTopic() != null)
+            logger.info("DDS Client created for input topic {} and output topic {}", 
+                  metadata.getInputTopic().getName(), metadata.getOutputTopic().getName());
 
       } catch (Exception e) {
          throw new DdsClientException(e);

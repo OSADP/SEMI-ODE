@@ -1,18 +1,23 @@
 package com.bah.ode.server;
 
+import com.bah.ode.distributors.BaseDataPropagator;
 import com.bah.ode.model.OdeMetadata;
 
-public class TestRequestManager extends DataRequestManager {
-   private static InboundTopicManagerSingleton itms = 
-         InboundTopicManagerSingleton.getInstance();
-   
+public class TestRequestManager {
    private OdeMetadata metadata;
 
+   // FOR LOOPBACK TEST ONLY
+   private BaseDataPropagator loopbackTestPropagator;
+   
+   public BaseDataPropagator getLoopbackTestPropagator() {
+      return loopbackTestPropagator;
+   }
+   public void setLoopbackTestPropagator(BaseDataPropagator propagator) {
+      this.loopbackTestPropagator = propagator;
+   }
+   // FOR LOOPBACK TEST ONLY
+
    public TestRequestManager(OdeMetadata metadata) {
-      super(metadata.getInputTopic().getName(), 
-            metadata.getOdeRequest().getDataType(), 
-            itms);
-      
       this.metadata = metadata;
    }
 

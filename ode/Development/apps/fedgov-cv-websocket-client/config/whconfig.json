@@ -15,7 +15,7 @@
     "binaryFiles": false,
     
     "systemDepositName": "SDC 2.2",
-    "encodeType": "HEX",
+    "encodeType": "Base64",
     "depositFileDir": "deposits",
     "depositDelay": 200 
 }

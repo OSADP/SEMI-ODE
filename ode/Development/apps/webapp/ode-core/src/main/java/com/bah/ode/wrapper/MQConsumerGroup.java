@@ -97,12 +97,13 @@ public class MQConsumerGroup<K, V, R> {
       return new ConsumerConfig(props);
    }
 
-   public MQTopic getMetadata() {
+   public MQTopic getTopic() {
       return topic;
    }
 
-   public void setMetadata(MQTopic topic) {
+   public void setTopic(MQTopic topic) {
       this.topic = topic;
    }
+
 
 }

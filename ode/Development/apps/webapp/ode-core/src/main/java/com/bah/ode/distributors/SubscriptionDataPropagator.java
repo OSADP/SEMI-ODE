@@ -21,6 +21,10 @@ public class SubscriptionDataPropagator extends BaseDataPropagator {
       super(clientSession, metadata);
    }
 
+   public SubscriptionDataPropagator(Session session) {
+      super(session);
+   }
+
    @Override
    public Future<String> process(String data)
          throws com.bah.ode.wrapper.DataProcessor.DataProcessorException {
