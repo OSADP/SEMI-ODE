@@ -1,0 +1,64 @@
+/*******************************************************************************
+ * Copyright (c) 2015 US DOT - Joint Program Office
+ *
+ * The Government has unlimited rights to all documents/material produced under 
+ * this task order. All documents and materials, to include the source code of 
+ * any software produced under this contract, shall be Government owned and the 
+ * property of the Government with all rights and privileges of ownership/copyright 
+ * belonging exclusively to the Government. These documents and materials may 
+ * not be used or sold by the Contractor without written permission from the CO.
+ * All materials supplied to the Government shall be the sole property of the 
+ * Government and may not be used for any other purpose. This right does not 
+ * abrogate any other Government rights.
+ *
+ * Contributors:
+ *     Booz | Allen | Hamilton - initial API and implementation
+ *******************************************************************************/
+package com.bah.ode.api.data;
+
+import java.io.InputStream;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.bah.ode.api.AbstractService;
+import com.bah.ode.model.DdsData;
+import com.bah.ode.wrapper.WebSocketClient;
+
+@Path("/deposit")
+public class DepositService extends AbstractService {
+
+   private static final Logger logger = LoggerFactory
+         .getLogger(DepositService.class);
+
+   private WebSocketClient<DdsData> wsClient = null;
+
+   public DepositService() {
+      super();
+   }
+
+   @POST
+   @Path("/ovsd")
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   public Response post(@FormParam("file") InputStream fileInputStream) {
+
+      logger.info("Received {}");
+      try {
+         
+      } catch (Exception e) {
+         throw new WebApplicationException(e);
+      }
+
+      return Response.ok().build();
+   }
+
+
+}

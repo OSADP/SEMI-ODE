@@ -56,8 +56,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * gives the relative name for the end point. This will be accessed via
- * ws://ip:port/ode/ws Where "ip" is the IP address of the host, "ode" is the
- * context root and "ws" is the address to access this class from the server
+ * ws://ip:port/ode/tst/ws Where "ip" is the IP address of the host, "ode" is the
+ * context root and "/tst/ws/{rtype}/{dtype}" identifies this service request.
  */
 @ServerEndpoint("/tst/ws/{dtype}/{requestId}")
 public class TestUploadServer {
@@ -115,8 +115,9 @@ public class TestUploadServer {
                   AppContext.KAFKA_METADATA_BROKER_LIST));
          }
          
-         if (WebSocketServer.getConnector(requestId) != null)
-            this.testMgr = WebSocketServer.getConnector(requestId).getTestMgr();
+         DataSourceConnector connector = WebSocketServer.getConnector(requestId);
+         if (connector != null)
+            this.testMgr = connector.getTestMgr();
       } catch (Exception ex) {
          msg.setCode(OdeStatus.Code.SOURCE_CONNECTION_ERROR).setMessage(
                String.format("Error processing connection request %s",
@@ -232,7 +233,7 @@ public class TestUploadServer {
                   } else { // unsupported message
                      status.setCode(Code.FAILURE);
                      status.setMessage("Unsupported message: " + message +
-                           "\npayload, metadata or className required."); 
+                           "\npayload and metadata are required."); 
                      logger.error(status.getMessage());
                      WebSocketUtils.send(session, new OdeDataMessage(status).toJson());
                   }

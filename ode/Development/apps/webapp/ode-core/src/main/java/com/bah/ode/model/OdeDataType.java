@@ -34,6 +34,8 @@ public enum OdeDataType {
    SPaTData("spat", OdeSpatData.class), 
    AggregateData("agg", OdeAggregateData.class),
    WeatherData("weather", OdeWeatherData.class),
+   AsnBase64("asnbase64", String.class),
+   AsnHex("asnhex", String.class),
    OtherData("other", OdeMsgPayload.class), 
    Unknown("unknown", OdeMsgPayload.class);
    

@@ -22,7 +22,7 @@ import javax.websocket.EndpointConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.dds.client.ws.ControlMessage.Tag;
+import com.bah.ode.model.ControlTag;
 import com.bah.ode.model.DdsData;
 import com.bah.ode.model.DdsRequest;
 import com.bah.ode.util.JsonUtils;
@@ -30,6 +30,16 @@ import com.bah.ode.wrapper.WebSocketMessageDecoder;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
+
+   public static class DdsDecoderException extends Exception {
+
+      private static final long serialVersionUID = -4474047515873708804L;
+
+      public DdsDecoderException(String string) {
+         super(string);
+      }
+
+   }
 
    private static final Logger logger = LoggerFactory
          .getLogger(DdsDecoder.class);
@@ -45,10 +55,10 @@ public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
    public void destroy() {
    }
 
-   protected static Tag getResponseTag(String tagName) {
-      Tag[] tags = ControlMessage.Tag.values();
+   protected static ControlTag getResponseTag(String tagName) {
+      ControlTag[] tags = ControlTag.values();
 
-      for (Tag tag : tags) {
+      for (ControlTag tag : tags) {
          if (tagName.equals(tag.name())) {
             return tag;
          }
@@ -64,7 +74,7 @@ public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
       try {
          ddsData.setFullMessage(message);
          String[] msgComponents = parseFullMsg(message);
-         Tag tag = getResponseTag(msgComponents[MSG_COMPONENT_TAG_INDEX]);
+         ControlTag tag = getResponseTag(msgComponents[MSG_COMPONENT_TAG_INDEX]);
          if (tag != null) {
             ControlMessage controlMsg = new ControlMessage().setTag(tag);
             ddsData.setControlMessage(controlMsg);
@@ -84,7 +94,7 @@ public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
                      .setEncoding(rootNode.get("resultEncoding").textValue());
                         
                } catch (Exception e) {
-                  logger.error("Error processing Start Tag", e);
+                  logger.error("Error processing START tag", e);
                }
             }
             break;
@@ -97,12 +107,24 @@ public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
                         controlMsg.setRecordCount(Integer.valueOf(rcArray[RECORD_COUNT_VALUE_INDEX]));
                      }
                   } catch (Exception e) {
-                     logger.error("Error processing Stop Tag", e);
+                     logger.error("Error processing STOP tag", e);
                   }
                } else {
                   logger.error("Invalid format for recordCount. "
                         + "Expecting \"recordCount=n\" but received \"{}\"", 
                         recordCount);
+               }
+            }
+            break;
+            
+            case DEPOSITED: {
+               String depositCount = msgComponents[MSG_COMPONENT_VALUE_INDEX];
+               try {
+                  if (controlMsg != null) {
+                     controlMsg.setRecordCount(Integer.valueOf(depositCount));
+                  }
+               } catch (Exception e) {
+                  logger.error("Error processing DEPOSITED tag", e);
                }
             }
             break;
@@ -128,6 +150,6 @@ public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
 
    @Override
    public boolean willDecode(String message) {
-      return getResponseTag(parseFullMsg(message)[MSG_COMPONENT_TAG_INDEX]) == Tag.START;
+      return getResponseTag(parseFullMsg(message)[MSG_COMPONENT_TAG_INDEX]) == ControlTag.START;
    }
 }

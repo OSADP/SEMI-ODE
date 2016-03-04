@@ -21,6 +21,10 @@ public class AggregateDataPropagator extends BaseDataPropagator {
       super(clientSession, metadata);
    }
 
+   public AggregateDataPropagator(Session session) {
+      super(session);
+   }
+
    @Override
    public Future<String> process(String data)
          throws com.bah.ode.wrapper.DataProcessor.DataProcessorException {
