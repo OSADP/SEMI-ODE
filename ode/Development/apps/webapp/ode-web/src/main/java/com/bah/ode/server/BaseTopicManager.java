@@ -20,7 +20,10 @@ public class BaseTopicManager {
    }
    
    public MQTopic getTopic(String topicName) {
-      return topics.get(topicName);
+      if (topicName != null)
+         return topics.get(topicName);
+      else
+         return null;
    }
 
    public synchronized MQTopic getOrCreateTopic(String topicName) {
@@ -33,7 +36,7 @@ public class BaseTopicManager {
       return topic;
    }
 
-   public void removeTopic(String topicName) {
+   private synchronized void removeTopic(String topicName) {
       MQTopic topic = topics.get(topicName);
       if (topic != null) {
          topics.remove(topicName);
@@ -58,4 +61,20 @@ public class BaseTopicManager {
       return subscribers; 
    }
    
+   public int numTopics() {
+      return topics.size();
+   }
+
+   public int numSubscribers() {
+      return subscribers.size();
+   }
+
+   public int numSubscribers(String topicName) {
+      AtomicInteger num = subscribers.get(topicName);
+      if (num != null)
+         return num.get();
+      else
+         return 0;
+   }
+
 }

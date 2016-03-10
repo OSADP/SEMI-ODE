@@ -17,6 +17,7 @@
 package com.bah.ode.context;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
@@ -31,6 +32,8 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.asn.OdeGeoRegion;
+import com.bah.ode.asn.OdePosition3D;
 import com.bah.ode.metrics.OdeMetrics;
 import com.bah.ode.yarn.YarnClientManager;
 
@@ -58,6 +61,11 @@ public class AppContext {
    public static final int DEFAULT_SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE = 20;
    public static final int DEFAULT_METRICS_GRAPHITE_PORT = 2003;
    public static final int DEFAULT_METRICS_POLLING_RATE_SECONDS = 10;
+   public static final OdeGeoRegion DEFAULT_SERVICE_REGION = 
+         new OdeGeoRegion(new OdePosition3D(BigDecimal.valueOf(42.53790),
+               BigDecimal.valueOf(-83.47790), BigDecimal.ZERO), 
+               new OdePosition3D(BigDecimal.valueOf(42.30575),
+                     BigDecimal.valueOf(-82.84275), BigDecimal.ZERO));
 
 
 

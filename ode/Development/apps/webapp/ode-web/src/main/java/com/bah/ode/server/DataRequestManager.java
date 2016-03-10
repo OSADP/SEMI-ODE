@@ -3,7 +3,6 @@ package com.bah.ode.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bah.ode.distributors.BaseDataPropagator;
 import com.bah.ode.model.OdeDataType;
 
 public abstract class DataRequestManager {
@@ -13,23 +12,11 @@ public abstract class DataRequestManager {
    protected BaseTopicManager topicManager;
    protected String topicName;
    
-   // FOR LOOPBACK TEST ONLY
-   private BaseDataPropagator loopbackTestPropagator;
-   
-   public BaseDataPropagator getLoopbackTestPropagator() {
-      return loopbackTestPropagator;
-   }
-   public void setLoopbackTestPropagator(BaseDataPropagator distributor) {
-      this.loopbackTestPropagator = distributor;
-   }
-   // FOR LOOPBACK TEST ONLY
-
    public DataRequestManager(String topicName, OdeDataType dataType,
          BaseTopicManager topicManager) {
       this.topicManager = topicManager;
       this.topicName = topicName;
    }
-
 
    public int addSubscriber() {
       logger.info("Adding subscriber to {}", topicName);

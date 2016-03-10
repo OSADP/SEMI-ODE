@@ -38,6 +38,10 @@ public class OdePosition3D extends OdeObject {
       this.elevation = elevation;
    }
 
+   public OdePosition3D(double latitude, double longitude, double elevation) {
+      this(BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude), BigDecimal.valueOf(elevation));
+   }
+
    public OdePosition3D(Position3D pos) {
       // private OdePosition3D position;
       //    Position3D ::=  SEQUENCE {

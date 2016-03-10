@@ -361,6 +361,53 @@ public class GeoUtils {
       return true;
    }
 
+   public static boolean isRegionWithinRegion(OdeGeoRegion inner, OdeGeoRegion outer) {
+      if (inner == null || outer == null)
+         return false;
+      
+      return isPositionInBoundsInclusive(inner.getNwCorner(), outer) &&
+             isPositionInBoundsInclusive(inner.getSeCorner(), outer);
+   }
+
+   public static OdePosition3D expandNwCorner(OdePosition3D p1, OdePosition3D p2) {
+      if (p1 == null || p1.getLatitude() == null || p1.getLongitude() == null)
+         return p2;
+      else if (p2 == null || p2.getLatitude() == null || p2.getLongitude() == null)
+         return p1;
+      else
+         return new OdePosition3D(Math.max(p1.getLatitude().doubleValue(), 
+                                           p2.getLatitude().doubleValue()),
+                                  Math.min(p1.getLongitude().doubleValue(), 
+                                           p2.getLongitude().doubleValue()),
+                                  (p1.getElevation().doubleValue() + 
+                                   p2.getElevation().doubleValue())/2);
+   }
+   
+   public static OdePosition3D expandSeCorner(OdePosition3D p1, OdePosition3D p2) {
+      if (p1 == null || p1.getLatitude() == null || p1.getLongitude() == null)
+         return p2;
+      else if (p2 == null || p2.getLatitude() == null || p2.getLongitude() == null)
+         return p1;
+      else
+         return new OdePosition3D(Math.min(p1.getLatitude().doubleValue(), 
+                                           p2.getLatitude().doubleValue()),
+                                  Math.max(p1.getLongitude().doubleValue(), 
+                                           p2.getLongitude().doubleValue()),
+                                  (p1.getElevation().doubleValue() + 
+                                   p2.getElevation().doubleValue())/2);
+   }
+   
+   public static OdeGeoRegion expandedRegion(OdeGeoRegion r1, OdeGeoRegion r2) {
+      if (r1 == null || r1.getNwCorner() ==  null || r1.getSeCorner() == null)
+         return r2;
+      else if (r2 == null || r2.getNwCorner() ==  null || r2.getSeCorner() == null)
+         return r1;
+      else {
+         return new OdeGeoRegion(expandNwCorner(r1.getNwCorner(), r2.getNwCorner()), 
+                                 expandSeCorner(r1.getSeCorner(), r2.getSeCorner()));
+      }
+   }
+
    // public static void snapToPathSegment(Path2D path, Point2D p) {
    // PathIterator pathIter = path.getPathIterator(null);
    //
