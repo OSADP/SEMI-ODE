@@ -167,7 +167,7 @@ public class OdeRequestManager {
       return numSubscribersRemaining;
    }
 
-   public static boolean encompassingRegion(OdeRequest odeRequest) {
+   private static boolean encompassingRegion(OdeRequest odeRequest) {
       if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
          OdeGeoRegion requestedRegion = new OdeGeoRegion(
                new OdePosition3D(odeRequest.getNwLat(), odeRequest.getNwLon(), BigDecimal.ZERO),
@@ -191,9 +191,9 @@ public class OdeRequestManager {
       return largestTopic;
    }
 
-   public static boolean haveActiveTopic() {
-      return largestTopic != null &&
-             otms.numSubscribers(largestTopic.getName()) > 0;
+   public static boolean haveActiveStream(OdeRequest odeRequest) {
+      return encompassingRegion(odeRequest) && largestTopic != null &&
+            otms.numSubscribers(largestTopic.getName()) > 0;
    }
 
 }

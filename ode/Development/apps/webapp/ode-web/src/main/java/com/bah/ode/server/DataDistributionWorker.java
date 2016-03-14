@@ -38,26 +38,11 @@ public class DataDistributionWorker implements Runnable {
 
    public DataDistributionWorker(
          final Session clientSession, 
-         BaseDataPropagator propagator,
-         MQTopic consumerTopic) {
+         BaseDataPropagator propagator) {
       super();
       this.clientSession = clientSession;
       this.groupId = clientSession.getId();
       this.propagator = propagator;
-
-      if (!AppContext.loopbackTest()) {
-         this.consumerGroup = new MQConsumerGroup<String, String, String>(
-               appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
-               this.groupId,
-               consumerTopic,
-               new StringDecoder(null),
-               new StringDecoder(null),
-               propagator,
-               appContext.getInt(AppContext.DATA_SEQUENCE_REORDER_DELAY, 
-                     AppContext.DEFAULT_DATA_SEQUENCE_REORDER_DELAY),
-               appContext.getInt(AppContext.DATA_SEQUENCE_REORDER_PERIOD, 
-                     AppContext.DEFAULT_DATA_SEQUENCE_REORDER_PERIOD));
-      }
    }
 
    public Session getClientSession() {
@@ -103,6 +88,19 @@ public class DataDistributionWorker implements Runnable {
 
    public void startIfNotAlive(OdeMetadata metadata) {
       propagator.setMetadata(metadata);
+      if (!AppContext.loopbackTest() && this.consumerGroup == null) {
+         this.consumerGroup = new MQConsumerGroup<String, String, String>(
+               appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
+               this.groupId,
+               metadata.getOutputTopic(),
+               new StringDecoder(null),
+               new StringDecoder(null),
+               propagator,
+               appContext.getInt(AppContext.DATA_SEQUENCE_REORDER_DELAY, 
+                     AppContext.DEFAULT_DATA_SEQUENCE_REORDER_DELAY),
+               appContext.getInt(AppContext.DATA_SEQUENCE_REORDER_PERIOD, 
+                     AppContext.DEFAULT_DATA_SEQUENCE_REORDER_PERIOD));
+      }
       if (thread == null) {
          logger.info("Starting distribution thread for {}...", 
                metadata.getOutputTopic().getName());

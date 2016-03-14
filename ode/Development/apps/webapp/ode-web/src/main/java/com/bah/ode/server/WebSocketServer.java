@@ -151,8 +151,8 @@ public class WebSocketServer {
                
                outputTopic = MQTopic.create(UUID.randomUUID().toString(), 
                      MQTopic.defaultPartitions());
-               
-               createPropagator(session, requestType, dataType);
+
+               createDistributionWorker(session, requestType, dataType);
                
             }
             WebSocketUtils.send(session, new OdeDataMessage(msg).toJson());
@@ -216,7 +216,7 @@ public class WebSocketServer {
             odeRequest = OdeRequestManager.buildOdeRequest(rtype, dtype, message);
    
             String requestId = odeRequest.getId();
-            /* 
+            /*
              * By default inputTopic is the same as outputTopic. Non-default
              * happens when data has to go to the spark processor which 
              * currently only processes vehicle data.
@@ -229,19 +229,18 @@ public class WebSocketServer {
                // Note: requestId should not be null. So if we get a NPE, we have an internal error
                logger.info("Created new request: {}", requestId );
                // No client topic exists, create a new one
-               
-               boolean haveActiveEncompassingRegion = 
-                     OdeRequestManager.encompassingRegion(odeRequest) &&
-                     OdeRequestManager.haveActiveTopic();
-      
-               MQTopic tempTopic = OdeRequestManager.registerRequest(odeRequest, outputTopic.getName());
+
+               // *** The next two statements must come back-to-back in this order. ***
+               boolean haveActiveStream = OdeRequestManager.haveActiveStream(odeRequest);
+               MQTopic tempTopic = OdeRequestManager.registerRequest(
+                     odeRequest, outputTopic.getName());
                
                if (tempTopic != null) {
                   outputTopic = tempTopic;
                   metadata.setOutputTopic(outputTopic);
                }
 
-               if (haveActiveEncompassingRegion) {// A data stream already exists to fulfill this request
+               if (haveActiveStream) {// A data stream already exists to fulfill this request
                   sendRequest = false;
                   statusMsg = "Tapping into existing data source connection: " + 
                         outputTopic.getName();
@@ -260,7 +259,16 @@ public class WebSocketServer {
                      requestId, outputTopic.getName());
             }
             
-            distroWorker.startIfNotAlive(metadata);
+            if (odeRequest.getDataType() == OdeDataType.AggregateData) {
+               //ODE-169 - Aggregate Query Data Results also contain Vehicle Data Records
+                  distroWorker.startIfNotAlive(new OdeMetadata(odeRequest.getId(), 
+                        outputTopic, MQTopic.create(
+                              AppContext.getInstance().getParam(
+                                    AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC), 
+                                    MQTopic.defaultPartitions()), odeRequest));
+            } else {
+               distroWorker.startIfNotAlive(metadata);
+            }
             
             if (sendRequest) {
                if (connector == null) {
@@ -297,7 +305,7 @@ public class WebSocketServer {
                logger.error("Error sending error message back to client", e);
             }
          }
-      }
+      }//End of Synchronized block
    }
    
    /**
@@ -312,7 +320,7 @@ public class WebSocketServer {
       shutDown(session, new CloseReason(CloseCodes.VIOLATED_POLICY, throwable.getMessage()));
    }
    
-   private void createPropagator(Session session, 
+   private void createDistributionWorker(Session session, 
          OdeRequestType requestType, OdeDataType dataType) {
       
       logger.info("Creating new Propagator for client session {}, "
@@ -322,11 +330,6 @@ public class WebSocketServer {
       BaseDataPropagator propagator;
       if (dataType == OdeDataType.AggregateData) {
          propagator = new AggregateDataPropagator(session);
-         //ODE-169 - Aggregate Query Data Results also contain Vehicle Data Records
-         outputTopic = MQTopic.create(
-               AppContext.getInstance().getParam(
-                     AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC), 
-                     MQTopic.defaultPartitions());
       } else if (requestType == OdeRequestType.Query ||
             requestType == OdeRequestType.Test) {
          propagator = new QueryDataPropagator(session);
@@ -336,7 +339,7 @@ public class WebSocketServer {
          propagator = new SubscriptionDataPropagator(session);
       }
       
-      distroWorker = new DataDistributionWorker(session, propagator, outputTopic);
+      distroWorker = new DataDistributionWorker(session, propagator);
    }
 
    /**

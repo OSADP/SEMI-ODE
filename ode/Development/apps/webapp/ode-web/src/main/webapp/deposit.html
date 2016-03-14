@@ -108,14 +108,14 @@
             <button class="input-button" id="get-token">Get
                Token</button>
 
-            <button class="input-button" onclick="clearMap();">
+            <button class="input-button" id ="clear-map" onclick="clearMap();">
                Clear Map</button>
          </div>
 
          <div id="sent-console"></div>
 
          <div class="clear-container">
-            <button class="clear-button" onclick="clearLog(0);">
+            <button class="clear-button" id ="clear-sent-console" onclick="clearLog('sent-console');">
                <div align="center">Clear</div>
             </button>
          </div>
@@ -123,7 +123,7 @@
          <div id="received-console"></div>
 
          <div class="clear-container">
-            <button class="clear-button" onclick="clearLog(1);">
+            <button class="clear-button"  id ="clear-received-console" onclick="clearLog('received-console');">
                <div align="center">Clear</div>
             </button>
             <input id="recordCounter" type="text"

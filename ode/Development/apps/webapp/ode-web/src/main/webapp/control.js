@@ -1033,6 +1033,14 @@ function getPayload(str) {
    }
 }
 
+function getMetadata(str) {
+   try {
+      return JSON.parse(str).metadata;
+   } catch (e) {
+      return false;
+   }
+}
+
 function updateClusters(str) {
    var pl = getPayload(str);
 
@@ -1090,8 +1098,7 @@ function updateClusters(str) {
       }
    } else if (pl !== undefined && pl !== false && pl !== null
          && pl.code === undefined && pl.token === undefined
-         && pl.tag === undefined) { // avoid success and token responses in
-                                    // payload
+         && (pl.tag === undefined || pl.tag === 'DEPOSITED')) { // avoid success and token responses in payload
       recordsReceived += 1;
    }
 }
