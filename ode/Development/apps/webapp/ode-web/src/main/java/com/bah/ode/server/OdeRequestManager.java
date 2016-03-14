@@ -37,9 +37,10 @@ public class OdeRequestManager {
    private static ConcurrentHashMap<String, OdeGeoRegion> serviceRegions =
          new ConcurrentHashMap<String, OdeGeoRegion>();
 
-   private static OdeGeoRegion largestServiceRegion;
-
-   private static MQTopic largestTopic;
+   private static ConcurrentHashMap<OdeDataType, OdeGeoRegion> largestServiceRegion
+      = new ConcurrentHashMap<OdeDataType, OdeGeoRegion>();
+   private static ConcurrentHashMap<OdeDataType, MQTopic> largestTopic
+      = new ConcurrentHashMap<OdeDataType, MQTopic>();
 
    public static OdeRequest buildOdeRequest(String rtype, String dtype, String message)
          throws WebSocketServerException {
@@ -109,38 +110,42 @@ public class OdeRequestManager {
    }
 
    public static MQTopic registerRequest(OdeRequest odeRequest, String topicName) {
-      if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
-         if (largestServiceRegion == null || largestTopic == null) {
-            largestServiceRegion = AppContext.DEFAULT_SERVICE_REGION;
-            serviceRegions.put(topicName, largestServiceRegion);
-            largestTopic = otms.getOrCreateTopic(topicName);
-            if (!isPassThrough(odeRequest.getDataType()) &&
-                  appContext.getParam(AppContext.SPARK_MASTER).startsWith("local")) {
-               LocalSparkProcessor.startStreamingContext();
+      if (odeRequest != null) {
+         OdeDataType dataType = odeRequest.getDataType();
+         if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
+            if (largestServiceRegion.isEmpty() || largestTopic.isEmpty()) {
+               largestServiceRegion.put(dataType, AppContext.DEFAULT_SERVICE_REGION);
+               serviceRegions.put(topicName, AppContext.DEFAULT_SERVICE_REGION);
+               largestTopic.put(dataType, otms.getOrCreateTopic(topicName));
+               if (!isPassThrough(odeRequest.getDataType()) &&
+                     appContext.getParam(AppContext.SPARK_MASTER).startsWith("local")) {
+                  LocalSparkProcessor.startStreamingContext();
+               }
+            } else {
+               OdeGeoRegion tempSR = largestServiceRegion.get(dataType);
+               OdeGeoRegion requestedRegion = new OdeGeoRegion(
+                     new OdePosition3D(odeRequest.getNwLat(), odeRequest.getNwLon(), BigDecimal.ZERO),
+                     new OdePosition3D(odeRequest.getSeLat(), odeRequest.getSeLon(), BigDecimal.ZERO));
+               if (!GeoUtils.isRegionWithinRegion(requestedRegion, tempSR)) {
+                  largestServiceRegion.put(dataType, GeoUtils.expandedRegion(requestedRegion, tempSR));
+                  serviceRegions.put(topicName, tempSR);
+                  largestTopic.put(dataType, otms.getOrCreateTopic(topicName));
+               }
             }
-         } else {
-            OdeGeoRegion requestedRegion = new OdeGeoRegion(
-                  new OdePosition3D(odeRequest.getNwLat(), odeRequest.getNwLon(), BigDecimal.ZERO),
-                  new OdePosition3D(odeRequest.getSeLat(), odeRequest.getSeLon(), BigDecimal.ZERO));
-            if (!GeoUtils.isRegionWithinRegion(requestedRegion, largestServiceRegion)) {
-               largestServiceRegion = GeoUtils.expandedRegion(requestedRegion, largestServiceRegion);
-               serviceRegions.put(topicName, largestServiceRegion);
-               largestTopic = otms.getOrCreateTopic(topicName);
-            }
+            MQTopic tempTopic = largestTopic.get(dataType);
+            int numSubs = otms.addSubscriber(tempTopic.getName());
+            logger.info("Added subscriber to {}: Total subscribers: {}", tempTopic.getName(), numSubs);
+            return tempTopic;
          }
-         int numSubs = otms.addSubscriber(largestTopic.getName());
-         logger.info("Added subscriber to {}: Total subscribers: {}", largestTopic.getName(), numSubs);
-         return largestTopic;
-      } else {
-         return null;
       }
+      return null;
    }
 
    public static int unregisterRequest(OdeRequest odeRequest, String topicName) {
       int numSubscribersRemaining = otms.removeSubscriber(topicName);
       serviceRegions.remove(topicName);
       if (numSubscribersRemaining <= 0) {
-         if (topicName.equals(largestTopic.getName())) {
+         if (topicName.equals(largestTopic.get(odeRequest.getDataType()).getName())) {
             OdeGeoRegion newLargestRegion = null;
             String newLargestTopicName = null;
             for (Entry<String, OdeGeoRegion> serviceRegionEntry : serviceRegions.entrySet()) {
@@ -154,8 +159,8 @@ public class OdeRequestManager {
                   }
                }
             }
-            largestServiceRegion = newLargestRegion;
-            largestTopic = otms.getTopic(newLargestTopicName);
+            largestServiceRegion.put(odeRequest.getDataType(), newLargestRegion);
+            largestTopic.put(odeRequest.getDataType(), otms.getTopic(newLargestTopicName));
          }
          if (!isPassThrough(odeRequest.getDataType()) &&
                appContext.getParam(AppContext.SPARK_MASTER).startsWith("local")) {
@@ -172,8 +177,9 @@ public class OdeRequestManager {
          OdeGeoRegion requestedRegion = new OdeGeoRegion(
                new OdePosition3D(odeRequest.getNwLat(), odeRequest.getNwLon(), BigDecimal.ZERO),
                new OdePosition3D(odeRequest.getSeLat(), odeRequest.getSeLon(), BigDecimal.ZERO));
-         if (largestServiceRegion != null && 
-             GeoUtils.isRegionWithinRegion(requestedRegion, largestServiceRegion)) {
+         if (!largestServiceRegion.isEmpty() && 
+             GeoUtils.isRegionWithinRegion(requestedRegion, 
+                   largestServiceRegion.get(odeRequest.getDataType()))) {
             return true;
          } else {
             return false;
@@ -183,17 +189,18 @@ public class OdeRequestManager {
       }
    }
 
-   public static OdeGeoRegion getLargestServiceRegion() {
-      return largestServiceRegion;
+   public static OdeGeoRegion getLargestServiceRegion(OdeDataType dataType) {
+      return largestServiceRegion.get(dataType);
    }
 
-   public static MQTopic getLargestTopic() {
-      return largestTopic;
+   public static MQTopic getLargestTopic(OdeDataType dataType) {
+      return largestTopic.get(dataType);
    }
 
    public static boolean haveActiveStream(OdeRequest odeRequest) {
-      return encompassingRegion(odeRequest) && largestTopic != null &&
-            otms.numSubscribers(largestTopic.getName()) > 0;
+      return encompassingRegion(odeRequest) &&
+            !largestTopic.isEmpty() && otms.numSubscribers(
+                  largestTopic.get(odeRequest.getDataType()).getName()) > 0;
    }
 
 }
