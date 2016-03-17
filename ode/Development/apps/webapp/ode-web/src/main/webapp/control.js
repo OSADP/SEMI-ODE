@@ -898,6 +898,7 @@ function sendFiles() {
                         if (records != undefined) {
                            for (var subj = recordLoc + recordsPerBatch; recordLoc < records.length
                                  && recordLoc < subj; recordLoc++) {
+                              recordsPerBatch = parseInt($("#recordsPerBatch").val());
                               var request = {};
                               request['dataSource'] = dataSource;
                               request['dataType'] = dataType;
