@@ -1,7 +1,6 @@
 package com.bah.ode.spark;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.spark.SparkConf;
@@ -18,45 +17,30 @@ import org.apache.spark.sql.types.StructType;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
-import org.apache.spark.streaming.kafka.KafkaUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import scala.Tuple2;
-
 import com.bah.ode.context.AppContext;
-//import com.bah.ode.context.AppContext;
-import com.bah.ode.model.OdeObject;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
 import com.bah.ode.wrapper.MQTopic;
 
-public class VehicleDataProcessor extends OdeObject {
-   private static final long serialVersionUID = 2480028249180282250L;
+import scala.Tuple2;
+
+public class VehicleDataProcessor extends SparkJob {
    private static Logger logger = LoggerFactory
          .getLogger(VehicleDataProcessor.class);
 
-   // private static AppContext appContext = AppContext.getInstance();
+   public JavaPairDStream<String, String> setup(JavaStreamingContext ssc,
+         MQTopic topic, String zkConnectionStrings,
+         String brokerList) {
+      
 
-   public void setup(final JavaStreamingContext ssc, MQTopic ovdfTopic,
-         String zkConnectionStrings, String brokerList) {
-
-      ArrayList<JavaPairDStream<String, String>> dstreams = new ArrayList<JavaPairDStream<String, String>>();
-
-      String groupId = VehicleDataProcessor.class.getName();
-
+      SparkConf conf = ssc.sparkContext().getConf();
+      JavaPairDStream<String, String> unifiedStream = super.unifiedStream(
+            ssc, topic, zkConnectionStrings, brokerList);
+      
       try {
-         for (int i = 0; i < ovdfTopic.getPartitions(); i++) {
-            JavaPairDStream<String, String> aStream = KafkaUtils.createStream(
-                  ssc, zkConnectionStrings, groupId, Collections.singletonMap(
-                        ovdfTopic.getName(), ovdfTopic.getPartitions()));
-
-            dstreams.add(aStream);
-         }
-
-         JavaPairDStream<String, String> unifiedStream = ssc
-               .union(dstreams.get(0), dstreams.subList(1, dstreams.size()));
-
          // System.out.println("unifiedStream");
          // System.out.println("===============");
          // unifiedStream.cache().print(10);
@@ -89,8 +73,6 @@ public class VehicleDataProcessor extends OdeObject {
          // unifiedStream.map(pam -> JsonUtils.getJson(pam._2,
          // AppContext.METADATA_STRING));
          //
-         SparkConf conf = ssc.sparkContext().getConf();
-
          Integer microbatchDuration = Integer.valueOf(conf.get(
                AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS,
                String.valueOf(
@@ -215,42 +197,64 @@ public class VehicleDataProcessor extends OdeObject {
          /*
           * Vehicle Data Distribution
           */
-         boolean aggEnabled = conf.getBoolean(
-               AppContext.SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED, false);
+         boolean aggInVDP = conf.getBoolean(
+               AppContext.SPARK_RUN_ODE_AGGREGATOR_IN_VDP, 
+               AppContext.DEFAULT_SPARK_RUN_ODE_AGGREGATOR_IN_VDP) ||
+               ssc.sparkContext().master().startsWith("local");
 
-         if (aggEnabled) {
+         if (aggInVDP) {
             // We do aggregation in the same Spark app
-            
-            //persist to make sure it remains in memory for the Aggregator task
-            payloadAndMetadata.persist();
+            if (conf.getBoolean(
+                     AppContext.SPARK_ODE_AGGREGATOR_ENABLED, 
+                     AppContext.DEFAULT_SPARK_ODE_AGGREGATOR_ENABLED)) {
+               logger.info("Aggregator is embedded in the Transformer application");
+               //persist to make sure it remains in memory
+               payloadAndMetadata.persist();
+
+               // Aggregate here
+               payloadAndMetadata
+                     .window(
+                           Durations.milliseconds(
+                                 microbatchDuration * windowDuration),
+                     Durations.milliseconds(microbatchDuration * slideDuration))
+                     .foreachRDD(
+                           new Aggregator(new PayloadAggregator(producerPool, conf.get(
+                                 AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC))));
+            } else {
+               logger.info("Aggregator is disabled");
+            }
             /*
              * Vehicle data Distribution
              */
             payloadAndMetadata.foreachRDD(new PayloadDistributor(producerPool,
                   null));
 
-            // Aggregate here
-            payloadAndMetadata
-                  .window(
-                        Durations.milliseconds(
-                              microbatchDuration * windowDuration),
-                  Durations.milliseconds(microbatchDuration * slideDuration))
-                  .foreachRDD(
-                        new Aggregator(new PayloadAggregator(producerPool, conf.get(
-                              AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC))));
-            
          } else {
-            /*
-             * Vehicle data distribution/rollover to the Aggregator app
-             */
-            payloadAndMetadata.foreachRDD(new PayloadDistributor(producerPool,
-                  conf.get(AppContext.SPARK_AGGREGATOR_INPUT_TOPIC)));
+            if (conf.getBoolean(
+                  AppContext.SPARK_ODE_AGGREGATOR_ENABLED, 
+                  AppContext.DEFAULT_SPARK_ODE_AGGREGATOR_ENABLED)) {
+               logger.info("Aggregator is running in its own application");
+               /*
+                * Vehicle data distribution/rollover to the Aggregator app
+                */
+               payloadAndMetadata.foreachRDD(new PayloadDistributor(producerPool,
+                     conf.get(AppContext.SPARK_AGGREGATOR_INPUT_TOPIC)));
+            } else {
+               logger.info("Aggregator is disabled");
+               /*
+                * Vehicle data Distribution
+                */
+               payloadAndMetadata.foreachRDD(new PayloadDistributor(producerPool,
+                     null));
+            }
          }
             
       } catch (Exception e) {
          logger.info("Error in Spark Job {}", e);
       }
 
-   }
+      return unifiedStream;
+  }
+
 
 }
