@@ -42,12 +42,7 @@ public class YarnClientManager {
    private ArrayList<String> filesList;
    
    public YarnClientManager(SparkConf conf) {
-      this(conf, "com.bah.ode.spark.VehicleDataProcessorWrapper");
-   }
-
-   public YarnClientManager(SparkConf conf, String className) {
       this.sparkConf = conf;
-      this.className = className;
       this.filesList = new ArrayList<String>();
    }
 
@@ -127,7 +122,7 @@ public class YarnClientManager {
    {
       Properties sparkYarnPropertyFile = new Properties();
       sparkYarnPropertyFile.load(file);
-      Enumeration<?> sparkYarnProperties =  sparkYarnPropertyFile.propertyNames();	               
+      Enumeration<?> sparkYarnProperties =  sparkYarnPropertyFile.propertyNames();
        
        while (sparkYarnProperties.hasMoreElements()){
           String key =  (String) sparkYarnProperties.nextElement();

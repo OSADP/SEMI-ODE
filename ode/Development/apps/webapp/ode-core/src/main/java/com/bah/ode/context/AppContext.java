@@ -67,6 +67,11 @@ public class AppContext {
                new OdePosition3D(BigDecimal.valueOf(42.30575),
                      BigDecimal.valueOf(-82.84275), BigDecimal.ZERO));
 
+   public static final String DEFAULT_SPARK_SCHEDULER_MODE = "FIFO";
+   public static final boolean DEFAULT_SPARK_RUN_ODE_AGGREGATOR_IN_VDP = false;
+   public static final boolean DEFAULT_SPARK_ODE_AGGREGATOR_ENABLED = true;
+   public static final boolean DEFAULT_SPARK_RUN_AGGREGATOR_IN_SLIDING_WINDOW = true;
+   public static final boolean DEFAULT_SPARK_USE_PARALLEL_RECEIVERS = false;
 
 
    private static final String HOST_SPECIFIC_UID = "HOST_SPECIFIC_UID";
@@ -121,6 +126,9 @@ public class AppContext {
    public static final String SPARK_ASSEMBLY_JAR = "spark.assembly.jar";
    public static final String SPARK_EXECUTOR_MEMORY = "spark.executor.memory";
    public static final String SPARK_DRIVER_MEMORY = "spark.driver.memory";
+   public static final String SPARK_SCHEDULER_MODE = "spark.scheduler.mode";
+
+
 
    public static final String SPARK_STATIC_WEATHER_FILE_LOCATION = "spark.static.weather.file.location";
    public static final String SPARK_STATIC_SANITIZATION_FILE_LOCATION = "spark.static.sanitization.file.location";
@@ -132,6 +140,8 @@ public class AppContext {
    
    // SPARK ON YARN Cluster Resource Params
    // Can be used to override defaults
+   // If you are adding a new spark.*.topic, you must also add code to set the
+   // SparkConf parameter in the init method
    public static final String SPARK_YARN_VEHICLE_DRIVER_CORES = "spark.yarn.vehicle.driver.cores";
    public static final String SPARK_YARN_VEHICLE_DRIVER_MEMORY = "spark.yarn.vehicle.driver.memory";
    public static final String SPARK_YARN_VEHICLE_EXECUTOR_CORES = "spark.yarn.vehicle.executor.cores";
@@ -145,7 +155,11 @@ public class AppContext {
    public static final String SPARK_METRICS_VEHICLE_CONFIGURATION_FILE = "spark.metrics.vehicle.configuration.file";
    public static final String SPARK_METRICS_AGGREGATOR_CONFIGURATION_FILE = "spark.metrics.aggregator.configuration.file";
 
-   public static final String SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED = "spark.ode.vehicle.aggregator.enabled";
+   public static final String SPARK_RUN_ODE_AGGREGATOR_IN_VDP = "spark.run.ode.aggregator.in.vdp";
+   public static final String SPARK_RUN_AGGREGATOR_IN_SLIDING_WINDOW = "spark.run.aggregator.in.sliding.window";
+   public static final String SPARK_ODE_AGGREGATOR_ENABLED = "spark.ode.aggregator.enabled";
+   public static final String SPARK_USE_PARALLEL_RECEIVERS = "spark.use.parallel.receivers";
+
    public static final String SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE = "spark.road.segment.snapping.tolerance";
 
    // Kafka Parameters
@@ -154,12 +168,10 @@ public class AppContext {
    public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
 
    /////////////////////////////////////////////////////////////////////////////
-   // Topics used by the Data Processor (Spark)
+   // Topics used by the Spark
    public static final String SPARK_DATA_PROCESSOR_INPUT_TOPIC = "spark.data.processor.input.topic";
    public static final String SPARK_AGGREGATOR_INPUT_TOPIC = "spark.aggregator.input.topic";
    public static final String SPARK_AGGREGATOR_OUTPUT_TOPIC = "spark.aggregator.output.topic";
-   // If you are adding a new spark.*.topic, you must also add code set the host
-   // specific config parameter in the init method
    /////////////////////////////////////////////////////////////////////////////
    
    public static final String TOKEN_KEY_RSA_PEM = "token.key.rsa.pem";
@@ -272,7 +284,21 @@ public class AppContext {
                   getParam(SPARK_AGGREGATOR_OUTPUT_TOPIC))
             .set(SPARK_AGGREGATOR_INPUT_TOPIC,
                   getParam(SPARK_AGGREGATOR_INPUT_TOPIC))
-            .set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED, Boolean.toString(true));
+            .set(SPARK_USE_PARALLEL_RECEIVERS, 
+                  Boolean.toString(getBoolean(SPARK_SCHEDULER_MODE, 
+                        DEFAULT_SPARK_USE_PARALLEL_RECEIVERS)))
+            .set(SPARK_SCHEDULER_MODE, 
+                  getParam(SPARK_SCHEDULER_MODE, 
+                        DEFAULT_SPARK_SCHEDULER_MODE))
+            .set(SPARK_RUN_ODE_AGGREGATOR_IN_VDP, 
+                  Boolean.toString(getBoolean(SPARK_RUN_ODE_AGGREGATOR_IN_VDP, 
+                        DEFAULT_SPARK_RUN_ODE_AGGREGATOR_IN_VDP)))
+            .set(SPARK_ODE_AGGREGATOR_ENABLED, 
+                  Boolean.toString(getBoolean(SPARK_ODE_AGGREGATOR_ENABLED, 
+                        DEFAULT_SPARK_ODE_AGGREGATOR_ENABLED)))
+            .set(SPARK_RUN_AGGREGATOR_IN_SLIDING_WINDOW, 
+                  Boolean.toString(getBoolean(SPARK_RUN_AGGREGATOR_IN_SLIDING_WINDOW, 
+                        DEFAULT_SPARK_RUN_AGGREGATOR_IN_SLIDING_WINDOW)));
 
       // DEBUG ONLY
       // For debugging only and running the app on local machine
@@ -509,17 +535,12 @@ public class AppContext {
          logger.info("Spark Properties File Directory Path: {} ", absolutePath);
 
          try {
+            logger.info("Starting Spark Jobs ...");
+
             if (null == vehicleProcessorManager) {
                vehicleProcessorManager = new YarnClientManager(
                      sparkConf.clone()
                      .set("spark.app.name", getParam(HOST_SPECIFIC_UID) + "-VDP")
-                     /*
-                      * Disable Aggregator function in Vehicle Data Processor by
-                      * Default when running on Yarn. Can be re-enabled by setting
-                      * "spark.ode.vehicle.aggregator.enabled" to true in a properties
-                      * file in order for it to run on yarn mode.
-                      */
-                     .set(SPARK_ODE_VEHICLE_AGGREGATOR_ENABLED, Boolean.toString(false))
                      );
 
                vehicleProcessorManager
@@ -542,19 +563,19 @@ public class AppContext {
               // Default Parameters are provided in the Yarn Client Manager Class
               if  (null !=getParam(SPARK_YARN_VEHICLE_DRIVER_CORES) && !getParam(SPARK_YARN_VEHICLE_DRIVER_CORES).equals(""))
               {
-            	  vehicleProcessorManager.setDriverCores(getParam(SPARK_YARN_VEHICLE_DRIVER_CORES));
+                 vehicleProcessorManager.setDriverCores(getParam(SPARK_YARN_VEHICLE_DRIVER_CORES));
               }
               if  (null !=getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY) && !getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY).equals(""))
               {
-            	  vehicleProcessorManager.setDriverMemory(getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY));
+                 vehicleProcessorManager.setDriverMemory(getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY));
               } 
               if  (null !=getParam(SPARK_YARN_VEHICLE_EXECUTOR_CORES) && !getParam(SPARK_YARN_VEHICLE_EXECUTOR_CORES).equals(""))
               {
-            	  vehicleProcessorManager.setExectorsCores(getParam(SPARK_YARN_VEHICLE_EXECUTOR_CORES));
+                 vehicleProcessorManager.setExectorsCores(getParam(SPARK_YARN_VEHICLE_EXECUTOR_CORES));
               }
               if  (null !=getParam(SPARK_YARN_VEHICLE_EXECUTOR_MEMORY) && !getParam(SPARK_YARN_VEHICLE_EXECUTOR_MEMORY).equals(""))
               {
-            	  vehicleProcessorManager.setExecutorMemory(getParam(SPARK_YARN_VEHICLE_EXECUTOR_MEMORY));
+                 vehicleProcessorManager.setExecutorMemory(getParam(SPARK_YARN_VEHICLE_EXECUTOR_MEMORY));
               } 
              
                String sparkConfigFilePath = getParam(
@@ -566,9 +587,21 @@ public class AppContext {
                         .setSparkConfPropertyFile(this.servletContext
                               .getResourceAsStream(sparkConfigFilePath));
                }
+               
+               ApplicationId vehicleProcessorAppId = 
+                     vehicleProcessorManager.submitSparkJob();
+               logger.info("Started Vehicle Data Processor. ApplicationID: {}",
+                     vehicleProcessorAppId.toString());
+
             }
 
-            if (null == aggregatorManager) {
+            if (null == aggregatorManager &&
+                getBoolean(SPARK_ODE_AGGREGATOR_ENABLED, 
+                      DEFAULT_SPARK_ODE_AGGREGATOR_ENABLED) &&
+                !getBoolean(
+                      AppContext.SPARK_RUN_ODE_AGGREGATOR_IN_VDP, 
+                      AppContext.DEFAULT_SPARK_RUN_ODE_AGGREGATOR_IN_VDP)) {
+               logger.info("Aggregator is enabled AND configured to run in a separate Spark application");
                aggregatorManager = new YarnClientManager(sparkConf.clone()
                      .set("spark.app.name", getParam(HOST_SPECIFIC_UID) + "-VDA")
                      );
@@ -580,9 +613,6 @@ public class AppContext {
                            String.valueOf(DEFAULT_KAFKA_CONSUMER_THREADS)))
                      .setInputTopic(
                            getParam(SPARK_AGGREGATOR_INPUT_TOPIC))
-                     .setSparkStreamingMicrobatchDuration(
-                           getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS,
-                                 String.valueOf(DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS)))
                      .setUserJar(DEPLOY_HOME + File.separator
                            + getParam(ODE_SPARK_JAR))
                      .addFiles("file://" + absolutePath + "/"
@@ -590,6 +620,35 @@ public class AppContext {
                                  SPARK_METRICS_AGGREGATOR_CONFIGURATION_FILE))
                      .setClass(
                            "com.bah.ode.spark.VehicleDataAggregatorWrapper");
+               
+               /*
+                * If the aggregator is to run in a sliding window, the microbatch
+                * durations is the normal duration. Otherwise, microbatch duration
+                * should be the size of the aggregation window.
+                */
+               int microbatchDuration = getInt(SPARK_STREAMING_MICROBATCH_DURATION_MS,
+                     DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS);
+               int windowSize = getInt(SPARK_STREAMING_WINDOW_MICROBATCHES,
+                     DEFAULT_SPARK_STREAMING_WINDOW_MICROBATCHES);
+               if (getBoolean(SPARK_RUN_AGGREGATOR_IN_SLIDING_WINDOW, 
+                     DEFAULT_SPARK_RUN_AGGREGATOR_IN_SLIDING_WINDOW)) {
+                  int slideSize = getInt(SPARK_STREAMING_SLIDE_MICROBATCHES,
+                        DEFAULT_SPARK_STREAMING_SLIDE_MICROBATCHES);
+                  aggregatorManager.setSparkStreamingMicrobatchDuration(
+                        String.valueOf(microbatchDuration));
+                  logger.info("Running Aggregator in Sliding Window. "
+                        + "Aggregator Microbatch duration: {} ms. "
+                        + "Window size: {} ms. "
+                        + "Slide Duration: {} ms",
+                        microbatchDuration, microbatchDuration * windowSize,
+                        microbatchDuration * slideSize);
+               } else {
+                  aggregatorManager.setSparkStreamingMicrobatchDuration(
+                        String.valueOf(microbatchDuration * windowSize));
+                  logger.info("Running Aggregator "
+                        + "with Microbatch duration: {} ms",
+                        microbatchDuration * windowSize);
+               }
                // Default Parameters are provided in the Yarn Client Manager Class
                if  (null !=getParam(SPARK_YARN_AGGREGATOR_DRIVER_CORES) && !getParam(SPARK_YARN_AGGREGATOR_DRIVER_CORES).equals(""))
                {
@@ -616,18 +675,12 @@ public class AppContext {
                   aggregatorManager.setSparkConfPropertyFile(this.servletContext
                         .getResourceAsStream(sparkAggregatorConfigFilePath));
                }
+               
+               ApplicationId aggregatorAppId = aggregatorManager.submitSparkJob();
+               logger.info("Started Aggregator. ApplicationID: {}",
+                     aggregatorAppId.toString());
+
             }
-
-            logger.info("Starting Spark Jobs ...");
-
-            ApplicationId vehicleProcessorAppId = vehicleProcessorManager
-                  .submitSparkJob();
-            logger.info("Spark Vehicle Processor ApplicationID: {}",
-                  vehicleProcessorAppId.toString());
-
-            ApplicationId aggregatorAppId = aggregatorManager.submitSparkJob();
-            logger.info("Spark Aggregator ApplicationID: {}",
-                  aggregatorAppId.toString());
 
             logger.info("*** Spark Streaming Context Started ***");
          } catch (Throwable t1) {

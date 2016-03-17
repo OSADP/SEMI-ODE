@@ -898,6 +898,7 @@ function sendFiles() {
                         if (records != undefined) {
                            for (var subj = recordLoc + recordsPerBatch; recordLoc < records.length
                                  && recordLoc < subj; recordLoc++) {
+                              recordsPerBatch = parseInt($("#recordsPerBatch").val());
                               var request = {};
                               request['dataSource'] = dataSource;
                               request['dataType'] = dataType;
@@ -1043,9 +1044,9 @@ function getMetadata(str) {
 
 function updateClusters(str) {
    var pl = getPayload(str);
+   var metadata = getMetadata(str);
 
-   if (pl !== undefined && pl !== false && pl !== null
-         && pl.longitude !== undefined && pl.latitude !== undefined) {
+   if (pl !== undefined && pl !== false && pl !== null && pl.dataType === "VehicleData") {
       recordsReceived += 1;
       var lon = parseFloat(pl.longitude);
       var lat = parseFloat(pl.latitude);
@@ -1097,8 +1098,8 @@ function updateClusters(str) {
          }
       }
    } else if (pl !== undefined && pl !== false && pl !== null
-         && pl.code === undefined && pl.token === undefined
-         && (pl.tag === undefined || pl.tag === 'DEPOSITED')) { // avoid success and token responses in payload
+           && pl.code === undefined && pl.token === undefined
+           && (pl.tag === undefined || pl.tag === 'DEPOSITED')) { // avoid success and token responses in payload
       recordsReceived += 1;
    }
 }

@@ -105,4 +105,5 @@ public class MQConsumerGroup<K, V, R> {
       this.topic = topic;
    }
 
+
 }

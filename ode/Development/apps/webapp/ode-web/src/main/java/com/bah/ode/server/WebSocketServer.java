@@ -111,7 +111,7 @@ public class WebSocketServer {
 	   String sessionId = session.getId();
 
       logger.info("---Connected to ODE on Session ID: {}, " + "Request Type: {}, "
-            + "Data Type: {} ---", sessionId, rtype, dtype);
+            + "Data Type: {}", sessionId, rtype, dtype);
 
       OdeStatus msg = new OdeStatus();
       boolean isAuthorized = validateRequest(endpointConfig.getUserProperties());
@@ -206,7 +206,7 @@ public class WebSocketServer {
          return;
       
       String sessionId = session.getId();
-      logger.info("=== Message Received on Session ID {}, Request Type {}, Data Type {} : {} ===", 
+      logger.info("=== Message Received on Session ID {}, Request Type {}, Data Type {} : {}", 
             sessionId, rtype, dtype, message);
       
       OdeStatus status = new OdeStatus();
@@ -361,7 +361,7 @@ public class WebSocketServer {
       synchronized(WebSocketServer.class) {
          String sessionId = session.getId();
          try {
-            logger.info("--- Session {} disconnected. Shutting Down a subscriber to {} ---", sessionId, outputTopic.getName());
+            logger.info("--- Session {} disconnected. Shutting Down a subscriber to {}", sessionId, outputTopic.getName());
             if (reason != null)
                logger.info("Reason: {}", reason.getCloseCode());
    
