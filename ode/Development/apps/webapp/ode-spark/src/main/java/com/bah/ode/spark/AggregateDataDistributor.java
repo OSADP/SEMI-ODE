@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.UUID;
 
+import org.apache.spark.Accumulator;
 import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.Row;
@@ -22,14 +23,17 @@ public class AggregateDataDistributor extends BaseDistributor
    private String streamId = UUID.randomUUID().toString();
    
    public AggregateDataDistributor(
+         Accumulator<Integer> accumulator,
          Broadcast<MQSerialazableProducerPool> producerPool,
          String outputTopic) {
-      super(producerPool);
+      super(accumulator, producerPool);
       this.outputTopic = outputTopic;
    }
 
    @Override
    public void call(Iterator<Row> partitionOfRecords) throws Exception {
+      startTimer();
+      
       MQProducer<String, String> producer = producerPool.value().checkOut();
       
       long recordId = 0;
@@ -52,6 +56,7 @@ public class AggregateDataDistributor extends BaseDistributor
       }
       
       producerPool.value().checkIn(producer);
+      stopTimer();
    }
 
 }

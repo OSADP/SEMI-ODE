@@ -1,18 +1,19 @@
 package com.bah.ode.spark;
 
+import org.apache.spark.Accumulator;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.function.Function;
 
 import scala.Tuple2;
 
-public class Aggregator extends BaseDistributor
+public class Aggregator extends SparkProcessor
    implements Function<JavaPairRDD<String, Tuple2<String, String>>, Void> {
 
    private static final long serialVersionUID = 34991323740854373L;
    private PayloadAggregator aggregator;
    
-   public Aggregator(PayloadAggregator aggregator) {
-      super(aggregator.getProducerPool());
+   public Aggregator(Accumulator<Integer> accumulator, PayloadAggregator aggregator) {
+      super(accumulator);
       this.aggregator = aggregator;
    }
 

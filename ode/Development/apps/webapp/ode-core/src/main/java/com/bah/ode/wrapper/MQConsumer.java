@@ -9,6 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
+import com.bah.ode.metrics.LongGauge;
+import com.bah.ode.metrics.OdeMetrics;
+import com.bah.ode.metrics.OdeMetrics.Context;
+import com.bah.ode.metrics.OdeMetrics.Meter;
+import com.bah.ode.metrics.OdeMetrics.Timer;
 import com.bah.ode.util.JsonUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -27,6 +32,15 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
    private long reOrderDelay;
    private long reOrderPeriod;
    
+   protected Meter meter;
+   protected Timer callTimer;
+   protected Timer runTimer;
+   protected static final LongGauge sizeGauge = new LongGauge();
+   
+   static {
+      OdeMetrics.getInstance().registerGauge(sizeGauge, 
+            MQConsumer.class.getSimpleName(), "sizeGauge");
+   }
 
    public MQConsumer(KafkaStream<K, V> a_stream, int a_threadNumber,
          DataProcessor<V, R> a_processor, 
@@ -38,12 +52,24 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
       this.reOrderDelay = reOrderDelay;
       this.reOrderPeriod = reOrderPeriod;
       
+      this.meter = OdeMetrics.getInstance().meter(
+            MQConsumer.class.getSimpleName(), 
+            processor.getClass().getSimpleName(), "meter");
+      
+      this.callTimer = OdeMetrics.getInstance().timer(
+            MQConsumer.class.getSimpleName(), 
+            processor.getClass().getSimpleName(), "callTimer");
+
+      this.runTimer = OdeMetrics.getInstance().timer(
+            MQConsumer.class.getSimpleName(), 
+            processor.getClass().getSimpleName(), "runTimer");
    }
 
    @Override
    public Object call() throws Exception {
       ConsumerIterator<K, V> it = m_stream.iterator();
-
+      Context context = callTimer.time();
+      
       /**
        * Sends all received and ordered records every second as a batch Records
        * sent as map of serialId.bundleId
@@ -57,6 +83,7 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
              * if it hasn't arrived yet.
              */
             if (records.size() != 0) {
+               Context runContext = runTimer.time();
                try {
                   TreeMap<Integer, ArrayList<V>> sendMap = new TreeMap<Integer, ArrayList<V>>(
                         records);
@@ -75,11 +102,14 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
                } catch (Exception e) {
                   logger.error("Error Consuming message", e);
                }
+               runContext.stop();
             }
          }
       }, reOrderDelay, reOrderPeriod);
 
+      long numMsgs = 0;
       while (it.hasNext()) {
+         numMsgs++;
          V msg = it.next().message();
          ObjectNode bundleObject = JsonUtils.toObjectNode(msg.toString());
 
@@ -133,7 +163,12 @@ public class MQConsumer<K, V, R> implements Callable<Object> {
          } // End of 'has payload' block
       } // End of while loop
 
+      meter.mark(numMsgs);
+      sizeGauge.setValue(numMsgs);
+
       logger.info("Shutting down Thread: " + m_threadNumber);
+      
+      context.stop();
       return null;
    }
 }

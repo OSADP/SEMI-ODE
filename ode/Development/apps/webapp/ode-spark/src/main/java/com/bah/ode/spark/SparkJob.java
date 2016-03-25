@@ -2,6 +2,7 @@ package com.bah.ode.spark;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.wrapper.MQTopic;
+
+import kafka.serializer.StringDecoder;
 
 public abstract class SparkJob {
    private static Logger logger = LoggerFactory.getLogger(SparkJob.class);
@@ -45,6 +48,24 @@ public abstract class SparkJob {
       return unifiedStream;
    }
 
+   public JavaPairDStream<String, String> receiveDirect (
+         final JavaStreamingContext ssc, MQTopic topic, String brokerList) {
+      HashSet<String> topicsSet = new HashSet<String>();
+      topicsSet.add(topic.getName());
+      JavaPairDStream<String, String> unifiedStream = KafkaUtils.createDirectStream(
+            ssc,
+            String.class,
+            String.class,
+            StringDecoder.class,
+            StringDecoder.class,
+            Collections.singletonMap("metadata.broker.list",
+                  brokerList),
+            topicsSet
+        );
+
+      return unifiedStream;
+   }
+
    public JavaPairDStream<String, String> unifiedStream(
          final JavaStreamingContext ssc, MQTopic topic,
          String zkConnectionStrings, String brokerList) {
@@ -59,7 +80,7 @@ public abstract class SparkJob {
          unifiedStream = parallelReceivers(ssc, this.getClass().getName(),
                topic, zkConnectionStrings, brokerList);
       } else {
-         logger.info("Spark using a single receiver comsuming all available partitions");
+         logger.info("Spark using a single receiver consuming all available partitions");
          unifiedStream = singleReceiver(ssc, this.getClass().getName(), topic,
                zkConnectionStrings, brokerList);
       }

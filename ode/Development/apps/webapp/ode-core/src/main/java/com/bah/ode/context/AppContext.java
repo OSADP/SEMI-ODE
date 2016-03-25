@@ -25,6 +25,7 @@ import java.util.UUID;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -132,8 +133,6 @@ public class AppContext {
    
    // SPARK ON YARN Cluster Resource Params
    // Can be used to override defaults
-   // If you are adding a new spark.*.topic, you must also add code to set the
-   // SparkConf parameter in the init method
    public static final String SPARK_YARN_VEHICLE_DRIVER_CORES = "spark.yarn.vehicle.driver.cores";
    public static final String SPARK_YARN_VEHICLE_DRIVER_MEMORY = "spark.yarn.vehicle.driver.memory";
    public static final String SPARK_YARN_VEHICLE_EXECUTOR_CORES = "spark.yarn.vehicle.executor.cores";
@@ -180,7 +179,7 @@ public class AppContext {
 
    private String sparkMaster;
    private SparkConf sparkConf;
-   private JavaSparkContext sparkContext;
+   private JavaSparkContext sparkContextLocal;
    // private SQLContext sqlContext;
    private boolean streamingContextStarted = false;
    private YarnClientManager vehicleProcessorManager = null;
@@ -399,7 +398,7 @@ public class AppContext {
                      .getRealPath(getParam(SPARK_CONFIGURATION_DIRECTORY_HOME));
                sparkConf.set("spark.metrics.conf", absolutePath + File.separator
                      + getParam(SPARK_METRICS_VEHICLE_CONFIGURATION_FILE));
-               sparkContext = getOrSetSparkContext();
+               sparkContextLocal = getOrSetSparkContextLocal();
             }
          } catch (Throwable t) {
             logger.error("Error setting sparkConf.", t);
@@ -495,20 +494,20 @@ public class AppContext {
       return sparkConf;
    }
 
-   public JavaSparkContext getOrSetSparkContext() {
-      if (sparkContext == null) {
+   public JavaSparkContext getOrSetSparkContextLocal() {
+      if (sparkContextLocal == null) {
          logger.info("Creating Spark Context...");
-         sparkContext = new JavaSparkContext(sparkConf);
+         sparkContextLocal = new JavaSparkContext(sparkConf);
       }
-      return sparkContext;
+      return sparkContextLocal;
    }
 
    public JavaSparkContext getSparkContext() {
-      return sparkContext;
+      return sparkContextLocal;
    }
 
    public void setSparkContext(JavaSparkContext sparkContext) {
-      this.sparkContext = sparkContext;
+      this.sparkContextLocal = sparkContext;
    }
 
    // public SQLContext getSparkSQLContext() {
@@ -529,11 +528,21 @@ public class AppContext {
          try {
             logger.info("Starting Spark Jobs ...");
 
+
             if (null == vehicleProcessorManager) {
-               vehicleProcessorManager = new YarnClientManager(
-                     sparkConf.clone()
-                     .set("spark.app.name", getParam(HOST_SPECIFIC_UID) + "-VDP")
-                     );
+               SparkConf cloneConf = sparkConf.clone()
+                     .set("spark.app.name", getParam(HOST_SPECIFIC_UID) + "-VDP");
+               
+               if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_VEHICLE_DRIVER_CORES)))
+               {
+                  cloneConf.set("spark.yarn.am.cores", getParam(SPARK_YARN_VEHICLE_DRIVER_CORES));
+               }
+               if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY)))
+               {
+                  cloneConf.set("spark.yarn.am.memory", getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY));
+               } 
+
+               vehicleProcessorManager = new YarnClientManager(cloneConf);
 
                vehicleProcessorManager
                      .setKafkaMetaDataBrokerList(
@@ -553,19 +562,19 @@ public class AppContext {
                            + getParam(ODE_SPARK_JAR));
               
               // Default Parameters are provided in the Yarn Client Manager Class
-              if  (null !=getParam(SPARK_YARN_VEHICLE_DRIVER_CORES) && !getParam(SPARK_YARN_VEHICLE_DRIVER_CORES).equals(""))
+              if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_VEHICLE_DRIVER_CORES)))
               {
                  vehicleProcessorManager.setDriverCores(getParam(SPARK_YARN_VEHICLE_DRIVER_CORES));
               }
-              if  (null !=getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY) && !getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY).equals(""))
+              if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY)))
               {
                  vehicleProcessorManager.setDriverMemory(getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY));
               } 
-              if  (null !=getParam(SPARK_YARN_VEHICLE_EXECUTOR_CORES) && !getParam(SPARK_YARN_VEHICLE_EXECUTOR_CORES).equals(""))
+              if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_VEHICLE_EXECUTOR_CORES)))
               {
                  vehicleProcessorManager.setExectorsCores(getParam(SPARK_YARN_VEHICLE_EXECUTOR_CORES));
               }
-              if  (null !=getParam(SPARK_YARN_VEHICLE_EXECUTOR_MEMORY) && !getParam(SPARK_YARN_VEHICLE_EXECUTOR_MEMORY).equals(""))
+              if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_VEHICLE_EXECUTOR_MEMORY)))
               {
                  vehicleProcessorManager.setExecutorMemory(getParam(SPARK_YARN_VEHICLE_EXECUTOR_MEMORY));
               } 
@@ -582,7 +591,7 @@ public class AppContext {
                
                ApplicationId vehicleProcessorAppId = 
                      vehicleProcessorManager.submitSparkJob();
-               logger.info("Started Vehicle Data Processor. ApplicationID: {}",
+               logger.info("*** Started Vehicle Data Processor. ApplicationID: {} ***",
                      vehicleProcessorAppId.toString());
 
             }
@@ -594,9 +603,21 @@ public class AppContext {
                       AppContext.SPARK_RUN_ODE_AGGREGATOR_IN_VDP, 
                       AppContext.DEFAULT_SPARK_RUN_ODE_AGGREGATOR_IN_VDP)) {
                logger.info("Aggregator is enabled AND configured to run in a separate Spark application");
-               aggregatorManager = new YarnClientManager(sparkConf.clone()
-                     .set("spark.app.name", getParam(HOST_SPECIFIC_UID) + "-VDA")
-                     );
+               
+               SparkConf cloneConf = sparkConf.clone()
+                     .set("spark.app.name", getParam(HOST_SPECIFIC_UID) + "-VDA");
+               
+               if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_AGGREGATOR_DRIVER_CORES)))
+               {
+                  cloneConf.set("spark.yarn.am.cores", getParam(SPARK_YARN_AGGREGATOR_DRIVER_CORES));
+               }
+               if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_AGGREGATOR_DRIVER_MEMORY)))
+               {
+                  cloneConf.set("spark.yarn.am.memory", getParam(SPARK_YARN_AGGREGATOR_DRIVER_MEMORY));
+               } 
+
+               aggregatorManager = new YarnClientManager(cloneConf);
+               
                aggregatorManager
                      .setKafkaMetaDataBrokerList(
                            getParam(KAFKA_METADATA_BROKER_LIST))
@@ -642,19 +663,19 @@ public class AppContext {
                         microbatchDuration * windowSize);
                }
                // Default Parameters are provided in the Yarn Client Manager Class
-               if  (null !=getParam(SPARK_YARN_AGGREGATOR_DRIVER_CORES) && !getParam(SPARK_YARN_AGGREGATOR_DRIVER_CORES).equals(""))
+               if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_AGGREGATOR_DRIVER_CORES)))
                {
             	   aggregatorManager.setDriverCores(getParam(SPARK_YARN_AGGREGATOR_DRIVER_CORES));
                }
-               if  (null !=getParam(SPARK_YARN_AGGREGATOR_DRIVER_MEMORY) && !getParam(SPARK_YARN_AGGREGATOR_DRIVER_MEMORY).equals(""))
+               if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_AGGREGATOR_DRIVER_MEMORY)))
                {
             	   aggregatorManager.setDriverMemory(getParam(SPARK_YARN_AGGREGATOR_DRIVER_MEMORY));
                } 
-               if  (null !=getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_CORES) && !getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_CORES).equals(""))
+               if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_CORES)))
                {
             	   aggregatorManager.setExectorsCores(getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_CORES));
                }
-               if  (null !=getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_MEMORY) && !getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_MEMORY).equals(""))
+               if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_MEMORY)))
                {
             	   aggregatorManager.setExecutorMemory(getParam(SPARK_YARN_AGGREGATOR_EXECUTOR_MEMORY));
                } 
@@ -669,31 +690,14 @@ public class AppContext {
                }
                
                ApplicationId aggregatorAppId = aggregatorManager.submitSparkJob();
-               logger.info("Started Aggregator. ApplicationID: {}",
+               logger.info("*** Started Aggregator. ApplicationID: {} ***",
                      aggregatorAppId.toString());
 
             }
 
-            logger.info("*** Spark Streaming Context Started ***");
          } catch (Throwable t1) {
-            logger.warn(
-                  "*** Error starting Spark Streaming Context. Stopping... ***",
-                  t1);
-            try {
-               logger.info("*** Spark Streaming Context Stopped ***");
-            } catch (Throwable t2) {
-               logger.warn(
-                     "*** Error stopping Spark Streaming Context. Starting... ***",
-                     t2);
-            }
-            try {
-               logger.info("*** Restarting Spark Streaming Context. ***");
-               streamingContextStarted = true;
-               logger.info("*** Spark Streaming Context Restarted ***");
-            } catch (Throwable t3) {
-               logger.error("*** Unable to start Spark Streaming Context ***",
-                     t3);
-            }
+            logger.error("*** Unable to start Spark on Yarn ***",
+                     t1);
          }
       }
    }

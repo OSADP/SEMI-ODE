@@ -147,27 +147,31 @@ public class OdeMetrics {
 
    }
    
-   public Meter meter(String meterId) {
-      com.codahale.metrics.Meter meter = registry.meter(meterId);
+   public Meter meter(String prefix, String... names) {
+      com.codahale.metrics.Meter meter = registry.meter(
+            com.codahale.metrics.MetricRegistry.name(prefix, names));
       return new Meter(meter);
    }
 
-   public void registerGauge(Gauge<?> odeGauge, String className, String... names) {
-      registry.register(com.codahale.metrics.MetricRegistry.name(className, names), odeGauge);
+   public void registerGauge(Gauge<?> odeGauge, String prefix, String... names) {
+      registry.register(com.codahale.metrics.MetricRegistry.name(prefix, names), odeGauge);
    }
    
-   public Counter counter(String name) {
-      com.codahale.metrics.Counter counter = registry.counter(name);
+   public Counter counter(String prefix, String... names) {
+      com.codahale.metrics.Counter counter = registry.counter(
+            com.codahale.metrics.MetricRegistry.name(prefix, names));
       return new Counter(counter);
    }
 
-   public Histogram histogram(String name) {
-      com.codahale.metrics.Histogram histogram = registry.histogram(name);
+   public Histogram histogram(String prefix, String... names) {
+      com.codahale.metrics.Histogram histogram = registry.histogram(
+            com.codahale.metrics.MetricRegistry.name(prefix, names));
       return new Histogram(histogram);
    }
 
-   public Timer timer(String name) {
-      com.codahale.metrics.Timer timer = registry.timer(name);
+   public Timer timer(String prefix, String... names) {
+      com.codahale.metrics.Timer timer = registry.timer(
+            com.codahale.metrics.MetricRegistry.name(prefix, names));
       return new Timer(timer);
    }
 
