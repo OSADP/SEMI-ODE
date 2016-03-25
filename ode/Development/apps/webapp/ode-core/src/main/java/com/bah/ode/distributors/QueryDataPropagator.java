@@ -13,6 +13,7 @@ import com.bah.ode.filter.OdeFilter;
 import com.bah.ode.filter.SpatialFilter;
 import com.bah.ode.filter.TemporalFilter;
 import com.bah.ode.metrics.OdeMetrics;
+import com.bah.ode.metrics.OdeMetrics.Context;
 import com.bah.ode.metrics.OdeMetrics.Meter;
 import com.bah.ode.model.OdeControlData;
 import com.bah.ode.model.OdeDataMessage;
@@ -52,8 +53,7 @@ public class QueryDataPropagator extends BaseDataPropagator {
 
    @Override
    public Future<String> process(String data) throws DataProcessorException {
-      queryMeter.mark();
-      baseMeter.mark();
+      Context context = timer.time();
       
       try {
          OdeDataMessage dataMsg = getDataMsg(data);
@@ -110,9 +110,16 @@ public class QueryDataPropagator extends BaseDataPropagator {
                }// We have a Filterable paylaod
             }// Not a Control record
          }// dataMsg != null 
+         queryMeter.mark();
+         baseMeter.mark();
       } catch (Exception e) {
-         throw new DataProcessorException("Error processing data.", e);
+         //if the session is not open, ignore the exception
+         if (clientSession.isOpen())
+            logger.error("Error processing data.", e);
+      } finally {
+         context.stop();
       }
+      
       return null;
    }
 

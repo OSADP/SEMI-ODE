@@ -4,7 +4,14 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.spark.Accumulator;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import junit.framework.TestCase;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
 import scala.Tuple2;
 
 import com.bah.ode.model.OdeDataType;
@@ -17,10 +24,23 @@ import com.bah.ode.model.OdeSubRequest;
 import com.bah.ode.model.OdeVehicleDataFlat;
 import com.bah.ode.util.JsonUtils;
 
+@RunWith(JMockit.class)
 public class RoadSegmentIntegratorTest extends TestCase {
 
+   @Mocked
+   Accumulator<Integer> accumulator;
+   
+   @Test
    public void testCall() throws Exception {
-      RoadSegmentIntegrator integrator = new RoadSegmentIntegrator(10000.0);
+      new Expectations() {
+         {
+            accumulator.$plus$eq(anyInt);
+         }
+      };
+      
+      RoadSegmentIntegrator integrator = new RoadSegmentIntegrator(
+            accumulator,
+            10000.0);
       String key = "key1";
       String segId = "s1NB";
       String payload = "{\"className\":\"com.bah.ode.model.OdeVehicleDataFlat\",\"serialId\":\"10817812-036b-4d7b-867b-ae0bc62a2b3e.0\",\"receivedAt\":\"2015-07-22T19:21:16.413+0000\",\"groupId\":\"4130008F\",\"accelLong\":0.34,\"accelVert\":0,\"accellYaw\":8.42,\"heading\":65.95,\"speed\":8.12,\"sizeLength\":500,\"sizeWidth\":200,\"latitude\":42.3296667,\"longitude\":-83.044539,\"elevation\":156.9,\"tempId\":\"C4290123\",\"year\":2015,\"month\":5,\"day\":13,\"hour\":15,\"minute\":52,\"second\":45.5,\"dateTime\":\"2015-06-13T19:52:45.500+0000\"}";

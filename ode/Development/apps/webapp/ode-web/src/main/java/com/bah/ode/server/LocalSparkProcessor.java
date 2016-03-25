@@ -30,7 +30,7 @@ public class LocalSparkProcessor {
          if (ssc == null) {
             logger.info("Creating Spark Streaming Context...");
             ssc = new JavaStreamingContext(
-                  appContext.getOrSetSparkContext(),
+                  appContext.getOrSetSparkContextLocal(),
                   Durations.milliseconds(AppContext.getInstance().getInt(
                               AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS,
                               AppContext.DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS)));

@@ -1,5 +1,6 @@
 package com.bah.ode.spark;
 
+import org.apache.spark.Accumulator;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.broadcast.Broadcast;
@@ -13,17 +14,24 @@ public class PayloadAggregator extends BaseDistributor
 
    private static final long serialVersionUID = 34991323740854373L;
    private String outputTopic;
+   private Accumulator<Integer> distributorAccumulator;
    
-   public PayloadAggregator(Broadcast<MQSerialazableProducerPool> producerPool,
+   public PayloadAggregator(
+         Accumulator<Integer> aggregatorAccumulator, 
+         Accumulator<Integer> distributorAccumulator, 
+         Broadcast<MQSerialazableProducerPool> producerPool,
          String outputTopic) {
-      super(producerPool);
+      super(aggregatorAccumulator, producerPool);
       this.outputTopic = outputTopic;
+      this.distributorAccumulator = distributorAccumulator;
    }
 
    @Override
    public Void call(JavaPairRDD<String, String> rdd)
          throws Exception {
-      rdd.cache();
+
+      startTimer();
+      
       if (rdd.count() == 0){
          return null;
       }
@@ -32,7 +40,6 @@ public class PayloadAggregator extends BaseDistributor
 
       DataFrame ovdfDataFrame = sqlContext.jsonRDD(rdd.values());
 //      ovdfDataFrame.show(10);
-      rdd.unpersist(false);
       
       // Register as table
       ovdfDataFrame.registerTempTable("OVDF");
@@ -45,8 +52,12 @@ public class PayloadAggregator extends BaseDistributor
 
 //      ovdfAggsDataFrame.show(10);
 
-      ovdfAggsDataFrame.toJavaRDD().foreachPartition(new AggregateDataDistributor(producerPool,
+      ovdfAggsDataFrame.toJavaRDD().foreachPartition(new AggregateDataDistributor(
+            distributorAccumulator,
+            producerPool,
             outputTopic));
+      
+      stopTimer();
       return null;
    }
 
