@@ -2,6 +2,7 @@ package com.bah.ode.spark;
 
 import java.util.List;
 
+import org.apache.spark.Accumulator;
 import org.apache.spark.api.java.function.PairFunction;
 
 import com.bah.ode.context.AppContext;
@@ -10,19 +11,22 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import scala.Tuple2;
 
-public class RecordSanitizer implements
-      PairFunction<Tuple2<String, Tuple2<String, String>>, String, Tuple2<String, String>> {
+public class RecordSanitizer extends SparkProcessor
+   implements PairFunction<Tuple2<String, Tuple2<String, String>>, String, Tuple2<String, String>> {
 
    private static final long serialVersionUID = 2040465851629473055L;
    private List<String> sanitizationData = null;
 
-   public RecordSanitizer(List<String> sanitizationData) {
+   public RecordSanitizer(Accumulator<Integer> accumulator, List<String> sanitizationData) {
+      super(accumulator);
       this.sanitizationData = sanitizationData;
    }
 
    @Override
    public Tuple2<String, Tuple2<String, String>> call(
          Tuple2<String, Tuple2<String, String>> record) throws Exception {
+
+      startTimer();
 
       ObjectNode vehicledata = JsonUtils.toObjectNode(record._2()._1());
       double record_latitude = vehicledata.get("latitude").asDouble();
@@ -87,6 +91,8 @@ public class RecordSanitizer implements
          }
       }
 
+      stopTimer();
+      
       return record;
    }
 

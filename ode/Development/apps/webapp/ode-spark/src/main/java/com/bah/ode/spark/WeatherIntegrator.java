@@ -3,6 +3,7 @@ package com.bah.ode.spark;
 import java.awt.geom.Point2D;
 import java.util.List;
 
+import org.apache.spark.Accumulator;
 import org.apache.spark.api.java.function.PairFunction;
 
 import com.bah.ode.util.GeoUtils;
@@ -11,19 +12,22 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import scala.Tuple2;
 
-public class WeatherIntegrator implements
+public class WeatherIntegrator extends SparkProcessor implements
       PairFunction<Tuple2<String, Tuple2<String, String>>, String, Tuple2<String, String>> {
 
    private static final long serialVersionUID = 2040465851629473055L;
    private List<String> weatherData = null;
 
-   public WeatherIntegrator(List<String> weatherData) {
+   public WeatherIntegrator(Accumulator<Integer> accumulator, List<String> weatherData) {
+      super(accumulator);
       this.weatherData = weatherData;
    }
 
    @Override
    public Tuple2<String, Tuple2<String, String>> call(
          Tuple2<String, Tuple2<String, String>> record) throws Exception {
+
+      startTimer();
 
       ObjectNode vehicledata = JsonUtils.toObjectNode(record._2()._1());
       if (vehicledata.has("latitude") && vehicledata.has("longitude") &&
@@ -101,6 +105,8 @@ public class WeatherIntegrator implements
          return record;
       }
 
+      stopTimer();
+      
       return new Tuple2<String, Tuple2<String, String>>(record._1(),
             new Tuple2<String, String>(vehicledata.toString(),
                   record._2()._2()));

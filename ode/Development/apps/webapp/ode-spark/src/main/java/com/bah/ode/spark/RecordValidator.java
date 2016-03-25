@@ -3,6 +3,7 @@ package com.bah.ode.spark;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.spark.Accumulator;
 import org.apache.spark.api.java.function.PairFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +15,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import scala.Tuple2;
 
-public class RecordValidator implements
-      PairFunction<Tuple2<String, Tuple2<String, String>>, String, Tuple2<String, String>> {
+public class RecordValidator extends SparkProcessor 
+   implements PairFunction<Tuple2<String, Tuple2<String, String>>, String, Tuple2<String, String>> {
 
    private static final long serialVersionUID = 2040465851629473055L;
    
@@ -23,13 +24,17 @@ public class RecordValidator implements
 
    private List<String> validationData = null;
 
-   public RecordValidator(List<String> validationData) {
+   public RecordValidator(Accumulator<Integer> accumulator, List<String> validationData) {
+      super(accumulator);
       this.validationData = validationData;
    }
 
    @Override
    public Tuple2<String, Tuple2<String, String>> call(
          Tuple2<String, Tuple2<String, String>> record) throws Exception {
+
+      startTimer();
+
       if (!record._1().equals("sanitized")) {
          ArrayList<ObjectNode> violations = new ArrayList<ObjectNode>();
          ObjectNode metadata = JsonUtils.toObjectNode(record._2()._2());
@@ -81,6 +86,8 @@ public class RecordValidator implements
 
       }
 
+      stopTimer();
+      
       return record;
    }
 
