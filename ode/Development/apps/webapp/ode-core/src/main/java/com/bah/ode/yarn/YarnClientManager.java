@@ -34,9 +34,9 @@ public class YarnClientManager {
    private String className;
    private String userJar;
    private Client client;
-   private String driverMemory = "512m"; //MB
+   private String driverMemory = "1024m"; //MB
    private String driverCores = "1";
-   private String executorMemory = "1024m"; //MB
+   private String executorMemory = "2048m"; //MB
    private String executorCores = "1";
    private ApplicationId appId;
    private ArrayList<String> filesList;
@@ -145,9 +145,12 @@ public class YarnClientManager {
       // String sparkStreamingDefaultDuration = args[4];
       //
       String[] args = new String[] { "--class", className, "--jar", userJar,
-            "--arg", numPartitions, "--arg", inputTopic, "--arg",
-            zkConnectionString, "--arg", kafkaMetaDataBrokerList, "--arg",
-            sparkStreamingMicrobatchDurationMs,"--files", String.join(",", filesList),
+            "--arg", numPartitions,
+            "--arg", inputTopic, 
+            "--arg", zkConnectionString,
+            "--arg", kafkaMetaDataBrokerList, 
+            "--arg", sparkStreamingMicrobatchDurationMs,
+            "--files", String.join(",", filesList),
             "--driver-memory", driverMemory, "--driver-cores", driverCores,
             "--executor-memory", executorMemory,"--executor-cores", executorCores
       		};

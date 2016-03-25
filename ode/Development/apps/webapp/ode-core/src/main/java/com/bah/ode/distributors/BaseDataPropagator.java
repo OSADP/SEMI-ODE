@@ -13,7 +13,9 @@ import com.bah.ode.context.AppContext;
 import com.bah.ode.filter.OdeFilter;
 import com.bah.ode.metrics.LongGauge;
 import com.bah.ode.metrics.OdeMetrics;
+import com.bah.ode.metrics.OdeMetrics.Context;
 import com.bah.ode.metrics.OdeMetrics.Meter;
+import com.bah.ode.metrics.OdeMetrics.Timer;
 import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
@@ -50,15 +52,17 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
       OdeMetrics.getInstance().registerGauge(vsdLatency, "VSD_Latency");
    }
 
+   protected Timer timer;
+
    public BaseDataPropagator(Session clientSession, OdeMetadata metadata) {
-      super();
-      this.clientSession = clientSession;
+      this(clientSession);
       this.metadata = metadata;
       filters = createFilters();
    }
 
    public BaseDataPropagator(Session session) {
       this.clientSession = session;
+      timer = OdeMetrics.getInstance().timer(this.getClass().getName(), "timer");
    }
 
    protected abstract List<OdeFilter> createFilters();
@@ -68,6 +72,7 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
           throws DataProcessorException {
       
       baseMeter.mark();
+      Context context = timer.time();
       
       try {
          OdeDataMessage dataMsg = getDataMsg(data);
@@ -79,9 +84,12 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
             WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
          }
       } catch (Exception e) {
-         throw new DataProcessorException(
-               "Error processing data.", e);
+         //if the session is not open, ignore the exception
+         if (clientSession.isOpen())
+            logger.error("Error processing data.", e);
       }
+      context.stop();
+      
       return null;
    }
 

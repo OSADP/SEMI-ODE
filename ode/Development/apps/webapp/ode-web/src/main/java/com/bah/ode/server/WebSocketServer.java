@@ -207,9 +207,6 @@ public class WebSocketServer {
          return;
       
       String sessionId = session.getId();
-      logger.info("=== Message Received on Session ID {}, Request Type {}, Data Type {} : {}", 
-            sessionId, rtype, dtype, message);
-      
       OdeStatus status = new OdeStatus();
 
       synchronized(WebSocketServer.class) {
@@ -232,7 +229,10 @@ public class WebSocketServer {
             String requestId = odeRequest.getId();
             if (tempTopic == null) {
                // Note: requestId should not be null. So if we get a NPE, we have an internal error
-               logger.info("Creating new request: {}", requestId );
+               
+               if (odeRequest.getRequestType() !=  OdeRequestType.Deposit)
+                  logger.info("Creating new data request: {}", requestId );
+               
                // No client topic exists, create a new one
                
                outputTopic = OdeRequestManager.getOrCreateTopic(requestId);
@@ -280,8 +280,10 @@ public class WebSocketServer {
                   }
                }
                
-               logger.info("Request sent to Data Source. Request ID: {}, Topic: {}", requestId, outputTopic.getName());
-               status.setMessage("Data Source Connection Established");
+               if (odeRequest.getRequestType() !=  OdeRequestType.Deposit) {
+                  logger.info("Request sent to Data Source. Request ID: {}, Topic: {}", requestId, outputTopic.getName());
+                  status.setMessage("Data Source Connection Established");
+               }
             } else {
                OdeMetadata metadata = new OdeMetadata(
                      requestId, outputTopic, outputTopic, odeRequest);
@@ -326,8 +328,15 @@ public class WebSocketServer {
             logger.error(status.toString(), ex);
          } finally {
             try {
-               if (odeRequest.getRequestType() !=  OdeRequestType.Deposit)
+               if (odeRequest.getRequestType() !=  OdeRequestType.Deposit) {
+                  logger.info("=== Message Received on Session ID {}, Request Type {}, Data Type {} : {}", 
+                        sessionId, rtype, dtype, message);
+                  
                   WebSocketUtils.send(session, new OdeDataMessage(status).toString());
+               } else {
+                  logger.debug("=== Message Received on Session ID {}, Request Type {}, Data Type {} : {}", 
+                        sessionId, rtype, dtype, message);
+               }
             } catch (IOException e) {
                logger.error("Error sending error message back to client", e);
             }
@@ -409,12 +418,12 @@ public class WebSocketServer {
                distroWorker.shutDown();
             }
    
-         if (odeRequest != null) {
-            logger.info("Removing subscriber {}", odeRequest.getId());
-            OdeRequestManager.removeSubscriber(
-                  odeRequest.getId(),
-                  odeRequest.getDataType());
-         }
+            if (odeRequest != null) {
+               logger.info("Removing subscriber {}", odeRequest.getId());
+               OdeRequestManager.removeSubscriber(
+                     odeRequest.getId(),
+                     odeRequest.getDataType());
+            }
          } catch (Exception e) {
             logger.error("Error closing session " + sessionId, e);
          }

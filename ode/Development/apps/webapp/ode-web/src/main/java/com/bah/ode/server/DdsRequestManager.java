@@ -265,7 +265,11 @@ public class DdsRequestManager {
 
 
    public void sendDdsDataRequest(OdeRequest odeRequest) throws DdsRequestManagerException {
-      logger.info("Sending request to DDS for topic: {}", metadata.getInputTopic());
+      if (odeRequest.getRequestType() != OdeRequestType.Deposit)
+         logger.info("Sending request to DDS for topic: {}", metadata.getInputTopic());
+      else
+         logger.debug("Sending request to DDS for topic: {}", metadata.getInputTopic());
+         
       try {
          if (ddsClient.getWsSession() != null) {
             // Send the new request
