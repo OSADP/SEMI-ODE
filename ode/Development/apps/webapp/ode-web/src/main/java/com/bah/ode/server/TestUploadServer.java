@@ -283,8 +283,7 @@ public class TestUploadServer {
          idm.setPayload(msgPayload);
          
          producer.send(
-//               testMgr.getMetadata().getInputTopic().getName(), 
-               null, 
+               testMgr.getMetadata().getInputTopic().getName(), 
                idm.getKey(), idm.toJson());
       }
       

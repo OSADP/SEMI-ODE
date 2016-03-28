@@ -52,7 +52,7 @@ public class QueryDataPropagator extends BaseDataPropagator {
    }
 
    @Override
-   public Future<String> process(String data) throws DataProcessorException {
+   public synchronized Future<String> process(String data) throws DataProcessorException {
       Context context = timer.time();
       
       try {

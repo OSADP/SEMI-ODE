@@ -68,7 +68,7 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
    protected abstract List<OdeFilter> createFilters();
    
    @Override
-    public Future<String> process(String data)
+    public synchronized Future<String> process(String data)
           throws DataProcessorException {
       
       Context context = timer.time();

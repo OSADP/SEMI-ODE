@@ -21,6 +21,7 @@ public class AggregateDataDistributor extends BaseDistributor
    
    private String outputTopic;
    private String streamId = UUID.randomUUID().toString();
+   private long recordId = 0;
    
    public AggregateDataDistributor(
          Accumulator<Integer> accumulator,
@@ -36,10 +37,8 @@ public class AggregateDataDistributor extends BaseDistributor
       
       MQProducer<String, String> producer = producerPool.value().checkOut();
       
-      long recordId = 0;
       while (partitionOfRecords.hasNext()) {
          Row record = partitionOfRecords.next();
-         String tempId = record.getString(0);
 
          OdeAggregateData payload = new OdeAggregateData(streamId, 0L, recordId++);
          payload.setKey(record.getString(0));
@@ -48,11 +47,11 @@ public class AggregateDataDistributor extends BaseDistributor
          payload.setAvgSpeed(BigDecimal.valueOf(record.getDouble(3)));
          payload.setMaxSpeed(BigDecimal.valueOf(record.getDouble(4)));
 
-         InternalDataMessage dm = new InternalDataMessage(
-               record.getString(0),
+         InternalDataMessage idm = new InternalDataMessage(
+               payload.getSerialId(),
                payload);
          
-         producer.send(outputTopic, tempId, dm.toJson());
+         producer.send(outputTopic, payload.getSerialId(), idm.toJson());
       }
       
       producerPool.value().checkIn(producer);
