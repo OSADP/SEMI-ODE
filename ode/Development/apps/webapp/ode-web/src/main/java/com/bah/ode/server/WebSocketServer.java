@@ -397,20 +397,24 @@ public class WebSocketServer {
       synchronized(WebSocketServer.class) {
          String sessionId = session.getId();
          try {
-            logger.info("--- Session {} disconnected. Shutting Down a subscriber to {}", 
-                  sessionId, odeRequest.getId());
+            logger.info("--- Session {} disconnected.", sessionId);
+
+            if (odeRequest != null)
+               logger.info("Shutting Down a subscriber to {}", 
+                     sessionId, odeRequest.getId());
+               
             if (reason != null)
                logger.info("Reason: {}", reason.getCloseCode());
    
-         // Do this after rqstMgr.requesterDisconnected()
-         if (connector != null) {
-            logger.info("Cancelling data request {}", 
-                  connector.getMetadata().getOdeRequest().getId());
-                        connector.cancelDataRequest();
-            logger.info("Removing connector {}", 
-                  connector.getMetadata().getOdeRequest().getId());
-                     connectors.remove(connector.getMetadata().getOutputTopic().getName());
-                  }
+            // Do this after rqstMgr.requesterDisconnected()
+            if (connector != null) {
+               logger.info("Cancelling data request {}", 
+                     connector.getMetadata().getOdeRequest().getId());
+               connector.cancelDataRequest();
+               logger.info("Removing connector {}", 
+                     connector.getMetadata().getOdeRequest().getId());
+                        connectors.remove(connector.getMetadata().getOutputTopic().getName());
+            }
                   
             if (distroWorker != null) {
             logger.info("Shutting down distribution worker {}", 
