@@ -308,7 +308,7 @@ public class WebSocketClient<T> extends Endpoint {
     */
    public void send(String message) throws WebSocketException {
       try {
-         WebSocketUtils.send(this.wsSession, message);
+         WebSocketUtils.sendSync(this.wsSession, message);
       } catch (IOException e) {
          throw new WebSocketException("Error sending message", e);
       }
