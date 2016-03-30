@@ -4,12 +4,31 @@ import java.io.IOException;
 
 import javax.websocket.Session;
 
-public class WebSocketUtils {
-   public static void send(Session session, String message) throws IOException {
-      session.getBasicRemote().sendText(message);
-   }
+import com.bah.ode.context.AppContext;
 
+public class WebSocketUtils {
+   
+   private static boolean async = 
+         AppContext.getInstance().getBoolean("websocket.sendAsync.byDefault", false);
+   
+   public static void send(Session session, String message) throws IOException {
+      synchronized(session) {
+         if (async)
+            session.getAsyncRemote().sendText(message);
+         else
+            session.getBasicRemote().sendText(message);
+      }
+   }
+   
+   public static void sendSync(Session session, String message) throws IOException {
+      synchronized(session) {
+         session.getBasicRemote().sendText(message);
+      }
+   }
+   
    public static void sendAsync(Session session, String message) throws IOException {
-      session.getAsyncRemote().sendText(message);
+      synchronized(session) {
+         session.getAsyncRemote().sendText(message);
+      }
    }
 }

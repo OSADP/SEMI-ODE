@@ -143,11 +143,11 @@
    </context-param>
    <context-param>
       <param-name>data.sequence.reorder.delay</param-name>
-      <param-value>2000</param-value>
+      <param-value>1000</param-value>
    </context-param>
    <context-param>
       <param-name>data.sequence.reorder.period</param-name>
-      <param-value>2000</param-value>
+      <param-value>1000</param-value>
    </context-param>
    <context-param>
       <param-name>zk.connection.strings</param-name>
