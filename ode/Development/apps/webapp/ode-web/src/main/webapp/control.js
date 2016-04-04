@@ -1052,7 +1052,7 @@ function getMetadata(str) {
 function updateClusters(str) {
    var pl = getPayload(str);
    var metadata = getMetadata(str);
-   var recordsReceivedIncrement = 0;
+   var recordsReceivedIncrement = 1;
    
    if (metadata.latency != null)
       recordsReceivedIncrement = Math.ceil(parseInt(metadata.latency) / 100);
