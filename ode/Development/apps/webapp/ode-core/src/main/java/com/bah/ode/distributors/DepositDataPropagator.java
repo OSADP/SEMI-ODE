@@ -25,7 +25,7 @@ public class DepositDataPropagator extends BaseDataPropagator {
    }
 
    @Override
-   public Future<String> process(String data)
+   public synchronized Future<String> process(String data)
          throws com.bah.ode.wrapper.DataProcessor.DataProcessorException {
       //Disregard the deposit response
       try {

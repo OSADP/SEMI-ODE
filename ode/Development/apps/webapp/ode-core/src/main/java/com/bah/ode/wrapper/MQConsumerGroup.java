@@ -25,18 +25,15 @@ public class MQConsumerGroup<K, V, R> {
 
    private ConsumerConnector consumerConnector;
    private MQTopic topic;
-   private ExecutorService executor;
+   private ExecutorService executorService;
    private DataProcessor<V, R> processor;
    private Decoder<K> keyDecoder;
    private Decoder<V> valueDecoder;
-   private long reOrderDelay;
-   private long reOrderPeriod;
 
    public MQConsumerGroup(String zookeepers, String a_groupId, 
          MQTopic topic, Decoder<K> keyDecoder,
          Decoder<V> valueDecoder,
-         DataProcessor<V, R> a_processor, 
-         long reOrderDelay, long reOrderPeriod) {
+         DataProcessor<V, R> a_processor) {
       
       consumerConnector = Consumer.createJavaConsumerConnector(
             createConsumerConfig(zookeepers, a_groupId));
@@ -45,17 +42,15 @@ public class MQConsumerGroup<K, V, R> {
       this.keyDecoder = keyDecoder;
       this.valueDecoder = valueDecoder;
       this.processor = a_processor;
-      this.reOrderDelay = reOrderDelay;
-      this.reOrderPeriod = reOrderPeriod;
    }
 
    public void shutDown() {
       if (consumerConnector != null)
          consumerConnector.shutdown();
-      if (executor != null)
-         executor.shutdown();
+      if (executorService != null)
+         executorService.shutdown();
       try {
-         if (!executor.awaitTermination(5000, TimeUnit.MILLISECONDS)) {
+         if (!executorService.awaitTermination(5000, TimeUnit.MILLISECONDS)) {
             logger.warn("Timed out waiting for consumer threads to shut down, exiting uncleanly");
          }
       } catch (InterruptedException e) {
@@ -70,16 +65,16 @@ public class MQConsumerGroup<K, V, R> {
          Map<String, List<KafkaStream<K, V>>> consumerMap = consumerConnector
                .createMessageStreams(topicCountMap, keyDecoder, valueDecoder);
          List<KafkaStream<K, V>> streams = consumerMap.get(topic.getName());
+
          // now launch all the threads
-         //
-         executor = Executors.newFixedThreadPool(topic.getPartitions());
+         executorService = Executors.newFixedThreadPool(streams.size());
+
          // now create an object to consume the messages
-         //
          int threadNumber = 0;
          for (final KafkaStream<K, V> stream : streams) {
             @SuppressWarnings("unused")
-            Future<Object> future = executor.submit(new MQConsumer<K, V, R>(
-                  stream, threadNumber, processor, reOrderDelay, reOrderPeriod));
+            Future<Object> future = executorService.submit(new MQConsumer<K, V, R>(
+                  stream, threadNumber, processor));
             threadNumber++;
          }
       }
@@ -104,6 +99,5 @@ public class MQConsumerGroup<K, V, R> {
    public void setTopic(MQTopic topic) {
       this.topic = topic;
    }
-
 
 }

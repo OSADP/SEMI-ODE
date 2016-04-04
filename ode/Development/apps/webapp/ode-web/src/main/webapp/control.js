@@ -565,6 +565,8 @@ function setButtonHoverOver(buttonId, enabled) {
 }
 
 function connect() {
+   var clustersUpdateCnt = 0;
+   var updateClustersConstant = 0;
    var requestUri;
    if (dataSource != "TEST_UPLOAD") {
       requestUri = $('#requestUri').val();
@@ -601,7 +603,10 @@ function connect() {
          }
       }
       log("received-console", event.data);
-      updateClusters(event.data);
+      if (clustersUpdateCnt++ >= updateClustersConstant) {
+         updateClustersConstant = updateClusters(event.data);
+         clustersUpdateCnt = 0;
+      }
 
       var pl = getPayload(event.data);
       var haveRequestId = pl !== undefined && pl !== false && pl !== null
@@ -873,7 +878,7 @@ function sendFiles() {
       var fileData = new String(reader.result);
       records = fileData.split('\n');
       if (isNaN(recordsPerBatch) || isNaN(milisecondsBetween)) {
-         for (var i = 0, numRecords = records.length; i < numRecords; i++) {
+         for (var i = 0, numRecords = records.length; i < numRecords && ws != null; i++) {
             var request = {};
             request['dataSource'] = dataSource;
             request['dataType'] = dataType;
@@ -896,8 +901,10 @@ function sendFiles() {
                .setInterval(
                      function() {
                         if (records != undefined) {
-                           for (var subj = recordLoc + recordsPerBatch; recordLoc < records.length
-                                 && recordLoc < subj; recordLoc++) {
+                           for (var subj = recordLoc + recordsPerBatch; 
+                                recordLoc < records.length
+                                && recordLoc < subj
+                                && ws != null; recordLoc++) {
                               recordsPerBatch = parseInt($("#recordsPerBatch").val());
                               var request = {};
                               request['dataSource'] = dataSource;
@@ -1045,9 +1052,15 @@ function getMetadata(str) {
 function updateClusters(str) {
    var pl = getPayload(str);
    var metadata = getMetadata(str);
-
+   var recordsReceivedIncrement = 1;
+   
+   if (metadata.latency != null)
+      recordsReceivedIncrement = Math.ceil(parseInt(metadata.latency) / 100);
+   else
+      recordsReceivedIncrement = 100;
+   
    if (pl !== undefined && pl !== false && pl !== null && pl.dataType === "VehicleData") {
-      recordsReceived += 1;
+      recordsReceived += recordsReceivedIncrement;
       var lon = parseFloat(pl.longitude);
       var lat = parseFloat(pl.latitude);
       var temp = ol.proj.fromLonLat([ lon, lat ]);
@@ -1100,8 +1113,10 @@ function updateClusters(str) {
    } else if (pl !== undefined && pl !== false && pl !== null
            && pl.code === undefined && pl.token === undefined
            && (pl.tag === undefined || pl.tag === 'DEPOSITED')) { // avoid success and token responses in payload
-      recordsReceived += 1;
+      recordsReceived += recordsReceivedIncrement;
    }
+
+   return recordsReceivedIncrement;
 }
 
 function clearMap() {

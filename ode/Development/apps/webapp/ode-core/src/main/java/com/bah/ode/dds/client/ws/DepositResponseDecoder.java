@@ -33,7 +33,7 @@ public class DepositResponseDecoder extends DdsDecoder {
       DdsData ddsData;
       try {
          ddsData = super.decode(message);
-         logger.info("Deposit Response Received: {}", message);
+         logger.debug("Deposit Response Received: {}", message);
       } finally {
       }
       return ddsData;

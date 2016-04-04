@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
+import com.bah.ode.metrics.SparkInstrumentation;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
 import com.bah.ode.wrapper.MQTopic;
@@ -25,6 +26,8 @@ public class VehicleDataAggregator extends SparkJob {
       SparkConf conf = ssc.sparkContext().getConf();
       JavaPairDStream<String, String> unifiedStream = super.unifiedStream(
             ssc, topic, zkConnectionStrings, brokerList);
+//      JavaPairDStream<String, String> unifiedStream = super.receiveDirect(
+//            ssc, topic, brokerList);
 
       Integer microbatchDuration = Integer.valueOf(conf.get(
             AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS, String.valueOf(
@@ -44,7 +47,7 @@ public class VehicleDataAggregator extends SparkJob {
                      pam -> new Tuple2<String, String>(pam._1,
                            JsonUtils
                                  .getJsonNode(pam._2, AppContext.PAYLOAD_STRING)
-                                 .toString()));
+                                 .toString())).repartition(topic.getPartitions());
 
          final Broadcast<MQSerialazableProducerPool> producerPool = ssc
                .sparkContext()
@@ -75,7 +78,10 @@ public class VehicleDataAggregator extends SparkJob {
          /*
           * Vehicle Data Aggregation and Distribution
           */
-         payloadStream.foreachRDD(new PayloadAggregator(producerPool, conf.get(
+         payloadStream.foreachRDD(new PayloadAggregator(
+               new SparkInstrumentation(ssc.sparkContext(), "ode", "PayloadAggregator").register(),
+               new SparkInstrumentation(ssc.sparkContext(), "ode", "AggregateDataDistributor").register(),
+               producerPool, conf.get(
                AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC)));
 
       } catch (Exception e) {

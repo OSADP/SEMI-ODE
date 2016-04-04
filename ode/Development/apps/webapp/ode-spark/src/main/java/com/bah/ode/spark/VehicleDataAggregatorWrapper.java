@@ -9,13 +9,6 @@ import com.bah.ode.wrapper.MQTopic;
 
 public class VehicleDataAggregatorWrapper {
 
-   public static final String SPARK_HOME = "/usr/hdp/current/spark-client";
-   public static final String HADOOP_HOME = "/usr/hdp/current/hadoop-client";
-   public static final String HADOOP_CONF_DIR = HADOOP_HOME + "/conf";
-   public static final String HADOOP_YARN_HOME = "/usr/hdp/current/hadoop-yarn-client";
-   public static final String YARN_CONF_DIR = HADOOP_YARN_HOME + "/conf";
-   public static final String SPARK_MASTER = "yarn-client";
-
    /**
     * 
     * <numParitions> <odeVehDataFlatTopic> <ZookeeperString> <KafkaBrokerString>

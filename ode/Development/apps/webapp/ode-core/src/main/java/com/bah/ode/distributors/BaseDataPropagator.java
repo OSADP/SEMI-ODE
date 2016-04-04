@@ -1,7 +1,10 @@
 package com.bah.ode.distributors;
 
+import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.Future;
 
 import javax.websocket.Session;
@@ -13,7 +16,9 @@ import com.bah.ode.context.AppContext;
 import com.bah.ode.filter.OdeFilter;
 import com.bah.ode.metrics.LongGauge;
 import com.bah.ode.metrics.OdeMetrics;
+import com.bah.ode.metrics.OdeMetrics.Context;
 import com.bah.ode.metrics.OdeMetrics.Meter;
+import com.bah.ode.metrics.OdeMetrics.Timer;
 import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
@@ -35,6 +40,7 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
    protected Session clientSession;
    protected OdeMetadata metadata;
    protected List<OdeFilter> filters;
+   private TreeMap<Integer, ArrayList<String>> records;
    
    //Metrics
    protected Meter baseMeter = OdeMetrics.getInstance().meter("TotalRecordsPropagated");
@@ -50,39 +56,109 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
       OdeMetrics.getInstance().registerGauge(vsdLatency, "VSD_Latency");
    }
 
+   protected Timer timer;
+
    public BaseDataPropagator(Session clientSession, OdeMetadata metadata) {
-      super();
-      this.clientSession = clientSession;
+      this(clientSession);
       this.metadata = metadata;
       filters = createFilters();
    }
 
    public BaseDataPropagator(Session session) {
       this.clientSession = session;
+      timer = OdeMetrics.getInstance().timer(this.getClass().getName(), "timer");
+      this.records = new TreeMap<Integer, ArrayList<String>>();
    }
 
    protected abstract List<OdeFilter> createFilters();
    
    @Override
-    public Future<String> process(String data)
+    public synchronized Future<String> process(String data)
           throws DataProcessorException {
       
-      baseMeter.mark();
-      
+      Context context = timer.time();
+
+
       try {
-         OdeDataMessage dataMsg = getDataMsg(data);
-         if (dataMsg != null && dataMsg.getPayload() instanceof OdeFilterable) {
-            if (applyFilters((OdeFilterable)dataMsg.getPayload())) {
-               WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
-            }
+         if (AppContext.getInstance().getInt(
+               AppContext.DATA_SEQUENCE_REORDER_PERIOD, 0)  <= 0) {
+            filterAndSend(data);
+            return null;
+         }
+         
+         ObjectNode bundleObject = JsonUtils.toObjectNode(data);
+
+         JsonNode payloadNode = bundleObject.get(AppContext.PAYLOAD_STRING);
+         if (payloadNode == null) {
+            filterAndSend(data);
          } else {
+            JsonNode serialIdNode = payloadNode
+                  .get(AppContext.SERIAL_ID_STRING);
+            if (serialIdNode == null) {
+               filterAndSend(data);
+            } else {
+               String tempSerialId = serialIdNode.asText();
+               if (tempSerialId == null || tempSerialId.equals("")) {
+                  filterAndSend(data);
+               } else {
+                  try {
+                     String[] splitId = tempSerialId.split(
+                           "[^\\w-]+"); /* Non-alphanumerics and hyphen */
+                     int bundleId = Integer.parseInt(splitId[1]);
+                     int recordId = Integer.parseInt(splitId[2]);
+
+                     /*
+                      * vList is an array with the recordId as the index that
+                      * way there is no need to loop twice through arrays
+                      *
+                      * uses map as to not lose records if multiple record Ids
+                      * come in scrambled
+                      */
+                     ArrayList<String> vList = records.get(bundleId);
+                     if (vList == null) {
+                        vList = new ArrayList<String>();
+                        while (recordId + 1 > vList.size()) {
+                           vList.add(vList.size(), null);
+                        }
+                        vList.set(recordId, data);
+                        records.put(bundleId, vList);
+                     } else {
+                        while (recordId + 1 > vList.size()) {
+                           vList.add(vList.size(), null);
+                        }
+                        records.get(bundleId).set(recordId, data);
+                     }
+                  } catch (Exception e) {
+                     logger.info("ERROR IN CODE. Sending message as is : ", e);
+                     filterAndSend(data);
+                  }
+
+               } // End of serial ID is not blank
+            } // End of 'has serialId' block
+         } // End of 'has payload' block
+         baseMeter.mark();
+      } catch (Exception e) {
+         //if the session is not open, ignore the exception
+         if (clientSession.isOpen())
+            logger.error("Error processing data.", e);
+      } finally {
+         context.stop();
+      }
+      
+      return null;
+   }
+
+   public void filterAndSend(String data)
+         throws com.bah.ode.wrapper.DataProcessor.DataProcessorException,
+         IOException, ParseException {
+      OdeDataMessage dataMsg = getDataMsg(data);
+      if (dataMsg != null && dataMsg.getPayload() instanceof OdeFilterable) {
+         if (applyFilters((OdeFilterable)dataMsg.getPayload())) {
             WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
          }
-      } catch (Exception e) {
-         throw new DataProcessorException(
-               "Error processing data.", e);
+      } else {
+         WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
       }
-      return null;
    }
 
    protected String updateDataMsg(OdeDataMessage dataMsg) throws ParseException {
@@ -202,5 +278,9 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
 
    public void setMetadata(OdeMetadata metadata) {
       this.metadata = metadata;
+   }
+
+   public TreeMap<Integer, ArrayList<String>> records() {
+      return records;
    }
 }

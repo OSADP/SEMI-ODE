@@ -2,6 +2,7 @@ package com.bah.ode.spark;
 
 import java.util.Iterator;
 
+import org.apache.spark.Accumulator;
 import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.broadcast.Broadcast;
 
@@ -22,18 +23,24 @@ public class PartitionDistributor extends BaseDistributor implements
 
    private static final long serialVersionUID = -5994663995916421920L;
    private String aggregatorInputTopic;
+   private Accumulator<Integer> producerAccumulator;
 
    public PartitionDistributor(
+         Accumulator<Integer> accumulator, 
+         Accumulator<Integer> producerAccumulator, 
          Broadcast<MQSerialazableProducerPool> producerPool,
          String aggregatorInputTopic) {
-      super(producerPool);
+      super(accumulator, producerPool);
       this.aggregatorInputTopic = aggregatorInputTopic;
+      this.producerAccumulator = producerAccumulator;
    }
 
    @Override
    public void call(
          Iterator<Tuple2<String, Tuple2<String, String>>> partitionOfRecords)
                throws Exception {
+      startTimer();
+      
       MQProducer<String, String> producer = producerPool.value().checkOut();
 
       try {
@@ -57,10 +64,10 @@ public class PartitionDistributor extends BaseDistributor implements
                      if (metadata.getOdeRequest() != null && 
                          metadata.getOdeRequest().getId() != null) {
                         String sanitizationTopic = "Sanitized-" + metadata.getOdeRequest().getId();
-                        producer.send(sanitizationTopic, key, record._2()._1());
+                        send(producer, sanitizationTopic, key, record._2()._1());
                      }
                   } else {
-                     producer.send(metadata.getOutputTopic().getName(), key,
+                     send(producer, metadata.getOutputTopic().getName(), key,
                            idm.toJson());
                   }
                   
@@ -75,10 +82,10 @@ public class PartitionDistributor extends BaseDistributor implements
                         }
                         
                         if (!hasSpeedViolation) {
-                           producer.send(aggregatorInputTopic, key, idm.toJson());
+                           send(producer, aggregatorInputTopic, key, idm.toJson());
                         }
                      } else {
-                        producer.send(aggregatorInputTopic, key,idm.toJson());
+                        send(producer, aggregatorInputTopic, key, idm.toJson());
                      }
                   }
                }
@@ -87,8 +94,16 @@ public class PartitionDistributor extends BaseDistributor implements
          }
       } finally {
          producerPool.value().checkIn(producer);
+         stopTimer();
       }
 
+   }
+
+   private void send(
+         MQProducer<String, String> producer, 
+         String topic, String key, String value) {
+      producerAccumulator.add(1);
+      producer.send(topic, key, value);
    }
 
 }

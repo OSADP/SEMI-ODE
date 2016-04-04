@@ -206,9 +206,6 @@ public class WebSocketServer {
          return;
       
       String sessionId = session.getId();
-      logger.info("=== Message Received on Session ID {}, Request Type {}, Data Type {} : {}", 
-            sessionId, rtype, dtype, message);
-      
       OdeStatus status = new OdeStatus();
       String statusMsg;
       synchronized(WebSocketServer.class) {
@@ -227,7 +224,10 @@ public class WebSocketServer {
             boolean sendRequest = true;
             if (odeRequest.getRequestType() != OdeRequestType.Deposit) {
                // Note: requestId should not be null. So if we get a NPE, we have an internal error
-               logger.info("Created new request: {}", requestId );
+               
+               if (odeRequest.getRequestType() !=  OdeRequestType.Deposit)
+                  logger.info("Creating new data request: {}", requestId );
+               
                // No client topic exists, create a new one
 
                // *** The next two statements must come back-to-back in this order. ***
@@ -297,10 +297,18 @@ public class WebSocketServer {
             try {
                if (status == null)
                   status = new OdeStatus();
+
                //Propagator sends feedback to deposit client, send status for other
                //requests only.
-               if (odeRequest.getRequestType() !=  OdeRequestType.Deposit)
+               if (odeRequest.getRequestType() !=  OdeRequestType.Deposit) {
+                  logger.info("=== Message Received on Session ID {}, Request Type {}, Data Type {} : {}", 
+                        sessionId, rtype, dtype, message);
+                  
                   WebSocketUtils.send(session, new OdeDataMessage(status).toString());
+               } else {
+                  logger.debug("=== Message Received on Session ID {}, Request Type {}, Data Type {} : {}", 
+                        sessionId, rtype, dtype, message);
+               }
             } catch (IOException e) {
                logger.error("Error sending error message back to client", e);
             }

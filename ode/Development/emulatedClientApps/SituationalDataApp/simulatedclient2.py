@@ -180,6 +180,11 @@ def validate_location(msg_payload,region=None):
 def _main():
     parser = clientConfig.get_parser()
     (options, args) = parser.parse_args()
+    
+    if len(sys.argv) < 2:
+      parser.print_help()
+      sys.exit()
+    
     cp = None
     config.update(vars(options))
     if config.get('CONFIG_FILE'):
@@ -331,7 +336,9 @@ def on_message(ws, message):
     """
 
     # determine message type and act accordingly
-    logger.info("Message Value: %s", message)
+    #logger.info("Message Value: %s", message)
+    sys.stdout.write('.')
+    
     # if log_to_file:
     append_to_file(message)
     try:
@@ -351,12 +358,12 @@ def on_message(ws, message):
         if msg.get_payload_type() in dataType.OtherData and 'STOP' not in  msg.payload.get('fullMessage'):
             logger.info("Other Message Type: %s",msg.payload.get('fullMessage',""))
 
-        if msg.get_payload_type() in dataType.VehicleData and ( config['REQUEST_TYPE'] in ('qry') or  (config['REQUEST_TYPE'] in ('sub'))): # and  config['UPLOAD_TEST_DATA'] )):
-            logger.info("Validating Vehicle Record")
-            validate_message(msg.payload)
-
-        elif  msg.get_payload_type() in un_supported_payloads_codes:
-            logger.info("No validation function defined for payload type: %s",msg.get_payload_type())
+#        if msg.get_payload_type() in dataType.VehicleData and ( config['REQUEST_TYPE'] in ('qry') or  (config['REQUEST_TYPE'] in ('sub'))): # and  config['UPLOAD_TEST_DATA'] )):
+#            logger.info("Validating Vehicle Record")
+#            validate_message(msg.payload)
+#
+#        elif  msg.get_payload_type() in un_supported_payloads_codes:
+#            logger.info("No validation function defined for payload type: %s",msg.get_payload_type())
 
         # elif msg.get_payload_value("fullMessage"):
         #     logger.info(msg.get("fullMessage"))
@@ -373,7 +380,7 @@ def validate_message(msg_payload):
     """
 
     location_result = validate_location(msg_payload)
-    logger.info("Validate Location Result: %s", str(location_result))
+#    logger.info("Validate Location Result: %s", str(location_result))
 
     if config['REQUEST_TYPE'] in ('qry',):
         date_result = validate_datetime(msg_payload)

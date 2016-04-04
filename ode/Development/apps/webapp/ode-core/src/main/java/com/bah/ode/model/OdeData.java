@@ -40,7 +40,7 @@ public class OdeData extends OdeMsgPayload implements OdeFilterable {
 
    public OdeData(String streamId, long bundleId, long recordId) {
       super();
-      setSerialId(serialId);
+      setSerialId(buildSerialId(streamId, bundleId, recordId));
       this.receivedAt = DateTimeUtils.isoDateTime(ZonedDateTime.now(ZoneOffset.UTC));
    }
 

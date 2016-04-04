@@ -88,12 +88,8 @@
       <param-value>CV2015</param-value>
    </context-param>
    <context-param>
-      <param-name>send.latest.vsr.in.vsd.bundle</param-name>
-      <param-value>false</param-value>
-   </context-param>
-   <context-param>
       <param-name>spark.master</param-name>
-      <!--param-value>yarn-client OR local[2]</param-value -->
+      <!--param-value>yarn-cluster OR yarn-client OR local[2]</param-value -->
       <param-value>yarn-client</param-value>
    </context-param>
    <context-param>
@@ -109,34 +105,6 @@
       <param-value>30</param-value>
    </context-param>
    
-   <!-- This param can be used to disable ODE Aggregator. Default = true -->
-   <context-param>
-      <param-name>spark.ode.aggregator.enabled</param-name>
-      <param-value>true</param-value>
-   </context-param>
-   <!-- 
-      This param can be used to run the aggregator in a sliding windnow 
-      of size: spark.streaming.window.microbatches * spark.streaming.microbatch.duration.ms 
-      OR 
-      run it in a microbatch size of: 
-      spark.streaming.window.microbatches * spark.streaming.microbatch.duration.ms
-      
-      Default: true
-   -->
-   <context-param>
-      <param-name>spark.run.aggregator.in.sliding.window</param-name>
-      <param-value>true</param-value>
-   </context-param>
-   <!-- 
-      This param can be used to run the aggregator in the same Spark 
-      application as the Vehicle Data Transformer application.
-      Default: false
-   -->
-   <context-param>
-      <param-name>spark.run.ode.aggregator.in.vdp</param-name>
-      <param-value>false</param-value>
-   </context-param>
-
    <context-param>
       <param-name>spark.static.weather.file.location</param-name>
       <!-- CAN BE HDFS OR LOCAL -->
@@ -174,16 +142,12 @@
       <param-value>ip-10-0-16-115.ec2.internal:6667,ip-10-0-16-143.ec2.internal:6667</param-value>
    </context-param>
    <context-param>
-      <param-name>kafka.consumer.threads</param-name>
-      <param-value>1</param-value>
-   </context-param>
-   <context-param>
       <param-name>data.sequence.reorder.delay</param-name>
-      <param-value>2000</param-value>
+      <param-value>1000</param-value>
    </context-param>
    <context-param>
       <param-name>data.sequence.reorder.period</param-name>
-      <param-value>2000</param-value>
+      <param-value>1000</param-value>
    </context-param>
    <context-param>
       <param-name>zk.connection.strings</param-name>
@@ -213,29 +177,6 @@
       <param-name>spark.configuration.file.directory</param-name>
       <param-value>/WEB-INF</param-value>
    </context-param>
-   <!--
-      This param can be used to change the spark scheduler mode of operation.
-      Valid values are FIFO and FAIR. Default = FIFO
-   -->
-   <context-param>
-      <param-name>spark.scheduler.mode</param-name>
-      <param-value>FIFO</param-value>
-   </context-param>
-   <!--
-      This param can be used to run the spark apps with a single kafka receiver
-      supporting multiple topic partitions or route each kafka partition to 
-      a separate Spark receiver. Default = false
-      
-      When false, one receiver is used to receive all partitions. When true,
-      multiple receivers are dispatched to worker nodes to receive data in 
-      parallel streams. the streams are then unified by spark before processing.
-      This param should probably be set to true if a single receiver
-      is the cause of data bottleneck.    
-   -->
-   <context-param>
-      <param-name>spark.use.parallel.receivers</param-name>
-      <param-value>false</param-value>
-   </context-param>
 
 
    <!-- Properties Value set in the Parent POM since the values are used 
@@ -263,6 +204,101 @@
    <context-param>
       <param-name>metrics.graphite.port</param-name>
       <param-value>2003</param-value>
+   </context-param>
+
+   <!-- *** PERFORMANCE PARAMS -->
+   <context-param>
+      <param-name>send.latest.vsr.in.vsd.bundle</param-name>
+      <param-value>false</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.yarn.vehicle.driver.cores</param-name>
+      <param-value>1</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.yarn.vehicle.driver.memory</param-name>
+      <param-value>1024m</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.yarn.vehicle.executor.cores</param-name>
+      <param-value>3</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.yarn.vehicle.executor.memory</param-name>
+      <param-value>18432m</param-value>
+   </context-param>
+
+   <context-param>
+      <param-name>spark.yarn.aggregator.driver.cores</param-name>
+      <param-value>1</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.yarn.aggregator.driver.memory</param-name>
+      <param-value>1024m</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.yarn.aggregator.executor.cores</param-name>
+      <param-value>1</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.yarn.aggregator.executor.memory</param-name>
+      <param-value>4096m</param-value>
+   </context-param>
+
+   
+   <!-- This param can be used to disable ODE Aggregator. Default = true -->
+   <context-param>
+      <param-name>spark.ode.aggregator.enabled</param-name>
+      <param-value>true</param-value>
+   </context-param>
+   <!-- 
+      This param can be used to run the aggregator in a sliding windnow 
+      of size: spark.streaming.window.microbatches * spark.streaming.microbatch.duration.ms 
+      OR 
+      run it in a microbatch size of: 
+      spark.streaming.window.microbatches * spark.streaming.microbatch.duration.ms
+      
+      Default: true
+   -->
+   <context-param>
+      <param-name>spark.run.aggregator.in.sliding.window</param-name>
+      <param-value>false</param-value>
+   </context-param>
+   <!-- 
+      This param can be used to run the aggregator in the same Spark 
+      application as the Vehicle Data Transformer application.
+      Default: false
+   -->
+   <context-param>
+      <param-name>spark.run.ode.aggregator.in.vdp</param-name>
+      <param-value>false</param-value>
+   </context-param>
+   <context-param>
+      <param-name>kafka.consumer.threads</param-name>
+      <param-value>6</param-value>
+   </context-param>
+   <!--
+      This param can be used to change the spark scheduler mode of operation.
+      Valid values are FIFO and FAIR. Default = FIFO
+   -->
+   <context-param>
+      <param-name>spark.scheduler.mode</param-name>
+      <param-value>FAIR</param-value>
+   </context-param>
+   <!--
+      This param can be used to run the spark apps with a single kafka receiver
+      supporting multiple topic partitions or route each kafka partition to 
+      a separate Spark receiver. Default = false
+      
+      When false, one receiver is used to receive all partitions. When true,
+      multiple receivers are dispatched to worker nodes to receive data in 
+      parallel streams. the streams are then unified by spark before processing.
+      This param should probably be set to true if a single receiver
+      is the cause of data bottleneck.    
+   -->
+   <context-param>
+      <param-name>spark.use.parallel.receivers</param-name>
+      <param-value>false</param-value>
    </context-param>
 
    <listener>

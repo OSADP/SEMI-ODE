@@ -33,7 +33,11 @@ public class DataSourceConnector {
    public void sendRequest() 
          throws DataSourceConnectorException {
       try {
-         logger.info("Sending request for {}", metadata.getOutputTopic());
+         if (metadata.getOdeRequest().getRequestType() != OdeRequestType.Deposit)
+            logger.info("Sending request for {}", metadata.getOutputTopic());
+         else
+            logger.debug("Sending request for {}", metadata.getOutputTopic());
+         
          OdeRequest odeRequest = metadata.getOdeRequest();
          OdeDataType dataType = odeRequest.getDataType();
          int partitions = appContext.getInt(
