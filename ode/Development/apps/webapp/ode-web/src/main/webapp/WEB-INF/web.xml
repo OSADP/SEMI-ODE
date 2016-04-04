@@ -150,6 +150,10 @@
       <param-value>1000</param-value>
    </context-param>
    <context-param>
+      <param-name>data.sequencer.max.cache.size</param-name>
+      <param-value>50</param-value>
+   </context-param>
+   <context-param>
       <param-name>zk.connection.strings</param-name>
       <param-value>ip-10-0-16-115.ec2.internal:2181,ip-10-0-16-10.ec2.internal:2181,ip-10-0-16-143.ec2.internal:2181</param-value>
    </context-param>

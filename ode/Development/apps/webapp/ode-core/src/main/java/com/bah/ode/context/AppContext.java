@@ -55,6 +55,7 @@ public class AppContext {
    public static final boolean DEFAULT_DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE = false;
    public static final int DEFAULT_DATA_SEQUENCE_REORDER_DELAY = 1000;
    public static final int DEFAULT_DATA_SEQUENCE_REORDER_PERIOD = 3500;
+   public static final int DEFAULT_DATA_SEQUENCER_MAX_CACHE_SIZE = 50;
    public static final int DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS = 1000;
    public static final int DEFAULT_SPARK_STREAMING_WINDOW_MICROBATCHES = 60;
    public static final int DEFAULT_SPARK_STREAMING_SLIDE_MICROBATCHES = 30;
@@ -115,6 +116,8 @@ public class AppContext {
    public static final String DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE = "send.latest.vsr.in.vsd.bundle";
    public static final String DATA_SEQUENCE_REORDER_DELAY = "data.sequence.reorder.delay";
    public static final String DATA_SEQUENCE_REORDER_PERIOD = "data.sequence.reorder.period";
+   public static final String DATA_SEQUENCER_MAX_CACHE_SIZE = "data.sequencer.max.cache.size";
+
 
    // Spark parameters
    /* 
