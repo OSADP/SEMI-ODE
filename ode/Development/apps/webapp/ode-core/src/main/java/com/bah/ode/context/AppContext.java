@@ -49,7 +49,7 @@ public class AppContext {
    public static final String DATA_TYPE_STRING = "dataType";
    public static final String SERIAL_ID_STRING = "serialId";
    public static final String SANITIZED_STRING = "Sanitized-";
-   public static final boolean DEFAULT_DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE = false;
+   public static final int DEFAULT_DDS_NUM_VSR_IN_BUNDLE_TO_USE = 10;
    public static final int DEFAULT_DATA_SEQUENCE_REORDER_DELAY = 1000;
    public static final int DEFAULT_DATA_SEQUENCE_REORDER_PERIOD = 3500;
    public static final int DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS = 1000;
@@ -104,7 +104,7 @@ public class AppContext {
    public static final String DDS_CAS_URL = "dds.cas.url";
    public static final String DDS_CAS_USERNAME = "dds.cas.username";
    public static final String DDS_CAS_PASSWORD = "dds.cas.password";
-   public static final String DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE = "send.latest.vsr.in.vsd.bundle";
+   public static final String DDS_NUM_VSR_IN_BUNDLE_TO_USE = "dds.num.vsr.in.bundle.to.use";
    public static final String DATA_SEQUENCE_REORDER_DELAY = "data.sequence.reorder.delay";
    public static final String DATA_SEQUENCE_REORDER_PERIOD = "data.sequence.reorder.period";
 

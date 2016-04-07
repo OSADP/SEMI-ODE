@@ -214,6 +214,7 @@ public class WebSocketServer {
             odeRequest = OdeRequestManager.buildOdeRequest(rtype, dtype, message);
    
             MQTopic tempTopic = null;
+            OdeRequest tempRequest = null; 
             /*
              * Since queries are finite streams, each query should be treated as
              * unique. QUeries cannot share the same data process and the same
@@ -221,7 +222,15 @@ public class WebSocketServer {
              */
             if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
                // Use the request Id to determine if there is an existing request for the same data
-               tempTopic = OdeRequestManager.getTopic(odeRequest.getId());
+               if (odeRequest.getDataType() == OdeDataType.AggregateData) {
+                  tempRequest  = 
+                        OdeRequestManager.buildOdeRequest(rtype, 
+                              OdeDataType.VehicleData.getShortName(), message);
+                  
+                  tempTopic = OdeRequestManager.getTopic(tempRequest.getId());
+               } else {
+                  tempTopic = OdeRequestManager.getTopic(odeRequest.getId());
+               }
             } else {
                odeRequest.setId(outputTopic.getName());
             }
@@ -245,19 +254,7 @@ public class WebSocketServer {
                OdeMetadata metadata = new OdeMetadata(
                      requestId, outputTopic, outputTopic, odeRequest);
                
-               if (odeRequest.getDataType() == OdeDataType.AggregateData) {
-                  //ODE-169 - Aggregate Query Data Results also contain Vehicle Data Records
-                  tempTopic = MQTopic.create(
-                        AppContext.getInstance().getParam(
-                              AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC), 
-                              MQTopic.defaultPartitions());
-                  
-                  distroWorker.startIfNotAlive(new OdeMetadata(requestId, 
-                        metadata.getInputTopic(), tempTopic, odeRequest));
-                  
-               } else {
-                  distroWorker.startIfNotAlive(metadata);
-               }
+               startDistroWorker(requestId, metadata);
                
                if (connector == null) {
                   connector = new DataSourceConnector(metadata, 
@@ -269,50 +266,23 @@ public class WebSocketServer {
                   
                connector.sendRequest();
                
-               if (!OdeRequestManager.isPassThrough(odeRequest.getDataType())) {
-                  if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
-                     int numSubscribers = OdeRequestManager.addSubscriber(
-                           requestId, odeRequest.getDataType());
-                     if (numSubscribers > 0)
-                        LocalSparkProcessor.startStreamingContext();
-                  } else {
-                     LocalSparkProcessor.startStreamingContext();
-                  }
-               }
-               
                if (odeRequest.getRequestType() !=  OdeRequestType.Deposit) {
                   logger.info("Request sent to Data Source. Request ID: {}, Topic: {}", requestId, outputTopic.getName());
                   status.setMessage("Data Source Connection Established");
                }
             } else {
+               outputTopic = tempTopic;
+               if (tempRequest != null)
+                  requestId = tempRequest.getId();
                OdeMetadata metadata = new OdeMetadata(
                      requestId, outputTopic, outputTopic, odeRequest);
                
-               distroWorker.startIfNotAlive(metadata);
+               startDistroWorker(requestId, metadata);
                
-               OdeRequestManager.addSubscriber(requestId, odeRequest.getDataType());
-               status.setMessage(String.format("Tapped into existing request %s using a new distributor", requestId));
+               status.setMessage(String.format(
+                     "Tapping into existing request %s using a new distributor", requestId));
                logger.info(status.getMessage());
-//               // Topic already exists by this or another subscriber
-//               if (!distroWorker.getPropagator().getMetadata().getOutputTopic().getName().equals(outputTopic.getName())) {
-//                  /* 
-//                   * This subscriber is subscribing to a new topic. Remove the old
-//                   * topic and add the new one. 
-//                   */
-//            
-//                  OdeRequestManager.removeSubscriber(
-//                        distroWorker.getPropagator().getMetadata().getOutputTopic().getName(), 
-//                        odeRequest.getDataType());
-//                  
-//                  OdeRequestManager.addSubscriber(requestId, 
-//                        odeRequest.getDataType());
-//                  distroWorker.getPropagator().getMetadata().setOutputTopic(outputTopic);
-//                  status.setMessage(String.format("Tapped into existing request %s using existing distributor", requestId));
-//                  logger.info(status.getMessage());
-//               } else {
-//                  status.setMessage(String.format("Request %s already fulfilled. Nothing further to do.", requestId));
-//                  logger.info(status.getMessage());
-//               }
+               
             }
             status.setCode(OdeStatus.Code.SUCCESS);
             status.setRequestId(requestId);
@@ -342,6 +312,33 @@ public class WebSocketServer {
             }
          }
       }//End of Synchronized block
+   }
+   private void startDistroWorker(String requestId, OdeMetadata metadata) {
+      MQTopic tempTopic;
+      if (odeRequest.getDataType() == OdeDataType.AggregateData) {
+         //ODE-169 - Aggregate Query Data Results also contain Vehicle Data Records
+         tempTopic = MQTopic.create(
+               AppContext.getInstance().getParam(
+                     AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC), 
+                     MQTopic.defaultPartitions());
+         
+         distroWorker.startIfNotAlive(new OdeMetadata(requestId, 
+               metadata.getInputTopic(), tempTopic, odeRequest));
+         
+      } else {
+         distroWorker.startIfNotAlive(metadata);
+      }
+      
+      /* 
+       * If it's subscription, add subscriber which also starts streaming context
+       * based on data type. If not a subscription but data type requires,
+       * stream processing, start streaming context anyway.
+       */
+      if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
+         OdeRequestManager.addSubscriber(requestId, odeRequest.getDataType());
+      } else if (!OdeRequestManager.isPassThrough(odeRequest.getDataType())) {
+            LocalSparkProcessor.startStreamingContext();
+      }
    }
          
    /**
@@ -398,36 +395,36 @@ public class WebSocketServer {
          String sessionId = session.getId();
          try {
             logger.info("--- Session {} disconnected.", sessionId);
-
-            if (odeRequest != null)
-               logger.info("Shutting Down a subscriber to {}", 
-                     sessionId, odeRequest.getId());
-               
             if (reason != null)
                logger.info("Reason: {}", reason.getCloseCode());
    
-            // Do this after rqstMgr.requesterDisconnected()
-            if (connector != null) {
-               logger.info("Cancelling data request {}", 
-                     connector.getMetadata().getOdeRequest().getId());
-               connector.cancelDataRequest();
-               logger.info("Removing connector {}", 
-                     connector.getMetadata().getOdeRequest().getId());
-                        connectors.remove(connector.getMetadata().getOutputTopic().getName());
+
+            if (odeRequest != null) {
+               logger.info("Removing session {} subscriber {}", 
+                     sessionId, odeRequest.getId());
+               int remaining = OdeRequestManager.removeSubscriber(
+                     odeRequest.getId(),
+                     odeRequest.getDataType());
+               
+               if (remaining <= 0) {
+                  if (connector != null) {
+                     logger.info("Cancelling data request {}", 
+                           connector.getMetadata().getOdeRequest().getId());
+                     connector.cancelDataRequest();
+                     logger.info("Removing connector {}", 
+                           connector.getMetadata().getOdeRequest().getId());
+                              connectors.remove(connector.getMetadata().getOutputTopic().getName());
+                  }
+                        
+               }
             }
-                  
+               
             if (distroWorker != null) {
             logger.info("Shutting down distribution worker {}", 
                   distroWorker.getPropagator().getMetadata().getOdeRequest().getId());
                distroWorker.shutDown();
             }
    
-            if (odeRequest != null) {
-               logger.info("Removing subscriber {}", odeRequest.getId());
-               OdeRequestManager.removeSubscriber(
-                     odeRequest.getId(),
-                     odeRequest.getDataType());
-            }
          } catch (Exception e) {
             logger.error("Error closing session " + sessionId, e);
          }

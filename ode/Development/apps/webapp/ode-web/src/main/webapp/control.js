@@ -825,7 +825,7 @@ function log(consoleId, msgOrData) {
    p.style.wordWrap = 'break-word';
    p.appendChild(document.createTextNode(msgOrData));
    console.appendChild(p);
-   while (console.childNodes.length > 10000) {
+   while (console.childNodes.length > 1000) {
       console.removeChild(console.firstChild);
    }
    console.scrollTop = console.scrollHeight;
