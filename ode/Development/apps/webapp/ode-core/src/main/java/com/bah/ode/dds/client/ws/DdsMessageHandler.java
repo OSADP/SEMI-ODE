@@ -110,17 +110,12 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
             if (ddsData.getVsd() != null) {
                topicName = metadata.getInputTopic().getName();
                VehSitDataMessage vsd = ddsData.getVsd();
-               List<OdeVehicleDataFlat> ovdfList;
-               if (appContext.getBoolean(
-                           AppContext.DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE,
-                           AppContext.DEFAULT_DDS_SEND_LATEST_VSR_IN_VSD_BUNDLE)) {
-                  ovdfList = getLatestOvdfFromVsd(vsd, 1,
-                        streamId.toString(), bundleId++);
-               } else {
-                  ovdfList = getLatestOvdfFromVsd(
-                        vsd, vsd.getBundle().getSize(),
-                        streamId.toString(), bundleId++);
-               }
+               int numVSRs = appContext.getInt(
+                     AppContext.DDS_NUM_VSR_IN_BUNDLE_TO_USE,
+                     AppContext.DEFAULT_DDS_NUM_VSR_IN_BUNDLE_TO_USE);
+               List<OdeVehicleDataFlat> ovdfList = getLatestOvdfFromVsd(
+                     vsd, numVSRs,
+                     streamId.toString(), bundleId++);
                
                for (OdeVehicleDataFlat ovdf : ovdfList) {
 
@@ -224,8 +219,12 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
       GroupID groupId = vsd.groupID;
       int bSize = bundle.getSize();
       int recordId = 0;
+      
+      if (count > bSize)
+         count = bSize;
+      
       //data in the bundle appear to be in reverse chronological order
-      if (bSize > 0 && count > 0 && count <= bSize) {
+      if (bSize > 0 && count > 0) {
          for (int i = count-1; i >= 0; i--) {
             VehSitRecord vsr = bundle.get(i);
             OdeVehicleDataFlat ovdf = new OdeVehicleDataFlat(

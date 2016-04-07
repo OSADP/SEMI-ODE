@@ -208,8 +208,8 @@
 
    <!-- *** PERFORMANCE PARAMS -->
    <context-param>
-      <param-name>send.latest.vsr.in.vsd.bundle</param-name>
-      <param-value>false</param-value>
+      <param-name>dds.num.vsr.in.bundle.to.use</param-name>
+      <param-value>10</param-value>
    </context-param>
    <context-param>
       <param-name>spark.yarn.vehicle.driver.cores</param-name>
@@ -275,7 +275,7 @@
    </context-param>
    <context-param>
       <param-name>kafka.consumer.threads</param-name>
-      <param-value>6</param-value>
+      <param-value>9</param-value>
    </context-param>
    <!--
       This param can be used to change the spark scheduler mode of operation.
