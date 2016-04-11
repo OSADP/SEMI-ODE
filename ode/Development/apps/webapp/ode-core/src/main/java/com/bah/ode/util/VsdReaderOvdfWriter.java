@@ -25,7 +25,7 @@ public class VsdReaderOvdfWriter {
          .getName());
 
    public static void main(String args[]) {
-      String filename = new String("message.dat");
+      String filename = "message.dat";
       boolean allVSRs = true;
       char encoding = 'b';
       char content = 'd';
