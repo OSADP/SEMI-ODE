@@ -188,7 +188,7 @@ public class AppContext {
    public static String getServletBaseUrl(HttpServletRequest request) {
       String proto = request.getScheme();
       String host = request.getServerName();
-      String port = new Integer(request.getServerPort()).toString();
+      String port = Integer.toString(request.getServerPort());
       String path = request.getContextPath();
       return proto + "://" + host + ":" + port + path;
    }
@@ -199,9 +199,9 @@ public class AppContext {
    public void init(ServletContext context) {
       this.servletContext = context;
 
-      String hostname = System.getenv("HOSTNAME");
+      String osName = System.getProperty("os.name");
       String hostSpecificUid;
-      if (hostname == null) {
+      if (osName.startsWith("Windows")) {
          /*
           * If running on windows host, HOSTNAME environment variable is usually
           * not defined. So we'll assume that the software should be run in
@@ -211,23 +211,23 @@ public class AppContext {
          this.servletContext.setInitParameter(SPARK_MASTER, this.sparkMaster);
          this.servletContext.setInitParameter(LOOPBACK_TEST, "true");
          
-         //Let's get the hostname a different way
-         try {
-            hostname = InetAddress.getLocalHost().getHostName();
-            hostSpecificUid = hostname + "-" + System.currentTimeMillis();
-         } catch (UnknownHostException e) {
-            // Let's just use a random hostname
-            hostname = UUID.randomUUID().toString();
-            hostSpecificUid = hostname;
-         }
-
       } else {
-         hostSpecificUid = hostname + "-" + System.currentTimeMillis();
          this.sparkMaster = getParam(SPARK_MASTER);
          this.servletContext.setInitParameter(LOOPBACK_TEST, "false");
       }
 
+      String hostname;
+      try {
+         hostname = InetAddress.getLocalHost().getHostName();
+         hostSpecificUid = hostname + "-" + System.currentTimeMillis();
+      } catch (UnknownHostException e) {
+         // Let's just use a random hostname
+         hostname = UUID.randomUUID().toString();
+         hostSpecificUid = hostname;
+      }
+
       this.servletContext.setInitParameter(ODE_HOSTNAME, hostname);
+
       // Create host-specific topic names and add to init parameters
       //////////////////////////////////////////////////////////////////////////
       
