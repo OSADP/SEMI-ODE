@@ -1,0 +1,41 @@
+---
+Files:
+  test_ODE_Authentication.py:
+    Classes:
+      ODE_Client_Authentication_REST_API:
+        Summary: >
+          Tests that 'odeClient' can access application server with valid credentials
+          and is rejected with invalid credentials. Also tests that 'restApi' can both
+          login and logout the user.
+        Tests:
+          - test_access_token_with_valid_UserName_Password
+          - test_exception_returned_with_invalid_Password
+          - test_exception_returned_with_invalid_UserName
+          - test_restAPI_log_in
+          - test_restAPI_log_out
+      ODE_Streaming_API_Authentication_Tests:
+          Summary: >
+            Tests that 'odeClient' is successfully authenticated by the Query
+            and Subscriptions APIs for intersection, vehicle, and advisory data
+            types when using valid credentials. Also tests that those same endpoints
+            fail to authenticate the user when they try to connect with a revoked
+            token or an invalid credentials.
+          Tests:
+            - test_Authentication_to_Int_Qry_API
+            - test_Authentication_to_Veh_Qry_API
+            - test_Authentication_to_Adv_Qry_API
+            - test_Authentication_to_Int_Sub_API
+            - test_Authentication_to_Veh_Sub_API
+            - test_Authentication_to_Agg_Sub_API
+            - test_revoked_token_Authentication_to_Int_Qry_API
+            - test_revoked_token_Authentication_to_Veh_Qry_API
+            - test_revoked_token_Authentication_to_Adv_Qry_API
+            - test_revoked_token_Authentication_to_Int_Sub_API
+            - test_revoked_token_Authentication_to_Veh_Sub_API
+            - test_revoked_token_Authentication_to_Agg_Sub_API
+            - test_revoked_token_Authentication_to_Int_Qry_API
+            - test_Invalid_Authentication_to_Int_Veh_API
+            - test_Invalid_Authentication_to_Int_Adv_API
+            - test_Invalid_Authentication_to_Int_Sub_API
+            - test_Invalid_Authentication_to_Veh_Sub_API
+            - test_Invalid_Authentication_to_Agg_Sub_API

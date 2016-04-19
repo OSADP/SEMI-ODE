@@ -8,6 +8,7 @@ import os
 import json
 import time
 import datetime
+import dateutil.relativedelta
 import inspect
 from __init__ import LogThisTestCase
 
@@ -27,12 +28,17 @@ except:
 
 import testRunnerHelper
 import logging
-import os
 
 
 class ODE_Client_Authentication_REST_API(unittest.TestCase):
 
     config = testRunnerHelper.parse_config_file(os.path.join('.','test_config_files','test_Authentication_config.ini'))
+
+    end = datetime.datetime.utcnow()
+    start = end - dateutil.relativedelta.relativedelta(months = 6)
+
+    config['START_DATE'] = start.isoformat()[:-3] + 'Z'
+    config['END_DATE'] = end.isoformat()[:-3] + 'Z'
 
     userName = config['USERNAME']
     password = config['PASSWORD']
