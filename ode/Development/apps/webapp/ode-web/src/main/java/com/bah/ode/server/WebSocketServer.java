@@ -206,13 +206,17 @@ public class WebSocketServer {
       if (StringUtils.isEmpty(message))
          return;
       
-      String sessionId = session.getId();
       OdeStatus status = new OdeStatus();
 
       synchronized(WebSocketServer.class) {
          try {
             odeRequest = OdeRequestManager.buildOdeRequest(rtype, dtype, message);
    
+            if (odeRequest.getRequestType() !=  OdeRequestType.Deposit) {
+               logger.info("=== Message Received on Session ID {}, Request Type {}, Data Type {} : {}", 
+                     session.getId(), rtype, dtype, message);
+            }
+            
             MQTopic tempTopic = null;
             OdeRequest tempRequest = null; 
             /*
@@ -299,13 +303,7 @@ public class WebSocketServer {
          } finally {
             try {
                if (odeRequest.getRequestType() !=  OdeRequestType.Deposit) {
-                  logger.info("=== Message Received on Session ID {}, Request Type {}, Data Type {} : {}", 
-                        sessionId, rtype, dtype, message);
-                  
                   WebSocketUtils.send(session, new OdeDataMessage(status).toString());
-               } else {
-                  logger.debug("=== Message Received on Session ID {}, Request Type {}, Data Type {} : {}", 
-                        sessionId, rtype, dtype, message);
                }
             } catch (IOException e) {
                logger.error("Error sending error message back to client", e);
