@@ -5,6 +5,7 @@ import json
 import logging
 import time
 import datetime
+import dateutil.relativedelta
 
 from __init__ import LogThisTestCase
 import testRunnerHelper
@@ -41,6 +42,11 @@ class ODE_Query_Downloads_Tests(unittest.TestCase):
     # l2.addHandler(logging.FileHandler(os.path.join('.','log_outputs','ODE_Query_Downloads_Tests.log')))
 
     config = testRunnerHelper.parse_config_file( os.path.join('.','test_config_files','test_Basic_Query_API_config.ini'))
+    end = datetime.datetime.utcnow()
+    start = end - dateutil.relativedelta.relativedelta(months = 6)
+
+    config['START_DATE'] = start.isoformat()[:-3] + 'Z'
+    config['END_DATE'] = end.isoformat()[:-3] + 'Z'
 
     def setUp(self):
         self.logger.addHandler(logging.FileHandler(os.path.join('.','log_outputs','ODE_Query_Downloads_Tests.log')))
