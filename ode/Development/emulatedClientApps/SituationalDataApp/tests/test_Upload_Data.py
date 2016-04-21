@@ -92,6 +92,7 @@ class ODE_Validation_With_Test_Upload(unittest.TestCase):
         while not (self.client.is_buffer_empty() and total_records_received != 0):
             responses = self.client.get_messages(25)
             for msg in responses:
+
                 total_records_received += 1
                 # Run validation logic over vehicle records and not ODE Status Messages
                 if msg.get_payload_type() in dataType.Status:
@@ -146,17 +147,17 @@ class ODE_Validation_With_Test_Upload(unittest.TestCase):
                           msg="Received {} more(less) record(s) than expected ".format(
                               record_count - len(valid_ode_output)))
 
-    def test_upload_with_valid_data(self):
-        full_config_path = os.path.join(self.config_path, 'testCase_9__with_bad_input_dataFile_config.ini')
+    def test_upload_with_good_input(self):
+        full_config_path = os.path.join(self.config_path, 'test_Upload_Data_good_input_config.ini')
         self.initialize(full_config_path)
 
         cwd = os.path.dirname(os.path.realpath(__file__))
         self.config['INPUT_FILE'] = os.path.join(cwd, "test_input", "TF9_sub_veh_7_records_good_Lat_Long.json")
-        self.config['VALIDATION_FILE'] = os.path.join(cwd, "test_validation", "TFR9_sub_veh_10_records_bad_Lat_Long_results.json")
+        self.config['VALIDATION_FILE'] = os.path.join(cwd, "test_validation", "TFR9_sub_veh_7_records_good_Lat_Long_results.json")
         self.run_test_with_input()
 
-    def test_upload_with_invalid_data(self):
-        full_config_path = os.path.join(self.config_path, 'testCase_9_config.ini')
+    def test_upload_with_bad_input(self):
+        full_config_path = os.path.join(self.config_path, 'test_Upload_Data_bad_input_config.ini')
         self.initialize(full_config_path)
 
         cwd = os.path.dirname(os.path.realpath(__file__))
