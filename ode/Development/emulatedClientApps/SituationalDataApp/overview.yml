@@ -43,10 +43,13 @@ Files:
     Classes:
       ODE_Validation_With_Test_Upload:
         Summary: >
-          TODO
+          Tests that 'odeClient' can upload data to ODE server and can then recieve
+          that data from the server. The first test is run by submitting data that is
+          in the region specified in the client request and the second test is run
+          by submitting data that is outside of the bounds of the requesting box.
         Tests:
-          - test_upload_with_valid_data
-          - test_upload_with_valid_data
+          - test_upload_with_good_input
+          - test_upload_with_bad_input
   test_ODE_Query_API.py:
     Classes:
       ODE_Query_Downloads_Tests:
