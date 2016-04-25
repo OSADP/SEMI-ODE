@@ -7,6 +7,8 @@ Files:
           Tests that 'odeClient' can access application server with valid credentials
           and is rejected with invalid credentials. Also tests that 'restApi' can both
           login and logout the user.
+        Status: >
+          All tests are passing.
         Tests:
           - test_access_token_with_valid_UserName_Password
           - test_exception_returned_with_invalid_Password
@@ -20,6 +22,8 @@ Files:
             types when using valid credentials. Also tests that those same endpoints
             fail to authenticate the user when they try to connect with a revoked
             token or an invalid credentials.
+          Status: >
+            All tests are passing.
           Tests:
             - test_Authentication_to_Int_Qry_API
             - test_Authentication_to_Veh_Qry_API
@@ -39,7 +43,7 @@ Files:
             - test_Invalid_Authentication_to_Int_Sub_API
             - test_Invalid_Authentication_to_Veh_Sub_API
             - test_Invalid_Authentication_to_Agg_Sub_API
-  test_with_Upload_Data.py:
+  test_ODE_Upload_Data.py:
     Classes:
       ODE_Validation_With_Test_Upload:
         Summary: >
@@ -47,6 +51,15 @@ Files:
           that data from the server. The first test is run by submitting data that is
           in the region specified in the client request and the second test is run
           by submitting data that is outside of the bounds of the requesting box.
+        Status: >
+          The tests pass and fail intermittenly. The tests upload data and then check
+          to see if they can retrieve that data. Not all records are always returned
+          however. For example, in the test with good input, sometimes only 5 or 6
+          out of 7 records are returned, and this causes the test to fail. The explanation
+          for this behavior requires further investigation. Furthermore, the test
+          with bad input uploads data that is outside of the requested range, however
+          this data is still returned to the user. It is unclear from the documentation
+          whether this behavior is expected or not and should be clarified.
         Tests:
           - test_upload_with_good_input
           - test_upload_with_bad_input
@@ -54,5 +67,49 @@ Files:
     Classes:
       ODE_Query_Downloads_Tests:
         Summary: >
+          Tests that 'odeClient' can successfully connect to the Query APIs of
+          both the SDW and the SDPC for vehicle, intersection, advisory, MAP,
+          SPAT, and Aggregate data types.
+        Status: >
+          TODO (ODE down, need to test skipped tests)
+        Tests:
+          - test_Connection_to_Vehicle_Query_API
+          - test_Connection_to_Vehicle_Query_API_SDW
+          - test_Connection_to_Intersection_Query_API
+          - test_Connection_to_Intersection_Query_API_SDW
+          - test_Connection_to_MAP_Query_API
+          - test_Connection_to_MAP_Query_API_SDW
+          - test_Connection_to_ADV_Query_SDW_API
+        Skipped:
+          - test_Connection_to_Aggregate_Query_API
+          - test_Connection_to_Aggregate_Query_API_SDW
+          - test_Connection_to_SPAT_Query_API
+          - test_Connection_to_SPAT_Query_API_SWD
+          - test_Connection_to_ADV_Query_API
+  test_ODE_Subscription_API.py:
+    Classes:
+      ODE_Subscription_Connectivity_Tests:
+        Summary: >
+          Tests that 'odeClient' can successfully connect to the SDC Subscription
+          APIs of for vehicle, intersection, advisory, MAP, SPAT, and Aggregate
+          data types.
+        Status: >
+          TODO (ODE down, need to test skipped tests)
+        Tests:
+          - test_Connection_to_Vehicle_Sub_API
+          - test_Connection_to_Intersection_Sub_API
+          - test_Connection_to_SPAT_Sub_API
+          - test_Connection_to_MAP_Sub_API
+        Skipped:
+          - test_Connection_to_Aggregate_Sub_API
+  test_ODE_Multiple_Clients.py:
+    Classes:
+      ODE_Basic_Subscription_Multiple_Clients_Tests:
+        Summary: >
+          Tests that the ODE application can handle more than one clients
+          concurrently by testing the vehicle query and vehicle subscription APIs.
+        Status: >
           TODO
         Tests:
+          - test_Connection_to_Vehicle_Query_API
+          - test_Connection_to_Vehicle_Subscription_API
