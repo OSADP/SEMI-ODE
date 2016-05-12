@@ -64,7 +64,7 @@ public class DdsClientFactory {
          
          Map<String, Map<String, String>> cookieHeader = Collections
                .singletonMap("Cookie", Collections.singletonMap(
-                     AppContext.JSESSIONID_KEY, casClient.getSessionID()));
+                     CASClient.JSESSIONID_KEY, casClient.getSessionID()));
 
          List<Class<? extends WebSocketMessageDecoder<?>>> decoders = 
                new ArrayList<Class<? extends WebSocketMessageDecoder<?>>>();
@@ -87,15 +87,12 @@ public class DdsClientFactory {
    private static void init(AppContext appContext) throws URISyntaxException,
          SSLException, CASException {
       if (uri == null) {
-         uri = new URI("wss", null, appContext.getParam(AppContext.DDS_DOMAIN),
-               Integer.parseInt(appContext.getParam(AppContext.DDS_PORT)),
-               appContext.getParam(AppContext.DDS_RESOURCE_IDENTIFIER), null,
-               null);
+         uri = new URI(appContext.getParam(AppContext.DDS_WEBSOCKET_URI));
       }
 
-      if (keystoreStream == null) {
-         keystoreStream = CASClient.class.getClassLoader().getResourceAsStream(
-               appContext.getParam(AppContext.DDS_KEYSTORE_FILE_PATH));
+      String keystoreFile = appContext.getParam(AppContext.DDS_KEYSTORE_FILE_PATH);
+      if (keystoreStream == null && keystoreFile != null) {
+         keystoreStream = CASClient.class.getClassLoader().getResourceAsStream(keystoreFile );
       }
 
       if (sslContext == null) {

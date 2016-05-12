@@ -95,10 +95,7 @@ public class AppContext {
    public static final String MAIL_USERNAME = "mail.user";
    public static final String MAIL_PASSWORD = "mail.password";
 
-   public static final String JSESSIONID_KEY = "JSESSIONID";
-   public static final String DDS_DOMAIN = "dds.domain";
-   public static final String DDS_PORT = "dds.port";
-   public static final String DDS_RESOURCE_IDENTIFIER = "dds.resource.identifier";
+   public static final String DDS_WEBSOCKET_URI = "dds.websocket.uri";
    public static final String DDS_KEYSTORE_FILE_PATH = "dds.keystore.file.path";
    public static final String DDS_KEYSTORE_PASSWORD = "dds.keystore.password";
    public static final String DDS_CAS_URL = "dds.cas.url";
