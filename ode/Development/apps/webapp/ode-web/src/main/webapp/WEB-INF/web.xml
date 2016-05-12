@@ -56,28 +56,8 @@
       <param-value></param-value>
    </context-param>
    <context-param>
-      <param-name>dds.domain</param-name>
-      <param-value>ec2-54-211-216-181.compute-1.amazonaws.com</param-value>
-   </context-param>
-   <context-param>
-      <param-name>dds.port</param-name>
-      <param-value>443</param-value>
-   </context-param>
-   <context-param>
-      <param-name>dds.resource.identifier</param-name>
-      <param-value>/whtools22/websocket</param-value>
-   </context-param>
-   <context-param>
-      <param-name>dds.keystore.file.path</param-name>
-      <param-value>keystore-all</param-value>
-   </context-param>
-   <context-param>
-      <param-name>dds.keystore.password</param-name>
-      <param-value>password</param-value>
-   </context-param>
-   <context-param>
       <param-name>dds.cas.url</param-name>
-      <param-value>https://ec2-54-211-88-131.compute-1.amazonaws.com/accounts/v1/tickets</param-value>
+      <param-value>https://cas.connectedvcs.com/accounts/v1/tickets</param-value>
    </context-param>
    <context-param>
       <param-name>dds.cas.username</param-name>
@@ -86,6 +66,10 @@
    <context-param>
       <param-name>dds.cas.password</param-name>
       <param-value>CV2015</param-value>
+   </context-param>
+   <context-param>
+      <param-name>dds.websocket.uri</param-name>
+      <param-value>wss://webapp.connectedvcs.com/whtools22/websocket</param-value>
    </context-param>
    <context-param>
       <param-name>spark.master</param-name>
