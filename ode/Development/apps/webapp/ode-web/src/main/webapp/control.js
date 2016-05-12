@@ -1054,10 +1054,10 @@ function updateClusters(str) {
    var metadata = getMetadata(str);
    var recordsReceivedIncrement = 1;
    
-   if (metadata.latency != null)
-      recordsReceivedIncrement = Math.ceil(parseInt(metadata.latency) / 100);
-   else
-      recordsReceivedIncrement = 100;
+//   if (metadata.latency != null)
+//      recordsReceivedIncrement = Math.ceil(parseInt(metadata.latency) / 100);
+//   else
+//      recordsReceivedIncrement = 100;
    
    if (pl !== undefined && pl !== false && pl !== null && pl.dataType === "VehicleData") {
       recordsReceived += recordsReceivedIncrement;
