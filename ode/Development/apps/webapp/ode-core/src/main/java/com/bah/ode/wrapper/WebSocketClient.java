@@ -256,7 +256,7 @@ public class WebSocketClient<T> extends Endpoint {
                ArrayList<String> headerValue = new ArrayList<String>();
                for (Entry<String, String> entry : hmap.entrySet()) {
                   StringBuilder nvp = new StringBuilder(entry.getKey());
-                  nvp.append("=").append(entry.getValue());
+                  nvp.append('=').append(entry.getValue());
                   headerValue.add(nvp.toString());
                }
                headers.put(header, headerValue);
