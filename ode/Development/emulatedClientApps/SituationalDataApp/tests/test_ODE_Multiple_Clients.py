@@ -143,7 +143,7 @@ class ODE_Basic_Subscription_Multiple_Clients_Tests(unittest.TestCase):
         msg1 = self.client1.get_all_messages()
         self.logger.info("Processing Client 1 Messages")
         for m in msg1:
-            self.logger.info( m.toJson() )
+            # self.logger.info( m.toJson() )
             if m.get_payload_type() in ('veh',):
                 self.assertTrue(testRunnerHelper.validate_location(m.payload, self.config1))
 
@@ -151,7 +151,7 @@ class ODE_Basic_Subscription_Multiple_Clients_Tests(unittest.TestCase):
 
         self.logger.info("Processing Client 2 Messages")
         for m in msg2:
-            self.logger.info( m.toJson())
+            # self.logger.info( m.toJson())
             if m.get_payload_type() in ('veh',):
                 self.assertTrue(testRunnerHelper.validate_location(m.payload, self.config2))
 
