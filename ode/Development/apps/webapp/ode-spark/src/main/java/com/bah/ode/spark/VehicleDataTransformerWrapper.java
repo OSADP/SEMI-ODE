@@ -6,7 +6,7 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 
 import com.bah.ode.wrapper.MQTopic;
 
-public class VehicleDataProcessorWrapper {
+public class VehicleDataTransformerWrapper {
 
    /**
     * 
@@ -19,7 +19,7 @@ public class VehicleDataProcessorWrapper {
 
       SparkConf sparkConf = new SparkConf();
 
-      VehicleDataProcessor ovdfWF = new VehicleDataProcessor();
+      VehicleDataTransformer ovdfWF = new VehicleDataTransformer();
 
       String numPartitions = args[0];
       String odeVehDataFlatTopic = args[1];

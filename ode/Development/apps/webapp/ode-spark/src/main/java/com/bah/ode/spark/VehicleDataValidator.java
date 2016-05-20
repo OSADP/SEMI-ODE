@@ -15,16 +15,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import scala.Tuple2;
 
-public class RecordValidator extends SparkProcessor 
+public class VehicleDataValidator extends SparkProcessor 
    implements PairFunction<Tuple2<String, Tuple2<String, String>>, String, Tuple2<String, String>> {
 
    private static final long serialVersionUID = 2040465851629473055L;
    
-   private static Logger logger = LoggerFactory.getLogger(RecordValidator.class);
+   private static Logger logger = LoggerFactory.getLogger(VehicleDataValidator.class);
 
    private List<String> validationData = null;
 
-   public RecordValidator(Accumulator<Integer> accumulator, List<String> validationData) {
+   public VehicleDataValidator(Accumulator<Integer> accumulator, List<String> validationData) {
       super(accumulator);
       this.validationData = validationData;
    }

@@ -55,8 +55,8 @@ public class YarnClientManager {
       return inputTopic;
    }
 
-   public YarnClientManager setInputTopic(String dataProcessorInputTopic) {
-      this.inputTopic = dataProcessorInputTopic;
+   public YarnClientManager setInputTopic(String inputTopic) {
+      this.inputTopic = inputTopic;
       return this;
    }
 
@@ -159,10 +159,11 @@ public class YarnClientManager {
             + "\nApplication Jar: {} " + "\nPartition count: {} "
             + "\nInput Topic: {}" + "\nZookeeper Connection String: {}"
             + "\nkafka Broker Connection String {}"
-            + "\nSpark Streamin Duration (ms): {}"
+            + "\nSpark Streaming Microbatch Duration (ms): {}"
             + "\nFiles: {}", userJar,
             numPartitions.toString(), inputTopic, zkConnectionString,
-            kafkaMetaDataBrokerList, sparkStreamingMicrobatchDurationMs, String.join(",", filesList));
+            kafkaMetaDataBrokerList, sparkStreamingMicrobatchDurationMs, 
+            String.join(",", filesList));
 
       ClientArguments cArgs = new ClientArguments(args, sparkConf);
       // create an instance of yarn Client

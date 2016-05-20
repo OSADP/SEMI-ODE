@@ -11,13 +11,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import scala.Tuple2;
 
-public class RecordSanitizer extends SparkProcessor
+public class VehicleDataSanitizer extends SparkProcessor
    implements PairFunction<Tuple2<String, Tuple2<String, String>>, String, Tuple2<String, String>> {
 
    private static final long serialVersionUID = 2040465851629473055L;
    private List<String> sanitizationData = null;
 
-   public RecordSanitizer(Accumulator<Integer> accumulator, List<String> sanitizationData) {
+   public VehicleDataSanitizer(Accumulator<Integer> accumulator, List<String> sanitizationData) {
       super(accumulator);
       this.sanitizationData = sanitizationData;
    }

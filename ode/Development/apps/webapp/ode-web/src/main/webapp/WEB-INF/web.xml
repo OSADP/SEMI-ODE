@@ -150,8 +150,8 @@
       files. Must be located within Servelet context, such as in /WEB-INF only 
       used in yarn-client or yarn-master modes -->
    <context-param>
-      <param-name>spark.yarn.vehicle.configuration.file</param-name>
-      <param-value>/WEB-INF/spark-yarn.properties</param-value>
+      <param-name>spark.yarn.transformer.configuration.file</param-name>
+      <param-value>/WEB-INF/spark-yarn-transformer.properties</param-value>
    </context-param>
    <context-param>
       <param-name>spark.yarn.aggregator.configuration.file</param-name>
@@ -166,8 +166,8 @@
    <!-- Properties Value set in the Parent POM since the values are used 
       in more than one file -->
    <context-param>
-      <param-name>spark.metrics.vehicle.configuration.file</param-name>
-      <param-value>${spark.metrics.ode.file}</param-value>
+      <param-name>spark.metrics.transformer.configuration.file</param-name>
+      <param-value>${spark.metrics.transformer.file}</param-value>
    </context-param>
    <context-param>
       <param-name>spark.metrics.aggregator.configuration.file</param-name>
@@ -196,19 +196,19 @@
       <param-value>10</param-value>
    </context-param>
    <context-param>
-      <param-name>spark.yarn.vehicle.driver.cores</param-name>
+      <param-name>spark.yarn.transformer.driver.cores</param-name>
       <param-value>1</param-value>
    </context-param>
    <context-param>
-      <param-name>spark.yarn.vehicle.driver.memory</param-name>
+      <param-name>spark.yarn.transformer.driver.memory</param-name>
       <param-value>1024m</param-value>
    </context-param>
    <context-param>
-      <param-name>spark.yarn.vehicle.executor.cores</param-name>
+      <param-name>spark.yarn.transformer.executor.cores</param-name>
       <param-value>3</param-value>
    </context-param>
    <context-param>
-      <param-name>spark.yarn.vehicle.executor.memory</param-name>
+      <param-name>spark.yarn.transformer.executor.memory</param-name>
       <param-value>18432m</param-value>
    </context-param>
 

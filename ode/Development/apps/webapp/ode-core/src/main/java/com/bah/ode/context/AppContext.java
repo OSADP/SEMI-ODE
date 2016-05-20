@@ -125,22 +125,22 @@ public class AppContext {
    public static final String SPARK_STATIC_VALIDATION_FILE_LOCATION = "spark.static.validation.file.location";
 
    public static final String SPARK_CONFIGURATION_DIRECTORY_HOME = "spark.configuration.file.directory";
-   public static final String SPARK_YARN_CONFIGURATION_FILE = "spark.yarn.vehicle.configuration.file";
+   public static final String SPARK_YARN_TRANSFORMER_CONFIGURATION_FILE = "spark.yarn.transformer.configuration.file";
    public static final String SPARK_YARN_AGGREGATOR_CONFIGURATION_FILE = "spark.yarn.aggregator.configuration.file";
    
    // SPARK ON YARN Cluster Resource Params
    // Can be used to override defaults
-   public static final String SPARK_YARN_VEHICLE_DRIVER_CORES = "spark.yarn.vehicle.driver.cores";
-   public static final String SPARK_YARN_VEHICLE_DRIVER_MEMORY = "spark.yarn.vehicle.driver.memory";
-   public static final String SPARK_YARN_VEHICLE_EXECUTOR_CORES = "spark.yarn.vehicle.executor.cores";
-   public static final String SPARK_YARN_VEHICLE_EXECUTOR_MEMORY = "spark.yarn.vehicle.executor.memory";
+   public static final String SPARK_YARN_TRANSFORMER_DRIVER_CORES = "spark.yarn.transformer.driver.cores";
+   public static final String SPARK_YARN_TRANSFORMER_DRIVER_MEMORY = "spark.yarn.transformer.driver.memory";
+   public static final String SPARK_YARN_TRANSFORMER_EXECUTOR_CORES = "spark.yarn.transformer.executor.cores";
+   public static final String SPARK_YARN_TRANSFORMER_EXECUTOR_MEMORY = "spark.yarn.transformer.executor.memory";
    public static final String SPARK_YARN_AGGREGATOR_DRIVER_CORES = "spark.yarn.aggregator.driver.cores";
    public static final String SPARK_YARN_AGGREGATOR_DRIVER_MEMORY = "spark.yarn.aggregator.driver.memory";
    public static final String SPARK_YARN_AGGREGATOR_EXECUTOR_CORES = "spark.yarn.aggregator.executor.cores";
    public static final String SPARK_YARN_AGGREGATOR_EXECUTOR_MEMORY = "spark.yarn.aggregator.executor.memory";
    
    
-   public static final String SPARK_METRICS_VEHICLE_CONFIGURATION_FILE = "spark.metrics.vehicle.configuration.file";
+   public static final String SPARK_METRICS_TRANSFORMER_CONFIGURATION_FILE = "spark.metrics.transformer.configuration.file";
    public static final String SPARK_METRICS_AGGREGATOR_CONFIGURATION_FILE = "spark.metrics.aggregator.configuration.file";
 
    public static final String SPARK_RUN_ODE_AGGREGATOR_IN_VDP = "spark.run.ode.aggregator.in.vdp";
@@ -156,10 +156,10 @@ public class AppContext {
    public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
 
    /////////////////////////////////////////////////////////////////////////////
-   // Topics used by the Spark
-   public static final String SPARK_DATA_PROCESSOR_INPUT_TOPIC = "spark.data.processor.input.topic";
-   public static final String SPARK_AGGREGATOR_INPUT_TOPIC = "spark.aggregator.input.topic";
-   public static final String SPARK_AGGREGATOR_OUTPUT_TOPIC = "spark.aggregator.output.topic";
+   // Topics used by Spark
+   public static final String SPARK_TRANSFORMER_INPUT_TOPIC = "spark.vehicle.transformer.input.topic";
+   public static final String SPARK_AGGREGATOR_INPUT_TOPIC = "spark.vehicle.aggregator.input.topic";
+   public static final String SPARK_AGGREGATOR_OUTPUT_TOPIC = "spark.vehicle.aggregator.output.topic";
    /////////////////////////////////////////////////////////////////////////////
    
    public static final String TOKEN_KEY_RSA_PEM = "token.key.rsa.pem";
@@ -179,7 +179,7 @@ public class AppContext {
    private JavaSparkContext sparkContextLocal;
    // private SQLContext sqlContext;
    private boolean streamingContextStarted = false;
-   private YarnClientManager vehicleProcessorManager = null;
+   private YarnClientManager transformerManager = null;
    private YarnClientManager aggregatorManager = null;
 
    public static String getServletBaseUrl(HttpServletRequest request) {
@@ -231,8 +231,8 @@ public class AppContext {
       this.servletContext.setInitParameter(HOST_SPECIFIC_UID,
             hostSpecificUid );
       
-      this.servletContext.setInitParameter(SPARK_DATA_PROCESSOR_INPUT_TOPIC,
-            SPARK_DATA_PROCESSOR_INPUT_TOPIC + "-" + hostSpecificUid);
+      this.servletContext.setInitParameter(SPARK_TRANSFORMER_INPUT_TOPIC,
+            SPARK_TRANSFORMER_INPUT_TOPIC + "-" + hostSpecificUid);
 
       this.servletContext.setInitParameter(SPARK_AGGREGATOR_OUTPUT_TOPIC,
             SPARK_AGGREGATOR_OUTPUT_TOPIC + "-" + hostSpecificUid);
@@ -266,8 +266,8 @@ public class AppContext {
                   getParam(SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE,
                         String.valueOf(
                         AppContext.DEFAULT_SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE)))
-            .set(SPARK_DATA_PROCESSOR_INPUT_TOPIC,
-                  getParam(SPARK_DATA_PROCESSOR_INPUT_TOPIC))
+            .set(SPARK_TRANSFORMER_INPUT_TOPIC,
+                  getParam(SPARK_TRANSFORMER_INPUT_TOPIC))
             .set(SPARK_AGGREGATOR_OUTPUT_TOPIC,
                   getParam(SPARK_AGGREGATOR_OUTPUT_TOPIC))
             .set(SPARK_AGGREGATOR_INPUT_TOPIC,
@@ -394,7 +394,7 @@ public class AppContext {
                String absolutePath = this.servletContext
                      .getRealPath(getParam(SPARK_CONFIGURATION_DIRECTORY_HOME));
                sparkConf.set("spark.metrics.conf", absolutePath + File.separator
-                     + getParam(SPARK_METRICS_VEHICLE_CONFIGURATION_FILE));
+                     + getParam(SPARK_METRICS_TRANSFORMER_CONFIGURATION_FILE));
                sparkContextLocal = getOrSetSparkContextLocal();
             }
          } catch (Throwable t) {
@@ -526,70 +526,70 @@ public class AppContext {
             logger.info("Starting Spark Jobs ...");
 
 
-            if (null == vehicleProcessorManager) {
+            if (null == transformerManager) {
                SparkConf cloneConf = sparkConf.clone()
                      .set("spark.app.name", getParam(HOST_SPECIFIC_UID) + "-VDP");
                
-               if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_VEHICLE_DRIVER_CORES)))
+               if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_TRANSFORMER_DRIVER_CORES)))
                {
-                  cloneConf.set("spark.yarn.am.cores", getParam(SPARK_YARN_VEHICLE_DRIVER_CORES));
+                  cloneConf.set("spark.yarn.am.cores", getParam(SPARK_YARN_TRANSFORMER_DRIVER_CORES));
                }
-               if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY)))
+               if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_TRANSFORMER_DRIVER_MEMORY)))
                {
-                  cloneConf.set("spark.yarn.am.memory", getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY));
+                  cloneConf.set("spark.yarn.am.memory", getParam(SPARK_YARN_TRANSFORMER_DRIVER_MEMORY));
                } 
 
-               vehicleProcessorManager = new YarnClientManager(cloneConf);
+               transformerManager = new YarnClientManager(cloneConf);
 
-               vehicleProcessorManager
+               transformerManager
                      .setKafkaMetaDataBrokerList(
                            getParam(KAFKA_METADATA_BROKER_LIST))
                      .setZkConnectionString(getParam(ZK_CONNECTION_STRINGS))
                      .setNumPartitions(getParam(KAFKA_CONSUMER_THREADS,
                            String.valueOf(DEFAULT_KAFKA_CONSUMER_THREADS)))
                      .setInputTopic(
-                           getParam(SPARK_DATA_PROCESSOR_INPUT_TOPIC))
+                           getParam(SPARK_TRANSFORMER_INPUT_TOPIC))
                      .setSparkStreamingMicrobatchDuration(
                            getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS,
                                  String.valueOf(DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS)))
-                     .setClass("com.bah.ode.spark.VehicleDataProcessorWrapper")
+                     .setClass("com.bah.ode.spark.VehicleDataTransformerWrapper")
                      .addFiles("file://" + absolutePath + "/"
-                           + getParam(SPARK_METRICS_VEHICLE_CONFIGURATION_FILE))
+                           + getParam(SPARK_METRICS_TRANSFORMER_CONFIGURATION_FILE))
                      .setUserJar(DEPLOY_HOME + File.separator
                            + getParam(ODE_SPARK_JAR));
               
               // Default Parameters are provided in the Yarn Client Manager Class
-              if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_VEHICLE_DRIVER_CORES)))
+              if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_TRANSFORMER_DRIVER_CORES)))
               {
-                 vehicleProcessorManager.setDriverCores(getParam(SPARK_YARN_VEHICLE_DRIVER_CORES));
+                 transformerManager.setDriverCores(getParam(SPARK_YARN_TRANSFORMER_DRIVER_CORES));
               }
-              if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY)))
+              if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_TRANSFORMER_DRIVER_MEMORY)))
               {
-                 vehicleProcessorManager.setDriverMemory(getParam(SPARK_YARN_VEHICLE_DRIVER_MEMORY));
+                 transformerManager.setDriverMemory(getParam(SPARK_YARN_TRANSFORMER_DRIVER_MEMORY));
               } 
-              if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_VEHICLE_EXECUTOR_CORES)))
+              if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_TRANSFORMER_EXECUTOR_CORES)))
               {
-                 vehicleProcessorManager.setExectorsCores(getParam(SPARK_YARN_VEHICLE_EXECUTOR_CORES));
+                 transformerManager.setExectorsCores(getParam(SPARK_YARN_TRANSFORMER_EXECUTOR_CORES));
               }
-              if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_VEHICLE_EXECUTOR_MEMORY)))
+              if  (StringUtils.isNotEmpty(getParam(SPARK_YARN_TRANSFORMER_EXECUTOR_MEMORY)))
               {
-                 vehicleProcessorManager.setExecutorMemory(getParam(SPARK_YARN_VEHICLE_EXECUTOR_MEMORY));
+                 transformerManager.setExecutorMemory(getParam(SPARK_YARN_TRANSFORMER_EXECUTOR_MEMORY));
               } 
              
                String sparkConfigFilePath = getParam(
-                     SPARK_YARN_CONFIGURATION_FILE);
+                     SPARK_YARN_TRANSFORMER_CONFIGURATION_FILE);
 
                if (null != sparkConfigFilePath
                      && !sparkConfigFilePath.equals("")) {
-                  vehicleProcessorManager
+                  transformerManager
                         .setSparkConfPropertyFile(this.servletContext
                               .getResourceAsStream(sparkConfigFilePath));
                }
                
-               ApplicationId vehicleProcessorAppId = 
-                     vehicleProcessorManager.submitSparkJob();
-               logger.info("*** Started Vehicle Data Processor. ApplicationID: {} ***",
-                     vehicleProcessorAppId.toString());
+               ApplicationId vehicleTransformerAppId = 
+                     transformerManager.submitSparkJob();
+               logger.info("*** Started Vehicle Data Transformer. ApplicationID: {} ***",
+                     vehicleTransformerAppId.toString());
 
             }
 
@@ -703,8 +703,8 @@ public class AppContext {
       if (streamingContextStarted) {
          try {
 
-            if (null != vehicleProcessorManager) {
-               vehicleProcessorManager.stopSparkJob();
+            if (null != transformerManager) {
+               transformerManager.stopSparkJob();
             }
 
             if (null != aggregatorManager) {

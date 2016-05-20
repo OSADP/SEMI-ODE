@@ -28,9 +28,9 @@ import com.bah.ode.wrapper.MQTopic;
 
 import scala.Tuple2;
 
-public class VehicleDataProcessor extends SparkJob {
+public class VehicleDataTransformer extends SparkJob {
    private static Logger logger = LoggerFactory
-         .getLogger(VehicleDataProcessor.class);
+         .getLogger(VehicleDataTransformer.class);
 
    public JavaPairDStream<String, String> setup(JavaStreamingContext ssc,
          MQTopic topic, String zkConnectionStrings,
@@ -137,7 +137,7 @@ public class VehicleDataProcessor extends SparkJob {
                   .toArray();
 
             payloadAndMetadata = payloadAndMetadata
-                  .mapToPair(new RecordSanitizer(
+                  .mapToPair(new VehicleDataSanitizer(
                         new SparkInstrumentation(ssc.sparkContext(), "ode", "RecordSanitizer").register(), 
                         sanitizationData));
 
@@ -162,7 +162,7 @@ public class VehicleDataProcessor extends SparkJob {
                   .toArray();
 
             payloadAndMetadata = payloadAndMetadata
-                  .mapToPair(new RecordValidator(
+                  .mapToPair(new VehicleDataValidator(
                         new SparkInstrumentation(ssc.sparkContext(), "ode", "RecordValidator").register(),
                         validationData));
          }
