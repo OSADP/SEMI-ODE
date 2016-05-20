@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -87,61 +84,45 @@ public final class ElevationConfidence extends Enumerated {
 	public static final long elev_000_01 = 15;
     }
     // Named list definitions.
-    public static final ElevationConfidence unavailable =
-	new ElevationConfidence();
-    public static final ElevationConfidence elev_500_00 =
-	new ElevationConfidence(1);
-    public static final ElevationConfidence elev_200_00 =
-	new ElevationConfidence(2);
-    public static final ElevationConfidence elev_100_00 =
-	new ElevationConfidence(3);
-    public static final ElevationConfidence elev_050_00 =
-	new ElevationConfidence(4);
-    public static final ElevationConfidence elev_020_00 =
-	new ElevationConfidence(5);
-    public static final ElevationConfidence elev_010_00 =
-	new ElevationConfidence(6);
-    public static final ElevationConfidence elev_005_00 =
-	new ElevationConfidence(7);
-    public static final ElevationConfidence elev_002_00 =
-	new ElevationConfidence(8);
-    public static final ElevationConfidence elev_001_00 =
-	new ElevationConfidence(9);
-    public static final ElevationConfidence elev_000_50 =
-	new ElevationConfidence(10);
-    public static final ElevationConfidence elev_000_20 =
-	new ElevationConfidence(11);
-    public static final ElevationConfidence elev_000_10 =
-	new ElevationConfidence(12);
-    public static final ElevationConfidence elev_000_05 =
-	new ElevationConfidence(13);
-    public static final ElevationConfidence elev_000_02 =
-	new ElevationConfidence(14);
-    public static final ElevationConfidence elev_000_01 =
-	new ElevationConfidence(15);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static ElevationConfidence cNamedNumbers[] = {
-	 unavailable, 
-	 elev_500_00, 
-	 elev_200_00, 
-	 elev_100_00, 
-	 elev_050_00, 
-	 elev_020_00, 
-	 elev_010_00, 
-	 elev_005_00, 
-	 elev_002_00, 
-	 elev_001_00, 
-	 elev_000_50, 
-	 elev_000_20, 
-	 elev_000_10, 
-	 elev_000_05, 
-	 elev_000_02, 
-	 elev_000_01
+	new ElevationConfidence(), 
+	new ElevationConfidence(1), 
+	new ElevationConfidence(2), 
+	new ElevationConfidence(3), 
+	new ElevationConfidence(4), 
+	new ElevationConfidence(5), 
+	new ElevationConfidence(6), 
+	new ElevationConfidence(7), 
+	new ElevationConfidence(8), 
+	new ElevationConfidence(9), 
+	new ElevationConfidence(10), 
+	new ElevationConfidence(11), 
+	new ElevationConfidence(12), 
+	new ElevationConfidence(13), 
+	new ElevationConfidence(14), 
+	new ElevationConfidence(15)
     };
+    public static final ElevationConfidence unavailable = cNamedNumbers[0];
+    public static final ElevationConfidence elev_500_00 = cNamedNumbers[1];
+    public static final ElevationConfidence elev_200_00 = cNamedNumbers[2];
+    public static final ElevationConfidence elev_100_00 = cNamedNumbers[3];
+    public static final ElevationConfidence elev_050_00 = cNamedNumbers[4];
+    public static final ElevationConfidence elev_020_00 = cNamedNumbers[5];
+    public static final ElevationConfidence elev_010_00 = cNamedNumbers[6];
+    public static final ElevationConfidence elev_005_00 = cNamedNumbers[7];
+    public static final ElevationConfidence elev_002_00 = cNamedNumbers[8];
+    public static final ElevationConfidence elev_001_00 = cNamedNumbers[9];
+    public static final ElevationConfidence elev_000_50 = cNamedNumbers[10];
+    public static final ElevationConfidence elev_000_20 = cNamedNumbers[11];
+    public static final ElevationConfidence elev_000_10 = cNamedNumbers[12];
+    public static final ElevationConfidence elev_000_05 = cNamedNumbers[13];
+    public static final ElevationConfidence elev_000_02 = cNamedNumbers[14];
+    public static final ElevationConfidence elev_000_01 = cNamedNumbers[15];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -165,6 +146,7 @@ public final class ElevationConfidence extends Enumerated {
 	"elev-000-02",
 	"elev-000-01"
     };
+    
     
     /**
      * Returns the array of enumerators (reserved for internal use).
@@ -196,8 +178,12 @@ public final class ElevationConfidence extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static ElevationConfidence valueOf(long value)
     {
 	int inx = indexOfValue(value);

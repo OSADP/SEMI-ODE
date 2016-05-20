@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -214,40 +211,6 @@ public class DDateTime extends Sequence {
 	second = null;
     }
     
-    
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__year("year"),
-	__month("month"),
-	__day("day"),
-	__hour("hour"),
-	__minute("minute"),
-	__second("second"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(7);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -736,282 +699,6 @@ public class DDateTime extends Sequence {
 	    data.second = null;
 	}
 	return data;
-    }
-
-    /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	String separator0 = null;
-
-	sink.beginObject();
-	// Encode field 'year'
-	try {
-	    DYear item1 = this.year;
-
-	    if (item1 != null) {
-		{
-		    separator0 = ",";
-		    sink.encodeKey("year");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		separator0 = ",";
-		coder.encodeAbsentComponent(sink, "year");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("year", "DYear");
-	    throw ee;
-	}
-	// Encode field 'month'
-	try {
-	    DMonth item1 = this.month;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator(separator0);
-		    separator0 = ",";
-		    sink.encodeKey("month");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator(separator0);
-		separator0 = ",";
-		coder.encodeAbsentComponent(sink, "month");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("month", "DMonth");
-	    throw ee;
-	}
-	// Encode field 'day'
-	try {
-	    DDay item1 = this.day;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator(separator0);
-		    separator0 = ",";
-		    sink.encodeKey("day");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator(separator0);
-		separator0 = ",";
-		coder.encodeAbsentComponent(sink, "day");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("day", "DDay");
-	    throw ee;
-	}
-	// Encode field 'hour'
-	try {
-	    DHour item1 = this.hour;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator(separator0);
-		    separator0 = ",";
-		    sink.encodeKey("hour");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator(separator0);
-		separator0 = ",";
-		coder.encodeAbsentComponent(sink, "hour");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("hour", "DHour");
-	    throw ee;
-	}
-	// Encode field 'minute'
-	try {
-	    DMinute item1 = this.minute;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator(separator0);
-		    separator0 = ",";
-		    sink.encodeKey("minute");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator(separator0);
-		separator0 = ",";
-		coder.encodeAbsentComponent(sink, "minute");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("minute", "DMinute");
-	    throw ee;
-	}
-	// Encode field 'second'
-	try {
-	    DSecond item1 = this.second;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator(separator0);
-		    separator0 = ",";
-		    sink.encodeKey("second");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator(separator0);
-		separator0 = ",";
-		coder.encodeAbsentComponent(sink, "second");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("second", "DSecond");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public DDateTime decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[7];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		DDateTime.__Tag t_tag0 = DDateTime.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = DDateTime.__Tag._null_;
-		switch (t_tag0) {
-		    case __year:
-		    // Decode field 'year'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[0])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.year == null)
-				this.year = new DYear();
-			    this.year.setValue(coder.decodeInteger(source));
-			    present0[0] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("year", "DYear");
-			throw de;
-		    }
-		    break;
-		    case __month:
-		    // Decode field 'month'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[1])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.month == null)
-				this.month = new DMonth();
-			    this.month.setValue(coder.decodeInteger(source));
-			    present0[1] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("month", "DMonth");
-			throw de;
-		    }
-		    break;
-		    case __day:
-		    // Decode field 'day'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[2])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.day == null)
-				this.day = new DDay();
-			    this.day.setValue(coder.decodeInteger(source));
-			    present0[2] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("day", "DDay");
-			throw de;
-		    }
-		    break;
-		    case __hour:
-		    // Decode field 'hour'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[3])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.hour == null)
-				this.hour = new DHour();
-			    this.hour.setValue(coder.decodeInteger(source));
-			    present0[3] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("hour", "DHour");
-			throw de;
-		    }
-		    break;
-		    case __minute:
-		    // Decode field 'minute'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[4])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.minute == null)
-				this.minute = new DMinute();
-			    this.minute.setValue(coder.decodeInteger(source));
-			    present0[4] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("minute", "DMinute");
-			throw de;
-		    }
-		    break;
-		    case __second:
-		    // Decode field 'second'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[5])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.second == null)
-				this.second = new DSecond();
-			    this.second.setValue(coder.decodeInteger(source));
-			    present0[5] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("second", "DSecond");
-			throw de;
-		    }
-		    break;
-		    default:
-			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    this.year = null;
-	if (!present0[1])
-	    this.month = null;
-	if (!present0[2])
-	    this.day = null;
-	if (!present0[3])
-	    this.hour = null;
-	if (!present0[4])
-	    this.minute = null;
-	if (!present0[5])
-	    this.second = null;
-	return this;
     }
 
     /**

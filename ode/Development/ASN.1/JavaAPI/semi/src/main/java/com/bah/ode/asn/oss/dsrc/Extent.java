@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -83,49 +80,37 @@ public final class Extent extends Enumerated {
 	public static final long forever = 127;
     }
     // Named list definitions.
-    public static final Extent useInstantlyOnly =
-	new Extent();
-    public static final Extent useFor3meters =
-	new Extent(1);
-    public static final Extent useFor10meters =
-	new Extent(2);
-    public static final Extent useFor50meters =
-	new Extent(3);
-    public static final Extent useFor100meters =
-	new Extent(4);
-    public static final Extent useFor500meters =
-	new Extent(5);
-    public static final Extent useFor1000meters =
-	new Extent(6);
-    public static final Extent useFor5000meters =
-	new Extent(7);
-    public static final Extent useFor10000meters =
-	new Extent(8);
-    public static final Extent useFor50000meters =
-	new Extent(9);
-    public static final Extent useFor100000meters =
-	new Extent(10);
-    public static final Extent forever =
-	new Extent(127);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static Extent cNamedNumbers[] = {
-	 useInstantlyOnly, 
-	 useFor3meters, 
-	 useFor10meters, 
-	 useFor50meters, 
-	 useFor100meters, 
-	 useFor500meters, 
-	 useFor1000meters, 
-	 useFor5000meters, 
-	 useFor10000meters, 
-	 useFor50000meters, 
-	 useFor100000meters, 
-	 forever
+	new Extent(), 
+	new Extent(1), 
+	new Extent(2), 
+	new Extent(3), 
+	new Extent(4), 
+	new Extent(5), 
+	new Extent(6), 
+	new Extent(7), 
+	new Extent(8), 
+	new Extent(9), 
+	new Extent(10), 
+	new Extent(127)
     };
+    public static final Extent useInstantlyOnly = cNamedNumbers[0];
+    public static final Extent useFor3meters = cNamedNumbers[1];
+    public static final Extent useFor10meters = cNamedNumbers[2];
+    public static final Extent useFor50meters = cNamedNumbers[3];
+    public static final Extent useFor100meters = cNamedNumbers[4];
+    public static final Extent useFor500meters = cNamedNumbers[5];
+    public static final Extent useFor1000meters = cNamedNumbers[6];
+    public static final Extent useFor5000meters = cNamedNumbers[7];
+    public static final Extent useFor10000meters = cNamedNumbers[8];
+    public static final Extent useFor50000meters = cNamedNumbers[9];
+    public static final Extent useFor100000meters = cNamedNumbers[10];
+    public static final Extent forever = cNamedNumbers[11];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -145,6 +130,7 @@ public final class Extent extends Enumerated {
 	"useFor100000meters",
 	"forever"
     };
+    
     
     /**
      * Returns the array of enumerators (reserved for internal use).
@@ -178,8 +164,12 @@ public final class Extent extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static Extent valueOf(long value)
     {
 	int inx = indexOfValue(value);

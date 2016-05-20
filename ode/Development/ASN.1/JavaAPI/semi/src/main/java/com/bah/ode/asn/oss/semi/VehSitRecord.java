@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -240,42 +237,6 @@ public class VehSitRecord extends Sequence {
 	elveh = null;
     }
     
-    
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__tempID("tempID"),
-	__time("time"),
-	__pos("pos"),
-	__fundamental("fundamental"),
-	__vehstat("vehstat"),
-	__weather("weather"),
-	__env("env"),
-	__elveh("elveh"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(9);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -1926,315 +1887,6 @@ public class VehSitRecord extends Sequence {
 	    data.elveh = null;
 	}
 	return data;
-    }
-
-    /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	sink.beginObject();
-	// Encode field 'tempID'
-	try {
-	    com.bah.ode.asn.oss.dsrc.TemporaryID item1 = this.tempID;
-
-	    {
-		sink.encodeKey("tempID");
-		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("tempID", "TemporaryID");
-	    throw ee;
-	}
-	// Encode field 'time'
-	try {
-	    com.bah.ode.asn.oss.dsrc.DDateTime item1 = this.time;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("time");
-		item1.encodeValue(coder, sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("time", "DDateTime");
-	    throw ee;
-	}
-	// Encode field 'pos'
-	try {
-	    com.bah.ode.asn.oss.dsrc.Position3D item1 = this.pos;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("pos");
-		item1.encodeValue(coder, sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("pos", "Position3D");
-	    throw ee;
-	}
-	// Encode field 'fundamental'
-	try {
-	    FundamentalSituationalStatus item1 = this.fundamental;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("fundamental");
-		item1.encodeValue(coder, sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("fundamental", "FundamentalSituationalStatus");
-	    throw ee;
-	}
-	// Encode field 'vehstat'
-	try {
-	    VehicleSituationStatus item1 = this.vehstat;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("vehstat");
-		    item1.encodeValue(coder, sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "vehstat");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("vehstat", "VehicleSituationStatus");
-	    throw ee;
-	}
-	// Encode field 'weather'
-	try {
-	    Weather item1 = this.weather;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("weather");
-		    item1.encodeValue(coder, sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "weather");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("weather", "Weather");
-	    throw ee;
-	}
-	// Encode field 'env'
-	try {
-	    Environmental item1 = this.env;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("env");
-		    item1.encodeValue(coder, sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "env");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("env", "Environmental");
-	    throw ee;
-	}
-	// Encode field 'elveh'
-	try {
-	    ElectricVeh item1 = this.elveh;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("elveh");
-		    item1.encodeValue(coder, sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "elveh");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("elveh", "ElectricVeh");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public VehSitRecord decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[9];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		VehSitRecord.__Tag t_tag0 = VehSitRecord.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = VehSitRecord.__Tag._null_;
-		switch (t_tag0) {
-		    case __tempID:
-		    // Decode field 'tempID'
-		    try {
-			if (present0[0])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			this.tempID = new com.bah.ode.asn.oss.dsrc.TemporaryID(coder.decodeOctetString(source));
-			present0[0] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("tempID", "TemporaryID");
-			throw de;
-		    }
-		    break;
-		    case __time:
-		    // Decode field 'time'
-		    try {
-			if (present0[1])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.time == null)
-			    this.time = new com.bah.ode.asn.oss.dsrc.DDateTime();
-			this.time.decodeValue(coder, source);
-			present0[1] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("time", "DDateTime");
-			throw de;
-		    }
-		    break;
-		    case __pos:
-		    // Decode field 'pos'
-		    try {
-			if (present0[2])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.pos == null)
-			    this.pos = new com.bah.ode.asn.oss.dsrc.Position3D();
-			this.pos.decodeValue(coder, source);
-			present0[2] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("pos", "Position3D");
-			throw de;
-		    }
-		    break;
-		    case __fundamental:
-		    // Decode field 'fundamental'
-		    try {
-			if (present0[3])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.fundamental == null)
-			    this.fundamental = new FundamentalSituationalStatus();
-			this.fundamental.decodeValue(coder, source);
-			present0[3] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("fundamental", "FundamentalSituationalStatus");
-			throw de;
-		    }
-		    break;
-		    case __vehstat:
-		    // Decode field 'vehstat'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[4])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.vehstat == null)
-				this.vehstat = new VehicleSituationStatus();
-			    this.vehstat.decodeValue(coder, source);
-			    present0[4] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("vehstat", "VehicleSituationStatus");
-			throw de;
-		    }
-		    break;
-		    case __weather:
-		    // Decode field 'weather'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[5])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.weather == null)
-				this.weather = new Weather();
-			    this.weather.decodeValue(coder, source);
-			    present0[5] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("weather", "Weather");
-			throw de;
-		    }
-		    break;
-		    case __env:
-		    // Decode field 'env'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[6])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.env == null)
-				this.env = new Environmental();
-			    this.env.decodeValue(coder, source);
-			    present0[6] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("env", "Environmental");
-			throw de;
-		    }
-		    break;
-		    case __elveh:
-		    // Decode field 'elveh'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[7])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.elveh == null)
-				this.elveh = new ElectricVeh();
-			    this.elveh.decodeValue(coder, source);
-			    present0[7] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("elveh", "ElectricVeh");
-			throw de;
-		    }
-		    break;
-		    default:
-			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'tempID'");
-	if (!present0[1])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'time'");
-	if (!present0[2])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'pos'");
-	if (!present0[3])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'fundamental'");
-	if (!present0[4])
-	    this.vehstat = null;
-	if (!present0[5])
-	    this.weather = null;
-	if (!present0[6])
-	    this.env = null;
-	if (!present0[7])
-	    this.elveh = null;
-	return this;
     }
 
     /**

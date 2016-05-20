@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -53,7 +50,7 @@ import com.oss.coders.per.PerCoder;
  * @see Sequence
  */
 
-public class ObjectDiscoveryData extends Sequence implements BEREncodable, BERDecodable, DEREncodable, JSONEncodable, JSONDecodable, PEREncodable, PERDecodable {
+public class ObjectDiscoveryData extends Sequence implements BEREncodable, BERDecodable, DEREncodable, PEREncodable, PERDecodable {
     public SemiDialogID dialogID;
     public SemiSequenceID seqID;
     public GroupID groupID;
@@ -356,70 +353,6 @@ public class ObjectDiscoveryData extends Sequence implements BEREncodable, BERDe
 	    }
 
 	    /**
-	     * Implements JSON value encoder for the type (reserved for internal use).
-	     * This method is reserved for internal use and must not be invoked from the application code.
-	     */
-	    public void encodeValue(JsonCoder coder, JsonWriter sink)
-		    throws IOException, EncoderException
-	    {
-		int total_len0 = this.elements.size();
-		int idx0 = 0;
-
-		sink.beginArray();
-		if (total_len0 > 0) {
-		    while (true) {
-			try {
-			    ServiceRecord item1 = this.elements.get(idx0);
-
-			    item1.encodeValue(coder, sink);
-			
-		    } catch (Exception e) {
-			EncoderException ee = EncoderException.wrapException(e);
-			ee.appendElementContext(null, "ServiceRecord", idx0);
-			throw ee;
-		    }
-		    idx0++;
-		    if (idx0 == total_len0) break;
-		    sink.writeSeparator();
-		}
-	    }
-	    sink.endArray();
-
-	}
-
-	    /**
-	     * Implements JSON value decoder for the type (reserved for internal use).
-	     * This method is reserved for internal use and must not be invoked from the application code.
-	     */
-	    public ServiceRecords decodeValue(JsonCoder coder, JsonReader source)
-		throws IOException, DecoderException
-	{
-	    int total_len0 = 0;
-	    int idx0 = 0;
-
-	    if (this.elements != null)
-		this.elements.clear();
-	    else
-		this.elements = new java.util.ArrayList<ServiceRecord>(total_len0);
-	    coder.decodeArray(source);
-	    if (coder.hasMoreElements(source, true))
-		do {
-		    try {
-			ServiceRecord item1 = new ServiceRecord();
-
-			this.elements.add(item1);
-			item1.decodeValue(coder, source);
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendElementContext(null, "ServiceRecord", idx0);
-			throw de;
-		    }
-		    ++idx0;
-		} while (coder.hasMoreElements(source, false));
-		return this;
-	    }
-
-	    /**
 	     * Compare 'this' object to another object to see if their contents are the same.
 	     */
 	    public boolean abstractEqualTo(AbstractData that)
@@ -475,36 +408,6 @@ public class ObjectDiscoveryData extends Sequence implements BEREncodable, BERDe
 	    }
 	} // End class definition for ServiceRecords
 
-	/**
-	 * Hashtable for tags (reserved for internal use).
-	 * This class is reserved for internal use and must not be used in the application code.
-	 */
-	public static enum __Tag
-	{
-	    __countRecords("countRecords"),
-	    __serviceRecords("serviceRecords"),
-	    _null_("_null_");
-	    private String tag;
-	    private static java.util.HashMap<String, __Tag> map =
-		new java.util.HashMap<String, __Tag>(3);
-	    private __Tag(String tag) {
-		this.tag = tag;
-	    }
-	    private String getTag() {
-		return tag;
-	    }
-	    /**
-	     * This method is reserved for internal use and must not be invoked from the application code.
-	     */
-	    public static __Tag getTagSub(String tag) {
-		return map.get(tag);
-	    }
-	    static {
-		for (__Tag t:values())
-		    map.put(t.getTag(), t);
-	    }
-	}
-	
 	/**
 	 * Implements PER value encoder for the type (reserved for internal use).
 	 * This method is reserved for internal use and must not be invoked from the application code.
@@ -578,103 +481,6 @@ public class ObjectDiscoveryData extends Sequence implements BEREncodable, BERDe
 	}
 
 	/**
-	 * Implements JSON value encoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public void encodeValue(JsonCoder coder, JsonWriter sink)
-		throws IOException, EncoderException
-	{
-	    sink.beginObject();
-	    // Encode field 'countRecords'
-	    try {
-		com.bah.ode.asn.oss.dsrc.Count item1 = this.countRecords;
-
-		{
-		    sink.encodeKey("countRecords");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } catch (Exception e) {
-		EncoderException ee = EncoderException.wrapException(e);
-		ee.appendFieldContext("countRecords", "Count");
-		throw ee;
-	    }
-	    // Encode field 'serviceRecords'
-	    try {
-		ServiceRecords item1 = this.serviceRecords;
-
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("serviceRecords");
-		    item1.encodeValue(coder, sink);
-		}
-	    } catch (Exception e) {
-		EncoderException ee = EncoderException.wrapException(e);
-		ee.appendFieldContext("serviceRecords", "SEQUENCE OF");
-		throw ee;
-	    }
-	    sink.endObject();
-
-	}
-
-	/**
-	 * Implements JSON value decoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public ServiceInfo decodeValue(JsonCoder coder, JsonReader source)
-		throws IOException, DecoderException
-	{
-	    boolean[] present0 = new boolean[3];
-
-	    coder.decodeObject(source);
-	    if (coder.hasMoreProperties(source, true))
-		do {
-		    String tag0 = coder.nextProperty(source);
-		    ServiceInfo.__Tag t_tag0 = ServiceInfo.__Tag.getTagSub(tag0);
-		    if (t_tag0 == null) 
-			t_tag0 = ServiceInfo.__Tag._null_;
-		    switch (t_tag0) {
-			case __countRecords:
-			// Decode field 'countRecords'
-			try {
-			    if (present0[0])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.countRecords == null)
-				this.countRecords = new com.bah.ode.asn.oss.dsrc.Count();
-			    this.countRecords.setValue(coder.decodeInteger(source));
-			    present0[0] = true;
-			} catch (Exception e) {
-			    DecoderException de = DecoderException.wrapException(e);
-			    de.appendFieldContext("countRecords", "Count");
-			    throw de;
-			}
-			break;
-			case __serviceRecords:
-			// Decode field 'serviceRecords'
-			try {
-			    if (present0[1])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.serviceRecords == null)
-				this.serviceRecords = new ServiceRecords();
-			    this.serviceRecords.decodeValue(coder, source);
-			    present0[1] = true;
-			} catch (Exception e) {
-			    DecoderException de = DecoderException.wrapException(e);
-			    de.appendFieldContext("serviceRecords", "SEQUENCE OF");
-			    throw de;
-			}
-			break;
-			default:
-			    throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
-		    }
-		} while (coder.hasMoreProperties(source, false));
-	    if (!present0[0])
-		throw new DecoderException(ExceptionDescriptor._field_omit, ": 'countRecords'");
-	    if (!present0[1])
-		throw new DecoderException(ExceptionDescriptor._field_omit, ": 'serviceRecords'");
-	    return this;
-	}
-
-	/**
 	 * Compare 'this' object to another object to see if their contents are the same.
 	 */
 	public boolean abstractEqualTo(AbstractData that)
@@ -716,39 +522,6 @@ public class ObjectDiscoveryData extends Sequence implements BEREncodable, BERDe
 	}
     } // End class definition for ServiceInfo
 
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__dialogID("dialogID"),
-	__seqID("seqID"),
-	__groupID("groupID"),
-	__requestID("requestID"),
-	__serviceInfo("serviceInfo"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(6);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
-    
     /**
      * Encode the PDU using BER (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
@@ -1287,246 +1060,6 @@ public class ObjectDiscoveryData extends Sequence implements BEREncodable, BERDe
     }
 
     /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	sink.beginObject();
-	// Encode field 'dialogID'
-	try {
-	    SemiDialogID item1 = this.dialogID;
-
-	    {
-		sink.encodeKey("dialogID");
-		if (item1.isUnknownEnumerator()) {
-		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
-		} else 
-		    sink.writeString(item1.name());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("dialogID", "SemiDialogID");
-	    throw ee;
-	}
-	// Encode field 'seqID'
-	try {
-	    SemiSequenceID item1 = this.seqID;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("seqID");
-		if (item1.isUnknownEnumerator()) {
-		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
-		} else 
-		    sink.writeString(item1.name());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("seqID", "SemiSequenceID");
-	    throw ee;
-	}
-	// Encode field 'groupID'
-	try {
-	    GroupID item1 = this.groupID;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("groupID");
-		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("groupID", "GroupID");
-	    throw ee;
-	}
-	// Encode field 'requestID'
-	try {
-	    com.bah.ode.asn.oss.dsrc.TemporaryID item1 = this.requestID;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("requestID");
-		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("requestID", "TemporaryID");
-	    throw ee;
-	}
-	// Encode field 'serviceInfo'
-	try {
-	    ServiceInfo item1 = this.serviceInfo;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("serviceInfo");
-		item1.encodeValue(coder, sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("serviceInfo", "SEQUENCE");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Encode the PDU using JSON (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encode(JsonCoder coder, JsonWriter sink)
-	    throws EncoderException
-    {
-	try {
-	    this.encodeValue(coder, sink);
-
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext(null, "ObjectDiscoveryData");
-	    throw ee;
-	}
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public ObjectDiscoveryData decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[6];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		ObjectDiscoveryData.__Tag t_tag0 = ObjectDiscoveryData.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = ObjectDiscoveryData.__Tag._null_;
-		switch (t_tag0) {
-		    case __dialogID:
-		    // Decode field 'dialogID'
-		    try {
-			String content1 = coder.decodeString(source);
-			int idx1;
-			SemiDialogID temp1;
-
-			if (present0[0])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			idx1 = coder.resolveName(SemiDialogID.cConstantNameList, content1);
-			if (idx1 < 0 )
-			    temp1 = SemiDialogID.unknownEnumerator();
-			else
-			    temp1 = SemiDialogID.cNamedNumbers[idx1];
-			this.dialogID = temp1;
-			present0[0] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("dialogID", "SemiDialogID");
-			throw de;
-		    }
-		    break;
-		    case __seqID:
-		    // Decode field 'seqID'
-		    try {
-			String content1 = coder.decodeString(source);
-			int idx1;
-			SemiSequenceID temp1;
-
-			if (present0[1])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			idx1 = coder.resolveName(SemiSequenceID.cConstantNameList, content1);
-			if (idx1 < 0 )
-			    temp1 = SemiSequenceID.unknownEnumerator();
-			else
-			    temp1 = SemiSequenceID.cNamedNumbers[idx1];
-			this.seqID = temp1;
-			present0[1] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("seqID", "SemiSequenceID");
-			throw de;
-		    }
-		    break;
-		    case __groupID:
-		    // Decode field 'groupID'
-		    try {
-			if (present0[2])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			this.groupID = new GroupID(coder.decodeOctetString(source));
-			present0[2] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("groupID", "GroupID");
-			throw de;
-		    }
-		    break;
-		    case __requestID:
-		    // Decode field 'requestID'
-		    try {
-			if (present0[3])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			this.requestID = new com.bah.ode.asn.oss.dsrc.TemporaryID(coder.decodeOctetString(source));
-			present0[3] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("requestID", "TemporaryID");
-			throw de;
-		    }
-		    break;
-		    case __serviceInfo:
-		    // Decode field 'serviceInfo'
-		    try {
-			if (present0[4])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.serviceInfo == null)
-			    this.serviceInfo = new ServiceInfo();
-			this.serviceInfo.decodeValue(coder, source);
-			present0[4] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("serviceInfo", "SEQUENCE");
-			throw de;
-		    }
-		    break;
-		    default:
-			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'dialogID'");
-	if (!present0[1])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'seqID'");
-	if (!present0[2])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'groupID'");
-	if (!present0[3])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'requestID'");
-	if (!present0[4])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'serviceInfo'");
-	return this;
-    }
-
-    /**
-     * Decode the PDU using JSON (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public AbstractData decode(JsonCoder coder, JsonReader source)
-	    throws DecoderException
-    {
-	try {
-	    this.decodeValue(coder, source);
-	    return this;
-	} catch (Exception e) {
-	    DecoderException de = DecoderException.wrapException(e);
-	    de.appendFieldContext(null, "ObjectDiscoveryData");
-	    throw de;
-	}
-    }
-
-    /**
      * Implements value printer for the type (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
      */
@@ -1626,7 +1159,7 @@ public class ObjectDiscoveryData extends Sequence implements BEREncodable, BERDe
     }
 
     /**
-     * Convert the PDU value to a string.
+     * Convert the PDU value to a string. If the conversion is aborted due an error the method returns null.
      */
     public String toString()
     {

@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -87,61 +84,45 @@ public final class BrakeAppliedPressure extends Enumerated {
 	public static final long maxPressure = 15;
     }
     // Named list definitions.
-    public static final BrakeAppliedPressure unavailable =
-	new BrakeAppliedPressure();
-    public static final BrakeAppliedPressure minPressure =
-	new BrakeAppliedPressure(1);
-    public static final BrakeAppliedPressure bkLvl_2 =
-	new BrakeAppliedPressure(2);
-    public static final BrakeAppliedPressure bkLvl_3 =
-	new BrakeAppliedPressure(3);
-    public static final BrakeAppliedPressure bkLvl_4 =
-	new BrakeAppliedPressure(4);
-    public static final BrakeAppliedPressure bkLvl_5 =
-	new BrakeAppliedPressure(5);
-    public static final BrakeAppliedPressure bkLvl_6 =
-	new BrakeAppliedPressure(6);
-    public static final BrakeAppliedPressure bkLvl_7 =
-	new BrakeAppliedPressure(7);
-    public static final BrakeAppliedPressure bkLvl_8 =
-	new BrakeAppliedPressure(8);
-    public static final BrakeAppliedPressure bkLvl_9 =
-	new BrakeAppliedPressure(9);
-    public static final BrakeAppliedPressure bkLvl_10 =
-	new BrakeAppliedPressure(10);
-    public static final BrakeAppliedPressure bkLvl_11 =
-	new BrakeAppliedPressure(11);
-    public static final BrakeAppliedPressure bkLvl_12 =
-	new BrakeAppliedPressure(12);
-    public static final BrakeAppliedPressure bkLvl_13 =
-	new BrakeAppliedPressure(13);
-    public static final BrakeAppliedPressure bkLvl_14 =
-	new BrakeAppliedPressure(14);
-    public static final BrakeAppliedPressure maxPressure =
-	new BrakeAppliedPressure(15);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static BrakeAppliedPressure cNamedNumbers[] = {
-	 unavailable, 
-	 minPressure, 
-	 bkLvl_2, 
-	 bkLvl_3, 
-	 bkLvl_4, 
-	 bkLvl_5, 
-	 bkLvl_6, 
-	 bkLvl_7, 
-	 bkLvl_8, 
-	 bkLvl_9, 
-	 bkLvl_10, 
-	 bkLvl_11, 
-	 bkLvl_12, 
-	 bkLvl_13, 
-	 bkLvl_14, 
-	 maxPressure
+	new BrakeAppliedPressure(), 
+	new BrakeAppliedPressure(1), 
+	new BrakeAppliedPressure(2), 
+	new BrakeAppliedPressure(3), 
+	new BrakeAppliedPressure(4), 
+	new BrakeAppliedPressure(5), 
+	new BrakeAppliedPressure(6), 
+	new BrakeAppliedPressure(7), 
+	new BrakeAppliedPressure(8), 
+	new BrakeAppliedPressure(9), 
+	new BrakeAppliedPressure(10), 
+	new BrakeAppliedPressure(11), 
+	new BrakeAppliedPressure(12), 
+	new BrakeAppliedPressure(13), 
+	new BrakeAppliedPressure(14), 
+	new BrakeAppliedPressure(15)
     };
+    public static final BrakeAppliedPressure unavailable = cNamedNumbers[0];
+    public static final BrakeAppliedPressure minPressure = cNamedNumbers[1];
+    public static final BrakeAppliedPressure bkLvl_2 = cNamedNumbers[2];
+    public static final BrakeAppliedPressure bkLvl_3 = cNamedNumbers[3];
+    public static final BrakeAppliedPressure bkLvl_4 = cNamedNumbers[4];
+    public static final BrakeAppliedPressure bkLvl_5 = cNamedNumbers[5];
+    public static final BrakeAppliedPressure bkLvl_6 = cNamedNumbers[6];
+    public static final BrakeAppliedPressure bkLvl_7 = cNamedNumbers[7];
+    public static final BrakeAppliedPressure bkLvl_8 = cNamedNumbers[8];
+    public static final BrakeAppliedPressure bkLvl_9 = cNamedNumbers[9];
+    public static final BrakeAppliedPressure bkLvl_10 = cNamedNumbers[10];
+    public static final BrakeAppliedPressure bkLvl_11 = cNamedNumbers[11];
+    public static final BrakeAppliedPressure bkLvl_12 = cNamedNumbers[12];
+    public static final BrakeAppliedPressure bkLvl_13 = cNamedNumbers[13];
+    public static final BrakeAppliedPressure bkLvl_14 = cNamedNumbers[14];
+    public static final BrakeAppliedPressure maxPressure = cNamedNumbers[15];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -165,6 +146,7 @@ public final class BrakeAppliedPressure extends Enumerated {
 	"bkLvl-14",
 	"maxPressure"
     };
+    
     
     /**
      * Returns the array of enumerators (reserved for internal use).
@@ -196,8 +178,12 @@ public final class BrakeAppliedPressure extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static BrakeAppliedPressure valueOf(long value)
     {
 	int inx = indexOfValue(value);

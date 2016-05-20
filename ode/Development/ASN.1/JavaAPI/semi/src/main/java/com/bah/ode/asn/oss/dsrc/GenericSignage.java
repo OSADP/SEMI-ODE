@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -203,36 +200,6 @@ public class GenericSignage extends SequenceOf {
 		IA5StringPAInfo.paInfo;
 	    
 	    /**
-	     * Hashtable for tags (reserved for internal use).
-	     * This class is reserved for internal use and must not be used in the application code.
-	     */
-	    public static enum __Tag
-	    {
-		__itis("itis"),
-		__text("text"),
-		_null_("_null_");
-		private String tag;
-		private static java.util.HashMap<String, __Tag> map =
-		    new java.util.HashMap<String, __Tag>(3);
-		private __Tag(String tag) {
-		    this.tag = tag;
-		}
-		private String getTag() {
-		    return tag;
-		}
-		/**
-		 * This method is reserved for internal use and must not be invoked from the application code.
-		 */
-		public static __Tag getTagSub(String tag) {
-		    return map.get(tag);
-		}
-		static {
-		    for (__Tag t:values())
-			map.put(t.getTag(), t);
-		}
-	    }
-	    
-	    /**
 	     * Implements PER value encoder for the type (reserved for internal use).
 	     * This method is reserved for internal use and must not be invoked from the application code.
 	     */
@@ -332,102 +299,6 @@ public class GenericSignage extends SequenceOf {
 	    }
 
 	    /**
-	     * Implements JSON value encoder for the type (reserved for internal use).
-	     * This method is reserved for internal use and must not be invoked from the application code.
-	     */
-	    public void encodeValue(JsonCoder coder, JsonWriter sink)
-		    throws IOException, EncoderException
-	    {
-		int idx0 = this.mChosenFlag;
-
-		sink.beginObject();
-		switch (idx0)
-		{
-		case itis_chosen:
-		    // Encode alternative 'itis'
-		    try {
-			com.bah.ode.asn.oss.itis.ITIScodes item1 = (com.bah.ode.asn.oss.itis.ITIScodes)this.mChosenValue;
-
-			sink.encodeKey("itis");
-			coder.encodeInteger(item1.longValue(), sink);
-		    } catch (Exception e) {
-			EncoderException ee = EncoderException.wrapException(e);
-			ee.appendElementContext("itis", "ITIScodes", 0);
-			throw ee;
-		    }
-		    break;
-		case text_chosen:
-		    // Encode alternative 'text'
-		    try {
-			IA5String item1 = (IA5String)this.mChosenValue;
-
-			sink.encodeKey("text");
-			coder.encodeString(item1.stringValue(), sink);
-		    } catch (Exception e) {
-			EncoderException ee = EncoderException.wrapException(e);
-			ee.appendElementContext("text", "IA5String", 0);
-			throw ee;
-		    }
-		    break;
-		default:
-		    throw new EncoderException(com.oss.util.ExceptionDescriptor._bad_choice, null, idx0);
-		}
-		sink.endObject();
-
-	    }
-
-	    /**
-	     * Implements JSON value decoder for the type (reserved for internal use).
-	     * This method is reserved for internal use and must not be invoked from the application code.
-	     */
-	    public Item decodeValue(JsonCoder coder, JsonReader source)
-		    throws IOException, DecoderException
-	    {
-		coder.decodeObject(source);
-		String tag0 = coder.nextProperty(source);
-		Item.__Tag t_tag0 = Item.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = Item.__Tag._null_;
-		switch (t_tag0) {
-		    case __itis:
-			// Decode alternative 'itis'
-			try {
-			    com.bah.ode.asn.oss.itis.ITIScodes item1 = new com.bah.ode.asn.oss.itis.ITIScodes();
-
-			    // Decode alternative 'itis'
-			    item1.setValue(coder.decodeInteger(source));
-			    this.mChosenValue = item1;
-			    this.mChosenFlag = itis_chosen;
-			} catch (Exception e) {
-			    DecoderException de = DecoderException.wrapException(e);
-			    de.appendElementContext("itis", "ITIScodes", 0);
-			    throw de;
-			}
-			break;
-		    case __text:
-			// Decode alternative 'text'
-			try {
-			    IA5String item1 = null;
-
-			    // Decode alternative 'text'
-			    item1 = new IA5String(coder.decodeString(source));
-			    this.mChosenValue = item1;
-			    this.mChosenFlag = text_chosen;
-			} catch (Exception e) {
-			    DecoderException de = DecoderException.wrapException(e);
-			    de.appendElementContext("text", "IA5String", 0);
-			    throw de;
-			}
-			break;
-		    default:
-			throw new DecoderException(com.oss.util.ExceptionDescriptor._unknown_field, null, tag0);
-		}
-		if (coder.hasMoreProperties(source, false))
-		    throw new DecoderException(com.oss.util.ExceptionDescriptor._json_unexpected_token, null, ": expecting '}'");
-		return this;
-	    }
-
-	    /**
 	     * Clone 'this' object.
 	     */
 	    public Item clone() {
@@ -478,67 +349,6 @@ public class GenericSignage extends SequenceOf {
 		throw de;
 	    }
 	    return data;
-	}
-
-	/**
-	 * Implements JSON value encoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public void encodeValue(JsonCoder coder, JsonWriter sink)
-		throws IOException, EncoderException
-	{
-	    sink.beginObject();
-	    // Encode field 'item'
-	    try {
-		Item item1 = this.item;
-
-		{
-		    sink.encodeKey("item");
-		    item1.encodeValue(coder, sink);
-		}
-	    } catch (Exception e) {
-		EncoderException ee = EncoderException.wrapException(e);
-		ee.appendFieldContext("item", "CHOICE");
-		throw ee;
-	    }
-	    sink.endObject();
-
-	}
-
-	/**
-	 * Implements JSON value decoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public Sequence_ decodeValue(JsonCoder coder, JsonReader source)
-		throws IOException, DecoderException
-	{
-	    boolean[] present0 = new boolean[2];
-
-	    coder.decodeObject(source);
-	    if (coder.hasMoreProperties(source, true))
-		do {
-		    String tag0 = coder.nextProperty(source);
-		    if (tag0.equals("item")) {
-			// Decode field 'item'
-			try {
-			    if (present0[0])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.item == null)
-				this.item = new Item();
-			    this.item.decodeValue(coder, source);
-			    present0[0] = true;
-			} catch (Exception e) {
-			    DecoderException de = DecoderException.wrapException(e);
-			    de.appendFieldContext("item", "CHOICE");
-			    throw de;
-			}
-		    } else {
-			    throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
-		    }
-		} while (coder.hasMoreProperties(source, false));
-	    if (!present0[0])
-		throw new DecoderException(ExceptionDescriptor._field_omit, ": 'item'");
-	    return this;
 	}
 
 	/**
@@ -935,70 +745,6 @@ public class GenericSignage extends SequenceOf {
 	if (total_len0 < 1)
 	    throw new DecoderException(com.oss.util.ExceptionDescriptor._sizeConstraint, null, "length = " + total_len0);
 	return data;
-    }
-
-    /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	int total_len0 = this.elements.size();
-	int idx0 = 0;
-
-	sink.beginArray();
-	if (total_len0 > 0) {
-	    while (true) {
-		try {
-		    Sequence_ item1 = this.elements.get(idx0);
-
-		    item1.encodeValue(coder, sink);
-		
-	    } catch (Exception e) {
-		EncoderException ee = EncoderException.wrapException(e);
-		ee.appendElementContext(null, "SEQUENCE", idx0);
-		throw ee;
-	    }
-	    idx0++;
-	    if (idx0 == total_len0) break;
-	    sink.writeSeparator();
-	}
-    }
-    sink.endArray();
-
-}
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public GenericSignage decodeValue(JsonCoder coder, JsonReader source)
-	throws IOException, DecoderException
-{
-    int total_len0 = 0;
-    int idx0 = 0;
-
-    if (this.elements != null)
-	this.elements.clear();
-    else
-	this.elements = new java.util.ArrayList<Sequence_>(total_len0);
-    coder.decodeArray(source);
-    if (coder.hasMoreElements(source, true))
-	do {
-	    try {
-		Sequence_ item1 = new Sequence_();
-
-		this.elements.add(item1);
-		item1.decodeValue(coder, source);
-	    } catch (Exception e) {
-		DecoderException de = DecoderException.wrapException(e);
-		de.appendElementContext(null, "SEQUENCE", idx0);
-		throw de;
-	    }
-	    ++idx0;
-	} while (coder.hasMoreElements(source, false));
-	return this;
     }
 
     /**

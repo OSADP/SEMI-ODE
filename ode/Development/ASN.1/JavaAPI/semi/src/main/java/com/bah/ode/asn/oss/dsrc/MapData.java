@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -373,70 +370,6 @@ public class MapData extends Sequence {
 	}
 
 	/**
-	 * Implements JSON value encoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public void encodeValue(JsonCoder coder, JsonWriter sink)
-		throws IOException, EncoderException
-	{
-	    int total_len0 = this.elements.size();
-	    int idx0 = 0;
-
-	    sink.beginArray();
-	    if (total_len0 > 0) {
-		while (true) {
-		    try {
-			Intersection_ item1 = this.elements.get(idx0);
-
-			item1.encodeValue(coder, sink);
-		    
-		} catch (Exception e) {
-		    EncoderException ee = EncoderException.wrapException(e);
-		    ee.appendElementContext(null, "Intersection", idx0);
-		    throw ee;
-		}
-		idx0++;
-		if (idx0 == total_len0) break;
-		sink.writeSeparator();
-	    }
-	}
-	sink.endArray();
-
-    }
-
-	/**
-	 * Implements JSON value decoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public Intersections_ decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	int total_len0 = 0;
-	int idx0 = 0;
-
-	if (this.elements != null)
-	    this.elements.clear();
-	else
-	    this.elements = new java.util.ArrayList<Intersection_>(total_len0);
-	coder.decodeArray(source);
-	if (coder.hasMoreElements(source, true))
-	    do {
-		try {
-		    Intersection_ item1 = new Intersection_();
-
-		    this.elements.add(item1);
-		    item1.decodeValue(coder, source);
-		} catch (Exception e) {
-		    DecoderException de = DecoderException.wrapException(e);
-		    de.appendElementContext(null, "Intersection", idx0);
-		    throw de;
-		}
-		++idx0;
-	    } while (coder.hasMoreElements(source, false));
-	    return this;
-	}
-
-	/**
 	 * Compare 'this' object to another object to see if their contents are the same.
 	 */
 	public boolean abstractEqualTo(AbstractData that)
@@ -532,42 +465,6 @@ public class MapData extends Sequence {
      */
     public static final EPAInfo _cEPAInfo_name = 
 	com.bah.ode.asn.oss.dsrc.DescriptiveName._cEPAInfo_;
-    
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__msgID("msgID"),
-	__msgCnt("msgCnt"),
-	__name("name"),
-	__layerType("layerType"),
-	__layerID("layerID"),
-	__intersections("intersections"),
-	__dataParameters("dataParameters"),
-	__crc("crc"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(9);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
     
     /**
      * Implements PER value encoder for the type (reserved for internal use).
@@ -899,341 +796,6 @@ public class MapData extends Sequence {
 	    }
 	}
 	return data;
-    }
-
-    /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	sink.beginObject();
-	// Encode field 'msgID'
-	try {
-	    DSRCmsgID item1 = this.msgID;
-
-	    {
-		sink.encodeKey("msgID");
-		if (item1.isUnknownEnumerator()) {
-		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
-		} else 
-		    sink.writeString(item1.name());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("msgID", "DSRCmsgID");
-	    throw ee;
-	}
-	// Encode field 'msgCnt'
-	try {
-	    MsgCount item1 = this.msgCnt;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("msgCnt");
-		coder.encodeInteger(item1.longValue(), sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("msgCnt", "MsgCount");
-	    throw ee;
-	}
-	// Encode field 'name'
-	try {
-	    DescriptiveName item1 = this.name;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("name");
-		    coder.encodeString(item1.stringValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "name");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("name", "DescriptiveName");
-	    throw ee;
-	}
-	// Encode field 'layerType'
-	try {
-	    LayerType item1 = this.layerType;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("layerType");
-		    if (item1.isUnknownEnumerator()) {
-			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
-		    } else 
-			sink.writeString(item1.name());
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "layerType");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("layerType", "LayerType");
-	    throw ee;
-	}
-	// Encode field 'layerID'
-	try {
-	    LayerID item1 = this.layerID;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("layerID");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "layerID");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("layerID", "LayerID");
-	    throw ee;
-	}
-	// Encode field 'intersections'
-	try {
-	    Intersections_ item1 = this.intersections;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("intersections");
-		    item1.encodeValue(coder, sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "intersections");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("intersections", "SEQUENCE OF");
-	    throw ee;
-	}
-	// Encode field 'dataParameters'
-	try {
-	    DataParameters item1 = this.dataParameters;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("dataParameters");
-		    item1.encodeValue(coder, sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "dataParameters");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("dataParameters", "DataParameters");
-	    throw ee;
-	}
-	// Encode field 'crc'
-	try {
-	    MsgCRC item1 = this.crc;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("crc");
-		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("crc", "MsgCRC");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public MapData decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[9];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		MapData.__Tag t_tag0 = MapData.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = MapData.__Tag._null_;
-		switch (t_tag0) {
-		    case __msgID:
-		    // Decode field 'msgID'
-		    try {
-			String content1 = coder.decodeString(source);
-			int idx1;
-			DSRCmsgID temp1;
-
-			if (present0[0])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			idx1 = coder.resolveName(DSRCmsgID.cConstantNameList, content1);
-			if (idx1 < 0 )
-			    temp1 = DSRCmsgID.unknownEnumerator();
-			else
-			    temp1 = DSRCmsgID.cNamedNumbers[idx1];
-			this.msgID = temp1;
-			present0[0] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("msgID", "DSRCmsgID");
-			throw de;
-		    }
-		    break;
-		    case __msgCnt:
-		    // Decode field 'msgCnt'
-		    try {
-			if (present0[1])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.msgCnt == null)
-			    this.msgCnt = new MsgCount();
-			this.msgCnt.setValue(coder.decodeInteger(source));
-			present0[1] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("msgCnt", "MsgCount");
-			throw de;
-		    }
-		    break;
-		    case __name:
-		    // Decode field 'name'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[2])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    this.name = new DescriptiveName(coder.decodeString(source));
-			    present0[2] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("name", "DescriptiveName");
-			throw de;
-		    }
-		    break;
-		    case __layerType:
-		    // Decode field 'layerType'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    String content1 = coder.decodeString(source);
-			    int idx1;
-			    LayerType temp1;
-
-			    if (present0[3])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    idx1 = coder.resolveName(LayerType.cConstantNameList, content1);
-			    if (idx1 < 0 )
-				temp1 = LayerType.unknownEnumerator();
-			    else
-				temp1 = LayerType.cNamedNumbers[idx1];
-			    this.layerType = temp1;
-			    present0[3] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("layerType", "LayerType");
-			throw de;
-		    }
-		    break;
-		    case __layerID:
-		    // Decode field 'layerID'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[4])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.layerID == null)
-				this.layerID = new LayerID();
-			    this.layerID.setValue(coder.decodeInteger(source));
-			    present0[4] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("layerID", "LayerID");
-			throw de;
-		    }
-		    break;
-		    case __intersections:
-		    // Decode field 'intersections'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[5])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.intersections == null)
-				this.intersections = new Intersections_();
-			    this.intersections.decodeValue(coder, source);
-			    present0[5] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("intersections", "SEQUENCE OF");
-			throw de;
-		    }
-		    break;
-		    case __dataParameters:
-		    // Decode field 'dataParameters'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[6])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.dataParameters == null)
-				this.dataParameters = new DataParameters();
-			    this.dataParameters.decodeValue(coder, source);
-			    present0[6] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("dataParameters", "DataParameters");
-			throw de;
-		    }
-		    break;
-		    case __crc:
-		    // Decode field 'crc'
-		    try {
-			if (present0[7])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			this.crc = new MsgCRC(coder.decodeOctetString(source));
-			present0[7] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("crc", "MsgCRC");
-			throw de;
-		    }
-		    break;
-		    default:
-			coder.skipValue(source);
-			break;
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'msgID'");
-	if (!present0[1])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'msgCnt'");
-	if (!present0[2])
-	    this.name = null;
-	if (!present0[3])
-	    this.layerType = null;
-	if (!present0[4])
-	    this.layerID = null;
-	if (!present0[5])
-	    this.intersections = null;
-	if (!present0[6])
-	    this.dataParameters = null;
-	if (!present0[7])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'crc'");
-	return this;
     }
 
     /**

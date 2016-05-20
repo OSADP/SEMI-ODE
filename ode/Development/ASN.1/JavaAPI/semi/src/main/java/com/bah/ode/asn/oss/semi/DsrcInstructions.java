@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -126,37 +123,6 @@ public class DsrcInstructions extends Sequence {
 	this.biTxInterval = biTxInterval;
     }
     
-    
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__biTxMode("biTxMode"),
-	__biTxChannel("biTxChannel"),
-	__biTxInterval("biTxInterval"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(4);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
     
     /**
      * Implements PER value encoder for the type (reserved for internal use).
@@ -260,148 +226,6 @@ public class DsrcInstructions extends Sequence {
 	    throw de;
 	}
 	return data;
-    }
-
-    /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	sink.beginObject();
-	// Encode field 'biTxMode'
-	try {
-	    TxMode item1 = this.biTxMode;
-
-	    {
-		sink.encodeKey("biTxMode");
-		sink.writeString(item1.name());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("biTxMode", "TxMode");
-	    throw ee;
-	}
-	// Encode field 'biTxChannel'
-	try {
-	    TxChannel item1 = this.biTxChannel;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("biTxChannel");
-		sink.writeString(item1.name());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("biTxChannel", "TxChannel");
-	    throw ee;
-	}
-	// Encode field 'biTxInterval'
-	try {
-	    INTEGER item1 = this.biTxInterval;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("biTxInterval");
-		coder.encodeInteger(item1.longValue(), sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("biTxInterval", "INTEGER");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public DsrcInstructions decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[4];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		DsrcInstructions.__Tag t_tag0 = DsrcInstructions.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = DsrcInstructions.__Tag._null_;
-		switch (t_tag0) {
-		    case __biTxMode:
-		    // Decode field 'biTxMode'
-		    try {
-			String content1 = coder.decodeString(source);
-			int idx1;
-			TxMode temp1;
-
-			if (present0[0])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			idx1 = coder.resolveName(TxMode.cConstantNameList, content1);
-			if (idx1 < 0 )
-			    throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
-			else
-			    temp1 = TxMode.cNamedNumbers[idx1];
-			this.biTxMode = temp1;
-			present0[0] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("biTxMode", "TxMode");
-			throw de;
-		    }
-		    break;
-		    case __biTxChannel:
-		    // Decode field 'biTxChannel'
-		    try {
-			String content1 = coder.decodeString(source);
-			int idx1;
-			TxChannel temp1;
-
-			if (present0[1])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			idx1 = coder.resolveName(TxChannel.cConstantNameList, content1);
-			if (idx1 < 0 )
-			    throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
-			else
-			    temp1 = TxChannel.cNamedNumbers[idx1];
-			this.biTxChannel = temp1;
-			present0[1] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("biTxChannel", "TxChannel");
-			throw de;
-		    }
-		    break;
-		    case __biTxInterval:
-		    // Decode field 'biTxInterval'
-		    try {
-			if (present0[2])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.biTxInterval == null)
-			    this.biTxInterval = new INTEGER();
-			this.biTxInterval.setValue(coder.decodeInteger(source));
-			present0[2] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("biTxInterval", "INTEGER");
-			throw de;
-		    }
-		    break;
-		    default:
-			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'biTxMode'");
-	if (!present0[1])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'biTxChannel'");
-	if (!present0[2])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'biTxInterval'");
-	return this;
     }
 
     /**

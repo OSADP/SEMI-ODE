@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -107,118 +104,83 @@ public final class VehicleGroupAffected extends Enumerated {
 	
     }
     // Named list definitions.
-    public static final VehicleGroupAffected all_vehicles =
-	new VehicleGroupAffected();
-    public static final VehicleGroupAffected bicycles =
-	new VehicleGroupAffected(9218);
-    public static final VehicleGroupAffected motorcycles =
-	new VehicleGroupAffected(9219);
-    public static final VehicleGroupAffected cars =
-	new VehicleGroupAffected(9220);
-    public static final VehicleGroupAffected light_vehicles =
-	new VehicleGroupAffected(9221);
-    public static final VehicleGroupAffected cars_and_light_vehicles =
-	new VehicleGroupAffected(9222);
-    public static final VehicleGroupAffected cars_with_trailers =
-	new VehicleGroupAffected(9223);
-    public static final VehicleGroupAffected cars_with_recreational_trailers =
-	new VehicleGroupAffected(9224);
-    public static final VehicleGroupAffected vehicles_with_trailers =
-	new VehicleGroupAffected(9225);
-    public static final VehicleGroupAffected heavy_vehicles =
-	new VehicleGroupAffected(9226);
-    public static final VehicleGroupAffected trucks =
-	new VehicleGroupAffected(9227);
-    public static final VehicleGroupAffected buses =
-	new VehicleGroupAffected(9228);
-    public static final VehicleGroupAffected articulated_buses =
-	new VehicleGroupAffected(9229);
-    public static final VehicleGroupAffected school_buses =
-	new VehicleGroupAffected(9230);
-    public static final VehicleGroupAffected vehicles_with_semi_trailers =
-	new VehicleGroupAffected(9231);
-    public static final VehicleGroupAffected vehicles_with_double_trailers =
-	new VehicleGroupAffected(9232);
-    public static final VehicleGroupAffected high_profile_vehicles =
-	new VehicleGroupAffected(9233);
-    public static final VehicleGroupAffected wide_vehicles =
-	new VehicleGroupAffected(9234);
-    public static final VehicleGroupAffected long_vehicles =
-	new VehicleGroupAffected(9235);
-    public static final VehicleGroupAffected hazardous_loads =
-	new VehicleGroupAffected(9236);
-    public static final VehicleGroupAffected exceptional_loads =
-	new VehicleGroupAffected(9237);
-    public static final VehicleGroupAffected abnormal_loads =
-	new VehicleGroupAffected(9238);
-    public static final VehicleGroupAffected convoys =
-	new VehicleGroupAffected(9239);
-    public static final VehicleGroupAffected maintenance_vehicles =
-	new VehicleGroupAffected(9240);
-    public static final VehicleGroupAffected delivery_vehicles =
-	new VehicleGroupAffected(9241);
-    public static final VehicleGroupAffected vehicles_with_even_numbered_license_plates =
-	new VehicleGroupAffected(9242);
-    public static final VehicleGroupAffected vehicles_with_odd_numbered_license_plates =
-	new VehicleGroupAffected(9243);
-    public static final VehicleGroupAffected vehicles_with_parking_permits =
-	new VehicleGroupAffected(9244);
-    public static final VehicleGroupAffected vehicles_with_catalytic_converters =
-	new VehicleGroupAffected(9245);
-    public static final VehicleGroupAffected vehicles_without_catalytic_converters =
-	new VehicleGroupAffected(9246);
-    public static final VehicleGroupAffected gas_powered_vehicles =
-	new VehicleGroupAffected(9247);
-    public static final VehicleGroupAffected diesel_powered_vehicles =
-	new VehicleGroupAffected(9248);
-    public static final VehicleGroupAffected lPG_vehicles =
-	new VehicleGroupAffected(9249);
-    public static final VehicleGroupAffected military_convoys =
-	new VehicleGroupAffected(9250);
-    public static final VehicleGroupAffected military_vehicles =
-	new VehicleGroupAffected(9251);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static VehicleGroupAffected cNamedNumbers[] = {
-	 all_vehicles, 
-	 bicycles, 
-	 motorcycles, 
-	 cars, 
-	 light_vehicles, 
-	 cars_and_light_vehicles, 
-	 cars_with_trailers, 
-	 cars_with_recreational_trailers, 
-	 vehicles_with_trailers, 
-	 heavy_vehicles, 
-	 trucks, 
-	 buses, 
-	 articulated_buses, 
-	 school_buses, 
-	 vehicles_with_semi_trailers, 
-	 vehicles_with_double_trailers, 
-	 high_profile_vehicles, 
-	 wide_vehicles, 
-	 long_vehicles, 
-	 hazardous_loads, 
-	 exceptional_loads, 
-	 abnormal_loads, 
-	 convoys, 
-	 maintenance_vehicles, 
-	 delivery_vehicles, 
-	 vehicles_with_even_numbered_license_plates, 
-	 vehicles_with_odd_numbered_license_plates, 
-	 vehicles_with_parking_permits, 
-	 vehicles_with_catalytic_converters, 
-	 vehicles_without_catalytic_converters, 
-	 gas_powered_vehicles, 
-	 diesel_powered_vehicles, 
-	 lPG_vehicles, 
-	 military_convoys, 
-	 military_vehicles
+	new VehicleGroupAffected(), 
+	new VehicleGroupAffected(9218), 
+	new VehicleGroupAffected(9219), 
+	new VehicleGroupAffected(9220), 
+	new VehicleGroupAffected(9221), 
+	new VehicleGroupAffected(9222), 
+	new VehicleGroupAffected(9223), 
+	new VehicleGroupAffected(9224), 
+	new VehicleGroupAffected(9225), 
+	new VehicleGroupAffected(9226), 
+	new VehicleGroupAffected(9227), 
+	new VehicleGroupAffected(9228), 
+	new VehicleGroupAffected(9229), 
+	new VehicleGroupAffected(9230), 
+	new VehicleGroupAffected(9231), 
+	new VehicleGroupAffected(9232), 
+	new VehicleGroupAffected(9233), 
+	new VehicleGroupAffected(9234), 
+	new VehicleGroupAffected(9235), 
+	new VehicleGroupAffected(9236), 
+	new VehicleGroupAffected(9237), 
+	new VehicleGroupAffected(9238), 
+	new VehicleGroupAffected(9239), 
+	new VehicleGroupAffected(9240), 
+	new VehicleGroupAffected(9241), 
+	new VehicleGroupAffected(9242), 
+	new VehicleGroupAffected(9243), 
+	new VehicleGroupAffected(9244), 
+	new VehicleGroupAffected(9245), 
+	new VehicleGroupAffected(9246), 
+	new VehicleGroupAffected(9247), 
+	new VehicleGroupAffected(9248), 
+	new VehicleGroupAffected(9249), 
+	new VehicleGroupAffected(9250), 
+	new VehicleGroupAffected(9251)
     };
+    public static final VehicleGroupAffected all_vehicles = cNamedNumbers[0];
+    public static final VehicleGroupAffected bicycles = cNamedNumbers[1];
+    public static final VehicleGroupAffected motorcycles = cNamedNumbers[2];
+    public static final VehicleGroupAffected cars = cNamedNumbers[3];
+    public static final VehicleGroupAffected light_vehicles = cNamedNumbers[4];
+    public static final VehicleGroupAffected cars_and_light_vehicles = cNamedNumbers[5];
+    public static final VehicleGroupAffected cars_with_trailers = cNamedNumbers[6];
+    public static final VehicleGroupAffected cars_with_recreational_trailers = cNamedNumbers[7];
+    public static final VehicleGroupAffected vehicles_with_trailers = cNamedNumbers[8];
+    public static final VehicleGroupAffected heavy_vehicles = cNamedNumbers[9];
+    public static final VehicleGroupAffected trucks = cNamedNumbers[10];
+    public static final VehicleGroupAffected buses = cNamedNumbers[11];
+    public static final VehicleGroupAffected articulated_buses = cNamedNumbers[12];
+    public static final VehicleGroupAffected school_buses = cNamedNumbers[13];
+    public static final VehicleGroupAffected vehicles_with_semi_trailers = cNamedNumbers[14];
+    public static final VehicleGroupAffected vehicles_with_double_trailers = cNamedNumbers[15];
+    public static final VehicleGroupAffected high_profile_vehicles = cNamedNumbers[16];
+    public static final VehicleGroupAffected wide_vehicles = cNamedNumbers[17];
+    public static final VehicleGroupAffected long_vehicles = cNamedNumbers[18];
+    public static final VehicleGroupAffected hazardous_loads = cNamedNumbers[19];
+    public static final VehicleGroupAffected exceptional_loads = cNamedNumbers[20];
+    public static final VehicleGroupAffected abnormal_loads = cNamedNumbers[21];
+    public static final VehicleGroupAffected convoys = cNamedNumbers[22];
+    public static final VehicleGroupAffected maintenance_vehicles = cNamedNumbers[23];
+    public static final VehicleGroupAffected delivery_vehicles = cNamedNumbers[24];
+    public static final VehicleGroupAffected vehicles_with_even_numbered_license_plates = cNamedNumbers[25];
+    public static final VehicleGroupAffected vehicles_with_odd_numbered_license_plates = cNamedNumbers[26];
+    public static final VehicleGroupAffected vehicles_with_parking_permits = cNamedNumbers[27];
+    public static final VehicleGroupAffected vehicles_with_catalytic_converters = cNamedNumbers[28];
+    public static final VehicleGroupAffected vehicles_without_catalytic_converters = cNamedNumbers[29];
+    public static final VehicleGroupAffected gas_powered_vehicles = cNamedNumbers[30];
+    public static final VehicleGroupAffected diesel_powered_vehicles = cNamedNumbers[31];
+    public static final VehicleGroupAffected lPG_vehicles = cNamedNumbers[32];
+    public static final VehicleGroupAffected military_convoys = cNamedNumbers[33];
+    public static final VehicleGroupAffected military_vehicles = cNamedNumbers[34];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -262,6 +224,7 @@ public final class VehicleGroupAffected extends Enumerated {
 	"military-vehicles"
     };
     
+    
     /**
      * Returns the array of enumerators (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
@@ -292,8 +255,12 @@ public final class VehicleGroupAffected extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static VehicleGroupAffected valueOf(long value)
     {
 	int inx = indexOfValue(value);

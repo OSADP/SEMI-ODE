@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -381,70 +378,6 @@ public class IntersectionState extends Sequence {
 	}
 
 	/**
-	 * Implements JSON value encoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public void encodeValue(JsonCoder coder, JsonWriter sink)
-		throws IOException, EncoderException
-	{
-	    int total_len0 = this.elements.size();
-	    int idx0 = 0;
-
-	    sink.beginArray();
-	    if (total_len0 > 0) {
-		while (true) {
-		    try {
-			MovementState item1 = this.elements.get(idx0);
-
-			item1.encodeValue(coder, sink);
-		    
-		} catch (Exception e) {
-		    EncoderException ee = EncoderException.wrapException(e);
-		    ee.appendElementContext(null, "MovementState", idx0);
-		    throw ee;
-		}
-		idx0++;
-		if (idx0 == total_len0) break;
-		sink.writeSeparator();
-	    }
-	}
-	sink.endArray();
-
-    }
-
-	/**
-	 * Implements JSON value decoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public States decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	int total_len0 = 0;
-	int idx0 = 0;
-
-	if (this.elements != null)
-	    this.elements.clear();
-	else
-	    this.elements = new java.util.ArrayList<MovementState>(total_len0);
-	coder.decodeArray(source);
-	if (coder.hasMoreElements(source, true))
-	    do {
-		try {
-		    MovementState item1 = new MovementState();
-
-		    this.elements.add(item1);
-		    item1.decodeValue(coder, source);
-		} catch (Exception e) {
-		    DecoderException de = DecoderException.wrapException(e);
-		    de.appendElementContext(null, "MovementState", idx0);
-		    throw de;
-		}
-		++idx0;
-	    } while (coder.hasMoreElements(source, false));
-	    return this;
-	}
-
-	/**
 	 * Compare 'this' object to another object to see if their contents are the same.
 	 */
 	public boolean abstractEqualTo(AbstractData that)
@@ -550,42 +483,6 @@ public class IntersectionState extends Sequence {
      */
     public static final EPAInfo _cEPAInfo_name = 
 	com.bah.ode.asn.oss.dsrc.DescriptiveName._cEPAInfo_;
-    
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__name("name"),
-	__id("id"),
-	__status("status"),
-	__timeStamp("timeStamp"),
-	__lanesCnt("lanesCnt"),
-	__states("states"),
-	__priority("priority"),
-	__preempt("preempt"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(9);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -1218,318 +1115,6 @@ public class IntersectionState extends Sequence {
 	    }
 	}
 	return data;
-    }
-
-    /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	String separator0 = null;
-
-	sink.beginObject();
-	// Encode field 'name'
-	try {
-	    DescriptiveName item1 = this.name;
-
-	    if (item1 != null) {
-		{
-		    separator0 = ",";
-		    sink.encodeKey("name");
-		    coder.encodeString(item1.stringValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		separator0 = ",";
-		coder.encodeAbsentComponent(sink, "name");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("name", "DescriptiveName");
-	    throw ee;
-	}
-	// Encode field 'id'
-	try {
-	    IntersectionID item1 = this.id;
-
-	    {
-		sink.writeSeparator(separator0);
-		sink.encodeKey("id");
-		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("id", "IntersectionID");
-	    throw ee;
-	}
-	// Encode field 'status'
-	try {
-	    IntersectionStatusObject item1 = this.status;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("status");
-		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("status", "IntersectionStatusObject");
-	    throw ee;
-	}
-	// Encode field 'timeStamp'
-	try {
-	    TimeMark item1 = this.timeStamp;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("timeStamp");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "timeStamp");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("timeStamp", "TimeMark");
-	    throw ee;
-	}
-	// Encode field 'lanesCnt'
-	try {
-	    INTEGER item1 = this.lanesCnt;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("lanesCnt");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "lanesCnt");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("lanesCnt", "INTEGER");
-	    throw ee;
-	}
-	// Encode field 'states'
-	try {
-	    States item1 = this.states;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("states");
-		item1.encodeValue(coder, sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("states", "SEQUENCE OF");
-	    throw ee;
-	}
-	// Encode field 'priority'
-	try {
-	    SignalState item1 = this.priority;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("priority");
-		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "priority");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("priority", "SignalState");
-	    throw ee;
-	}
-	// Encode field 'preempt'
-	try {
-	    SignalState item1 = this.preempt;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("preempt");
-		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "preempt");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("preempt", "SignalState");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public IntersectionState decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[9];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		IntersectionState.__Tag t_tag0 = IntersectionState.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = IntersectionState.__Tag._null_;
-		switch (t_tag0) {
-		    case __name:
-		    // Decode field 'name'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[0])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    this.name = new DescriptiveName(coder.decodeString(source));
-			    present0[0] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("name", "DescriptiveName");
-			throw de;
-		    }
-		    break;
-		    case __id:
-		    // Decode field 'id'
-		    try {
-			if (present0[1])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			this.id = new IntersectionID(coder.decodeOctetString(source));
-			present0[1] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("id", "IntersectionID");
-			throw de;
-		    }
-		    break;
-		    case __status:
-		    // Decode field 'status'
-		    try {
-			if (present0[2])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			this.status = new IntersectionStatusObject(coder.decodeOctetString(source));
-			present0[2] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("status", "IntersectionStatusObject");
-			throw de;
-		    }
-		    break;
-		    case __timeStamp:
-		    // Decode field 'timeStamp'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[3])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.timeStamp == null)
-				this.timeStamp = new TimeMark();
-			    this.timeStamp.setValue(coder.decodeInteger(source));
-			    present0[3] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("timeStamp", "TimeMark");
-			throw de;
-		    }
-		    break;
-		    case __lanesCnt:
-		    // Decode field 'lanesCnt'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[4])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.lanesCnt == null)
-				this.lanesCnt = new INTEGER();
-			    this.lanesCnt.setValue(coder.decodeInteger(source));
-			    present0[4] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("lanesCnt", "INTEGER");
-			throw de;
-		    }
-		    break;
-		    case __states:
-		    // Decode field 'states'
-		    try {
-			if (present0[5])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.states == null)
-			    this.states = new States();
-			this.states.decodeValue(coder, source);
-			present0[5] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("states", "SEQUENCE OF");
-			throw de;
-		    }
-		    break;
-		    case __priority:
-		    // Decode field 'priority'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[6])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    this.priority = new SignalState(coder.decodeOctetString(source));
-			    present0[6] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("priority", "SignalState");
-			throw de;
-		    }
-		    break;
-		    case __preempt:
-		    // Decode field 'preempt'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[7])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    this.preempt = new SignalState(coder.decodeOctetString(source));
-			    present0[7] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("preempt", "SignalState");
-			throw de;
-		    }
-		    break;
-		    default:
-			coder.skipValue(source);
-			break;
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    this.name = null;
-	if (!present0[1])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'id'");
-	if (!present0[2])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'status'");
-	if (!present0[3])
-	    this.timeStamp = null;
-	if (!present0[4])
-	    this.lanesCnt = null;
-	if (!present0[5])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'states'");
-	if (!present0[6])
-	    this.priority = null;
-	if (!present0[7])
-	    this.preempt = null;
-	return this;
     }
 
     /**

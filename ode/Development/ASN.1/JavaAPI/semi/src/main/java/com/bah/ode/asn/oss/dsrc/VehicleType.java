@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -88,61 +85,45 @@ public final class VehicleType extends Enumerated {
 	
     }
     // Named list definitions.
-    public static final VehicleType none =
-	new VehicleType();
-    public static final VehicleType unknown =
-	new VehicleType(1);
-    public static final VehicleType special =
-	new VehicleType(2);
-    public static final VehicleType moto =
-	new VehicleType(3);
-    public static final VehicleType car =
-	new VehicleType(4);
-    public static final VehicleType carOther =
-	new VehicleType(5);
-    public static final VehicleType bus =
-	new VehicleType(6);
-    public static final VehicleType axleCnt2 =
-	new VehicleType(7);
-    public static final VehicleType axleCnt3 =
-	new VehicleType(8);
-    public static final VehicleType axleCnt4 =
-	new VehicleType(9);
-    public static final VehicleType axleCnt4Trailer =
-	new VehicleType(10);
-    public static final VehicleType axleCnt5Trailer =
-	new VehicleType(11);
-    public static final VehicleType axleCnt6Trailer =
-	new VehicleType(12);
-    public static final VehicleType axleCnt5MultiTrailer =
-	new VehicleType(13);
-    public static final VehicleType axleCnt6MultiTrailer =
-	new VehicleType(14);
-    public static final VehicleType axleCnt7MultiTrailer =
-	new VehicleType(15);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static VehicleType cNamedNumbers[] = {
-	 none, 
-	 unknown, 
-	 special, 
-	 moto, 
-	 car, 
-	 carOther, 
-	 bus, 
-	 axleCnt2, 
-	 axleCnt3, 
-	 axleCnt4, 
-	 axleCnt4Trailer, 
-	 axleCnt5Trailer, 
-	 axleCnt6Trailer, 
-	 axleCnt5MultiTrailer, 
-	 axleCnt6MultiTrailer, 
-	 axleCnt7MultiTrailer
+	new VehicleType(), 
+	new VehicleType(1), 
+	new VehicleType(2), 
+	new VehicleType(3), 
+	new VehicleType(4), 
+	new VehicleType(5), 
+	new VehicleType(6), 
+	new VehicleType(7), 
+	new VehicleType(8), 
+	new VehicleType(9), 
+	new VehicleType(10), 
+	new VehicleType(11), 
+	new VehicleType(12), 
+	new VehicleType(13), 
+	new VehicleType(14), 
+	new VehicleType(15)
     };
+    public static final VehicleType none = cNamedNumbers[0];
+    public static final VehicleType unknown = cNamedNumbers[1];
+    public static final VehicleType special = cNamedNumbers[2];
+    public static final VehicleType moto = cNamedNumbers[3];
+    public static final VehicleType car = cNamedNumbers[4];
+    public static final VehicleType carOther = cNamedNumbers[5];
+    public static final VehicleType bus = cNamedNumbers[6];
+    public static final VehicleType axleCnt2 = cNamedNumbers[7];
+    public static final VehicleType axleCnt3 = cNamedNumbers[8];
+    public static final VehicleType axleCnt4 = cNamedNumbers[9];
+    public static final VehicleType axleCnt4Trailer = cNamedNumbers[10];
+    public static final VehicleType axleCnt5Trailer = cNamedNumbers[11];
+    public static final VehicleType axleCnt6Trailer = cNamedNumbers[12];
+    public static final VehicleType axleCnt5MultiTrailer = cNamedNumbers[13];
+    public static final VehicleType axleCnt6MultiTrailer = cNamedNumbers[14];
+    public static final VehicleType axleCnt7MultiTrailer = cNamedNumbers[15];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -166,6 +147,7 @@ public final class VehicleType extends Enumerated {
 	"axleCnt6MultiTrailer",
 	"axleCnt7MultiTrailer"
     };
+    
     
     /**
      * Returns the array of enumerators (reserved for internal use).
@@ -197,8 +179,12 @@ public final class VehicleType extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static VehicleType valueOf(long value)
     {
 	int inx = indexOfValue(value);

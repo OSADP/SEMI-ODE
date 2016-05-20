@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -53,7 +50,7 @@ import com.oss.coders.per.PerCoder;
  * @see Sequence
  */
 
-public class IntersectionCollision extends Sequence implements BEREncodable, BERDecodable, DEREncodable, JSONEncodable, JSONDecodable, PEREncodable, PERDecodable {
+public class IntersectionCollision extends Sequence implements BEREncodable, BERDecodable, DEREncodable, PEREncodable, PERDecodable {
     public DSRCmsgID msgID;
     public MsgCount msgCnt;
     public TemporaryID id;
@@ -211,42 +208,6 @@ public class IntersectionCollision extends Sequence implements BEREncodable, BER
 	this.eventFlag = eventFlag;
     }
     
-    
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__msgID("msgID"),
-	__msgCnt("msgCnt"),
-	__id("id"),
-	__secMark("secMark"),
-	__path("path"),
-	__intersetionID("intersetionID"),
-	__laneNumber("laneNumber"),
-	__eventFlag("eventFlag"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(9);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
     
     /**
      * Encode the PDU using BER (reserved for internal use).
@@ -855,335 +816,6 @@ public class IntersectionCollision extends Sequence implements BEREncodable, BER
     }
 
     /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	sink.beginObject();
-	// Encode field 'msgID'
-	try {
-	    DSRCmsgID item1 = this.msgID;
-
-	    {
-		sink.encodeKey("msgID");
-		if (item1.isUnknownEnumerator()) {
-		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
-		} else 
-		    sink.writeString(item1.name());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("msgID", "DSRCmsgID");
-	    throw ee;
-	}
-	// Encode field 'msgCnt'
-	try {
-	    MsgCount item1 = this.msgCnt;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("msgCnt");
-		coder.encodeInteger(item1.longValue(), sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("msgCnt", "MsgCount");
-	    throw ee;
-	}
-	// Encode field 'id'
-	try {
-	    TemporaryID item1 = this.id;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("id");
-		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("id", "TemporaryID");
-	    throw ee;
-	}
-	// Encode field 'secMark'
-	try {
-	    DSecond item1 = this.secMark;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("secMark");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "secMark");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("secMark", "DSecond");
-	    throw ee;
-	}
-	// Encode field 'path'
-	try {
-	    PathHistory item1 = this.path;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("path");
-		item1.encodeValue(coder, sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("path", "PathHistory");
-	    throw ee;
-	}
-	// Encode field 'intersetionID'
-	try {
-	    IntersectionID item1 = this.intersetionID;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("intersetionID");
-		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("intersetionID", "IntersectionID");
-	    throw ee;
-	}
-	// Encode field 'laneNumber'
-	try {
-	    LaneNumber item1 = this.laneNumber;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("laneNumber");
-		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("laneNumber", "LaneNumber");
-	    throw ee;
-	}
-	// Encode field 'eventFlag'
-	try {
-	    EventFlags item1 = this.eventFlag;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("eventFlag");
-		coder.encodeInteger(item1.longValue(), sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("eventFlag", "EventFlags");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Encode the PDU using JSON (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encode(JsonCoder coder, JsonWriter sink)
-	    throws EncoderException
-    {
-	try {
-	    this.encodeValue(coder, sink);
-
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext(null, "IntersectionCollision");
-	    throw ee;
-	}
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public IntersectionCollision decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[9];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		IntersectionCollision.__Tag t_tag0 = IntersectionCollision.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = IntersectionCollision.__Tag._null_;
-		switch (t_tag0) {
-		    case __msgID:
-		    // Decode field 'msgID'
-		    try {
-			String content1 = coder.decodeString(source);
-			int idx1;
-			DSRCmsgID temp1;
-
-			if (present0[0])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			idx1 = coder.resolveName(DSRCmsgID.cConstantNameList, content1);
-			if (idx1 < 0 )
-			    temp1 = DSRCmsgID.unknownEnumerator();
-			else
-			    temp1 = DSRCmsgID.cNamedNumbers[idx1];
-			this.msgID = temp1;
-			present0[0] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("msgID", "DSRCmsgID");
-			throw de;
-		    }
-		    break;
-		    case __msgCnt:
-		    // Decode field 'msgCnt'
-		    try {
-			if (present0[1])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.msgCnt == null)
-			    this.msgCnt = new MsgCount();
-			this.msgCnt.setValue(coder.decodeInteger(source));
-			present0[1] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("msgCnt", "MsgCount");
-			throw de;
-		    }
-		    break;
-		    case __id:
-		    // Decode field 'id'
-		    try {
-			if (present0[2])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			this.id = new TemporaryID(coder.decodeOctetString(source));
-			present0[2] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("id", "TemporaryID");
-			throw de;
-		    }
-		    break;
-		    case __secMark:
-		    // Decode field 'secMark'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[3])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.secMark == null)
-				this.secMark = new DSecond();
-			    this.secMark.setValue(coder.decodeInteger(source));
-			    present0[3] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("secMark", "DSecond");
-			throw de;
-		    }
-		    break;
-		    case __path:
-		    // Decode field 'path'
-		    try {
-			if (present0[4])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.path == null)
-			    this.path = new PathHistory();
-			this.path.decodeValue(coder, source);
-			present0[4] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("path", "PathHistory");
-			throw de;
-		    }
-		    break;
-		    case __intersetionID:
-		    // Decode field 'intersetionID'
-		    try {
-			if (present0[5])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			this.intersetionID = new IntersectionID(coder.decodeOctetString(source));
-			present0[5] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("intersetionID", "IntersectionID");
-			throw de;
-		    }
-		    break;
-		    case __laneNumber:
-		    // Decode field 'laneNumber'
-		    try {
-			if (present0[6])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			this.laneNumber = new LaneNumber(coder.decodeOctetString(source));
-			present0[6] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("laneNumber", "LaneNumber");
-			throw de;
-		    }
-		    break;
-		    case __eventFlag:
-		    // Decode field 'eventFlag'
-		    try {
-			if (present0[7])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.eventFlag == null)
-			    this.eventFlag = new EventFlags();
-			this.eventFlag.setValue(coder.decodeInteger(source));
-			present0[7] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("eventFlag", "EventFlags");
-			throw de;
-		    }
-		    break;
-		    default:
-			coder.skipValue(source);
-			break;
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'msgID'");
-	if (!present0[1])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'msgCnt'");
-	if (!present0[2])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'id'");
-	if (!present0[3])
-	    this.secMark = null;
-	if (!present0[4])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'path'");
-	if (!present0[5])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'intersetionID'");
-	if (!present0[6])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'laneNumber'");
-	if (!present0[7])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'eventFlag'");
-	return this;
-    }
-
-    /**
-     * Decode the PDU using JSON (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public AbstractData decode(JsonCoder coder, JsonReader source)
-	    throws DecoderException
-    {
-	try {
-	    this.decodeValue(coder, source);
-	    return this;
-	} catch (Exception e) {
-	    DecoderException de = DecoderException.wrapException(e);
-	    de.appendFieldContext(null, "IntersectionCollision");
-	    throw de;
-	}
-    }
-
-    /**
      * Implements value printer for the type (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
      */
@@ -1266,7 +898,7 @@ public class IntersectionCollision extends Sequence implements BEREncodable, BER
     }
 
     /**
-     * Convert the PDU value to a string.
+     * Convert the PDU value to a string. If the conversion is aborted due an error the method returns null.
      */
     public String toString()
     {

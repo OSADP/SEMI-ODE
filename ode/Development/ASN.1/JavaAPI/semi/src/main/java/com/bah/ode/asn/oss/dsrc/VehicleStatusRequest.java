@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -221,39 +218,6 @@ public class VehicleStatusRequest extends Sequence {
 	sendAll = null;
     }
     
-    
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__dataType("dataType"),
-	__subType("subType"),
-	__sendOnLessThenValue("sendOnLessThenValue"),
-	__sendOnMoreThenValue("sendOnMoreThenValue"),
-	__sendAll("sendAll"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(6);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -719,235 +683,6 @@ public class VehicleStatusRequest extends Sequence {
 	    }
 	}
 	return data;
-    }
-
-    /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	sink.beginObject();
-	// Encode field 'dataType'
-	try {
-	    VehicleStatusDeviceTypeTag item1 = this.dataType;
-
-	    {
-		sink.encodeKey("dataType");
-		if (item1.isUnknownEnumerator()) {
-		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
-		} else 
-		    sink.writeString(item1.name());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("dataType", "VehicleStatusDeviceTypeTag");
-	    throw ee;
-	}
-	// Encode field 'subType'
-	try {
-	    INTEGER item1 = this.subType;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("subType");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "subType");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("subType", "INTEGER");
-	    throw ee;
-	}
-	// Encode field 'sendOnLessThenValue'
-	try {
-	    INTEGER item1 = this.sendOnLessThenValue;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("sendOnLessThenValue");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "sendOnLessThenValue");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("sendOnLessThenValue", "INTEGER");
-	    throw ee;
-	}
-	// Encode field 'sendOnMoreThenValue'
-	try {
-	    INTEGER item1 = this.sendOnMoreThenValue;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("sendOnMoreThenValue");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "sendOnMoreThenValue");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("sendOnMoreThenValue", "INTEGER");
-	    throw ee;
-	}
-	// Encode field 'sendAll'
-	try {
-	    BOOLEAN item1 = this.sendAll;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("sendAll");
-		    sink.writeBoolean(item1.booleanValue());
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "sendAll");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("sendAll", "BOOLEAN");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public VehicleStatusRequest decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[6];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		VehicleStatusRequest.__Tag t_tag0 = VehicleStatusRequest.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = VehicleStatusRequest.__Tag._null_;
-		switch (t_tag0) {
-		    case __dataType:
-		    // Decode field 'dataType'
-		    try {
-			String content1 = coder.decodeString(source);
-			int idx1;
-			VehicleStatusDeviceTypeTag temp1;
-
-			if (present0[0])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			idx1 = coder.resolveName(VehicleStatusDeviceTypeTag.cConstantNameList, content1);
-			if (idx1 < 0 )
-			    temp1 = VehicleStatusDeviceTypeTag.unknownEnumerator();
-			else
-			    temp1 = VehicleStatusDeviceTypeTag.cNamedNumbers[idx1];
-			this.dataType = temp1;
-			present0[0] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("dataType", "VehicleStatusDeviceTypeTag");
-			throw de;
-		    }
-		    break;
-		    case __subType:
-		    // Decode field 'subType'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[1])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.subType == null)
-				this.subType = new INTEGER();
-			    this.subType.setValue(coder.decodeInteger(source));
-			    present0[1] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("subType", "INTEGER");
-			throw de;
-		    }
-		    break;
-		    case __sendOnLessThenValue:
-		    // Decode field 'sendOnLessThenValue'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[2])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.sendOnLessThenValue == null)
-				this.sendOnLessThenValue = new INTEGER();
-			    this.sendOnLessThenValue.setValue(coder.decodeInteger(source));
-			    present0[2] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("sendOnLessThenValue", "INTEGER");
-			throw de;
-		    }
-		    break;
-		    case __sendOnMoreThenValue:
-		    // Decode field 'sendOnMoreThenValue'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[3])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.sendOnMoreThenValue == null)
-				this.sendOnMoreThenValue = new INTEGER();
-			    this.sendOnMoreThenValue.setValue(coder.decodeInteger(source));
-			    present0[3] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("sendOnMoreThenValue", "INTEGER");
-			throw de;
-		    }
-		    break;
-		    case __sendAll:
-		    // Decode field 'sendAll'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[4])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.sendAll == null)
-				this.sendAll = new BOOLEAN();
-			    this.sendAll.setValue(coder.decodeBoolean(source));
-			    present0[4] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("sendAll", "BOOLEAN");
-			throw de;
-		    }
-		    break;
-		    default:
-			coder.skipValue(source);
-			break;
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'dataType'");
-	if (!present0[1])
-	    this.subType = null;
-	if (!present0[2])
-	    this.sendOnLessThenValue = null;
-	if (!present0[3])
-	    this.sendOnMoreThenValue = null;
-	if (!present0[4])
-	    this.sendAll = null;
-	return this;
     }
 
     /**

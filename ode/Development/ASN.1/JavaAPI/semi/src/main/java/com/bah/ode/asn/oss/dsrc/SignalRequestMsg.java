@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -53,7 +50,7 @@ import com.oss.coders.per.PerCoder;
  * @see Sequence
  */
 
-public class SignalRequestMsg extends Sequence implements BEREncodable, BERDecodable, DEREncodable, JSONEncodable, JSONDecodable, PEREncodable, PERDecodable {
+public class SignalRequestMsg extends Sequence implements BEREncodable, BERDecodable, DEREncodable, PEREncodable, PERDecodable {
     public DSRCmsgID msgID;
     public MsgCount msgCnt;
     public SignalRequest request;
@@ -268,43 +265,6 @@ public class SignalRequestMsg extends Sequence implements BEREncodable, BERDecod
      */
     public static final Bounds _cBounds_transitStatus = 
 	com.bah.ode.asn.oss.dsrc.TransitStatus._cBounds_;
-    
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__msgID("msgID"),
-	__msgCnt("msgCnt"),
-	__request("request"),
-	__timeOfService("timeOfService"),
-	__endOfService("endOfService"),
-	__transitStatus("transitStatus"),
-	__vehicleVIN("vehicleVIN"),
-	__vehicleData("vehicleData"),
-	__status("status"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(10);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
     
     /**
      * Encode the PDU using BER (reserved for internal use).
@@ -1009,399 +969,6 @@ public class SignalRequestMsg extends Sequence implements BEREncodable, BERDecod
     }
 
     /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	sink.beginObject();
-	// Encode field 'msgID'
-	try {
-	    DSRCmsgID item1 = this.msgID;
-
-	    {
-		sink.encodeKey("msgID");
-		if (item1.isUnknownEnumerator()) {
-		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
-		} else 
-		    sink.writeString(item1.name());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("msgID", "DSRCmsgID");
-	    throw ee;
-	}
-	// Encode field 'msgCnt'
-	try {
-	    MsgCount item1 = this.msgCnt;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("msgCnt");
-		coder.encodeInteger(item1.longValue(), sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("msgCnt", "MsgCount");
-	    throw ee;
-	}
-	// Encode field 'request'
-	try {
-	    SignalRequest item1 = this.request;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("request");
-		item1.encodeValue(coder, sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("request", "SignalRequest");
-	    throw ee;
-	}
-	// Encode field 'timeOfService'
-	try {
-	    DTime item1 = this.timeOfService;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("timeOfService");
-		    item1.encodeValue(coder, sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "timeOfService");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("timeOfService", "DTime");
-	    throw ee;
-	}
-	// Encode field 'endOfService'
-	try {
-	    DTime item1 = this.endOfService;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("endOfService");
-		    item1.encodeValue(coder, sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "endOfService");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("endOfService", "DTime");
-	    throw ee;
-	}
-	// Encode field 'transitStatus'
-	try {
-	    TransitStatus item1 = this.transitStatus;
-
-	    if (item1 != null) {
-		{
-		    int len1 = item1.getSize();
-		    byte[] temp1 = item1.byteArrayValue();
-
-		    sink.writeSeparator();
-		    sink.encodeKey("transitStatus");
-		    coder.encodeBitStringWithNamedBits(temp1, len1, 6, sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "transitStatus");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("transitStatus", "TransitStatus");
-	    throw ee;
-	}
-	// Encode field 'vehicleVIN'
-	try {
-	    VehicleIdent item1 = this.vehicleVIN;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("vehicleVIN");
-		    item1.encodeValue(coder, sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "vehicleVIN");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("vehicleVIN", "VehicleIdent");
-	    throw ee;
-	}
-	// Encode field 'vehicleData'
-	try {
-	    BSMblob item1 = this.vehicleData;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("vehicleData");
-		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("vehicleData", "BSMblob");
-	    throw ee;
-	}
-	// Encode field 'status'
-	try {
-	    VehicleRequestStatus item1 = this.status;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("status");
-		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "status");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("status", "VehicleRequestStatus");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Encode the PDU using JSON (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encode(JsonCoder coder, JsonWriter sink)
-	    throws EncoderException
-    {
-	try {
-	    this.encodeValue(coder, sink);
-
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext(null, "SignalRequestMsg");
-	    throw ee;
-	}
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public SignalRequestMsg decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[10];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		SignalRequestMsg.__Tag t_tag0 = SignalRequestMsg.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = SignalRequestMsg.__Tag._null_;
-		switch (t_tag0) {
-		    case __msgID:
-		    // Decode field 'msgID'
-		    try {
-			String content1 = coder.decodeString(source);
-			int idx1;
-			DSRCmsgID temp1;
-
-			if (present0[0])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			idx1 = coder.resolveName(DSRCmsgID.cConstantNameList, content1);
-			if (idx1 < 0 )
-			    temp1 = DSRCmsgID.unknownEnumerator();
-			else
-			    temp1 = DSRCmsgID.cNamedNumbers[idx1];
-			this.msgID = temp1;
-			present0[0] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("msgID", "DSRCmsgID");
-			throw de;
-		    }
-		    break;
-		    case __msgCnt:
-		    // Decode field 'msgCnt'
-		    try {
-			if (present0[1])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.msgCnt == null)
-			    this.msgCnt = new MsgCount();
-			this.msgCnt.setValue(coder.decodeInteger(source));
-			present0[1] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("msgCnt", "MsgCount");
-			throw de;
-		    }
-		    break;
-		    case __request:
-		    // Decode field 'request'
-		    try {
-			if (present0[2])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.request == null)
-			    this.request = new SignalRequest();
-			this.request.decodeValue(coder, source);
-			present0[2] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("request", "SignalRequest");
-			throw de;
-		    }
-		    break;
-		    case __timeOfService:
-		    // Decode field 'timeOfService'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[3])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.timeOfService == null)
-				this.timeOfService = new DTime();
-			    this.timeOfService.decodeValue(coder, source);
-			    present0[3] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("timeOfService", "DTime");
-			throw de;
-		    }
-		    break;
-		    case __endOfService:
-		    // Decode field 'endOfService'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[4])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.endOfService == null)
-				this.endOfService = new DTime();
-			    this.endOfService.decodeValue(coder, source);
-			    present0[4] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("endOfService", "DTime");
-			throw de;
-		    }
-		    break;
-		    case __transitStatus:
-		    // Decode field 'transitStatus'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[5])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.transitStatus == null)
-				this.transitStatus = new TransitStatus();
-			    coder.decodeBitString(6, source, this.transitStatus);
-			    present0[5] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("transitStatus", "TransitStatus");
-			throw de;
-		    }
-		    break;
-		    case __vehicleVIN:
-		    // Decode field 'vehicleVIN'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[6])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.vehicleVIN == null)
-				this.vehicleVIN = new VehicleIdent();
-			    this.vehicleVIN.decodeValue(coder, source);
-			    present0[6] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("vehicleVIN", "VehicleIdent");
-			throw de;
-		    }
-		    break;
-		    case __vehicleData:
-		    // Decode field 'vehicleData'
-		    try {
-			if (present0[7])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			this.vehicleData = new BSMblob(coder.decodeOctetString(source));
-			present0[7] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("vehicleData", "BSMblob");
-			throw de;
-		    }
-		    break;
-		    case __status:
-		    // Decode field 'status'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[8])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    this.status = new VehicleRequestStatus(coder.decodeOctetString(source));
-			    present0[8] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("status", "VehicleRequestStatus");
-			throw de;
-		    }
-		    break;
-		    default:
-			coder.skipValue(source);
-			break;
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'msgID'");
-	if (!present0[1])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'msgCnt'");
-	if (!present0[2])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'request'");
-	if (!present0[3])
-	    this.timeOfService = null;
-	if (!present0[4])
-	    this.endOfService = null;
-	if (!present0[5])
-	    this.transitStatus = null;
-	if (!present0[6])
-	    this.vehicleVIN = null;
-	if (!present0[7])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'vehicleData'");
-	if (!present0[8])
-	    this.status = null;
-	return this;
-    }
-
-    /**
-     * Decode the PDU using JSON (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public AbstractData decode(JsonCoder coder, JsonReader source)
-	    throws DecoderException
-    {
-	try {
-	    this.decodeValue(coder, source);
-	    return this;
-	} catch (Exception e) {
-	    DecoderException de = DecoderException.wrapException(e);
-	    de.appendFieldContext(null, "SignalRequestMsg");
-	    throw de;
-	}
-    }
-
-    /**
      * Implements value printer for the type (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
      */
@@ -1500,7 +1067,7 @@ public class SignalRequestMsg extends Sequence implements BEREncodable, BERDecod
     }
 
     /**
-     * Convert the PDU value to a string.
+     * Convert the PDU value to a string. If the conversion is aborted due an error the method returns null.
      */
     public String toString()
     {
