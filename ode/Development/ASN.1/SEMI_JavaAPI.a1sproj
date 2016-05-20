@@ -1,14 +1,14 @@
-<OssGuiProject compiler="ASN.1/Java" version="2.0" compilerSettingsChangeTime="2015-12-14T11:50:30" product="ASN.1 Studio" productVersion="7.4" compilerVersionLastUsed="6.2" compilerVersionInitial="6.1 T">
+<OssGuiProject compiler="ASN.1/Java" compilerVersionLastUsed="6.3" compilerSettingsChangeTime="2015-12-14T11:50:30" version="2.0" product="ASN.1 Studio" productVersion="7.5.1" compilerVersionInitial="6.1 T">
  <Asn1Files>
   <File>DSRC_R36_Source.asn</File>
   <File>SEMI_ASN.1_Structures_2.2.asn</File>
  </Asn1Files>
  <CompilerSettings>
-  <Setting name="disablCAGLMessagesCheckBox" present="true"/>
+  <Setting present="true" name="disablCAGLMessagesCheckBox"/>
   <Setting name="jOutputDirLineEdit">JavaAPI/semi/src/main/java</Setting>
   <Setting name="jOutputLineEdit">com.bah.ode.asn.oss</Setting>
-  <Setting name="jToedRadioButton" present="true"/>
-  <Setting name="modListRadioButton" present="false"/>
+  <Setting present="true" name="jToedRadioButton"/>
+  <Setting present="false" name="modListRadioButton"/>
  </CompilerSettings>
  <EncodingFiles/>
  <GeneratedFiles>
@@ -331,9 +331,9 @@
  <Settings>
   <Setting name="-ber"/>
   <Setting name="-der"/>
-  <Setting name="-noRelaxedMode" present="false"/>
+  <Setting present="false" name="-noRelaxedMode"/>
   <Setting name="-per"/>
-  <Setting name="-relaySafe" present="false"/>
+  <Setting present="false" name="-relaySafe"/>
   <Setting name="-root"/>
   <Setting name="-uper"/>
   <Setting name="AUTOMATIC_ENCDEC"/>
