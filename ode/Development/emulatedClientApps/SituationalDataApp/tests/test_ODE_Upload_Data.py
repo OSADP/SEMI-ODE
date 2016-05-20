@@ -33,13 +33,14 @@ class ODE_Validation_With_Test_Upload(unittest.TestCase):
     logger.propagate = False
     logger.setLevel(logging.DEBUG)
 
-    def __init__(self,testname='test_with_input', config_path=None,):
-        super(ODE_Validation_With_Test_Upload, self).__init__(testname)
-        self.config_path = config_path
-        self.config = None
+    config_path = os.path.join('.','test_config_files')
 
-    def setUp(self):
-        self.config = config = testRunnerHelper.parse_config_file(self.config_path)
+    def initialize(self, full_config_path):
+        self.config = config = testRunnerHelper.parse_config_file(full_config_path)
+
+        self.config['START_DATE'] = "2014-01-13T19:52:45.500Z"
+        self.config['END_DATE'] = "2015-09-17T17:52:45.500Z"
+
         self.logger.info(config['TEST_NAME'])
         ode = client.ODEClient(self.config['HOST'])
         ode.get_token(self.config['USERNAME'], self.config['PASSWORD'])
@@ -57,7 +58,7 @@ class ODE_Validation_With_Test_Upload(unittest.TestCase):
             pass
         time.sleep(1)
 
-    def test_with_input(self):
+    def run_test_with_input(self):
         request = client.BaseRequest("tst", self.config['DATA'],
                                      testRunnerHelper.build_region(self.config['SERVICE_REGION']))
         self.logger.info("Request: %s", request.toJson())
@@ -68,7 +69,7 @@ class ODE_Validation_With_Test_Upload(unittest.TestCase):
         self.run_validation_test()
 
     def run_validation_test(self):
-        valid_ode_output = testRunnerHelper.extract_payload_expected_records(self.config['VALIDATION_FILE'],subkey=None)
+        valid_ode_output = testRunnerHelper.extract_payload_expected_records(self.config['VALIDATION_FILE'], subkey = None)
 
         while not self.client.is_buffer_empty() and self.config['TEST_REQUEST'] is None:
             responses = self.client.get_messages(2)
@@ -91,6 +92,7 @@ class ODE_Validation_With_Test_Upload(unittest.TestCase):
         while not (self.client.is_buffer_empty() and total_records_received != 0):
             responses = self.client.get_messages(25)
             for msg in responses:
+
                 total_records_received += 1
                 # Run validation logic over vehicle records and not ODE Status Messages
                 if msg.get_payload_type() in dataType.Status:
@@ -145,12 +147,23 @@ class ODE_Validation_With_Test_Upload(unittest.TestCase):
                           msg="Received {} more(less) record(s) than expected ".format(
                               record_count - len(valid_ode_output)))
 
+    def test_upload_with_good_input(self):
+        full_config_path = os.path.join(self.config_path, 'test_Upload_Data_good_input_config.ini')
+        self.initialize(full_config_path)
+
+        cwd = os.path.dirname(os.path.realpath(__file__))
+        self.config['INPUT_FILE'] = os.path.join(cwd, "test_input", "TF9_sub_veh_7_records_good_Lat_Long.json")
+        self.config['VALIDATION_FILE'] = os.path.join(cwd, "test_validation", "TFR9_sub_veh_7_records_good_Lat_Long_results.json")
+        self.run_test_with_input()
+
+    def test_upload_with_bad_input(self):
+        full_config_path = os.path.join(self.config_path, 'test_Upload_Data_bad_input_config.ini')
+        self.initialize(full_config_path)
+
+        cwd = os.path.dirname(os.path.realpath(__file__))
+        self.config['INPUT_FILE'] = os.path.join(cwd, "test_input", "TF9_sub_veh_10_records_bad_Lat_Long.json")
+        self.config['VALIDATION_FILE'] = os.path.join(cwd, "test_validation", "TFR9_sub_veh_10_records_bad_Lat_Long_results.json")
+        self.run_test_with_input()
+
 if __name__ == '__main__':
-    suite = unittest.TestSuite()
-    config_path = os.path.join('.','test_config_files')
-
-    # Test Case 9
-    suite.addTest(ODE_Validation_With_Test_Upload(config_path=os.path.join(config_path, 'testCase_9_config.ini')))
-    suite.addTest(ODE_Validation_With_Test_Upload(config_path=os.path.join(config_path, 'testCase_9__with_bad_input_dataFile_config.ini')))
-
-    unittest.TextTestRunner(stream=sys.stdout).run(suite)
+    unittest.main()  # run all Tests

@@ -113,8 +113,9 @@ def parse_config_file(file_path, config={}, **kwargs):
 
 
     if config_file.has_section('queryParams'):
-        config['START_DATE'] = config_file.get('queryParams', 'startDate')
-        config['END_DATE'] = config_file.get('queryParams', 'endDate')
+        # using relative dates in tests so data parameters are unnecessary
+        # config['START_DATE'] = config_file.get('queryParams', 'startDate')
+        # config['END_DATE'] = config_file.get('queryParams', 'endDate')
         config['SKIP'] = config_file.get('queryParams', 'skip')
         config['LIMIT'] = config_file.get('queryParams', 'limit')
     area = None
