@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -88,61 +85,45 @@ public final class PriorityState extends Enumerated {
 	
     }
     // Named list definitions.
-    public static final PriorityState noneActive =
-	new PriorityState();
-    public static final PriorityState none =
-	new PriorityState(1);
-    public static final PriorityState requested =
-	new PriorityState(2);
-    public static final PriorityState active =
-	new PriorityState(3);
-    public static final PriorityState activeButIhibitd =
-	new PriorityState(4);
-    public static final PriorityState seccess =
-	new PriorityState(5);
-    public static final PriorityState removed =
-	new PriorityState(6);
-    public static final PriorityState clearFail =
-	new PriorityState(7);
-    public static final PriorityState detectFail =
-	new PriorityState(8);
-    public static final PriorityState detectClear =
-	new PriorityState(9);
-    public static final PriorityState abort =
-	new PriorityState(10);
-    public static final PriorityState delayTiming =
-	new PriorityState(11);
-    public static final PriorityState extendTiming =
-	new PriorityState(12);
-    public static final PriorityState preemptOverride =
-	new PriorityState(13);
-    public static final PriorityState adaptiveOverride =
-	new PriorityState(14);
-    public static final PriorityState reserved =
-	new PriorityState(15);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static PriorityState cNamedNumbers[] = {
-	 noneActive, 
-	 none, 
-	 requested, 
-	 active, 
-	 activeButIhibitd, 
-	 seccess, 
-	 removed, 
-	 clearFail, 
-	 detectFail, 
-	 detectClear, 
-	 abort, 
-	 delayTiming, 
-	 extendTiming, 
-	 preemptOverride, 
-	 adaptiveOverride, 
-	 reserved
+	new PriorityState(), 
+	new PriorityState(1), 
+	new PriorityState(2), 
+	new PriorityState(3), 
+	new PriorityState(4), 
+	new PriorityState(5), 
+	new PriorityState(6), 
+	new PriorityState(7), 
+	new PriorityState(8), 
+	new PriorityState(9), 
+	new PriorityState(10), 
+	new PriorityState(11), 
+	new PriorityState(12), 
+	new PriorityState(13), 
+	new PriorityState(14), 
+	new PriorityState(15)
     };
+    public static final PriorityState noneActive = cNamedNumbers[0];
+    public static final PriorityState none = cNamedNumbers[1];
+    public static final PriorityState requested = cNamedNumbers[2];
+    public static final PriorityState active = cNamedNumbers[3];
+    public static final PriorityState activeButIhibitd = cNamedNumbers[4];
+    public static final PriorityState seccess = cNamedNumbers[5];
+    public static final PriorityState removed = cNamedNumbers[6];
+    public static final PriorityState clearFail = cNamedNumbers[7];
+    public static final PriorityState detectFail = cNamedNumbers[8];
+    public static final PriorityState detectClear = cNamedNumbers[9];
+    public static final PriorityState abort = cNamedNumbers[10];
+    public static final PriorityState delayTiming = cNamedNumbers[11];
+    public static final PriorityState extendTiming = cNamedNumbers[12];
+    public static final PriorityState preemptOverride = cNamedNumbers[13];
+    public static final PriorityState adaptiveOverride = cNamedNumbers[14];
+    public static final PriorityState reserved = cNamedNumbers[15];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -166,6 +147,7 @@ public final class PriorityState extends Enumerated {
 	"adaptiveOverride",
 	"reserved"
     };
+    
     
     /**
      * Returns the array of enumerators (reserved for internal use).
@@ -197,8 +179,12 @@ public final class PriorityState extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static PriorityState valueOf(long value)
     {
 	int inx = indexOfValue(value);

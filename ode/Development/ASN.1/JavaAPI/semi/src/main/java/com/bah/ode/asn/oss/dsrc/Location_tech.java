@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -80,37 +77,29 @@ public final class Location_tech extends Enumerated {
 	
     }
     // Named list definitions.
-    public static final Location_tech loc_tech_unknown =
-	new Location_tech();
-    public static final Location_tech loc_tech_GPS =
-	new Location_tech(1);
-    public static final Location_tech loc_tech_DGPS =
-	new Location_tech(2);
-    public static final Location_tech loc_tech_drGPS =
-	new Location_tech(3);
-    public static final Location_tech loc_tech_drDGPS =
-	new Location_tech(4);
-    public static final Location_tech loc_tech_dr =
-	new Location_tech(5);
-    public static final Location_tech loc_tech_nav =
-	new Location_tech(6);
-    public static final Location_tech loc_tech_fault =
-	new Location_tech(31);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static Location_tech cNamedNumbers[] = {
-	 loc_tech_unknown, 
-	 loc_tech_GPS, 
-	 loc_tech_DGPS, 
-	 loc_tech_drGPS, 
-	 loc_tech_drDGPS, 
-	 loc_tech_dr, 
-	 loc_tech_nav, 
-	 loc_tech_fault
+	new Location_tech(), 
+	new Location_tech(1), 
+	new Location_tech(2), 
+	new Location_tech(3), 
+	new Location_tech(4), 
+	new Location_tech(5), 
+	new Location_tech(6), 
+	new Location_tech(31)
     };
+    public static final Location_tech loc_tech_unknown = cNamedNumbers[0];
+    public static final Location_tech loc_tech_GPS = cNamedNumbers[1];
+    public static final Location_tech loc_tech_DGPS = cNamedNumbers[2];
+    public static final Location_tech loc_tech_drGPS = cNamedNumbers[3];
+    public static final Location_tech loc_tech_drDGPS = cNamedNumbers[4];
+    public static final Location_tech loc_tech_dr = cNamedNumbers[5];
+    public static final Location_tech loc_tech_nav = cNamedNumbers[6];
+    public static final Location_tech loc_tech_fault = cNamedNumbers[7];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -126,6 +115,7 @@ public final class Location_tech extends Enumerated {
 	"loc-tech-nav",
 	"loc-tech-fault"
     };
+    
     
     /**
      * Returns the array of enumerators (reserved for internal use).
@@ -159,8 +149,12 @@ public final class Location_tech extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static Location_tech valueOf(long value)
     {
 	int inx = indexOfValue(value);

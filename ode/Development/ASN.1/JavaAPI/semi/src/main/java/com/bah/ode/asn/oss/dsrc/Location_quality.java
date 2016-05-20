@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -79,37 +76,29 @@ public final class Location_quality extends Enumerated {
 	public static final long loc_qual_unknown = 7;
     }
     // Named list definitions.
-    public static final Location_quality loc_qual_bt1m =
-	new Location_quality();
-    public static final Location_quality loc_qual_bt5m =
-	new Location_quality(1);
-    public static final Location_quality loc_qual_bt12m =
-	new Location_quality(2);
-    public static final Location_quality loc_qual_bt50m =
-	new Location_quality(3);
-    public static final Location_quality loc_qual_bt125m =
-	new Location_quality(4);
-    public static final Location_quality loc_qual_bt500m =
-	new Location_quality(5);
-    public static final Location_quality loc_qual_bt1250m =
-	new Location_quality(6);
-    public static final Location_quality loc_qual_unknown =
-	new Location_quality(7);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static Location_quality cNamedNumbers[] = {
-	 loc_qual_bt1m, 
-	 loc_qual_bt5m, 
-	 loc_qual_bt12m, 
-	 loc_qual_bt50m, 
-	 loc_qual_bt125m, 
-	 loc_qual_bt500m, 
-	 loc_qual_bt1250m, 
-	 loc_qual_unknown
+	new Location_quality(), 
+	new Location_quality(1), 
+	new Location_quality(2), 
+	new Location_quality(3), 
+	new Location_quality(4), 
+	new Location_quality(5), 
+	new Location_quality(6), 
+	new Location_quality(7)
     };
+    public static final Location_quality loc_qual_bt1m = cNamedNumbers[0];
+    public static final Location_quality loc_qual_bt5m = cNamedNumbers[1];
+    public static final Location_quality loc_qual_bt12m = cNamedNumbers[2];
+    public static final Location_quality loc_qual_bt50m = cNamedNumbers[3];
+    public static final Location_quality loc_qual_bt125m = cNamedNumbers[4];
+    public static final Location_quality loc_qual_bt500m = cNamedNumbers[5];
+    public static final Location_quality loc_qual_bt1250m = cNamedNumbers[6];
+    public static final Location_quality loc_qual_unknown = cNamedNumbers[7];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -125,6 +114,7 @@ public final class Location_quality extends Enumerated {
 	"loc-qual-bt1250m",
 	"loc-qual-unknown"
     };
+    
     
     /**
      * Returns the array of enumerators (reserved for internal use).
@@ -156,8 +146,12 @@ public final class Location_quality extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static Location_quality valueOf(long value)
     {
 	int inx = indexOfValue(value);

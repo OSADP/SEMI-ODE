@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -144,229 +141,157 @@ public final class IncidentResponseEquipment extends Enumerated {
 	
     }
     // Named list definitions.
-    public static final IncidentResponseEquipment ground_fire_suppression =
-	new IncidentResponseEquipment();
-    public static final IncidentResponseEquipment heavy_ground_equipment =
-	new IncidentResponseEquipment(9986);
-    public static final IncidentResponseEquipment aircraft =
-	new IncidentResponseEquipment(9988);
-    public static final IncidentResponseEquipment marine_equipment =
-	new IncidentResponseEquipment(9989);
-    public static final IncidentResponseEquipment support_equipment =
-	new IncidentResponseEquipment(9990);
-    public static final IncidentResponseEquipment medical_rescue_unit =
-	new IncidentResponseEquipment(9991);
-    public static final IncidentResponseEquipment other =
-	new IncidentResponseEquipment(9993);
-    public static final IncidentResponseEquipment ground_fire_suppression_other =
-	new IncidentResponseEquipment(9994);
-    public static final IncidentResponseEquipment engine =
-	new IncidentResponseEquipment(9995);
-    public static final IncidentResponseEquipment truck_or_aerial =
-	new IncidentResponseEquipment(9996);
-    public static final IncidentResponseEquipment quint =
-	new IncidentResponseEquipment(9997);
-    public static final IncidentResponseEquipment tanker_pumper_combination =
-	new IncidentResponseEquipment(9998);
-    public static final IncidentResponseEquipment brush_truck =
-	new IncidentResponseEquipment(10000);
-    public static final IncidentResponseEquipment aircraft_rescue_firefighting =
-	new IncidentResponseEquipment(10001);
-    public static final IncidentResponseEquipment heavy_ground_equipment_other =
-	new IncidentResponseEquipment(10004);
-    public static final IncidentResponseEquipment dozer_or_plow =
-	new IncidentResponseEquipment(10005);
-    public static final IncidentResponseEquipment tractor =
-	new IncidentResponseEquipment(10006);
-    public static final IncidentResponseEquipment tanker_or_tender =
-	new IncidentResponseEquipment(10008);
-    public static final IncidentResponseEquipment aircraft_other =
-	new IncidentResponseEquipment(10024);
-    public static final IncidentResponseEquipment aircraft_fixed_wing_tanker =
-	new IncidentResponseEquipment(10025);
-    public static final IncidentResponseEquipment helitanker =
-	new IncidentResponseEquipment(10026);
-    public static final IncidentResponseEquipment helicopter =
-	new IncidentResponseEquipment(10027);
-    public static final IncidentResponseEquipment marine_equipment_other =
-	new IncidentResponseEquipment(10034);
-    public static final IncidentResponseEquipment fire_boat_with_pump =
-	new IncidentResponseEquipment(10035);
-    public static final IncidentResponseEquipment boat_no_pump =
-	new IncidentResponseEquipment(10036);
-    public static final IncidentResponseEquipment support_apparatus_other =
-	new IncidentResponseEquipment(10044);
-    public static final IncidentResponseEquipment breathing_apparatus_support =
-	new IncidentResponseEquipment(10045);
-    public static final IncidentResponseEquipment light_and_air_unit =
-	new IncidentResponseEquipment(10046);
-    public static final IncidentResponseEquipment medical_rescue_unit_other =
-	new IncidentResponseEquipment(10054);
-    public static final IncidentResponseEquipment rescue_unit =
-	new IncidentResponseEquipment(10055);
-    public static final IncidentResponseEquipment urban_search_rescue_unit =
-	new IncidentResponseEquipment(10056);
-    public static final IncidentResponseEquipment high_angle_rescue =
-	new IncidentResponseEquipment(10057);
-    public static final IncidentResponseEquipment crash_fire_rescue =
-	new IncidentResponseEquipment(10058);
-    public static final IncidentResponseEquipment bLS_unit =
-	new IncidentResponseEquipment(10059);
-    public static final IncidentResponseEquipment aLS_unit =
-	new IncidentResponseEquipment(10060);
-    public static final IncidentResponseEquipment mobile_command_post =
-	new IncidentResponseEquipment(10075);
-    public static final IncidentResponseEquipment chief_officer_car =
-	new IncidentResponseEquipment(10076);
-    public static final IncidentResponseEquipment hAZMAT_unit =
-	new IncidentResponseEquipment(10077);
-    public static final IncidentResponseEquipment type_i_hand_crew =
-	new IncidentResponseEquipment(10078);
-    public static final IncidentResponseEquipment type_ii_hand_crew =
-	new IncidentResponseEquipment(10079);
-    public static final IncidentResponseEquipment privately_owned_vehicle =
-	new IncidentResponseEquipment(10083);
-    public static final IncidentResponseEquipment other_apparatus_resource =
-	new IncidentResponseEquipment(10084);
-    public static final IncidentResponseEquipment ambulance =
-	new IncidentResponseEquipment(10085);
-    public static final IncidentResponseEquipment bomb_squad_van =
-	new IncidentResponseEquipment(10086);
-    public static final IncidentResponseEquipment combine_harvester =
-	new IncidentResponseEquipment(10087);
-    public static final IncidentResponseEquipment construction_vehicle =
-	new IncidentResponseEquipment(10088);
-    public static final IncidentResponseEquipment farm_tractor =
-	new IncidentResponseEquipment(10089);
-    public static final IncidentResponseEquipment grass_cutting_machines =
-	new IncidentResponseEquipment(10090);
-    public static final IncidentResponseEquipment hAZMAT_containment_tow =
-	new IncidentResponseEquipment(10091);
-    public static final IncidentResponseEquipment heavy_tow =
-	new IncidentResponseEquipment(10092);
-    public static final IncidentResponseEquipment hedge_cutting_machines =
-	new IncidentResponseEquipment(10093);
-    public static final IncidentResponseEquipment light_tow =
-	new IncidentResponseEquipment(10094);
-    public static final IncidentResponseEquipment mobile_crane =
-	new IncidentResponseEquipment(10095);
-    public static final IncidentResponseEquipment refuse_collection_vehicle =
-	new IncidentResponseEquipment(10096);
-    public static final IncidentResponseEquipment resurfacing_vehicle =
-	new IncidentResponseEquipment(10097);
-    public static final IncidentResponseEquipment road_sweeper =
-	new IncidentResponseEquipment(10098);
-    public static final IncidentResponseEquipment roadside_litter_collection_crews =
-	new IncidentResponseEquipment(10099);
-    public static final IncidentResponseEquipment salvage_vehicle =
-	new IncidentResponseEquipment(10100);
-    public static final IncidentResponseEquipment sand_truck =
-	new IncidentResponseEquipment(10101);
-    public static final IncidentResponseEquipment snowplow =
-	new IncidentResponseEquipment(10102);
-    public static final IncidentResponseEquipment steam_roller =
-	new IncidentResponseEquipment(10103);
-    public static final IncidentResponseEquipment swat_team_van =
-	new IncidentResponseEquipment(10104);
-    public static final IncidentResponseEquipment track_laying_vehicle =
-	new IncidentResponseEquipment(10105);
-    public static final IncidentResponseEquipment unknown_vehicle =
-	new IncidentResponseEquipment(10106);
-    public static final IncidentResponseEquipment white_lining_vehicle =
-	new IncidentResponseEquipment(10107);
-    public static final IncidentResponseEquipment dump_truck =
-	new IncidentResponseEquipment(10108);
-    public static final IncidentResponseEquipment supervisor_vehicle =
-	new IncidentResponseEquipment(10109);
-    public static final IncidentResponseEquipment snow_blower =
-	new IncidentResponseEquipment(10110);
-    public static final IncidentResponseEquipment rotary_snow_blower =
-	new IncidentResponseEquipment(10111);
-    public static final IncidentResponseEquipment road_grader =
-	new IncidentResponseEquipment(10112);
-    public static final IncidentResponseEquipment steam_truck =
-	new IncidentResponseEquipment(10113);
-    public static final IncidentResponseEquipment flatbed_tow =
-	new IncidentResponseEquipment(10114);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static IncidentResponseEquipment cNamedNumbers[] = {
-	 ground_fire_suppression, 
-	 heavy_ground_equipment, 
-	 aircraft, 
-	 marine_equipment, 
-	 support_equipment, 
-	 medical_rescue_unit, 
-	 other, 
-	 ground_fire_suppression_other, 
-	 engine, 
-	 truck_or_aerial, 
-	 quint, 
-	 tanker_pumper_combination, 
-	 brush_truck, 
-	 aircraft_rescue_firefighting, 
-	 heavy_ground_equipment_other, 
-	 dozer_or_plow, 
-	 tractor, 
-	 tanker_or_tender, 
-	 aircraft_other, 
-	 aircraft_fixed_wing_tanker, 
-	 helitanker, 
-	 helicopter, 
-	 marine_equipment_other, 
-	 fire_boat_with_pump, 
-	 boat_no_pump, 
-	 support_apparatus_other, 
-	 breathing_apparatus_support, 
-	 light_and_air_unit, 
-	 medical_rescue_unit_other, 
-	 rescue_unit, 
-	 urban_search_rescue_unit, 
-	 high_angle_rescue, 
-	 crash_fire_rescue, 
-	 bLS_unit, 
-	 aLS_unit, 
-	 mobile_command_post, 
-	 chief_officer_car, 
-	 hAZMAT_unit, 
-	 type_i_hand_crew, 
-	 type_ii_hand_crew, 
-	 privately_owned_vehicle, 
-	 other_apparatus_resource, 
-	 ambulance, 
-	 bomb_squad_van, 
-	 combine_harvester, 
-	 construction_vehicle, 
-	 farm_tractor, 
-	 grass_cutting_machines, 
-	 hAZMAT_containment_tow, 
-	 heavy_tow, 
-	 hedge_cutting_machines, 
-	 light_tow, 
-	 mobile_crane, 
-	 refuse_collection_vehicle, 
-	 resurfacing_vehicle, 
-	 road_sweeper, 
-	 roadside_litter_collection_crews, 
-	 salvage_vehicle, 
-	 sand_truck, 
-	 snowplow, 
-	 steam_roller, 
-	 swat_team_van, 
-	 track_laying_vehicle, 
-	 unknown_vehicle, 
-	 white_lining_vehicle, 
-	 dump_truck, 
-	 supervisor_vehicle, 
-	 snow_blower, 
-	 rotary_snow_blower, 
-	 road_grader, 
-	 steam_truck, 
-	 flatbed_tow
+	new IncidentResponseEquipment(), 
+	new IncidentResponseEquipment(9986), 
+	new IncidentResponseEquipment(9988), 
+	new IncidentResponseEquipment(9989), 
+	new IncidentResponseEquipment(9990), 
+	new IncidentResponseEquipment(9991), 
+	new IncidentResponseEquipment(9993), 
+	new IncidentResponseEquipment(9994), 
+	new IncidentResponseEquipment(9995), 
+	new IncidentResponseEquipment(9996), 
+	new IncidentResponseEquipment(9997), 
+	new IncidentResponseEquipment(9998), 
+	new IncidentResponseEquipment(10000), 
+	new IncidentResponseEquipment(10001), 
+	new IncidentResponseEquipment(10004), 
+	new IncidentResponseEquipment(10005), 
+	new IncidentResponseEquipment(10006), 
+	new IncidentResponseEquipment(10008), 
+	new IncidentResponseEquipment(10024), 
+	new IncidentResponseEquipment(10025), 
+	new IncidentResponseEquipment(10026), 
+	new IncidentResponseEquipment(10027), 
+	new IncidentResponseEquipment(10034), 
+	new IncidentResponseEquipment(10035), 
+	new IncidentResponseEquipment(10036), 
+	new IncidentResponseEquipment(10044), 
+	new IncidentResponseEquipment(10045), 
+	new IncidentResponseEquipment(10046), 
+	new IncidentResponseEquipment(10054), 
+	new IncidentResponseEquipment(10055), 
+	new IncidentResponseEquipment(10056), 
+	new IncidentResponseEquipment(10057), 
+	new IncidentResponseEquipment(10058), 
+	new IncidentResponseEquipment(10059), 
+	new IncidentResponseEquipment(10060), 
+	new IncidentResponseEquipment(10075), 
+	new IncidentResponseEquipment(10076), 
+	new IncidentResponseEquipment(10077), 
+	new IncidentResponseEquipment(10078), 
+	new IncidentResponseEquipment(10079), 
+	new IncidentResponseEquipment(10083), 
+	new IncidentResponseEquipment(10084), 
+	new IncidentResponseEquipment(10085), 
+	new IncidentResponseEquipment(10086), 
+	new IncidentResponseEquipment(10087), 
+	new IncidentResponseEquipment(10088), 
+	new IncidentResponseEquipment(10089), 
+	new IncidentResponseEquipment(10090), 
+	new IncidentResponseEquipment(10091), 
+	new IncidentResponseEquipment(10092), 
+	new IncidentResponseEquipment(10093), 
+	new IncidentResponseEquipment(10094), 
+	new IncidentResponseEquipment(10095), 
+	new IncidentResponseEquipment(10096), 
+	new IncidentResponseEquipment(10097), 
+	new IncidentResponseEquipment(10098), 
+	new IncidentResponseEquipment(10099), 
+	new IncidentResponseEquipment(10100), 
+	new IncidentResponseEquipment(10101), 
+	new IncidentResponseEquipment(10102), 
+	new IncidentResponseEquipment(10103), 
+	new IncidentResponseEquipment(10104), 
+	new IncidentResponseEquipment(10105), 
+	new IncidentResponseEquipment(10106), 
+	new IncidentResponseEquipment(10107), 
+	new IncidentResponseEquipment(10108), 
+	new IncidentResponseEquipment(10109), 
+	new IncidentResponseEquipment(10110), 
+	new IncidentResponseEquipment(10111), 
+	new IncidentResponseEquipment(10112), 
+	new IncidentResponseEquipment(10113), 
+	new IncidentResponseEquipment(10114)
     };
+    public static final IncidentResponseEquipment ground_fire_suppression = cNamedNumbers[0];
+    public static final IncidentResponseEquipment heavy_ground_equipment = cNamedNumbers[1];
+    public static final IncidentResponseEquipment aircraft = cNamedNumbers[2];
+    public static final IncidentResponseEquipment marine_equipment = cNamedNumbers[3];
+    public static final IncidentResponseEquipment support_equipment = cNamedNumbers[4];
+    public static final IncidentResponseEquipment medical_rescue_unit = cNamedNumbers[5];
+    public static final IncidentResponseEquipment other = cNamedNumbers[6];
+    public static final IncidentResponseEquipment ground_fire_suppression_other = cNamedNumbers[7];
+    public static final IncidentResponseEquipment engine = cNamedNumbers[8];
+    public static final IncidentResponseEquipment truck_or_aerial = cNamedNumbers[9];
+    public static final IncidentResponseEquipment quint = cNamedNumbers[10];
+    public static final IncidentResponseEquipment tanker_pumper_combination = cNamedNumbers[11];
+    public static final IncidentResponseEquipment brush_truck = cNamedNumbers[12];
+    public static final IncidentResponseEquipment aircraft_rescue_firefighting = cNamedNumbers[13];
+    public static final IncidentResponseEquipment heavy_ground_equipment_other = cNamedNumbers[14];
+    public static final IncidentResponseEquipment dozer_or_plow = cNamedNumbers[15];
+    public static final IncidentResponseEquipment tractor = cNamedNumbers[16];
+    public static final IncidentResponseEquipment tanker_or_tender = cNamedNumbers[17];
+    public static final IncidentResponseEquipment aircraft_other = cNamedNumbers[18];
+    public static final IncidentResponseEquipment aircraft_fixed_wing_tanker = cNamedNumbers[19];
+    public static final IncidentResponseEquipment helitanker = cNamedNumbers[20];
+    public static final IncidentResponseEquipment helicopter = cNamedNumbers[21];
+    public static final IncidentResponseEquipment marine_equipment_other = cNamedNumbers[22];
+    public static final IncidentResponseEquipment fire_boat_with_pump = cNamedNumbers[23];
+    public static final IncidentResponseEquipment boat_no_pump = cNamedNumbers[24];
+    public static final IncidentResponseEquipment support_apparatus_other = cNamedNumbers[25];
+    public static final IncidentResponseEquipment breathing_apparatus_support = cNamedNumbers[26];
+    public static final IncidentResponseEquipment light_and_air_unit = cNamedNumbers[27];
+    public static final IncidentResponseEquipment medical_rescue_unit_other = cNamedNumbers[28];
+    public static final IncidentResponseEquipment rescue_unit = cNamedNumbers[29];
+    public static final IncidentResponseEquipment urban_search_rescue_unit = cNamedNumbers[30];
+    public static final IncidentResponseEquipment high_angle_rescue = cNamedNumbers[31];
+    public static final IncidentResponseEquipment crash_fire_rescue = cNamedNumbers[32];
+    public static final IncidentResponseEquipment bLS_unit = cNamedNumbers[33];
+    public static final IncidentResponseEquipment aLS_unit = cNamedNumbers[34];
+    public static final IncidentResponseEquipment mobile_command_post = cNamedNumbers[35];
+    public static final IncidentResponseEquipment chief_officer_car = cNamedNumbers[36];
+    public static final IncidentResponseEquipment hAZMAT_unit = cNamedNumbers[37];
+    public static final IncidentResponseEquipment type_i_hand_crew = cNamedNumbers[38];
+    public static final IncidentResponseEquipment type_ii_hand_crew = cNamedNumbers[39];
+    public static final IncidentResponseEquipment privately_owned_vehicle = cNamedNumbers[40];
+    public static final IncidentResponseEquipment other_apparatus_resource = cNamedNumbers[41];
+    public static final IncidentResponseEquipment ambulance = cNamedNumbers[42];
+    public static final IncidentResponseEquipment bomb_squad_van = cNamedNumbers[43];
+    public static final IncidentResponseEquipment combine_harvester = cNamedNumbers[44];
+    public static final IncidentResponseEquipment construction_vehicle = cNamedNumbers[45];
+    public static final IncidentResponseEquipment farm_tractor = cNamedNumbers[46];
+    public static final IncidentResponseEquipment grass_cutting_machines = cNamedNumbers[47];
+    public static final IncidentResponseEquipment hAZMAT_containment_tow = cNamedNumbers[48];
+    public static final IncidentResponseEquipment heavy_tow = cNamedNumbers[49];
+    public static final IncidentResponseEquipment hedge_cutting_machines = cNamedNumbers[50];
+    public static final IncidentResponseEquipment light_tow = cNamedNumbers[51];
+    public static final IncidentResponseEquipment mobile_crane = cNamedNumbers[52];
+    public static final IncidentResponseEquipment refuse_collection_vehicle = cNamedNumbers[53];
+    public static final IncidentResponseEquipment resurfacing_vehicle = cNamedNumbers[54];
+    public static final IncidentResponseEquipment road_sweeper = cNamedNumbers[55];
+    public static final IncidentResponseEquipment roadside_litter_collection_crews = cNamedNumbers[56];
+    public static final IncidentResponseEquipment salvage_vehicle = cNamedNumbers[57];
+    public static final IncidentResponseEquipment sand_truck = cNamedNumbers[58];
+    public static final IncidentResponseEquipment snowplow = cNamedNumbers[59];
+    public static final IncidentResponseEquipment steam_roller = cNamedNumbers[60];
+    public static final IncidentResponseEquipment swat_team_van = cNamedNumbers[61];
+    public static final IncidentResponseEquipment track_laying_vehicle = cNamedNumbers[62];
+    public static final IncidentResponseEquipment unknown_vehicle = cNamedNumbers[63];
+    public static final IncidentResponseEquipment white_lining_vehicle = cNamedNumbers[64];
+    public static final IncidentResponseEquipment dump_truck = cNamedNumbers[65];
+    public static final IncidentResponseEquipment supervisor_vehicle = cNamedNumbers[66];
+    public static final IncidentResponseEquipment snow_blower = cNamedNumbers[67];
+    public static final IncidentResponseEquipment rotary_snow_blower = cNamedNumbers[68];
+    public static final IncidentResponseEquipment road_grader = cNamedNumbers[69];
+    public static final IncidentResponseEquipment steam_truck = cNamedNumbers[70];
+    public static final IncidentResponseEquipment flatbed_tow = cNamedNumbers[71];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -447,6 +372,7 @@ public final class IncidentResponseEquipment extends Enumerated {
 	"flatbed-tow"
     };
     
+    
     /**
      * Returns the array of enumerators (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
@@ -474,8 +400,12 @@ public final class IncidentResponseEquipment extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static IncidentResponseEquipment valueOf(long value)
     {
 	int inx = indexOfValue(value, cNamedNumbers, 0, 72);

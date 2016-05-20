@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -53,7 +50,7 @@ import com.oss.coders.per.PerCoder;
  * @see Sequence
  */
 
-public class CommonSafetyRequest extends Sequence implements BEREncodable, BERDecodable, DEREncodable, JSONEncodable, JSONDecodable, PEREncodable, PERDecodable {
+public class CommonSafetyRequest extends Sequence implements BEREncodable, BERDecodable, DEREncodable, PEREncodable, PERDecodable {
     public DSRCmsgID msgID;
     public MsgCount msgCnt;
     public TemporaryID id;
@@ -346,81 +343,6 @@ public class CommonSafetyRequest extends Sequence implements BEREncodable, BERDe
 	}
 
 	/**
-	 * Implements JSON value encoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public void encodeValue(JsonCoder coder, JsonWriter sink)
-		throws IOException, EncoderException
-	{
-	    int total_len0 = this.elements.size();
-	    int idx0 = 0;
-
-	    sink.beginArray();
-	    if (total_len0 > 0) {
-		while (true) {
-		    try {
-			RequestedItem item1 = this.elements.get(idx0);
-
-			if (item1.isUnknownEnumerator()) {
-			    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
-			} else 
-			    sink.writeString(item1.name());
-		    
-		} catch (Exception e) {
-		    EncoderException ee = EncoderException.wrapException(e);
-		    ee.appendElementContext(null, "RequestedItem", idx0);
-		    throw ee;
-		}
-		idx0++;
-		if (idx0 == total_len0) break;
-		sink.writeSeparator();
-	    }
-	}
-	sink.endArray();
-
-    }
-
-	/**
-	 * Implements JSON value decoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public Requests decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	int total_len0 = 0;
-	int idx0 = 0;
-
-	if (this.elements != null)
-	    this.elements.clear();
-	else
-	    this.elements = new java.util.ArrayList<RequestedItem>(total_len0);
-	coder.decodeArray(source);
-	if (coder.hasMoreElements(source, true))
-	    do {
-		try {
-		    RequestedItem item1;
-		    String content1 = coder.decodeString(source);
-		    int idx1;
-		    RequestedItem temp1;
-
-		    idx1 = coder.resolveName(RequestedItem.cConstantNameList, content1);
-		    if (idx1 < 0 )
-			temp1 = RequestedItem.unknownEnumerator();
-		    else
-			temp1 = RequestedItem.cNamedNumbers[idx1];
-		    item1 = temp1;
-		    this.elements.add(item1);
-		} catch (Exception e) {
-		    DecoderException de = DecoderException.wrapException(e);
-		    de.appendElementContext(null, "RequestedItem", idx0);
-		    throw de;
-		}
-		++idx0;
-	    } while (coder.hasMoreElements(source, false));
-	    return this;
-	}
-
-	/**
 	 * Compare 'this' object to another object to see if their contents are the same.
 	 */
 	public boolean abstractEqualTo(AbstractData that)
@@ -476,38 +398,6 @@ public class CommonSafetyRequest extends Sequence implements BEREncodable, BERDe
 	}
     } // End class definition for Requests
 
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__msgID("msgID"),
-	__msgCnt("msgCnt"),
-	__id("id"),
-	__requests("requests"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(5);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
-    
     /**
      * Encode the PDU using BER (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
@@ -999,222 +889,6 @@ public class CommonSafetyRequest extends Sequence implements BEREncodable, BERDe
     }
 
     /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	sink.beginObject();
-	// Encode field 'msgID'
-	try {
-	    DSRCmsgID item1 = this.msgID;
-
-	    {
-		sink.encodeKey("msgID");
-		if (item1.isUnknownEnumerator()) {
-		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
-		} else 
-		    sink.writeString(item1.name());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("msgID", "DSRCmsgID");
-	    throw ee;
-	}
-	// Encode field 'msgCnt'
-	try {
-	    MsgCount item1 = this.msgCnt;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("msgCnt");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "msgCnt");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("msgCnt", "MsgCount");
-	    throw ee;
-	}
-	// Encode field 'id'
-	try {
-	    TemporaryID item1 = this.id;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("id");
-		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "id");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("id", "TemporaryID");
-	    throw ee;
-	}
-	// Encode field 'requests'
-	try {
-	    Requests item1 = this.requests;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("requests");
-		item1.encodeValue(coder, sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("requests", "SEQUENCE OF");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Encode the PDU using JSON (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encode(JsonCoder coder, JsonWriter sink)
-	    throws EncoderException
-    {
-	try {
-	    this.encodeValue(coder, sink);
-
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext(null, "CommonSafetyRequest");
-	    throw ee;
-	}
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public CommonSafetyRequest decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[5];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		CommonSafetyRequest.__Tag t_tag0 = CommonSafetyRequest.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = CommonSafetyRequest.__Tag._null_;
-		switch (t_tag0) {
-		    case __msgID:
-		    // Decode field 'msgID'
-		    try {
-			String content1 = coder.decodeString(source);
-			int idx1;
-			DSRCmsgID temp1;
-
-			if (present0[0])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			idx1 = coder.resolveName(DSRCmsgID.cConstantNameList, content1);
-			if (idx1 < 0 )
-			    temp1 = DSRCmsgID.unknownEnumerator();
-			else
-			    temp1 = DSRCmsgID.cNamedNumbers[idx1];
-			this.msgID = temp1;
-			present0[0] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("msgID", "DSRCmsgID");
-			throw de;
-		    }
-		    break;
-		    case __msgCnt:
-		    // Decode field 'msgCnt'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[1])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.msgCnt == null)
-				this.msgCnt = new MsgCount();
-			    this.msgCnt.setValue(coder.decodeInteger(source));
-			    present0[1] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("msgCnt", "MsgCount");
-			throw de;
-		    }
-		    break;
-		    case __id:
-		    // Decode field 'id'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[2])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    this.id = new TemporaryID(coder.decodeOctetString(source));
-			    present0[2] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("id", "TemporaryID");
-			throw de;
-		    }
-		    break;
-		    case __requests:
-		    // Decode field 'requests'
-		    try {
-			if (present0[3])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.requests == null)
-			    this.requests = new Requests();
-			this.requests.decodeValue(coder, source);
-			present0[3] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("requests", "SEQUENCE OF");
-			throw de;
-		    }
-		    break;
-		    default:
-			coder.skipValue(source);
-			break;
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'msgID'");
-	if (!present0[1])
-	    this.msgCnt = null;
-	if (!present0[2])
-	    this.id = null;
-	if (!present0[3])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'requests'");
-	return this;
-    }
-
-    /**
-     * Decode the PDU using JSON (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public AbstractData decode(JsonCoder coder, JsonReader source)
-	    throws DecoderException
-    {
-	try {
-	    this.decodeValue(coder, source);
-	    return this;
-	} catch (Exception e) {
-	    DecoderException de = DecoderException.wrapException(e);
-	    de.appendFieldContext(null, "CommonSafetyRequest");
-	    throw de;
-	}
-    }
-
-    /**
      * Implements value printer for the type (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
      */
@@ -1288,7 +962,7 @@ public class CommonSafetyRequest extends Sequence implements BEREncodable, BERDe
     }
 
     /**
-     * Convert the PDU value to a string.
+     * Convert the PDU value to a string. If the conversion is aborted due an error the method returns null.
      */
     public String toString()
     {

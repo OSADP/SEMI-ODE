@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -139,37 +136,6 @@ public class RTCMmsg extends Sequence {
 	this.payload = payload;
     }
     
-    
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__rev("rev"),
-	__rtcmID("rtcmID"),
-	__payload("payload"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(4);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -491,162 +457,6 @@ public class RTCMmsg extends Sequence {
 	    }
 	}
 	return data;
-    }
-
-    /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	String separator0 = null;
-
-	sink.beginObject();
-	// Encode field 'rev'
-	try {
-	    RTCM_Revision item1 = this.rev;
-
-	    if (item1 != null) {
-		{
-		    separator0 = ",";
-		    sink.encodeKey("rev");
-		    if (item1.isUnknownEnumerator()) {
-			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
-		    } else 
-			sink.writeString(item1.name());
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		separator0 = ",";
-		coder.encodeAbsentComponent(sink, "rev");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("rev", "RTCM-Revision");
-	    throw ee;
-	}
-	// Encode field 'rtcmID'
-	try {
-	    RTCM_ID item1 = this.rtcmID;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator(separator0);
-		    separator0 = ",";
-		    sink.encodeKey("rtcmID");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator(separator0);
-		separator0 = ",";
-		coder.encodeAbsentComponent(sink, "rtcmID");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("rtcmID", "RTCM-ID");
-	    throw ee;
-	}
-	// Encode field 'payload'
-	try {
-	    RTCM_Payload item1 = this.payload;
-
-	    {
-		sink.writeSeparator(separator0);
-		sink.encodeKey("payload");
-		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("payload", "RTCM-Payload");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public RTCMmsg decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[4];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		RTCMmsg.__Tag t_tag0 = RTCMmsg.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = RTCMmsg.__Tag._null_;
-		switch (t_tag0) {
-		    case __rev:
-		    // Decode field 'rev'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    String content1 = coder.decodeString(source);
-			    int idx1;
-			    RTCM_Revision temp1;
-
-			    if (present0[0])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    idx1 = coder.resolveName(RTCM_Revision.cConstantNameList, content1);
-			    if (idx1 < 0 )
-				temp1 = RTCM_Revision.unknownEnumerator();
-			    else
-				temp1 = RTCM_Revision.cNamedNumbers[idx1];
-			    this.rev = temp1;
-			    present0[0] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("rev", "RTCM-Revision");
-			throw de;
-		    }
-		    break;
-		    case __rtcmID:
-		    // Decode field 'rtcmID'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[1])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.rtcmID == null)
-				this.rtcmID = new RTCM_ID();
-			    this.rtcmID.setValue(coder.decodeInteger(source));
-			    present0[1] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("rtcmID", "RTCM-ID");
-			throw de;
-		    }
-		    break;
-		    case __payload:
-		    // Decode field 'payload'
-		    try {
-			if (present0[2])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			this.payload = new RTCM_Payload(coder.decodeOctetString(source));
-			present0[2] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("payload", "RTCM-Payload");
-			throw de;
-		    }
-		    break;
-		    default:
-			coder.skipValue(source);
-			break;
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    this.rev = null;
-	if (!present0[1])
-	    this.rtcmID = null;
-	if (!present0[2])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'payload'");
-	return this;
     }
 
     /**

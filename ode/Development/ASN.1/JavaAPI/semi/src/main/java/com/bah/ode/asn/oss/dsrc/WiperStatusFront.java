@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -79,34 +76,27 @@ public final class WiperStatusFront extends Enumerated {
 	
     }
     // Named list definitions.
-    public static final WiperStatusFront unavailable =
-	new WiperStatusFront();
-    public static final WiperStatusFront off =
-	new WiperStatusFront(1);
-    public static final WiperStatusFront intermittent =
-	new WiperStatusFront(2);
-    public static final WiperStatusFront low =
-	new WiperStatusFront(3);
-    public static final WiperStatusFront high =
-	new WiperStatusFront(4);
-    public static final WiperStatusFront washerInUse =
-	new WiperStatusFront(126);
-    public static final WiperStatusFront automaticPresent =
-	new WiperStatusFront(127);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static WiperStatusFront cNamedNumbers[] = {
-	 unavailable, 
-	 off, 
-	 intermittent, 
-	 low, 
-	 high, 
-	 washerInUse, 
-	 automaticPresent
+	new WiperStatusFront(), 
+	new WiperStatusFront(1), 
+	new WiperStatusFront(2), 
+	new WiperStatusFront(3), 
+	new WiperStatusFront(4), 
+	new WiperStatusFront(126), 
+	new WiperStatusFront(127)
     };
+    public static final WiperStatusFront unavailable = cNamedNumbers[0];
+    public static final WiperStatusFront off = cNamedNumbers[1];
+    public static final WiperStatusFront intermittent = cNamedNumbers[2];
+    public static final WiperStatusFront low = cNamedNumbers[3];
+    public static final WiperStatusFront high = cNamedNumbers[4];
+    public static final WiperStatusFront washerInUse = cNamedNumbers[5];
+    public static final WiperStatusFront automaticPresent = cNamedNumbers[6];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -121,6 +111,7 @@ public final class WiperStatusFront extends Enumerated {
 	"washerInUse",
 	"automaticPresent"
     };
+    
     
     /**
      * Returns the array of enumerators (reserved for internal use).
@@ -154,8 +145,12 @@ public final class WiperStatusFront extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static WiperStatusFront valueOf(long value)
     {
 	int inx = indexOfValue(value);

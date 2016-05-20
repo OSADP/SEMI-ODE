@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -101,100 +98,71 @@ public final class VehicleStatusDeviceTypeTag extends Enumerated {
 	
     }
     // Named list definitions.
-    public static final VehicleStatusDeviceTypeTag unknown =
-	new VehicleStatusDeviceTypeTag();
-    public static final VehicleStatusDeviceTypeTag lights =
-	new VehicleStatusDeviceTypeTag(1);
-    public static final VehicleStatusDeviceTypeTag wipers =
-	new VehicleStatusDeviceTypeTag(2);
-    public static final VehicleStatusDeviceTypeTag brakes =
-	new VehicleStatusDeviceTypeTag(3);
-    public static final VehicleStatusDeviceTypeTag stab =
-	new VehicleStatusDeviceTypeTag(4);
-    public static final VehicleStatusDeviceTypeTag trac =
-	new VehicleStatusDeviceTypeTag(5);
-    public static final VehicleStatusDeviceTypeTag abs =
-	new VehicleStatusDeviceTypeTag(6);
-    public static final VehicleStatusDeviceTypeTag sunS =
-	new VehicleStatusDeviceTypeTag(7);
-    public static final VehicleStatusDeviceTypeTag rainS =
-	new VehicleStatusDeviceTypeTag(8);
-    public static final VehicleStatusDeviceTypeTag airTemp =
-	new VehicleStatusDeviceTypeTag(9);
-    public static final VehicleStatusDeviceTypeTag steering =
-	new VehicleStatusDeviceTypeTag(10);
-    public static final VehicleStatusDeviceTypeTag vertAccelThres =
-	new VehicleStatusDeviceTypeTag(11);
-    public static final VehicleStatusDeviceTypeTag vertAccel =
-	new VehicleStatusDeviceTypeTag(12);
-    public static final VehicleStatusDeviceTypeTag hozAccelLong =
-	new VehicleStatusDeviceTypeTag(13);
-    public static final VehicleStatusDeviceTypeTag hozAccelLat =
-	new VehicleStatusDeviceTypeTag(14);
-    public static final VehicleStatusDeviceTypeTag hozAccelCon =
-	new VehicleStatusDeviceTypeTag(15);
-    public static final VehicleStatusDeviceTypeTag accel4way =
-	new VehicleStatusDeviceTypeTag(16);
-    public static final VehicleStatusDeviceTypeTag confidenceSet =
-	new VehicleStatusDeviceTypeTag(17);
-    public static final VehicleStatusDeviceTypeTag obDist =
-	new VehicleStatusDeviceTypeTag(18);
-    public static final VehicleStatusDeviceTypeTag obDirect =
-	new VehicleStatusDeviceTypeTag(19);
-    public static final VehicleStatusDeviceTypeTag yaw =
-	new VehicleStatusDeviceTypeTag(20);
-    public static final VehicleStatusDeviceTypeTag yawRateCon =
-	new VehicleStatusDeviceTypeTag(21);
-    public static final VehicleStatusDeviceTypeTag dateTime =
-	new VehicleStatusDeviceTypeTag(22);
-    public static final VehicleStatusDeviceTypeTag fullPos =
-	new VehicleStatusDeviceTypeTag(23);
-    public static final VehicleStatusDeviceTypeTag position2D =
-	new VehicleStatusDeviceTypeTag(24);
-    public static final VehicleStatusDeviceTypeTag position3D =
-	new VehicleStatusDeviceTypeTag(25);
-    public static final VehicleStatusDeviceTypeTag vehicle =
-	new VehicleStatusDeviceTypeTag(26);
-    public static final VehicleStatusDeviceTypeTag speedHeadC =
-	new VehicleStatusDeviceTypeTag(27);
-    public static final VehicleStatusDeviceTypeTag speedC =
-	new VehicleStatusDeviceTypeTag(28);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static VehicleStatusDeviceTypeTag cNamedNumbers[] = {
-	 unknown, 
-	 lights, 
-	 wipers, 
-	 brakes, 
-	 stab, 
-	 trac, 
-	 abs, 
-	 sunS, 
-	 rainS, 
-	 airTemp, 
-	 steering, 
-	 vertAccelThres, 
-	 vertAccel, 
-	 hozAccelLong, 
-	 hozAccelLat, 
-	 hozAccelCon, 
-	 accel4way, 
-	 confidenceSet, 
-	 obDist, 
-	 obDirect, 
-	 yaw, 
-	 yawRateCon, 
-	 dateTime, 
-	 fullPos, 
-	 position2D, 
-	 position3D, 
-	 vehicle, 
-	 speedHeadC, 
-	 speedC
+	new VehicleStatusDeviceTypeTag(), 
+	new VehicleStatusDeviceTypeTag(1), 
+	new VehicleStatusDeviceTypeTag(2), 
+	new VehicleStatusDeviceTypeTag(3), 
+	new VehicleStatusDeviceTypeTag(4), 
+	new VehicleStatusDeviceTypeTag(5), 
+	new VehicleStatusDeviceTypeTag(6), 
+	new VehicleStatusDeviceTypeTag(7), 
+	new VehicleStatusDeviceTypeTag(8), 
+	new VehicleStatusDeviceTypeTag(9), 
+	new VehicleStatusDeviceTypeTag(10), 
+	new VehicleStatusDeviceTypeTag(11), 
+	new VehicleStatusDeviceTypeTag(12), 
+	new VehicleStatusDeviceTypeTag(13), 
+	new VehicleStatusDeviceTypeTag(14), 
+	new VehicleStatusDeviceTypeTag(15), 
+	new VehicleStatusDeviceTypeTag(16), 
+	new VehicleStatusDeviceTypeTag(17), 
+	new VehicleStatusDeviceTypeTag(18), 
+	new VehicleStatusDeviceTypeTag(19), 
+	new VehicleStatusDeviceTypeTag(20), 
+	new VehicleStatusDeviceTypeTag(21), 
+	new VehicleStatusDeviceTypeTag(22), 
+	new VehicleStatusDeviceTypeTag(23), 
+	new VehicleStatusDeviceTypeTag(24), 
+	new VehicleStatusDeviceTypeTag(25), 
+	new VehicleStatusDeviceTypeTag(26), 
+	new VehicleStatusDeviceTypeTag(27), 
+	new VehicleStatusDeviceTypeTag(28)
     };
+    public static final VehicleStatusDeviceTypeTag unknown = cNamedNumbers[0];
+    public static final VehicleStatusDeviceTypeTag lights = cNamedNumbers[1];
+    public static final VehicleStatusDeviceTypeTag wipers = cNamedNumbers[2];
+    public static final VehicleStatusDeviceTypeTag brakes = cNamedNumbers[3];
+    public static final VehicleStatusDeviceTypeTag stab = cNamedNumbers[4];
+    public static final VehicleStatusDeviceTypeTag trac = cNamedNumbers[5];
+    public static final VehicleStatusDeviceTypeTag abs = cNamedNumbers[6];
+    public static final VehicleStatusDeviceTypeTag sunS = cNamedNumbers[7];
+    public static final VehicleStatusDeviceTypeTag rainS = cNamedNumbers[8];
+    public static final VehicleStatusDeviceTypeTag airTemp = cNamedNumbers[9];
+    public static final VehicleStatusDeviceTypeTag steering = cNamedNumbers[10];
+    public static final VehicleStatusDeviceTypeTag vertAccelThres = cNamedNumbers[11];
+    public static final VehicleStatusDeviceTypeTag vertAccel = cNamedNumbers[12];
+    public static final VehicleStatusDeviceTypeTag hozAccelLong = cNamedNumbers[13];
+    public static final VehicleStatusDeviceTypeTag hozAccelLat = cNamedNumbers[14];
+    public static final VehicleStatusDeviceTypeTag hozAccelCon = cNamedNumbers[15];
+    public static final VehicleStatusDeviceTypeTag accel4way = cNamedNumbers[16];
+    public static final VehicleStatusDeviceTypeTag confidenceSet = cNamedNumbers[17];
+    public static final VehicleStatusDeviceTypeTag obDist = cNamedNumbers[18];
+    public static final VehicleStatusDeviceTypeTag obDirect = cNamedNumbers[19];
+    public static final VehicleStatusDeviceTypeTag yaw = cNamedNumbers[20];
+    public static final VehicleStatusDeviceTypeTag yawRateCon = cNamedNumbers[21];
+    public static final VehicleStatusDeviceTypeTag dateTime = cNamedNumbers[22];
+    public static final VehicleStatusDeviceTypeTag fullPos = cNamedNumbers[23];
+    public static final VehicleStatusDeviceTypeTag position2D = cNamedNumbers[24];
+    public static final VehicleStatusDeviceTypeTag position3D = cNamedNumbers[25];
+    public static final VehicleStatusDeviceTypeTag vehicle = cNamedNumbers[26];
+    public static final VehicleStatusDeviceTypeTag speedHeadC = cNamedNumbers[27];
+    public static final VehicleStatusDeviceTypeTag speedC = cNamedNumbers[28];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -232,6 +200,7 @@ public final class VehicleStatusDeviceTypeTag extends Enumerated {
 	"speedC"
     };
     
+    
     /**
      * Returns the array of enumerators (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
@@ -262,8 +231,12 @@ public final class VehicleStatusDeviceTypeTag extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static VehicleStatusDeviceTypeTag valueOf(long value)
     {
 	int inx = indexOfValue(value);

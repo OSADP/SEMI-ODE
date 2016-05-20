@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -111,133 +108,93 @@ public final class TimeConfidence extends Enumerated {
 	public static final long time_000_000_000_000_01 = 39;
     }
     // Named list definitions.
-    public static final TimeConfidence unavailable =
-	new TimeConfidence();
-    public static final TimeConfidence time_100_000 =
-	new TimeConfidence(1);
-    public static final TimeConfidence time_050_000 =
-	new TimeConfidence(2);
-    public static final TimeConfidence time_020_000 =
-	new TimeConfidence(3);
-    public static final TimeConfidence time_010_000 =
-	new TimeConfidence(4);
-    public static final TimeConfidence time_002_000 =
-	new TimeConfidence(5);
-    public static final TimeConfidence time_001_000 =
-	new TimeConfidence(6);
-    public static final TimeConfidence time_000_500 =
-	new TimeConfidence(7);
-    public static final TimeConfidence time_000_200 =
-	new TimeConfidence(8);
-    public static final TimeConfidence time_000_100 =
-	new TimeConfidence(9);
-    public static final TimeConfidence time_000_050 =
-	new TimeConfidence(10);
-    public static final TimeConfidence time_000_020 =
-	new TimeConfidence(11);
-    public static final TimeConfidence time_000_010 =
-	new TimeConfidence(12);
-    public static final TimeConfidence time_000_005 =
-	new TimeConfidence(13);
-    public static final TimeConfidence time_000_002 =
-	new TimeConfidence(14);
-    public static final TimeConfidence time_000_001 =
-	new TimeConfidence(15);
-    public static final TimeConfidence time_000_000_5 =
-	new TimeConfidence(16);
-    public static final TimeConfidence time_000_000_2 =
-	new TimeConfidence(17);
-    public static final TimeConfidence time_000_000_1 =
-	new TimeConfidence(18);
-    public static final TimeConfidence time_000_000_05 =
-	new TimeConfidence(19);
-    public static final TimeConfidence time_000_000_02 =
-	new TimeConfidence(20);
-    public static final TimeConfidence time_000_000_01 =
-	new TimeConfidence(21);
-    public static final TimeConfidence time_000_000_005 =
-	new TimeConfidence(22);
-    public static final TimeConfidence time_000_000_002 =
-	new TimeConfidence(23);
-    public static final TimeConfidence time_000_000_001 =
-	new TimeConfidence(24);
-    public static final TimeConfidence time_000_000_000_5 =
-	new TimeConfidence(25);
-    public static final TimeConfidence time_000_000_000_2 =
-	new TimeConfidence(26);
-    public static final TimeConfidence time_000_000_000_1 =
-	new TimeConfidence(27);
-    public static final TimeConfidence time_000_000_000_05 =
-	new TimeConfidence(28);
-    public static final TimeConfidence time_000_000_000_02 =
-	new TimeConfidence(29);
-    public static final TimeConfidence time_000_000_000_01 =
-	new TimeConfidence(30);
-    public static final TimeConfidence time_000_000_000_005 =
-	new TimeConfidence(31);
-    public static final TimeConfidence time_000_000_000_002 =
-	new TimeConfidence(32);
-    public static final TimeConfidence time_000_000_000_001 =
-	new TimeConfidence(33);
-    public static final TimeConfidence time_000_000_000_000_5 =
-	new TimeConfidence(34);
-    public static final TimeConfidence time_000_000_000_000_2 =
-	new TimeConfidence(35);
-    public static final TimeConfidence time_000_000_000_000_1 =
-	new TimeConfidence(36);
-    public static final TimeConfidence time_000_000_000_000_05 =
-	new TimeConfidence(37);
-    public static final TimeConfidence time_000_000_000_000_02 =
-	new TimeConfidence(38);
-    public static final TimeConfidence time_000_000_000_000_01 =
-	new TimeConfidence(39);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static TimeConfidence cNamedNumbers[] = {
-	 unavailable, 
-	 time_100_000, 
-	 time_050_000, 
-	 time_020_000, 
-	 time_010_000, 
-	 time_002_000, 
-	 time_001_000, 
-	 time_000_500, 
-	 time_000_200, 
-	 time_000_100, 
-	 time_000_050, 
-	 time_000_020, 
-	 time_000_010, 
-	 time_000_005, 
-	 time_000_002, 
-	 time_000_001, 
-	 time_000_000_5, 
-	 time_000_000_2, 
-	 time_000_000_1, 
-	 time_000_000_05, 
-	 time_000_000_02, 
-	 time_000_000_01, 
-	 time_000_000_005, 
-	 time_000_000_002, 
-	 time_000_000_001, 
-	 time_000_000_000_5, 
-	 time_000_000_000_2, 
-	 time_000_000_000_1, 
-	 time_000_000_000_05, 
-	 time_000_000_000_02, 
-	 time_000_000_000_01, 
-	 time_000_000_000_005, 
-	 time_000_000_000_002, 
-	 time_000_000_000_001, 
-	 time_000_000_000_000_5, 
-	 time_000_000_000_000_2, 
-	 time_000_000_000_000_1, 
-	 time_000_000_000_000_05, 
-	 time_000_000_000_000_02, 
-	 time_000_000_000_000_01
+	new TimeConfidence(), 
+	new TimeConfidence(1), 
+	new TimeConfidence(2), 
+	new TimeConfidence(3), 
+	new TimeConfidence(4), 
+	new TimeConfidence(5), 
+	new TimeConfidence(6), 
+	new TimeConfidence(7), 
+	new TimeConfidence(8), 
+	new TimeConfidence(9), 
+	new TimeConfidence(10), 
+	new TimeConfidence(11), 
+	new TimeConfidence(12), 
+	new TimeConfidence(13), 
+	new TimeConfidence(14), 
+	new TimeConfidence(15), 
+	new TimeConfidence(16), 
+	new TimeConfidence(17), 
+	new TimeConfidence(18), 
+	new TimeConfidence(19), 
+	new TimeConfidence(20), 
+	new TimeConfidence(21), 
+	new TimeConfidence(22), 
+	new TimeConfidence(23), 
+	new TimeConfidence(24), 
+	new TimeConfidence(25), 
+	new TimeConfidence(26), 
+	new TimeConfidence(27), 
+	new TimeConfidence(28), 
+	new TimeConfidence(29), 
+	new TimeConfidence(30), 
+	new TimeConfidence(31), 
+	new TimeConfidence(32), 
+	new TimeConfidence(33), 
+	new TimeConfidence(34), 
+	new TimeConfidence(35), 
+	new TimeConfidence(36), 
+	new TimeConfidence(37), 
+	new TimeConfidence(38), 
+	new TimeConfidence(39)
     };
+    public static final TimeConfidence unavailable = cNamedNumbers[0];
+    public static final TimeConfidence time_100_000 = cNamedNumbers[1];
+    public static final TimeConfidence time_050_000 = cNamedNumbers[2];
+    public static final TimeConfidence time_020_000 = cNamedNumbers[3];
+    public static final TimeConfidence time_010_000 = cNamedNumbers[4];
+    public static final TimeConfidence time_002_000 = cNamedNumbers[5];
+    public static final TimeConfidence time_001_000 = cNamedNumbers[6];
+    public static final TimeConfidence time_000_500 = cNamedNumbers[7];
+    public static final TimeConfidence time_000_200 = cNamedNumbers[8];
+    public static final TimeConfidence time_000_100 = cNamedNumbers[9];
+    public static final TimeConfidence time_000_050 = cNamedNumbers[10];
+    public static final TimeConfidence time_000_020 = cNamedNumbers[11];
+    public static final TimeConfidence time_000_010 = cNamedNumbers[12];
+    public static final TimeConfidence time_000_005 = cNamedNumbers[13];
+    public static final TimeConfidence time_000_002 = cNamedNumbers[14];
+    public static final TimeConfidence time_000_001 = cNamedNumbers[15];
+    public static final TimeConfidence time_000_000_5 = cNamedNumbers[16];
+    public static final TimeConfidence time_000_000_2 = cNamedNumbers[17];
+    public static final TimeConfidence time_000_000_1 = cNamedNumbers[18];
+    public static final TimeConfidence time_000_000_05 = cNamedNumbers[19];
+    public static final TimeConfidence time_000_000_02 = cNamedNumbers[20];
+    public static final TimeConfidence time_000_000_01 = cNamedNumbers[21];
+    public static final TimeConfidence time_000_000_005 = cNamedNumbers[22];
+    public static final TimeConfidence time_000_000_002 = cNamedNumbers[23];
+    public static final TimeConfidence time_000_000_001 = cNamedNumbers[24];
+    public static final TimeConfidence time_000_000_000_5 = cNamedNumbers[25];
+    public static final TimeConfidence time_000_000_000_2 = cNamedNumbers[26];
+    public static final TimeConfidence time_000_000_000_1 = cNamedNumbers[27];
+    public static final TimeConfidence time_000_000_000_05 = cNamedNumbers[28];
+    public static final TimeConfidence time_000_000_000_02 = cNamedNumbers[29];
+    public static final TimeConfidence time_000_000_000_01 = cNamedNumbers[30];
+    public static final TimeConfidence time_000_000_000_005 = cNamedNumbers[31];
+    public static final TimeConfidence time_000_000_000_002 = cNamedNumbers[32];
+    public static final TimeConfidence time_000_000_000_001 = cNamedNumbers[33];
+    public static final TimeConfidence time_000_000_000_000_5 = cNamedNumbers[34];
+    public static final TimeConfidence time_000_000_000_000_2 = cNamedNumbers[35];
+    public static final TimeConfidence time_000_000_000_000_1 = cNamedNumbers[36];
+    public static final TimeConfidence time_000_000_000_000_05 = cNamedNumbers[37];
+    public static final TimeConfidence time_000_000_000_000_02 = cNamedNumbers[38];
+    public static final TimeConfidence time_000_000_000_000_01 = cNamedNumbers[39];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -286,6 +243,7 @@ public final class TimeConfidence extends Enumerated {
 	"time-000-000-000-000-01"
     };
     
+    
     /**
      * Returns the array of enumerators (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
@@ -316,8 +274,12 @@ public final class TimeConfidence extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static TimeConfidence valueOf(long value)
     {
 	int inx = indexOfValue(value);

@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -224,38 +221,6 @@ public class VehicleSituationStatus extends Sequence {
 	
 	
 	/**
-	 * Hashtable for tags (reserved for internal use).
-	 * This class is reserved for internal use and must not be used in the application code.
-	 */
-	public static enum __Tag
-	{
-	    __leftFront("leftFront"),
-	    __leftRear("leftRear"),
-	    __rightFront("rightFront"),
-	    __rightRear("rightRear"),
-	    _null_("_null_");
-	    private String tag;
-	    private static java.util.HashMap<String, __Tag> map =
-		new java.util.HashMap<String, __Tag>(5);
-	    private __Tag(String tag) {
-		this.tag = tag;
-	    }
-	    private String getTag() {
-		return tag;
-	    }
-	    /**
-	     * This method is reserved for internal use and must not be invoked from the application code.
-	     */
-	    public static __Tag getTagSub(String tag) {
-		return map.get(tag);
-	    }
-	    static {
-		for (__Tag t:values())
-		    map.put(t.getTag(), t);
-	    }
-	}
-	
-	/**
 	 * Implements PER value encoder for the type (reserved for internal use).
 	 * This method is reserved for internal use and must not be invoked from the application code.
 	 */
@@ -392,165 +357,6 @@ public class VehicleSituationStatus extends Sequence {
 	}
 
 	/**
-	 * Implements JSON value encoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public void encodeValue(JsonCoder coder, JsonWriter sink)
-		throws IOException, EncoderException
-	{
-	    sink.beginObject();
-	    // Encode field 'leftFront'
-	    try {
-		com.bah.ode.asn.oss.dsrc.TirePressure item1 = this.leftFront;
-
-		{
-		    sink.encodeKey("leftFront");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } catch (Exception e) {
-		EncoderException ee = EncoderException.wrapException(e);
-		ee.appendFieldContext("leftFront", "TirePressure");
-		throw ee;
-	    }
-	    // Encode field 'leftRear'
-	    try {
-		com.bah.ode.asn.oss.dsrc.TirePressure item1 = this.leftRear;
-
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("leftRear");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } catch (Exception e) {
-		EncoderException ee = EncoderException.wrapException(e);
-		ee.appendFieldContext("leftRear", "TirePressure");
-		throw ee;
-	    }
-	    // Encode field 'rightFront'
-	    try {
-		com.bah.ode.asn.oss.dsrc.TirePressure item1 = this.rightFront;
-
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("rightFront");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } catch (Exception e) {
-		EncoderException ee = EncoderException.wrapException(e);
-		ee.appendFieldContext("rightFront", "TirePressure");
-		throw ee;
-	    }
-	    // Encode field 'rightRear'
-	    try {
-		com.bah.ode.asn.oss.dsrc.TirePressure item1 = this.rightRear;
-
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("rightRear");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } catch (Exception e) {
-		EncoderException ee = EncoderException.wrapException(e);
-		ee.appendFieldContext("rightRear", "TirePressure");
-		throw ee;
-	    }
-	    sink.endObject();
-
-	}
-
-	/**
-	 * Implements JSON value decoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public TirePressure decodeValue(JsonCoder coder, JsonReader source)
-		throws IOException, DecoderException
-	{
-	    boolean[] present0 = new boolean[5];
-
-	    coder.decodeObject(source);
-	    if (coder.hasMoreProperties(source, true))
-		do {
-		    String tag0 = coder.nextProperty(source);
-		    TirePressure.__Tag t_tag0 = TirePressure.__Tag.getTagSub(tag0);
-		    if (t_tag0 == null) 
-			t_tag0 = TirePressure.__Tag._null_;
-		    switch (t_tag0) {
-			case __leftFront:
-			// Decode field 'leftFront'
-			try {
-			    if (present0[0])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.leftFront == null)
-				this.leftFront = new com.bah.ode.asn.oss.dsrc.TirePressure();
-			    this.leftFront.setValue(coder.decodeInteger(source));
-			    present0[0] = true;
-			} catch (Exception e) {
-			    DecoderException de = DecoderException.wrapException(e);
-			    de.appendFieldContext("leftFront", "TirePressure");
-			    throw de;
-			}
-			break;
-			case __leftRear:
-			// Decode field 'leftRear'
-			try {
-			    if (present0[1])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.leftRear == null)
-				this.leftRear = new com.bah.ode.asn.oss.dsrc.TirePressure();
-			    this.leftRear.setValue(coder.decodeInteger(source));
-			    present0[1] = true;
-			} catch (Exception e) {
-			    DecoderException de = DecoderException.wrapException(e);
-			    de.appendFieldContext("leftRear", "TirePressure");
-			    throw de;
-			}
-			break;
-			case __rightFront:
-			// Decode field 'rightFront'
-			try {
-			    if (present0[2])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.rightFront == null)
-				this.rightFront = new com.bah.ode.asn.oss.dsrc.TirePressure();
-			    this.rightFront.setValue(coder.decodeInteger(source));
-			    present0[2] = true;
-			} catch (Exception e) {
-			    DecoderException de = DecoderException.wrapException(e);
-			    de.appendFieldContext("rightFront", "TirePressure");
-			    throw de;
-			}
-			break;
-			case __rightRear:
-			// Decode field 'rightRear'
-			try {
-			    if (present0[3])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.rightRear == null)
-				this.rightRear = new com.bah.ode.asn.oss.dsrc.TirePressure();
-			    this.rightRear.setValue(coder.decodeInteger(source));
-			    present0[3] = true;
-			} catch (Exception e) {
-			    DecoderException de = DecoderException.wrapException(e);
-			    de.appendFieldContext("rightRear", "TirePressure");
-			    throw de;
-			}
-			break;
-			default:
-			    throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
-		    }
-		} while (coder.hasMoreProperties(source, false));
-	    if (!present0[0])
-		throw new DecoderException(ExceptionDescriptor._field_omit, ": 'leftFront'");
-	    if (!present0[1])
-		throw new DecoderException(ExceptionDescriptor._field_omit, ": 'leftRear'");
-	    if (!present0[2])
-		throw new DecoderException(ExceptionDescriptor._field_omit, ": 'rightFront'");
-	    if (!present0[3])
-		throw new DecoderException(ExceptionDescriptor._field_omit, ": 'rightRear'");
-	    return this;
-	}
-
-	/**
 	 * Compare 'this' object to another object to see if their contents are the same.
 	 */
 	public boolean abstractEqualTo(AbstractData that)
@@ -600,37 +406,6 @@ public class VehicleSituationStatus extends Sequence {
 	}
     } // End class definition for TirePressure
 
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__lights("lights"),
-	__throttlePos("throttlePos"),
-	__tirePressure("tirePressure"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(4);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
-    
     /**
      * Implements PER value encoder for the type (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
@@ -781,149 +556,6 @@ public class VehicleSituationStatus extends Sequence {
 	    }
 	}
 	return data;
-    }
-
-    /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	sink.beginObject();
-	// Encode field 'lights'
-	try {
-	    com.bah.ode.asn.oss.dsrc.ExteriorLights item1 = this.lights;
-
-	    {
-		sink.encodeKey("lights");
-		coder.encodeInteger(item1.longValue(), sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("lights", "ExteriorLights");
-	    throw ee;
-	}
-	// Encode field 'throttlePos'
-	try {
-	    com.bah.ode.asn.oss.dsrc.ThrottlePosition item1 = this.throttlePos;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("throttlePos");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "throttlePos");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("throttlePos", "ThrottlePosition");
-	    throw ee;
-	}
-	// Encode field 'tirePressure'
-	try {
-	    TirePressure item1 = this.tirePressure;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("tirePressure");
-		    item1.encodeValue(coder, sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "tirePressure");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("tirePressure", "SEQUENCE");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public VehicleSituationStatus decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[4];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		VehicleSituationStatus.__Tag t_tag0 = VehicleSituationStatus.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = VehicleSituationStatus.__Tag._null_;
-		switch (t_tag0) {
-		    case __lights:
-		    // Decode field 'lights'
-		    try {
-			if (present0[0])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.lights == null)
-			    this.lights = new com.bah.ode.asn.oss.dsrc.ExteriorLights();
-			this.lights.setValue(coder.decodeInteger(source));
-			present0[0] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("lights", "ExteriorLights");
-			throw de;
-		    }
-		    break;
-		    case __throttlePos:
-		    // Decode field 'throttlePos'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[1])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.throttlePos == null)
-				this.throttlePos = new com.bah.ode.asn.oss.dsrc.ThrottlePosition();
-			    this.throttlePos.setValue(coder.decodeInteger(source));
-			    present0[1] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("throttlePos", "ThrottlePosition");
-			throw de;
-		    }
-		    break;
-		    case __tirePressure:
-		    // Decode field 'tirePressure'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[2])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.tirePressure == null)
-				this.tirePressure = new TirePressure();
-			    this.tirePressure.decodeValue(coder, source);
-			    present0[2] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("tirePressure", "SEQUENCE");
-			throw de;
-		    }
-		    break;
-		    default:
-			coder.skipValue(source);
-			break;
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'lights'");
-	if (!present0[1])
-	    this.throttlePos = null;
-	if (!present0[2])
-	    this.tirePressure = null;
-	return this;
     }
 
     /**

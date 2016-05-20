@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -196,40 +193,6 @@ public class SpecialLane extends Sequence {
 	connectsTo = null;
     }
     
-    
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__laneNumber("laneNumber"),
-	__laneWidth("laneWidth"),
-	__laneAttributes("laneAttributes"),
-	__nodeList("nodeList"),
-	__keepOutList("keepOutList"),
-	__connectsTo("connectsTo"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(7);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -687,252 +650,6 @@ public class SpecialLane extends Sequence {
 	    }
 	}
 	return data;
-    }
-
-    /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	sink.beginObject();
-	// Encode field 'laneNumber'
-	try {
-	    LaneNumber item1 = this.laneNumber;
-
-	    {
-		sink.encodeKey("laneNumber");
-		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("laneNumber", "LaneNumber");
-	    throw ee;
-	}
-	// Encode field 'laneWidth'
-	try {
-	    LaneWidth item1 = this.laneWidth;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("laneWidth");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "laneWidth");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("laneWidth", "LaneWidth");
-	    throw ee;
-	}
-	// Encode field 'laneAttributes'
-	try {
-	    SpecialLaneAttributes item1 = this.laneAttributes;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("laneAttributes");
-		sink.writeString(item1.name());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("laneAttributes", "SpecialLaneAttributes");
-	    throw ee;
-	}
-	// Encode field 'nodeList'
-	try {
-	    NodeList item1 = this.nodeList;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("nodeList");
-		item1.encodeValue(coder, sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("nodeList", "NodeList");
-	    throw ee;
-	}
-	// Encode field 'keepOutList'
-	try {
-	    NodeList item1 = this.keepOutList;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("keepOutList");
-		    item1.encodeValue(coder, sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "keepOutList");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("keepOutList", "NodeList");
-	    throw ee;
-	}
-	// Encode field 'connectsTo'
-	try {
-	    ConnectsTo item1 = this.connectsTo;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("connectsTo");
-		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "connectsTo");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("connectsTo", "ConnectsTo");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public SpecialLane decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[7];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		SpecialLane.__Tag t_tag0 = SpecialLane.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = SpecialLane.__Tag._null_;
-		switch (t_tag0) {
-		    case __laneNumber:
-		    // Decode field 'laneNumber'
-		    try {
-			if (present0[0])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			this.laneNumber = new LaneNumber(coder.decodeOctetString(source));
-			present0[0] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("laneNumber", "LaneNumber");
-			throw de;
-		    }
-		    break;
-		    case __laneWidth:
-		    // Decode field 'laneWidth'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[1])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.laneWidth == null)
-				this.laneWidth = new LaneWidth();
-			    this.laneWidth.setValue(coder.decodeInteger(source));
-			    present0[1] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("laneWidth", "LaneWidth");
-			throw de;
-		    }
-		    break;
-		    case __laneAttributes:
-		    // Decode field 'laneAttributes'
-		    try {
-			String content1 = coder.decodeString(source);
-			int idx1;
-			SpecialLaneAttributes temp1;
-
-			if (present0[2])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			idx1 = coder.resolveName(SpecialLaneAttributes.cConstantNameList, content1);
-			if (idx1 < 0 )
-			    throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
-			else
-			    temp1 = SpecialLaneAttributes.cNamedNumbers[idx1];
-			this.laneAttributes = temp1;
-			present0[2] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("laneAttributes", "SpecialLaneAttributes");
-			throw de;
-		    }
-		    break;
-		    case __nodeList:
-		    // Decode field 'nodeList'
-		    try {
-			if (present0[3])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.nodeList == null)
-			    this.nodeList = new NodeList();
-			this.nodeList.decodeValue(coder, source);
-			present0[3] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("nodeList", "NodeList");
-			throw de;
-		    }
-		    break;
-		    case __keepOutList:
-		    // Decode field 'keepOutList'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[4])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.keepOutList == null)
-				this.keepOutList = new NodeList();
-			    this.keepOutList.decodeValue(coder, source);
-			    present0[4] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("keepOutList", "NodeList");
-			throw de;
-		    }
-		    break;
-		    case __connectsTo:
-		    // Decode field 'connectsTo'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[5])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    this.connectsTo = new ConnectsTo(coder.decodeOctetString(source));
-			    present0[5] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("connectsTo", "ConnectsTo");
-			throw de;
-		    }
-		    break;
-		    default:
-			coder.skipValue(source);
-			break;
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'laneNumber'");
-	if (!present0[1])
-	    this.laneWidth = null;
-	if (!present0[2])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'laneAttributes'");
-	if (!present0[3])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'nodeList'");
-	if (!present0[4])
-	    this.keepOutList = null;
-	if (!present0[5])
-	    this.connectsTo = null;
-	return this;
     }
 
     /**

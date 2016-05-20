@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -90,67 +87,49 @@ public final class RequestedItem extends Enumerated {
 	
     }
     // Named list definitions.
-    public static final RequestedItem reserved =
-	new RequestedItem();
-    public static final RequestedItem itemA =
-	new RequestedItem(1);
-    public static final RequestedItem itemB =
-	new RequestedItem(2);
-    public static final RequestedItem itemC =
-	new RequestedItem(3);
-    public static final RequestedItem itemD =
-	new RequestedItem(4);
-    public static final RequestedItem itemE =
-	new RequestedItem(5);
-    public static final RequestedItem itemF =
-	new RequestedItem(6);
-    public static final RequestedItem itemG =
-	new RequestedItem(7);
-    public static final RequestedItem itemH =
-	new RequestedItem(8);
-    public static final RequestedItem itemI =
-	new RequestedItem(9);
-    public static final RequestedItem itemJ =
-	new RequestedItem(10);
-    public static final RequestedItem itemK =
-	new RequestedItem(11);
-    public static final RequestedItem itemL =
-	new RequestedItem(12);
-    public static final RequestedItem itemM =
-	new RequestedItem(13);
-    public static final RequestedItem itemN =
-	new RequestedItem(14);
-    public static final RequestedItem itemO =
-	new RequestedItem(15);
-    public static final RequestedItem itemP =
-	new RequestedItem(16);
-    public static final RequestedItem itemQ =
-	new RequestedItem(17);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static RequestedItem cNamedNumbers[] = {
-	 reserved, 
-	 itemA, 
-	 itemB, 
-	 itemC, 
-	 itemD, 
-	 itemE, 
-	 itemF, 
-	 itemG, 
-	 itemH, 
-	 itemI, 
-	 itemJ, 
-	 itemK, 
-	 itemL, 
-	 itemM, 
-	 itemN, 
-	 itemO, 
-	 itemP, 
-	 itemQ
+	new RequestedItem(), 
+	new RequestedItem(1), 
+	new RequestedItem(2), 
+	new RequestedItem(3), 
+	new RequestedItem(4), 
+	new RequestedItem(5), 
+	new RequestedItem(6), 
+	new RequestedItem(7), 
+	new RequestedItem(8), 
+	new RequestedItem(9), 
+	new RequestedItem(10), 
+	new RequestedItem(11), 
+	new RequestedItem(12), 
+	new RequestedItem(13), 
+	new RequestedItem(14), 
+	new RequestedItem(15), 
+	new RequestedItem(16), 
+	new RequestedItem(17)
     };
+    public static final RequestedItem reserved = cNamedNumbers[0];
+    public static final RequestedItem itemA = cNamedNumbers[1];
+    public static final RequestedItem itemB = cNamedNumbers[2];
+    public static final RequestedItem itemC = cNamedNumbers[3];
+    public static final RequestedItem itemD = cNamedNumbers[4];
+    public static final RequestedItem itemE = cNamedNumbers[5];
+    public static final RequestedItem itemF = cNamedNumbers[6];
+    public static final RequestedItem itemG = cNamedNumbers[7];
+    public static final RequestedItem itemH = cNamedNumbers[8];
+    public static final RequestedItem itemI = cNamedNumbers[9];
+    public static final RequestedItem itemJ = cNamedNumbers[10];
+    public static final RequestedItem itemK = cNamedNumbers[11];
+    public static final RequestedItem itemL = cNamedNumbers[12];
+    public static final RequestedItem itemM = cNamedNumbers[13];
+    public static final RequestedItem itemN = cNamedNumbers[14];
+    public static final RequestedItem itemO = cNamedNumbers[15];
+    public static final RequestedItem itemP = cNamedNumbers[16];
+    public static final RequestedItem itemQ = cNamedNumbers[17];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -176,6 +155,7 @@ public final class RequestedItem extends Enumerated {
 	"itemP",
 	"itemQ"
     };
+    
     
     /**
      * Returns the array of enumerators (reserved for internal use).
@@ -207,8 +187,12 @@ public final class RequestedItem extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static RequestedItem valueOf(long value)
     {
 	int inx = indexOfValue(value);

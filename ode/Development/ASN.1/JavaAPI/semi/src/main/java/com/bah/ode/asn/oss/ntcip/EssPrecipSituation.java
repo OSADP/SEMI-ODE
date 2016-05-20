@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -86,58 +83,43 @@ public final class EssPrecipSituation extends Enumerated {
 	public static final long frozenPrecipitationHeavy = 15;
     }
     // Named list definitions.
-    public static final EssPrecipSituation other =
-	new EssPrecipSituation();
-    public static final EssPrecipSituation unknown =
-	new EssPrecipSituation(2);
-    public static final EssPrecipSituation noPrecipitation =
-	new EssPrecipSituation(3);
-    public static final EssPrecipSituation unidentifiedSlight =
-	new EssPrecipSituation(4);
-    public static final EssPrecipSituation unidentifiedModerate =
-	new EssPrecipSituation(5);
-    public static final EssPrecipSituation unidentifiedHeavy =
-	new EssPrecipSituation(6);
-    public static final EssPrecipSituation snowSlight =
-	new EssPrecipSituation(7);
-    public static final EssPrecipSituation snowModerate =
-	new EssPrecipSituation(8);
-    public static final EssPrecipSituation snowHeavy =
-	new EssPrecipSituation(9);
-    public static final EssPrecipSituation rainSlight =
-	new EssPrecipSituation(10);
-    public static final EssPrecipSituation rainModerate =
-	new EssPrecipSituation(11);
-    public static final EssPrecipSituation rainHeavy =
-	new EssPrecipSituation(12);
-    public static final EssPrecipSituation frozenPrecipitationSlight =
-	new EssPrecipSituation(13);
-    public static final EssPrecipSituation frozenPrecipitationModerate =
-	new EssPrecipSituation(14);
-    public static final EssPrecipSituation frozenPrecipitationHeavy =
-	new EssPrecipSituation(15);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static EssPrecipSituation cNamedNumbers[] = {
-	 other, 
-	 unknown, 
-	 noPrecipitation, 
-	 unidentifiedSlight, 
-	 unidentifiedModerate, 
-	 unidentifiedHeavy, 
-	 snowSlight, 
-	 snowModerate, 
-	 snowHeavy, 
-	 rainSlight, 
-	 rainModerate, 
-	 rainHeavy, 
-	 frozenPrecipitationSlight, 
-	 frozenPrecipitationModerate, 
-	 frozenPrecipitationHeavy
+	new EssPrecipSituation(), 
+	new EssPrecipSituation(2), 
+	new EssPrecipSituation(3), 
+	new EssPrecipSituation(4), 
+	new EssPrecipSituation(5), 
+	new EssPrecipSituation(6), 
+	new EssPrecipSituation(7), 
+	new EssPrecipSituation(8), 
+	new EssPrecipSituation(9), 
+	new EssPrecipSituation(10), 
+	new EssPrecipSituation(11), 
+	new EssPrecipSituation(12), 
+	new EssPrecipSituation(13), 
+	new EssPrecipSituation(14), 
+	new EssPrecipSituation(15)
     };
+    public static final EssPrecipSituation other = cNamedNumbers[0];
+    public static final EssPrecipSituation unknown = cNamedNumbers[1];
+    public static final EssPrecipSituation noPrecipitation = cNamedNumbers[2];
+    public static final EssPrecipSituation unidentifiedSlight = cNamedNumbers[3];
+    public static final EssPrecipSituation unidentifiedModerate = cNamedNumbers[4];
+    public static final EssPrecipSituation unidentifiedHeavy = cNamedNumbers[5];
+    public static final EssPrecipSituation snowSlight = cNamedNumbers[6];
+    public static final EssPrecipSituation snowModerate = cNamedNumbers[7];
+    public static final EssPrecipSituation snowHeavy = cNamedNumbers[8];
+    public static final EssPrecipSituation rainSlight = cNamedNumbers[9];
+    public static final EssPrecipSituation rainModerate = cNamedNumbers[10];
+    public static final EssPrecipSituation rainHeavy = cNamedNumbers[11];
+    public static final EssPrecipSituation frozenPrecipitationSlight = cNamedNumbers[12];
+    public static final EssPrecipSituation frozenPrecipitationModerate = cNamedNumbers[13];
+    public static final EssPrecipSituation frozenPrecipitationHeavy = cNamedNumbers[14];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -160,6 +142,7 @@ public final class EssPrecipSituation extends Enumerated {
 	"frozenPrecipitationModerate",
 	"frozenPrecipitationHeavy"
     };
+    
     
     /**
      * Returns the array of enumerators (reserved for internal use).
@@ -191,8 +174,12 @@ public final class EssPrecipSituation extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static EssPrecipSituation valueOf(long value)
     {
 	int inx = indexOfValue(value);

@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -267,41 +264,6 @@ public class PathHistoryPointType_01 extends Sequence {
 	speed = null;
     }
     
-    
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__latOffset("latOffset"),
-	__longOffset("longOffset"),
-	__elevationOffset("elevationOffset"),
-	__timeOffset("timeOffset"),
-	__posAccuracy("posAccuracy"),
-	__heading("heading"),
-	__speed("speed"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(8);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -812,289 +774,6 @@ public class PathHistoryPointType_01 extends Sequence {
 	    data.speed = null;
 	}
 	return data;
-    }
-
-    /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	sink.beginObject();
-	// Encode field 'latOffset'
-	try {
-	    INTEGER item1 = this.latOffset;
-
-	    {
-		sink.encodeKey("latOffset");
-		coder.encodeInteger(item1.longValue(), sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("latOffset", "INTEGER");
-	    throw ee;
-	}
-	// Encode field 'longOffset'
-	try {
-	    INTEGER item1 = this.longOffset;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("longOffset");
-		coder.encodeInteger(item1.longValue(), sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("longOffset", "INTEGER");
-	    throw ee;
-	}
-	// Encode field 'elevationOffset'
-	try {
-	    INTEGER item1 = this.elevationOffset;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("elevationOffset");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "elevationOffset");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("elevationOffset", "INTEGER");
-	    throw ee;
-	}
-	// Encode field 'timeOffset'
-	try {
-	    INTEGER item1 = this.timeOffset;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("timeOffset");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "timeOffset");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("timeOffset", "INTEGER");
-	    throw ee;
-	}
-	// Encode field 'posAccuracy'
-	try {
-	    PositionalAccuracy item1 = this.posAccuracy;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("posAccuracy");
-		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "posAccuracy");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("posAccuracy", "PositionalAccuracy");
-	    throw ee;
-	}
-	// Encode field 'heading'
-	try {
-	    INTEGER item1 = this.heading;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("heading");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "heading");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("heading", "INTEGER");
-	    throw ee;
-	}
-	// Encode field 'speed'
-	try {
-	    TransmissionAndSpeed item1 = this.speed;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("speed");
-		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "speed");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("speed", "TransmissionAndSpeed");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public PathHistoryPointType_01 decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[8];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		PathHistoryPointType_01.__Tag t_tag0 = PathHistoryPointType_01.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = PathHistoryPointType_01.__Tag._null_;
-		switch (t_tag0) {
-		    case __latOffset:
-		    // Decode field 'latOffset'
-		    try {
-			if (present0[0])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.latOffset == null)
-			    this.latOffset = new INTEGER();
-			this.latOffset.setValue(coder.decodeInteger(source));
-			present0[0] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("latOffset", "INTEGER");
-			throw de;
-		    }
-		    break;
-		    case __longOffset:
-		    // Decode field 'longOffset'
-		    try {
-			if (present0[1])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.longOffset == null)
-			    this.longOffset = new INTEGER();
-			this.longOffset.setValue(coder.decodeInteger(source));
-			present0[1] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("longOffset", "INTEGER");
-			throw de;
-		    }
-		    break;
-		    case __elevationOffset:
-		    // Decode field 'elevationOffset'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[2])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.elevationOffset == null)
-				this.elevationOffset = new INTEGER();
-			    this.elevationOffset.setValue(coder.decodeInteger(source));
-			    present0[2] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("elevationOffset", "INTEGER");
-			throw de;
-		    }
-		    break;
-		    case __timeOffset:
-		    // Decode field 'timeOffset'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[3])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.timeOffset == null)
-				this.timeOffset = new INTEGER();
-			    this.timeOffset.setValue(coder.decodeInteger(source));
-			    present0[3] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("timeOffset", "INTEGER");
-			throw de;
-		    }
-		    break;
-		    case __posAccuracy:
-		    // Decode field 'posAccuracy'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[4])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    this.posAccuracy = new PositionalAccuracy(coder.decodeOctetString(source));
-			    present0[4] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("posAccuracy", "PositionalAccuracy");
-			throw de;
-		    }
-		    break;
-		    case __heading:
-		    // Decode field 'heading'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[5])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.heading == null)
-				this.heading = new INTEGER();
-			    this.heading.setValue(coder.decodeInteger(source));
-			    present0[5] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("heading", "INTEGER");
-			throw de;
-		    }
-		    break;
-		    case __speed:
-		    // Decode field 'speed'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[6])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    this.speed = new TransmissionAndSpeed(coder.decodeOctetString(source));
-			    present0[6] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("speed", "TransmissionAndSpeed");
-			throw de;
-		    }
-		    break;
-		    default:
-			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'latOffset'");
-	if (!present0[1])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'longOffset'");
-	if (!present0[2])
-	    this.elevationOffset = null;
-	if (!present0[3])
-	    this.timeOffset = null;
-	if (!present0[4])
-	    this.posAccuracy = null;
-	if (!present0[5])
-	    this.heading = null;
-	if (!present0[6])
-	    this.speed = null;
-	return this;
     }
 
     /**

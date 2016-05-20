@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -53,7 +50,7 @@ import com.oss.coders.per.PerCoder;
  * @see Sequence
  */
 
-public class ProbeVehicleData extends Sequence implements BEREncodable, BERDecodable, DEREncodable, JSONEncodable, JSONDecodable, PEREncodable, PERDecodable {
+public class ProbeVehicleData extends Sequence implements BEREncodable, BERDecodable, DEREncodable, PEREncodable, PERDecodable {
     public DSRCmsgID msgID;
     public ProbeSegmentNumber segNum;
     public VehicleIdent probeID;
@@ -375,70 +372,6 @@ public class ProbeVehicleData extends Sequence implements BEREncodable, BERDecod
 	}
 
 	/**
-	 * Implements JSON value encoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public void encodeValue(JsonCoder coder, JsonWriter sink)
-		throws IOException, EncoderException
-	{
-	    int total_len0 = this.elements.size();
-	    int idx0 = 0;
-
-	    sink.beginArray();
-	    if (total_len0 > 0) {
-		while (true) {
-		    try {
-			Snapshot item1 = this.elements.get(idx0);
-
-			item1.encodeValue(coder, sink);
-		    
-		} catch (Exception e) {
-		    EncoderException ee = EncoderException.wrapException(e);
-		    ee.appendElementContext(null, "Snapshot", idx0);
-		    throw ee;
-		}
-		idx0++;
-		if (idx0 == total_len0) break;
-		sink.writeSeparator();
-	    }
-	}
-	sink.endArray();
-
-    }
-
-	/**
-	 * Implements JSON value decoder for the type (reserved for internal use).
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public Snapshots decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	int total_len0 = 0;
-	int idx0 = 0;
-
-	if (this.elements != null)
-	    this.elements.clear();
-	else
-	    this.elements = new java.util.ArrayList<Snapshot>(total_len0);
-	coder.decodeArray(source);
-	if (coder.hasMoreElements(source, true))
-	    do {
-		try {
-		    Snapshot item1 = new Snapshot();
-
-		    this.elements.add(item1);
-		    item1.decodeValue(coder, source);
-		} catch (Exception e) {
-		    DecoderException de = DecoderException.wrapException(e);
-		    de.appendElementContext(null, "Snapshot", idx0);
-		    throw de;
-		}
-		++idx0;
-	    } while (coder.hasMoreElements(source, false));
-	    return this;
-	}
-
-	/**
 	 * Compare 'this' object to another object to see if their contents are the same.
 	 */
 	public boolean abstractEqualTo(AbstractData that)
@@ -494,41 +427,6 @@ public class ProbeVehicleData extends Sequence implements BEREncodable, BERDecod
 	}
     } // End class definition for Snapshots
 
-    /**
-     * Hashtable for tags (reserved for internal use).
-     * This class is reserved for internal use and must not be used in the application code.
-     */
-    public static enum __Tag
-    {
-	__msgID("msgID"),
-	__segNum("segNum"),
-	__probeID("probeID"),
-	__startVector("startVector"),
-	__vehicleType("vehicleType"),
-	__cntSnapshots("cntSnapshots"),
-	__snapshots("snapshots"),
-	_null_("_null_");
-	private String tag;
-	private static java.util.HashMap<String, __Tag> map =
-	    new java.util.HashMap<String, __Tag>(8);
-	private __Tag(String tag) {
-	    this.tag = tag;
-	}
-	private String getTag() {
-	    return tag;
-	}
-	/**
-	 * This method is reserved for internal use and must not be invoked from the application code.
-	 */
-	public static __Tag getTagSub(String tag) {
-	    return map.get(tag);
-	}
-	static {
-	    for (__Tag t:values())
-		map.put(t.getTag(), t);
-	}
-    }
-    
     /**
      * Encode the PDU using BER (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
@@ -1199,334 +1097,6 @@ public class ProbeVehicleData extends Sequence implements BEREncodable, BERDecod
     }
 
     /**
-     * Implements JSON value encoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encodeValue(JsonCoder coder, JsonWriter sink)
-	    throws IOException, EncoderException
-    {
-	sink.beginObject();
-	// Encode field 'msgID'
-	try {
-	    DSRCmsgID item1 = this.msgID;
-
-	    {
-		sink.encodeKey("msgID");
-		if (item1.isUnknownEnumerator()) {
-		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
-		} else 
-		    sink.writeString(item1.name());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("msgID", "DSRCmsgID");
-	    throw ee;
-	}
-	// Encode field 'segNum'
-	try {
-	    ProbeSegmentNumber item1 = this.segNum;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("segNum");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "segNum");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("segNum", "ProbeSegmentNumber");
-	    throw ee;
-	}
-	// Encode field 'probeID'
-	try {
-	    VehicleIdent item1 = this.probeID;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("probeID");
-		    item1.encodeValue(coder, sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "probeID");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("probeID", "VehicleIdent");
-	    throw ee;
-	}
-	// Encode field 'startVector'
-	try {
-	    FullPositionVector item1 = this.startVector;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("startVector");
-		item1.encodeValue(coder, sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("startVector", "FullPositionVector");
-	    throw ee;
-	}
-	// Encode field 'vehicleType'
-	try {
-	    VehicleType item1 = this.vehicleType;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("vehicleType");
-		if (item1.isUnknownEnumerator()) {
-		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
-		} else 
-		    sink.writeString(item1.name());
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("vehicleType", "VehicleType");
-	    throw ee;
-	}
-	// Encode field 'cntSnapshots'
-	try {
-	    Count item1 = this.cntSnapshots;
-
-	    if (item1 != null) {
-		{
-		    sink.writeSeparator();
-		    sink.encodeKey("cntSnapshots");
-		    coder.encodeInteger(item1.longValue(), sink);
-		}
-	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
-		sink.writeSeparator();
-		coder.encodeAbsentComponent(sink, "cntSnapshots");
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("cntSnapshots", "Count");
-	    throw ee;
-	}
-	// Encode field 'snapshots'
-	try {
-	    Snapshots item1 = this.snapshots;
-
-	    {
-		sink.writeSeparator();
-		sink.encodeKey("snapshots");
-		item1.encodeValue(coder, sink);
-	    }
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext("snapshots", "SEQUENCE OF");
-	    throw ee;
-	}
-	sink.endObject();
-
-    }
-
-    /**
-     * Encode the PDU using JSON (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public void encode(JsonCoder coder, JsonWriter sink)
-	    throws EncoderException
-    {
-	try {
-	    this.encodeValue(coder, sink);
-
-	} catch (Exception e) {
-	    EncoderException ee = EncoderException.wrapException(e);
-	    ee.appendFieldContext(null, "ProbeVehicleData");
-	    throw ee;
-	}
-    }
-
-    /**
-     * Implements JSON value decoder for the type (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public ProbeVehicleData decodeValue(JsonCoder coder, JsonReader source)
-	    throws IOException, DecoderException
-    {
-	boolean[] present0 = new boolean[8];
-
-	coder.decodeObject(source);
-	if (coder.hasMoreProperties(source, true))
-	    do {
-		String tag0 = coder.nextProperty(source);
-		ProbeVehicleData.__Tag t_tag0 = ProbeVehicleData.__Tag.getTagSub(tag0);
-		if (t_tag0 == null) 
-		    t_tag0 = ProbeVehicleData.__Tag._null_;
-		switch (t_tag0) {
-		    case __msgID:
-		    // Decode field 'msgID'
-		    try {
-			String content1 = coder.decodeString(source);
-			int idx1;
-			DSRCmsgID temp1;
-
-			if (present0[0])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			idx1 = coder.resolveName(DSRCmsgID.cConstantNameList, content1);
-			if (idx1 < 0 )
-			    temp1 = DSRCmsgID.unknownEnumerator();
-			else
-			    temp1 = DSRCmsgID.cNamedNumbers[idx1];
-			this.msgID = temp1;
-			present0[0] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("msgID", "DSRCmsgID");
-			throw de;
-		    }
-		    break;
-		    case __segNum:
-		    // Decode field 'segNum'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[1])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.segNum == null)
-				this.segNum = new ProbeSegmentNumber();
-			    this.segNum.setValue(coder.decodeInteger(source));
-			    present0[1] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("segNum", "ProbeSegmentNumber");
-			throw de;
-		    }
-		    break;
-		    case __probeID:
-		    // Decode field 'probeID'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[2])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.probeID == null)
-				this.probeID = new VehicleIdent();
-			    this.probeID.decodeValue(coder, source);
-			    present0[2] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("probeID", "VehicleIdent");
-			throw de;
-		    }
-		    break;
-		    case __startVector:
-		    // Decode field 'startVector'
-		    try {
-			if (present0[3])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.startVector == null)
-			    this.startVector = new FullPositionVector();
-			this.startVector.decodeValue(coder, source);
-			present0[3] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("startVector", "FullPositionVector");
-			throw de;
-		    }
-		    break;
-		    case __vehicleType:
-		    // Decode field 'vehicleType'
-		    try {
-			String content1 = coder.decodeString(source);
-			int idx1;
-			VehicleType temp1;
-
-			if (present0[4])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			idx1 = coder.resolveName(VehicleType.cConstantNameList, content1);
-			if (idx1 < 0 )
-			    temp1 = VehicleType.unknownEnumerator();
-			else
-			    temp1 = VehicleType.cNamedNumbers[idx1];
-			this.vehicleType = temp1;
-			present0[4] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("vehicleType", "VehicleType");
-			throw de;
-		    }
-		    break;
-		    case __cntSnapshots:
-		    // Decode field 'cntSnapshots'
-		    try {
-			if (!coder.isNullValue(source)) {
-			    if (present0[5])
-				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			    if (this.cntSnapshots == null)
-				this.cntSnapshots = new Count();
-			    this.cntSnapshots.setValue(coder.decodeInteger(source));
-			    present0[5] = true;
-			}
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("cntSnapshots", "Count");
-			throw de;
-		    }
-		    break;
-		    case __snapshots:
-		    // Decode field 'snapshots'
-		    try {
-			if (present0[6])
-			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
-			if (this.snapshots == null)
-			    this.snapshots = new Snapshots();
-			this.snapshots.decodeValue(coder, source);
-			present0[6] = true;
-		    } catch (Exception e) {
-			DecoderException de = DecoderException.wrapException(e);
-			de.appendFieldContext("snapshots", "SEQUENCE OF");
-			throw de;
-		    }
-		    break;
-		    default:
-			coder.skipValue(source);
-			break;
-		}
-	    } while (coder.hasMoreProperties(source, false));
-	if (!present0[0])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'msgID'");
-	if (!present0[1])
-	    this.segNum = null;
-	if (!present0[2])
-	    this.probeID = null;
-	if (!present0[3])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'startVector'");
-	if (!present0[4])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'vehicleType'");
-	if (!present0[5])
-	    this.cntSnapshots = null;
-	if (!present0[6])
-	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'snapshots'");
-	return this;
-    }
-
-    /**
-     * Decode the PDU using JSON (reserved for internal use).
-     * This method is reserved for internal use and must not be invoked from the application code.
-     */
-    public AbstractData decode(JsonCoder coder, JsonReader source)
-	    throws DecoderException
-    {
-	try {
-	    this.decodeValue(coder, source);
-	    return this;
-	} catch (Exception e) {
-	    DecoderException de = DecoderException.wrapException(e);
-	    de.appendFieldContext(null, "ProbeVehicleData");
-	    throw de;
-	}
-    }
-
-    /**
      * Implements value printer for the type (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
      */
@@ -1626,7 +1196,7 @@ public class ProbeVehicleData extends Sequence implements BEREncodable, BERDecod
     }
 
     /**
-     * Convert the PDU value to a string.
+     * Convert the PDU value to a string. If the conversion is aborted due an error the method returns null.
      */
     public String toString()
     {

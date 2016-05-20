@@ -1,5 +1,5 @@
 /*************************************************************/
-/* Copyright (C) 2015 OSS Nokalva, Inc.  All rights reserved.*/
+/* Copyright (C) 2016 OSS Nokalva, Inc.  All rights reserved.*/
 /*************************************************************/
 
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.
@@ -7,15 +7,17 @@
  * THIS FILE MAY NOT BE DISTRIBUTED.
  * THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED. */
 
-/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - One-year Project Start-up, Expiring May 20, 2016, License 70234 70234,
+/* Generated for: Joint Program Office (JPO) US DOT, Washington D.C. - Research only, Project-based, License 70234 70234,
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Tue Dec 22 00:38:27 2015 */
-/* ASN.1 Compiler for Java version: 6.2 */
+/* Created: Fri May 20 15:51:02 2016 */
+/* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
- * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
+ * -messageFormat msvc
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
+ * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -37,11 +39,6 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
-import com.oss.coders.json.JsonWriter;
-import com.oss.coders.json.JSONEncodable;
-import com.oss.coders.json.JsonReader;
-import com.oss.coders.json.JSONDecodable;
-import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -87,61 +84,45 @@ public final class PositionConfidence extends Enumerated {
 	public static final long a1cm = 15;
     }
     // Named list definitions.
-    public static final PositionConfidence unavailable =
-	new PositionConfidence();
-    public static final PositionConfidence a500m =
-	new PositionConfidence(1);
-    public static final PositionConfidence a200m =
-	new PositionConfidence(2);
-    public static final PositionConfidence a100m =
-	new PositionConfidence(3);
-    public static final PositionConfidence a50m =
-	new PositionConfidence(4);
-    public static final PositionConfidence a20m =
-	new PositionConfidence(5);
-    public static final PositionConfidence a10m =
-	new PositionConfidence(6);
-    public static final PositionConfidence a5m =
-	new PositionConfidence(7);
-    public static final PositionConfidence a2m =
-	new PositionConfidence(8);
-    public static final PositionConfidence a1m =
-	new PositionConfidence(9);
-    public static final PositionConfidence a50cm =
-	new PositionConfidence(10);
-    public static final PositionConfidence a20cm =
-	new PositionConfidence(11);
-    public static final PositionConfidence a10cm =
-	new PositionConfidence(12);
-    public static final PositionConfidence a5cm =
-	new PositionConfidence(13);
-    public static final PositionConfidence a2cm =
-	new PositionConfidence(14);
-    public static final PositionConfidence a1cm =
-	new PositionConfidence(15);
     
     /**
      * List of enumerators (reserved for internal use).
      * This member is reserved for internal use and must not be used in the application code.
      */
     public final static PositionConfidence cNamedNumbers[] = {
-	 unavailable, 
-	 a500m, 
-	 a200m, 
-	 a100m, 
-	 a50m, 
-	 a20m, 
-	 a10m, 
-	 a5m, 
-	 a2m, 
-	 a1m, 
-	 a50cm, 
-	 a20cm, 
-	 a10cm, 
-	 a5cm, 
-	 a2cm, 
-	 a1cm
+	new PositionConfidence(), 
+	new PositionConfidence(1), 
+	new PositionConfidence(2), 
+	new PositionConfidence(3), 
+	new PositionConfidence(4), 
+	new PositionConfidence(5), 
+	new PositionConfidence(6), 
+	new PositionConfidence(7), 
+	new PositionConfidence(8), 
+	new PositionConfidence(9), 
+	new PositionConfidence(10), 
+	new PositionConfidence(11), 
+	new PositionConfidence(12), 
+	new PositionConfidence(13), 
+	new PositionConfidence(14), 
+	new PositionConfidence(15)
     };
+    public static final PositionConfidence unavailable = cNamedNumbers[0];
+    public static final PositionConfidence a500m = cNamedNumbers[1];
+    public static final PositionConfidence a200m = cNamedNumbers[2];
+    public static final PositionConfidence a100m = cNamedNumbers[3];
+    public static final PositionConfidence a50m = cNamedNumbers[4];
+    public static final PositionConfidence a20m = cNamedNumbers[5];
+    public static final PositionConfidence a10m = cNamedNumbers[6];
+    public static final PositionConfidence a5m = cNamedNumbers[7];
+    public static final PositionConfidence a2m = cNamedNumbers[8];
+    public static final PositionConfidence a1m = cNamedNumbers[9];
+    public static final PositionConfidence a50cm = cNamedNumbers[10];
+    public static final PositionConfidence a20cm = cNamedNumbers[11];
+    public static final PositionConfidence a10cm = cNamedNumbers[12];
+    public static final PositionConfidence a5cm = cNamedNumbers[13];
+    public static final PositionConfidence a2cm = cNamedNumbers[14];
+    public static final PositionConfidence a1cm = cNamedNumbers[15];
     
     /**
      * Constant name list definition (reserved for internal use).
@@ -165,6 +146,7 @@ public final class PositionConfidence extends Enumerated {
 	"a2cm",
 	"a1cm"
     };
+    
     
     /**
      * Returns the array of enumerators (reserved for internal use).
@@ -196,8 +178,12 @@ public final class PositionConfidence extends Enumerated {
     }
     
     /**
-     * This method is reserved for internal use and must not be invoked from the application code.
+     * Returns the enumerator with the specified value or null if the value
+     * is not associated with any enumerator.
+     *  @param value The value of the enumerator to return.
+     *  @return The enumerator with the specified value.
      */
+    
     public static PositionConfidence valueOf(long value)
     {
 	int inx = indexOfValue(value);
