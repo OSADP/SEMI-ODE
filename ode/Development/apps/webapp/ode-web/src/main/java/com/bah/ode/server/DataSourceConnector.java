@@ -48,7 +48,7 @@ public class DataSourceConnector {
             case AggregateData:
                if (!OdeRequestManager.isPassThrough(odeRequest.getDataType())) {
                   MQTopic ovdfTopic = MQTopic.create(appContext.getParam(
-                        AppContext.SPARK_DATA_PROCESSOR_INPUT_TOPIC), partitions);
+                        AppContext.SPARK_TRANSFORMER_INPUT_TOPIC), partitions);
                   metadata.setInputTopic(ovdfTopic);
                }
                if (odeRequest.getRequestType() == OdeRequestType.Test) {

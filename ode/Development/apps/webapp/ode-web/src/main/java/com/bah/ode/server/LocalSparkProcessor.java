@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
-import com.bah.ode.spark.VehicleDataProcessor;
+import com.bah.ode.spark.VehicleDataTransformer;
 import com.bah.ode.wrapper.MQTopic;
 
 public class LocalSparkProcessor {
@@ -14,7 +14,7 @@ public class LocalSparkProcessor {
    private static Logger logger = 
          LoggerFactory.getLogger(LocalSparkProcessor.class);
    
-   private static VehicleDataProcessor ovdfProcessor;
+   private static VehicleDataTransformer vehicleTransformer;
    private static JavaStreamingContext ssc;
    private static boolean streamingContextStarted = false;
    
@@ -36,12 +36,12 @@ public class LocalSparkProcessor {
                               AppContext.DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS)));
          }
          
-         if (ovdfProcessor == null) {
+         if (vehicleTransformer == null) {
             logger.info("Creating OVDF Process Flow...");
-            ovdfProcessor = new VehicleDataProcessor();
-            ovdfProcessor.setup(ssc,
+            vehicleTransformer = new VehicleDataTransformer();
+            vehicleTransformer.setup(ssc,
                   MQTopic.create(appContext.getParam(
-                        AppContext.SPARK_DATA_PROCESSOR_INPUT_TOPIC), numParitions),
+                        AppContext.SPARK_TRANSFORMER_INPUT_TOPIC), numParitions),
                   appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
                   appContext.getParam(AppContext.KAFKA_METADATA_BROKER_LIST));
          }
@@ -70,7 +70,7 @@ public class LocalSparkProcessor {
                logger.warn("Exception during spark job execution: " + t.getMessage());
             } finally {
                ssc = null;
-               ovdfProcessor = null;
+               vehicleTransformer = null;
             }
          } catch (Throwable t) {
             logger.warn("*** Error stopping Spark Streaming Context ***", t);
