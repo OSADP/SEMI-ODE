@@ -201,15 +201,15 @@
    </context-param>
    <context-param>
       <param-name>spark.yarn.transformer.driver.memory</param-name>
-      <param-value>1024m</param-value>
+      <param-value>512m</param-value>
    </context-param>
    <context-param>
       <param-name>spark.yarn.transformer.executor.cores</param-name>
-      <param-value>3</param-value>
+      <param-value>2</param-value>
    </context-param>
    <context-param>
       <param-name>spark.yarn.transformer.executor.memory</param-name>
-      <param-value>18432m</param-value>
+      <param-value>9216m</param-value>
    </context-param>
 
    <context-param>
@@ -218,7 +218,7 @@
    </context-param>
    <context-param>
       <param-name>spark.yarn.aggregator.driver.memory</param-name>
-      <param-value>1024m</param-value>
+      <param-value>512m</param-value>
    </context-param>
    <context-param>
       <param-name>spark.yarn.aggregator.executor.cores</param-name>
@@ -226,7 +226,7 @@
    </context-param>
    <context-param>
       <param-name>spark.yarn.aggregator.executor.memory</param-name>
-      <param-value>4096m</param-value>
+      <param-value>2048m</param-value>
    </context-param>
 
    
