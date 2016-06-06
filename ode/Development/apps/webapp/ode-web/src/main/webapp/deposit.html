@@ -1,17 +1,17 @@
 <html>
 <head>
-<title>ODE Test/Demo UI</title>
+<title>ODE Deposit Web UI</title>
 
 <!-- Start Stylesheets -->
 <link rel="stylesheet" type="text/css" href="style.css" />
 <link rel="stylesheet" type="text/css"
-   href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
+   href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="ol.css" />
 <!-- End Stylesheets -->
 
 <!-- Start Scripts -->
-<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src="ol.js"></script>
 <script src="control.js"></script>
 <!-- End Scripts -->
@@ -25,22 +25,24 @@
 
          <div class="leftsection">
             <div id="title">
-               <div align="center">ODE Deposit UI</div>
+               <div align="center">ODE Deposit Web UI</div>
             </div>
 
-            <h1>Data Sources</h1>
+            <h1>Publish</h1>
             <form action="" id="selectSourceForm">
                   <input id = "sdc" type="radio" name="source" value="DEPOSIT_SDC"/>
-                  <label for="sdc">SDC</label> <br/> 
+                  <label for="sdc">Vehicle Situation Data</label> <br/> 
                   <input id = "sdw" type="radio" name="source" value="DEPOSIT_SDW">
-                  <label for="sdw">SDW</label> <br/> 
+                  <label for="sdw">Traveller Advisory Data</label> <br/> 
             </form>
             <form action="" id="selectDataForm">
-               <h1>Select Data</h1>
+               <h1>Data Format</h1>
+               <!--
                   <input id="vehicles" type="radio" name="data" value="veh">
                   <label for="vehicles">Vehicles JSON</label> <br/> 
                   <input id="advisory" type="radio" name="data" value="adv">
                   <label for="advisory">Advisory JSON</label> <br/> 
+               -->
                   <input id="asnBase64" type="radio" name="data" value="asnbase64">
                   <label for="asn">ASN.1 Base 64</label> <br/> 
                   <input id="asnHex" type="radio" name="data" value="asnhex">
@@ -65,18 +67,10 @@
       <div class="column-center">
          <div class="deposit-options">
             <div class="geoRegion" id="geoRegion">
-               <label>NW Latitude</label> <input id="nwLatSub"
-                  type="text" value="42.53790" size="40"
-                  class="georegion-text" /> <br /> <label>NW
-                  Longitude</label> <input id="nwLonSub" type="text"
-                  value="-83.47790" size="40"
-                  class="georegion-text" /> <br /> <label>SE
-                  Latitude</label> <input id="seLatSub" type="text"
-                  value="42.30575" size="40"
-                  class="georegion-text" /> <br /> <label>SE
-                  Longitude</label> <input id="seLonSub" type="text"
-                  value="-82.84275" size="40"
-                  class="georegion-text" /> <br />
+               <label>NW Latitude</label> <input id="nwLatSub" type="text" value="42.53790" size="40" class="georegion-text" /> <br /> 
+               <label>NW Longitude</label> <input id="nwLonSub" type="text" value="-83.47790" size="40" class="georegion-text" /> <br />
+               <label>SE Latitude</label> <input id="seLatSub" type="text" value="42.30575" size="40" class="georegion-text" /> <br /> 
+               <label>SE Longitude</label> <input id="seLonSub" type="text" value="-82.84275" size="40" class="georegion-text" /> <br />
             </div>
             <hr/>
             <h2>Options:</h2>
