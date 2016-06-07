@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Fri May 20 15:51:02 2016 */
+/* Created: Tue Jun 07 13:54:40 2016 */
 /* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -39,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -319,6 +322,37 @@ public class VehicleIdent extends Sequence {
 	
 	
 	/**
+	 * Hashtable for tags (reserved for internal use).
+	 * This class is reserved for internal use and must not be used in the application code.
+	 */
+	public static enum __Tag
+	{
+	    __vGroup("vGroup"),
+	    __rGroup("rGroup"),
+	    __rEquip("rEquip"),
+	    _null_("_null_");
+	    private String tag;
+	    private static java.util.HashMap<String, __Tag> map =
+		new java.util.HashMap<String, __Tag>(4);
+	    private __Tag(String tag) {
+		this.tag = tag;
+	    }
+	    private String getTag() {
+		return tag;
+	    }
+	    /**
+	     * This method is reserved for internal use and must not be invoked from the application code.
+	     */
+	    public static __Tag getTagSub(String tag) {
+		return map.get(tag);
+	    }
+	    static {
+		for (__Tag t:values())
+		    map.put(t.getTag(), t);
+	    }
+	}
+	
+	/**
 	 * Implements PER value encoder for the type (reserved for internal use).
 	 * This method is reserved for internal use and must not be invoked from the application code.
 	 */
@@ -518,6 +552,163 @@ public class VehicleIdent extends Sequence {
 	}
 
 	/**
+	 * Implements JSON value encoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public void encodeValue(JsonCoder coder, JsonWriter sink)
+		throws IOException, EncoderException
+	{
+	    int idx0 = this.mChosenFlag;
+
+	    sink.beginObject();
+	    switch (idx0)
+	    {
+	    case vGroup_chosen:
+		// Encode alternative 'vGroup'
+		try {
+		    com.bah.ode.asn.oss.itis.VehicleGroupAffected item1 = (com.bah.ode.asn.oss.itis.VehicleGroupAffected)this.mChosenValue;
+
+		    sink.encodeKey("vGroup");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("vGroup", "VehicleGroupAffected", 0);
+		    throw ee;
+		}
+		break;
+	    case rGroup_chosen:
+		// Encode alternative 'rGroup'
+		try {
+		    com.bah.ode.asn.oss.itis.ResponderGroupAffected item1 = (com.bah.ode.asn.oss.itis.ResponderGroupAffected)this.mChosenValue;
+
+		    sink.encodeKey("rGroup");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("rGroup", "ResponderGroupAffected", 0);
+		    throw ee;
+		}
+		break;
+	    case rEquip_chosen:
+		// Encode alternative 'rEquip'
+		try {
+		    com.bah.ode.asn.oss.itis.IncidentResponseEquipment item1 = (com.bah.ode.asn.oss.itis.IncidentResponseEquipment)this.mChosenValue;
+
+		    sink.encodeKey("rEquip");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext("rEquip", "IncidentResponseEquipment", 0);
+		    throw ee;
+		}
+		break;
+	    default:
+		throw new EncoderException(com.oss.util.ExceptionDescriptor._bad_choice, null, idx0);
+	    }
+	    sink.endObject();
+
+	}
+
+	/**
+	 * Implements JSON value decoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public VehicleClass decodeValue(JsonCoder coder, JsonReader source)
+		throws IOException, DecoderException
+	{
+	    coder.decodeObject(source);
+	    String tag0 = coder.nextProperty(source);
+	    VehicleClass.__Tag t_tag0 = VehicleClass.__Tag.getTagSub(tag0);
+	    if (t_tag0 == null) 
+		t_tag0 = VehicleClass.__Tag._null_;
+	    switch (t_tag0) {
+		case __vGroup:
+		    // Decode alternative 'vGroup'
+		    try {
+			com.bah.ode.asn.oss.itis.VehicleGroupAffected item1 = null;
+			String content1 = coder.decodeString(source);
+			int idx1;
+			com.bah.ode.asn.oss.itis.VehicleGroupAffected temp1;
+
+			// Decode alternative 'vGroup'
+			idx1 = coder.resolveName(com.bah.ode.asn.oss.itis.VehicleGroupAffected.cConstantNameList, content1);
+			if (idx1 < 0 )
+			    temp1 = com.bah.ode.asn.oss.itis.VehicleGroupAffected.unknownEnumerator();
+			else
+			    temp1 = com.bah.ode.asn.oss.itis.VehicleGroupAffected.cNamedNumbers[idx1];
+			item1 = temp1;
+			this.mChosenValue = item1;
+			this.mChosenFlag = vGroup_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("vGroup", "VehicleGroupAffected", 0);
+			throw de;
+		    }
+		    break;
+		case __rGroup:
+		    // Decode alternative 'rGroup'
+		    try {
+			com.bah.ode.asn.oss.itis.ResponderGroupAffected item1 = null;
+			String content1 = coder.decodeString(source);
+			int idx1;
+			com.bah.ode.asn.oss.itis.ResponderGroupAffected temp1;
+
+			// Decode alternative 'rGroup'
+			idx1 = coder.resolveName(com.bah.ode.asn.oss.itis.ResponderGroupAffected.cConstantNameList, content1);
+			if (idx1 < 0 )
+			    temp1 = com.bah.ode.asn.oss.itis.ResponderGroupAffected.unknownEnumerator();
+			else
+			    temp1 = com.bah.ode.asn.oss.itis.ResponderGroupAffected.cNamedNumbers[idx1];
+			item1 = temp1;
+			this.mChosenValue = item1;
+			this.mChosenFlag = rGroup_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("rGroup", "ResponderGroupAffected", 0);
+			throw de;
+		    }
+		    break;
+		case __rEquip:
+		    // Decode alternative 'rEquip'
+		    try {
+			com.bah.ode.asn.oss.itis.IncidentResponseEquipment item1 = null;
+			String content1 = coder.decodeString(source);
+			int idx1;
+			com.bah.ode.asn.oss.itis.IncidentResponseEquipment temp1;
+
+			// Decode alternative 'rEquip'
+			idx1 = coder.resolveName(com.bah.ode.asn.oss.itis.IncidentResponseEquipment.cConstantNameList, content1);
+			if (idx1 < 0 )
+			    temp1 = com.bah.ode.asn.oss.itis.IncidentResponseEquipment.unknownEnumerator();
+			else
+			    temp1 = com.bah.ode.asn.oss.itis.IncidentResponseEquipment.cNamedNumbers[idx1];
+			item1 = temp1;
+			this.mChosenValue = item1;
+			this.mChosenFlag = rEquip_chosen;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendElementContext("rEquip", "IncidentResponseEquipment", 0);
+			throw de;
+		    }
+		    break;
+		default:
+		    throw new DecoderException(com.oss.util.ExceptionDescriptor._unknown_field, null, tag0);
+	    }
+	    if (coder.hasMoreProperties(source, false))
+		throw new DecoderException(com.oss.util.ExceptionDescriptor._json_unexpected_token, null, ": expecting '}'");
+	    return this;
+	}
+
+	/**
 	 * Clone 'this' object.
 	 */
 	public VehicleClass clone() {
@@ -539,6 +730,40 @@ public class VehicleIdent extends Sequence {
      */
     public static final EPAInfo _cEPAInfo_ownerCode = 
 	IA5StringPAInfo.paInfo;
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__name("name"),
+	__vin("vin"),
+	__ownerCode("ownerCode"),
+	__id("id"),
+	__vehicleType("vehicleType"),
+	__vehicleClass("vehicleClass"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(7);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -1186,6 +1411,285 @@ public class VehicleIdent extends Sequence {
 	    }
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	String separator0 = null;
+
+	sink.beginObject();
+	// Encode field 'name'
+	try {
+	    DescriptiveName item1 = this.name;
+
+	    if (item1 != null) {
+		{
+		    separator0 = ",";
+		    sink.encodeKey("name");
+		    coder.encodeString(item1.stringValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "name");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("name", "DescriptiveName");
+	    throw ee;
+	}
+	// Encode field 'vin'
+	try {
+	    VINstring item1 = this.vin;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("vin");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "vin");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("vin", "VINstring");
+	    throw ee;
+	}
+	// Encode field 'ownerCode'
+	try {
+	    IA5String item1 = this.ownerCode;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("ownerCode");
+		    coder.encodeString(item1.stringValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "ownerCode");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("ownerCode", "IA5String");
+	    throw ee;
+	}
+	// Encode field 'id'
+	try {
+	    TemporaryID item1 = this.id;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("id");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "id");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("id", "TemporaryID");
+	    throw ee;
+	}
+	// Encode field 'vehicleType'
+	try {
+	    VehicleType item1 = this.vehicleType;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("vehicleType");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "vehicleType");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("vehicleType", "VehicleType");
+	    throw ee;
+	}
+	// Encode field 'vehicleClass'
+	try {
+	    VehicleClass item1 = this.vehicleClass;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("vehicleClass");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "vehicleClass");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("vehicleClass", "CHOICE");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public VehicleIdent decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[7];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		VehicleIdent.__Tag t_tag0 = VehicleIdent.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = VehicleIdent.__Tag._null_;
+		switch (t_tag0) {
+		    case __name:
+		    // Decode field 'name'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[0])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.name = new DescriptiveName(coder.decodeString(source));
+			    present0[0] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("name", "DescriptiveName");
+			throw de;
+		    }
+		    break;
+		    case __vin:
+		    // Decode field 'vin'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[1])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.vin = new VINstring(coder.decodeOctetString(source));
+			    present0[1] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("vin", "VINstring");
+			throw de;
+		    }
+		    break;
+		    case __ownerCode:
+		    // Decode field 'ownerCode'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[2])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.ownerCode = new IA5String(coder.decodeString(source));
+			    present0[2] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("ownerCode", "IA5String");
+			throw de;
+		    }
+		    break;
+		    case __id:
+		    // Decode field 'id'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[3])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.id = new TemporaryID(coder.decodeOctetString(source));
+			    present0[3] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("id", "TemporaryID");
+			throw de;
+		    }
+		    break;
+		    case __vehicleType:
+		    // Decode field 'vehicleType'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    VehicleType temp1;
+
+			    if (present0[4])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(VehicleType.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = VehicleType.unknownEnumerator();
+			    else
+				temp1 = VehicleType.cNamedNumbers[idx1];
+			    this.vehicleType = temp1;
+			    present0[4] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("vehicleType", "VehicleType");
+			throw de;
+		    }
+		    break;
+		    case __vehicleClass:
+		    // Decode field 'vehicleClass'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[5])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.vehicleClass == null)
+				this.vehicleClass = new VehicleClass();
+			    this.vehicleClass.decodeValue(coder, source);
+			    present0[5] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("vehicleClass", "CHOICE");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    this.name = null;
+	if (!present0[1])
+	    this.vin = null;
+	if (!present0[2])
+	    this.ownerCode = null;
+	if (!present0[3])
+	    this.id = null;
+	if (!present0[4])
+	    this.vehicleType = null;
+	if (!present0[5])
+	    this.vehicleClass = null;
+	return this;
     }
 
     /**

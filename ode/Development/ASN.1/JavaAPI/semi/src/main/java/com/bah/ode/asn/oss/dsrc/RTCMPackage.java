@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Fri May 20 15:51:02 2016 */
+/* Created: Tue Jun 07 13:54:40 2016 */
 /* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -39,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -847,6 +850,66 @@ public class RTCMPackage extends Sequence {
 	msg1032 = null;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__anchorPoint("anchorPoint"),
+	__rtcmHeader("rtcmHeader"),
+	__msg1001("msg1001"),
+	__msg1002("msg1002"),
+	__msg1003("msg1003"),
+	__msg1004("msg1004"),
+	__msg1005("msg1005"),
+	__msg1006("msg1006"),
+	__msg1007("msg1007"),
+	__msg1008("msg1008"),
+	__msg1009("msg1009"),
+	__msg1010("msg1010"),
+	__msg1011("msg1011"),
+	__msg1012("msg1012"),
+	__msg1013("msg1013"),
+	__msg1014("msg1014"),
+	__msg1015("msg1015"),
+	__msg1016("msg1016"),
+	__msg1017("msg1017"),
+	__msg1019("msg1019"),
+	__msg1020("msg1020"),
+	__msg1021("msg1021"),
+	__msg1022("msg1022"),
+	__msg1023("msg1023"),
+	__msg1024("msg1024"),
+	__msg1025("msg1025"),
+	__msg1026("msg1026"),
+	__msg1027("msg1027"),
+	__msg1029("msg1029"),
+	__msg1030("msg1030"),
+	__msg1031("msg1031"),
+	__msg1032("msg1032"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(33);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -2990,6 +3053,1192 @@ public class RTCMPackage extends Sequence {
 	    }
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	String separator0 = null;
+
+	sink.beginObject();
+	// Encode field 'anchorPoint'
+	try {
+	    FullPositionVector item1 = this.anchorPoint;
+
+	    if (item1 != null) {
+		{
+		    separator0 = ",";
+		    sink.encodeKey("anchorPoint");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "anchorPoint");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("anchorPoint", "FullPositionVector");
+	    throw ee;
+	}
+	// Encode field 'rtcmHeader'
+	try {
+	    RTCMHeader item1 = this.rtcmHeader;
+
+	    {
+		sink.writeSeparator(separator0);
+		sink.encodeKey("rtcmHeader");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("rtcmHeader", "RTCMHeader");
+	    throw ee;
+	}
+	// Encode field 'msg1001'
+	try {
+	    OctetString item1 = this.msg1001;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1001");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1001");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1001", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode field 'msg1002'
+	try {
+	    OctetString item1 = this.msg1002;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1002");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1002");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1002", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode field 'msg1003'
+	try {
+	    OctetString item1 = this.msg1003;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1003");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1003");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1003", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode field 'msg1004'
+	try {
+	    OctetString item1 = this.msg1004;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1004");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1004");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1004", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode field 'msg1005'
+	try {
+	    OctetString item1 = this.msg1005;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1005");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1005");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1005", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode field 'msg1006'
+	try {
+	    OctetString item1 = this.msg1006;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1006");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1006");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1006", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode field 'msg1007'
+	try {
+	    OctetString item1 = this.msg1007;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1007");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1007");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1007", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode field 'msg1008'
+	try {
+	    OctetString item1 = this.msg1008;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1008");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1008");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1008", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode field 'msg1009'
+	try {
+	    OctetString item1 = this.msg1009;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1009");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1009");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1009", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode field 'msg1010'
+	try {
+	    OctetString item1 = this.msg1010;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1010");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1010");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1010", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode field 'msg1011'
+	try {
+	    OctetString item1 = this.msg1011;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1011");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1011");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1011", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode field 'msg1012'
+	try {
+	    OctetString item1 = this.msg1012;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1012");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1012");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1012", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode field 'msg1013'
+	try {
+	    OctetString item1 = this.msg1013;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1013");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1013");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1013", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1014'
+	try {
+	    OctetString item1 = this.msg1014;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1014");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1014");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1014", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1015'
+	try {
+	    OctetString item1 = this.msg1015;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1015");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1015");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1015", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1016'
+	try {
+	    OctetString item1 = this.msg1016;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1016");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1016");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1016", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1017'
+	try {
+	    OctetString item1 = this.msg1017;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1017");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1017");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1017", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1019'
+	try {
+	    OctetString item1 = this.msg1019;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1019");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1019");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1019", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1020'
+	try {
+	    OctetString item1 = this.msg1020;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1020");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1020");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1020", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1021'
+	try {
+	    OctetString item1 = this.msg1021;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1021");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1021");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1021", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1022'
+	try {
+	    OctetString item1 = this.msg1022;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1022");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1022");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1022", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1023'
+	try {
+	    OctetString item1 = this.msg1023;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1023");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1023");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1023", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1024'
+	try {
+	    OctetString item1 = this.msg1024;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1024");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1024");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1024", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1025'
+	try {
+	    OctetString item1 = this.msg1025;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1025");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1025");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1025", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1026'
+	try {
+	    OctetString item1 = this.msg1026;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1026");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1026");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1026", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1027'
+	try {
+	    OctetString item1 = this.msg1027;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1027");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1027");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1027", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1029'
+	try {
+	    OctetString item1 = this.msg1029;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1029");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1029");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1029", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1030'
+	try {
+	    OctetString item1 = this.msg1030;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1030");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1030");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1030", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1031'
+	try {
+	    OctetString item1 = this.msg1031;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1031");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1031");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1031", "OCTET STRING");
+	    throw ee;
+	}
+	// Encode extension 'msg1032'
+	try {
+	    OctetString item1 = this.msg1032;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("msg1032");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "msg1032");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msg1032", "OCTET STRING");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public RTCMPackage decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[33];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		RTCMPackage.__Tag t_tag0 = RTCMPackage.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = RTCMPackage.__Tag._null_;
+		switch (t_tag0) {
+		    case __anchorPoint:
+		    // Decode field 'anchorPoint'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[0])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.anchorPoint == null)
+				this.anchorPoint = new FullPositionVector();
+			    this.anchorPoint.decodeValue(coder, source);
+			    present0[0] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("anchorPoint", "FullPositionVector");
+			throw de;
+		    }
+		    break;
+		    case __rtcmHeader:
+		    // Decode field 'rtcmHeader'
+		    try {
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.rtcmHeader = new RTCMHeader(coder.decodeOctetString(source));
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("rtcmHeader", "RTCMHeader");
+			throw de;
+		    }
+		    break;
+		    case __msg1001:
+		    // Decode field 'msg1001'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[2])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1001 = new OctetString(coder.decodeOctetString(source));
+			    present0[2] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1001", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1002:
+		    // Decode field 'msg1002'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[3])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1002 = new OctetString(coder.decodeOctetString(source));
+			    present0[3] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1002", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1003:
+		    // Decode field 'msg1003'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[4])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1003 = new OctetString(coder.decodeOctetString(source));
+			    present0[4] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1003", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1004:
+		    // Decode field 'msg1004'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[5])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1004 = new OctetString(coder.decodeOctetString(source));
+			    present0[5] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1004", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1005:
+		    // Decode field 'msg1005'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[6])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1005 = new OctetString(coder.decodeOctetString(source));
+			    present0[6] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1005", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1006:
+		    // Decode field 'msg1006'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[7])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1006 = new OctetString(coder.decodeOctetString(source));
+			    present0[7] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1006", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1007:
+		    // Decode field 'msg1007'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[8])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1007 = new OctetString(coder.decodeOctetString(source));
+			    present0[8] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1007", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1008:
+		    // Decode field 'msg1008'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[9])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1008 = new OctetString(coder.decodeOctetString(source));
+			    present0[9] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1008", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1009:
+		    // Decode field 'msg1009'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[10])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1009 = new OctetString(coder.decodeOctetString(source));
+			    present0[10] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1009", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1010:
+		    // Decode field 'msg1010'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[11])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1010 = new OctetString(coder.decodeOctetString(source));
+			    present0[11] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1010", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1011:
+		    // Decode field 'msg1011'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[12])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1011 = new OctetString(coder.decodeOctetString(source));
+			    present0[12] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1011", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1012:
+		    // Decode field 'msg1012'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[13])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1012 = new OctetString(coder.decodeOctetString(source));
+			    present0[13] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1012", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1013:
+		    // Decode field 'msg1013'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[14])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1013 = new OctetString(coder.decodeOctetString(source));
+			    present0[14] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1013", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1014:
+		    // Decode extension 'msg1014'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[15])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1014 = new OctetString(coder.decodeOctetString(source));
+			    present0[15] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1014", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1015:
+		    // Decode extension 'msg1015'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[16])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1015 = new OctetString(coder.decodeOctetString(source));
+			    present0[16] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1015", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1016:
+		    // Decode extension 'msg1016'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[17])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1016 = new OctetString(coder.decodeOctetString(source));
+			    present0[17] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1016", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1017:
+		    // Decode extension 'msg1017'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[18])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1017 = new OctetString(coder.decodeOctetString(source));
+			    present0[18] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1017", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1019:
+		    // Decode extension 'msg1019'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[19])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1019 = new OctetString(coder.decodeOctetString(source));
+			    present0[19] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1019", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1020:
+		    // Decode extension 'msg1020'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[20])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1020 = new OctetString(coder.decodeOctetString(source));
+			    present0[20] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1020", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1021:
+		    // Decode extension 'msg1021'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[21])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1021 = new OctetString(coder.decodeOctetString(source));
+			    present0[21] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1021", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1022:
+		    // Decode extension 'msg1022'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[22])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1022 = new OctetString(coder.decodeOctetString(source));
+			    present0[22] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1022", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1023:
+		    // Decode extension 'msg1023'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[23])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1023 = new OctetString(coder.decodeOctetString(source));
+			    present0[23] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1023", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1024:
+		    // Decode extension 'msg1024'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[24])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1024 = new OctetString(coder.decodeOctetString(source));
+			    present0[24] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1024", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1025:
+		    // Decode extension 'msg1025'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[25])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1025 = new OctetString(coder.decodeOctetString(source));
+			    present0[25] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1025", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1026:
+		    // Decode extension 'msg1026'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[26])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1026 = new OctetString(coder.decodeOctetString(source));
+			    present0[26] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1026", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1027:
+		    // Decode extension 'msg1027'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[27])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1027 = new OctetString(coder.decodeOctetString(source));
+			    present0[27] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1027", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1029:
+		    // Decode extension 'msg1029'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[28])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1029 = new OctetString(coder.decodeOctetString(source));
+			    present0[28] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1029", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1030:
+		    // Decode extension 'msg1030'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[29])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1030 = new OctetString(coder.decodeOctetString(source));
+			    present0[29] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1030", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1031:
+		    // Decode extension 'msg1031'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[30])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1031 = new OctetString(coder.decodeOctetString(source));
+			    present0[30] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1031", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    case __msg1032:
+		    // Decode extension 'msg1032'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[31])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.msg1032 = new OctetString(coder.decodeOctetString(source));
+			    present0[31] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msg1032", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    this.anchorPoint = null;
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'rtcmHeader'");
+	if (!present0[2])
+	    this.msg1001 = null;
+	if (!present0[3])
+	    this.msg1002 = null;
+	if (!present0[4])
+	    this.msg1003 = null;
+	if (!present0[5])
+	    this.msg1004 = null;
+	if (!present0[6])
+	    this.msg1005 = null;
+	if (!present0[7])
+	    this.msg1006 = null;
+	if (!present0[8])
+	    this.msg1007 = null;
+	if (!present0[9])
+	    this.msg1008 = null;
+	if (!present0[10])
+	    this.msg1009 = null;
+	if (!present0[11])
+	    this.msg1010 = null;
+	if (!present0[12])
+	    this.msg1011 = null;
+	if (!present0[13])
+	    this.msg1012 = null;
+	if (!present0[14])
+	    this.msg1013 = null;
+	if (!present0[15])
+	    this.msg1014 = null;
+	if (!present0[16])
+	    this.msg1015 = null;
+	if (!present0[17])
+	    this.msg1016 = null;
+	if (!present0[18])
+	    this.msg1017 = null;
+	if (!present0[19])
+	    this.msg1019 = null;
+	if (!present0[20])
+	    this.msg1020 = null;
+	if (!present0[21])
+	    this.msg1021 = null;
+	if (!present0[22])
+	    this.msg1022 = null;
+	if (!present0[23])
+	    this.msg1023 = null;
+	if (!present0[24])
+	    this.msg1024 = null;
+	if (!present0[25])
+	    this.msg1025 = null;
+	if (!present0[26])
+	    this.msg1026 = null;
+	if (!present0[27])
+	    this.msg1027 = null;
+	if (!present0[28])
+	    this.msg1029 = null;
+	if (!present0[29])
+	    this.msg1030 = null;
+	if (!present0[30])
+	    this.msg1031 = null;
+	if (!present0[31])
+	    this.msg1032 = null;
+	return this;
     }
 
     /**

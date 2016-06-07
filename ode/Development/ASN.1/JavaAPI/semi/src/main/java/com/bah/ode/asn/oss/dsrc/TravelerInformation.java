@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Fri May 20 15:51:02 2016 */
+/* Created: Tue Jun 07 13:54:40 2016 */
 /* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -39,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -50,7 +53,7 @@ import com.oss.coders.per.PerCoder;
  * @see Sequence
  */
 
-public class TravelerInformation extends Sequence implements BEREncodable, BERDecodable, DEREncodable, PEREncodable, PERDecodable {
+public class TravelerInformation extends Sequence implements BEREncodable, BERDecodable, DEREncodable, JSONEncodable, JSONDecodable, PEREncodable, PERDecodable {
     public DSRCmsgID msgID;
     public UniqueMSGID packetID;
     public URL_Base urlB;
@@ -377,6 +380,36 @@ public class TravelerInformation extends Sequence implements BEREncodable, BERDe
 		
 		
 		/**
+		 * Hashtable for tags (reserved for internal use).
+		 * This class is reserved for internal use and must not be used in the application code.
+		 */
+		public static enum __Tag
+		{
+		    __furtherInfoID("furtherInfoID"),
+		    __roadSignID("roadSignID"),
+		    _null_("_null_");
+		    private String tag;
+		    private static java.util.HashMap<String, __Tag> map =
+			new java.util.HashMap<String, __Tag>(3);
+		    private __Tag(String tag) {
+			this.tag = tag;
+		    }
+		    private String getTag() {
+			return tag;
+		    }
+		    /**
+		     * This method is reserved for internal use and must not be invoked from the application code.
+		     */
+		    public static __Tag getTagSub(String tag) {
+			return map.get(tag);
+		    }
+		    static {
+			for (__Tag t:values())
+			    map.put(t.getTag(), t);
+		    }
+		}
+		
+		/**
 		 * Implements PER value encoder for the type (reserved for internal use).
 		 * This method is reserved for internal use and must not be invoked from the application code.
 		 */
@@ -466,6 +499,102 @@ public class TravelerInformation extends Sequence implements BEREncodable, BERDe
 			    break;
 		    }
 		    return data;
+		}
+
+		/**
+		 * Implements JSON value encoder for the type (reserved for internal use).
+		 * This method is reserved for internal use and must not be invoked from the application code.
+		 */
+		public void encodeValue(JsonCoder coder, JsonWriter sink)
+			throws IOException, EncoderException
+		{
+		    int idx0 = this.mChosenFlag;
+
+		    sink.beginObject();
+		    switch (idx0)
+		    {
+		    case furtherInfoID_chosen:
+			// Encode alternative 'furtherInfoID'
+			try {
+			    FurtherInfoID item1 = (FurtherInfoID)this.mChosenValue;
+
+			    sink.encodeKey("furtherInfoID");
+			    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+			} catch (Exception e) {
+			    EncoderException ee = EncoderException.wrapException(e);
+			    ee.appendElementContext("furtherInfoID", "FurtherInfoID", 0);
+			    throw ee;
+			}
+			break;
+		    case roadSignID_chosen:
+			// Encode alternative 'roadSignID'
+			try {
+			    RoadSignID item1 = (RoadSignID)this.mChosenValue;
+
+			    sink.encodeKey("roadSignID");
+			    item1.encodeValue(coder, sink);
+			} catch (Exception e) {
+			    EncoderException ee = EncoderException.wrapException(e);
+			    ee.appendElementContext("roadSignID", "RoadSignID", 0);
+			    throw ee;
+			}
+			break;
+		    default:
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._bad_choice, null, idx0);
+		    }
+		    sink.endObject();
+
+		}
+
+		/**
+		 * Implements JSON value decoder for the type (reserved for internal use).
+		 * This method is reserved for internal use and must not be invoked from the application code.
+		 */
+		public MsgId decodeValue(JsonCoder coder, JsonReader source)
+			throws IOException, DecoderException
+		{
+		    coder.decodeObject(source);
+		    String tag0 = coder.nextProperty(source);
+		    MsgId.__Tag t_tag0 = MsgId.__Tag.getTagSub(tag0);
+		    if (t_tag0 == null) 
+			t_tag0 = MsgId.__Tag._null_;
+		    switch (t_tag0) {
+			case __furtherInfoID:
+			    // Decode alternative 'furtherInfoID'
+			    try {
+				FurtherInfoID item1 = null;
+
+				// Decode alternative 'furtherInfoID'
+				item1 = new FurtherInfoID(coder.decodeOctetString(source));
+				this.mChosenValue = item1;
+				this.mChosenFlag = furtherInfoID_chosen;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendElementContext("furtherInfoID", "FurtherInfoID", 0);
+				throw de;
+			    }
+			    break;
+			case __roadSignID:
+			    // Decode alternative 'roadSignID'
+			    try {
+				RoadSignID item1 = new RoadSignID();
+
+				// Decode alternative 'roadSignID'
+				item1.decodeValue(coder, source);
+				this.mChosenValue = item1;
+				this.mChosenFlag = roadSignID_chosen;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendElementContext("roadSignID", "RoadSignID", 0);
+				throw de;
+			    }
+			    break;
+			default:
+			    throw new DecoderException(com.oss.util.ExceptionDescriptor._unknown_field, null, tag0);
+		    }
+		    if (coder.hasMoreProperties(source, false))
+			throw new DecoderException(com.oss.util.ExceptionDescriptor._json_unexpected_token, null, ": expecting '}'");
+		    return this;
 		}
 
 		/**
@@ -775,6 +904,70 @@ public class TravelerInformation extends Sequence implements BEREncodable, BERDe
 		}
 
 		/**
+		 * Implements JSON value encoder for the type (reserved for internal use).
+		 * This method is reserved for internal use and must not be invoked from the application code.
+		 */
+		public void encodeValue(JsonCoder coder, JsonWriter sink)
+			throws IOException, EncoderException
+		{
+		    int total_len0 = this.elements.size();
+		    int idx0 = 0;
+
+		    sink.beginArray();
+		    if (total_len0 > 0) {
+			while (true) {
+			    try {
+				ValidRegion item1 = this.elements.get(idx0);
+
+				item1.encodeValue(coder, sink);
+			    
+			} catch (Exception e) {
+			    EncoderException ee = EncoderException.wrapException(e);
+			    ee.appendElementContext(null, "ValidRegion", idx0);
+			    throw ee;
+			}
+			idx0++;
+			if (idx0 == total_len0) break;
+			sink.writeSeparator();
+		    }
+		}
+		sink.endArray();
+
+	    }
+
+		/**
+		 * Implements JSON value decoder for the type (reserved for internal use).
+		 * This method is reserved for internal use and must not be invoked from the application code.
+		 */
+		public Regions decodeValue(JsonCoder coder, JsonReader source)
+		    throws IOException, DecoderException
+	    {
+		int total_len0 = 0;
+		int idx0 = 0;
+
+		if (this.elements != null)
+		    this.elements.clear();
+		else
+		    this.elements = new java.util.ArrayList<ValidRegion>(total_len0);
+		coder.decodeArray(source);
+		if (coder.hasMoreElements(source, true))
+		    do {
+			try {
+			    ValidRegion item1 = new ValidRegion();
+
+			    this.elements.add(item1);
+			    item1.decodeValue(coder, source);
+			} catch (Exception e) {
+			    DecoderException de = DecoderException.wrapException(e);
+			    de.appendElementContext(null, "ValidRegion", idx0);
+			    throw de;
+			}
+			++idx0;
+		    } while (coder.hasMoreElements(source, false));
+		    return this;
+		}
+
+		/**
 		 * Compare 'this' object to another object to see if their contents are the same.
 		 */
 		public boolean abstractEqualTo(AbstractData that)
@@ -1008,6 +1201,39 @@ public class TravelerInformation extends Sequence implements BEREncodable, BERDe
 		
 		
 		/**
+		 * Hashtable for tags (reserved for internal use).
+		 * This class is reserved for internal use and must not be used in the application code.
+		 */
+		public static enum __Tag
+		{
+		    __advisory("advisory"),
+		    __workZone("workZone"),
+		    __genericSign("genericSign"),
+		    __speedLimit("speedLimit"),
+		    __exitService("exitService"),
+		    _null_("_null_");
+		    private String tag;
+		    private static java.util.HashMap<String, __Tag> map =
+			new java.util.HashMap<String, __Tag>(6);
+		    private __Tag(String tag) {
+			this.tag = tag;
+		    }
+		    private String getTag() {
+			return tag;
+		    }
+		    /**
+		     * This method is reserved for internal use and must not be invoked from the application code.
+		     */
+		    public static __Tag getTagSub(String tag) {
+			return map.get(tag);
+		    }
+		    static {
+			for (__Tag t:values())
+			    map.put(t.getTag(), t);
+		    }
+		}
+		
+		/**
 		 * Implements PER value encoder for the type (reserved for internal use).
 		 * This method is reserved for internal use and must not be invoked from the application code.
 		 */
@@ -1175,6 +1401,186 @@ public class TravelerInformation extends Sequence implements BEREncodable, BERDe
 		}
 
 		/**
+		 * Implements JSON value encoder for the type (reserved for internal use).
+		 * This method is reserved for internal use and must not be invoked from the application code.
+		 */
+		public void encodeValue(JsonCoder coder, JsonWriter sink)
+			throws IOException, EncoderException
+		{
+		    int idx0 = this.mChosenFlag;
+
+		    sink.beginObject();
+		    switch (idx0)
+		    {
+		    case advisory_chosen:
+			// Encode alternative 'advisory'
+			try {
+			    com.bah.ode.asn.oss.itis.ITIScodesAndText item1 = (com.bah.ode.asn.oss.itis.ITIScodesAndText)this.mChosenValue;
+
+			    sink.encodeKey("advisory");
+			    item1.encodeValue(coder, sink);
+			} catch (Exception e) {
+			    EncoderException ee = EncoderException.wrapException(e);
+			    ee.appendElementContext("advisory", "ITIScodesAndText", 0);
+			    throw ee;
+			}
+			break;
+		    case workZone_chosen:
+			// Encode alternative 'workZone'
+			try {
+			    WorkZone item1 = (WorkZone)this.mChosenValue;
+
+			    sink.encodeKey("workZone");
+			    item1.encodeValue(coder, sink);
+			} catch (Exception e) {
+			    EncoderException ee = EncoderException.wrapException(e);
+			    ee.appendElementContext("workZone", "WorkZone", 0);
+			    throw ee;
+			}
+			break;
+		    case genericSign_chosen:
+			// Encode alternative 'genericSign'
+			try {
+			    GenericSignage item1 = (GenericSignage)this.mChosenValue;
+
+			    sink.encodeKey("genericSign");
+			    item1.encodeValue(coder, sink);
+			} catch (Exception e) {
+			    EncoderException ee = EncoderException.wrapException(e);
+			    ee.appendElementContext("genericSign", "GenericSignage", 0);
+			    throw ee;
+			}
+			break;
+		    case speedLimit_chosen:
+			// Encode alternative 'speedLimit'
+			try {
+			    SpeedLimit item1 = (SpeedLimit)this.mChosenValue;
+
+			    sink.encodeKey("speedLimit");
+			    item1.encodeValue(coder, sink);
+			} catch (Exception e) {
+			    EncoderException ee = EncoderException.wrapException(e);
+			    ee.appendElementContext("speedLimit", "SpeedLimit", 0);
+			    throw ee;
+			}
+			break;
+		    case exitService_chosen:
+			// Encode alternative 'exitService'
+			try {
+			    ExitService item1 = (ExitService)this.mChosenValue;
+
+			    sink.encodeKey("exitService");
+			    item1.encodeValue(coder, sink);
+			} catch (Exception e) {
+			    EncoderException ee = EncoderException.wrapException(e);
+			    ee.appendElementContext("exitService", "ExitService", 0);
+			    throw ee;
+			}
+			break;
+		    default:
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._bad_choice, null, idx0);
+		    }
+		    sink.endObject();
+
+		}
+
+		/**
+		 * Implements JSON value decoder for the type (reserved for internal use).
+		 * This method is reserved for internal use and must not be invoked from the application code.
+		 */
+		public Content decodeValue(JsonCoder coder, JsonReader source)
+			throws IOException, DecoderException
+		{
+		    coder.decodeObject(source);
+		    String tag0 = coder.nextProperty(source);
+		    Content.__Tag t_tag0 = Content.__Tag.getTagSub(tag0);
+		    if (t_tag0 == null) 
+			t_tag0 = Content.__Tag._null_;
+		    switch (t_tag0) {
+			case __advisory:
+			    // Decode alternative 'advisory'
+			    try {
+				com.bah.ode.asn.oss.itis.ITIScodesAndText item1 = new com.bah.ode.asn.oss.itis.ITIScodesAndText();
+
+				// Decode alternative 'advisory'
+				item1.decodeValue(coder, source);
+				this.mChosenValue = item1;
+				this.mChosenFlag = advisory_chosen;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendElementContext("advisory", "ITIScodesAndText", 0);
+				throw de;
+			    }
+			    break;
+			case __workZone:
+			    // Decode alternative 'workZone'
+			    try {
+				WorkZone item1 = new WorkZone();
+
+				// Decode alternative 'workZone'
+				item1.decodeValue(coder, source);
+				this.mChosenValue = item1;
+				this.mChosenFlag = workZone_chosen;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendElementContext("workZone", "WorkZone", 0);
+				throw de;
+			    }
+			    break;
+			case __genericSign:
+			    // Decode alternative 'genericSign'
+			    try {
+				GenericSignage item1 = new GenericSignage();
+
+				// Decode alternative 'genericSign'
+				item1.decodeValue(coder, source);
+				this.mChosenValue = item1;
+				this.mChosenFlag = genericSign_chosen;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendElementContext("genericSign", "GenericSignage", 0);
+				throw de;
+			    }
+			    break;
+			case __speedLimit:
+			    // Decode alternative 'speedLimit'
+			    try {
+				SpeedLimit item1 = new SpeedLimit();
+
+				// Decode alternative 'speedLimit'
+				item1.decodeValue(coder, source);
+				this.mChosenValue = item1;
+				this.mChosenFlag = speedLimit_chosen;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendElementContext("speedLimit", "SpeedLimit", 0);
+				throw de;
+			    }
+			    break;
+			case __exitService:
+			    // Decode alternative 'exitService'
+			    try {
+				ExitService item1 = new ExitService();
+
+				// Decode alternative 'exitService'
+				item1.decodeValue(coder, source);
+				this.mChosenValue = item1;
+				this.mChosenFlag = exitService_chosen;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendElementContext("exitService", "ExitService", 0);
+				throw de;
+			    }
+			    break;
+			default:
+			    throw new DecoderException(com.oss.util.ExceptionDescriptor._unknown_field, null, tag0);
+		    }
+		    if (coder.hasMoreProperties(source, false))
+			throw new DecoderException(com.oss.util.ExceptionDescriptor._json_unexpected_token, null, ": expecting '}'");
+		    return this;
+		}
+
+		/**
 		 * Clone 'this' object.
 		 */
 		public Content clone() {
@@ -1211,6 +1617,46 @@ public class TravelerInformation extends Sequence implements BEREncodable, BERDe
 	     */
 	    public static final EPAInfo _cEPAInfo_url = 
 		com.bah.ode.asn.oss.dsrc.URL_Short._cEPAInfo_;
+	    
+	    /**
+	     * Hashtable for tags (reserved for internal use).
+	     * This class is reserved for internal use and must not be used in the application code.
+	     */
+	    public static enum __Tag
+	    {
+		__frameType("frameType"),
+		__msgId("msgId"),
+		__startYear("startYear"),
+		__startTime("startTime"),
+		__duratonTime("duratonTime"),
+		__priority("priority"),
+		__commonAnchor("commonAnchor"),
+		__commonLaneWidth("commonLaneWidth"),
+		__commonDirectionality("commonDirectionality"),
+		__regions("regions"),
+		__content("content"),
+		__url("url"),
+		_null_("_null_");
+		private String tag;
+		private static java.util.HashMap<String, __Tag> map =
+		    new java.util.HashMap<String, __Tag>(13);
+		private __Tag(String tag) {
+		    this.tag = tag;
+		}
+		private String getTag() {
+		    return tag;
+		}
+		/**
+		 * This method is reserved for internal use and must not be invoked from the application code.
+		 */
+		public static __Tag getTagSub(String tag) {
+		    return map.get(tag);
+		}
+		static {
+		    for (__Tag t:values())
+			map.put(t.getTag(), t);
+		}
+	    }
 	    
 	    /**
 	     * Implements PER value encoder for the type (reserved for internal use).
@@ -1613,6 +2059,466 @@ public class TravelerInformation extends Sequence implements BEREncodable, BERDe
 	    }
 
 	    /**
+	     * Implements JSON value encoder for the type (reserved for internal use).
+	     * This method is reserved for internal use and must not be invoked from the application code.
+	     */
+	    public void encodeValue(JsonCoder coder, JsonWriter sink)
+		    throws IOException, EncoderException
+	    {
+		sink.beginObject();
+		// Encode field 'frameType'
+		try {
+		    TravelerInfoType item1 = this.frameType;
+
+		    {
+			sink.encodeKey("frameType");
+			if (item1.isUnknownEnumerator()) {
+			    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+			} else 
+			    sink.writeString(item1.name());
+		    }
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendFieldContext("frameType", "TravelerInfoType");
+		    throw ee;
+		}
+		// Encode field 'msgId'
+		try {
+		    MsgId item1 = this.msgId;
+
+		    {
+			sink.writeSeparator();
+			sink.encodeKey("msgId");
+			item1.encodeValue(coder, sink);
+		    }
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendFieldContext("msgId", "CHOICE");
+		    throw ee;
+		}
+		// Encode field 'startYear'
+		try {
+		    DYear item1 = this.startYear;
+
+		    if (item1 != null) {
+			{
+			    sink.writeSeparator();
+			    sink.encodeKey("startYear");
+			    coder.encodeInteger(item1.longValue(), sink);
+			}
+		    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+			sink.writeSeparator();
+			coder.encodeAbsentComponent(sink, "startYear");
+		    }
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendFieldContext("startYear", "DYear");
+		    throw ee;
+		}
+		// Encode field 'startTime'
+		try {
+		    MinuteOfTheYear item1 = this.startTime;
+
+		    {
+			sink.writeSeparator();
+			sink.encodeKey("startTime");
+			coder.encodeInteger(item1.longValue(), sink);
+		    }
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendFieldContext("startTime", "MinuteOfTheYear");
+		    throw ee;
+		}
+		// Encode field 'duratonTime'
+		try {
+		    MinutesDuration item1 = this.duratonTime;
+
+		    {
+			sink.writeSeparator();
+			sink.encodeKey("duratonTime");
+			coder.encodeInteger(item1.longValue(), sink);
+		    }
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendFieldContext("duratonTime", "MinutesDuration");
+		    throw ee;
+		}
+		// Encode field 'priority'
+		try {
+		    SignPrority item1 = this.priority;
+
+		    {
+			sink.writeSeparator();
+			sink.encodeKey("priority");
+			coder.encodeInteger(item1.longValue(), sink);
+		    }
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendFieldContext("priority", "SignPrority");
+		    throw ee;
+		}
+		// Encode field 'commonAnchor'
+		try {
+		    Position3D item1 = this.commonAnchor;
+
+		    if (item1 != null) {
+			{
+			    sink.writeSeparator();
+			    sink.encodeKey("commonAnchor");
+			    item1.encodeValue(coder, sink);
+			}
+		    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+			sink.writeSeparator();
+			coder.encodeAbsentComponent(sink, "commonAnchor");
+		    }
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendFieldContext("commonAnchor", "Position3D");
+		    throw ee;
+		}
+		// Encode field 'commonLaneWidth'
+		try {
+		    LaneWidth item1 = this.commonLaneWidth;
+
+		    if (item1 != null) {
+			{
+			    sink.writeSeparator();
+			    sink.encodeKey("commonLaneWidth");
+			    coder.encodeInteger(item1.longValue(), sink);
+			}
+		    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+			sink.writeSeparator();
+			coder.encodeAbsentComponent(sink, "commonLaneWidth");
+		    }
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendFieldContext("commonLaneWidth", "LaneWidth");
+		    throw ee;
+		}
+		// Encode field 'commonDirectionality'
+		try {
+		    DirectionOfUse item1 = this.commonDirectionality;
+
+		    if (item1 != null) {
+			{
+			    sink.writeSeparator();
+			    sink.encodeKey("commonDirectionality");
+			    if (item1.isUnknownEnumerator()) {
+				throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+			    } else 
+				sink.writeString(item1.name());
+			}
+		    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+			sink.writeSeparator();
+			coder.encodeAbsentComponent(sink, "commonDirectionality");
+		    }
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendFieldContext("commonDirectionality", "DirectionOfUse");
+		    throw ee;
+		}
+		// Encode field 'regions'
+		try {
+		    Regions item1 = this.regions;
+
+		    {
+			sink.writeSeparator();
+			sink.encodeKey("regions");
+			item1.encodeValue(coder, sink);
+		    }
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendFieldContext("regions", "SEQUENCE OF");
+		    throw ee;
+		}
+		// Encode field 'content'
+		try {
+		    Content item1 = this.content;
+
+		    {
+			sink.writeSeparator();
+			sink.encodeKey("content");
+			item1.encodeValue(coder, sink);
+		    }
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendFieldContext("content", "CHOICE");
+		    throw ee;
+		}
+		// Encode field 'url'
+		try {
+		    URL_Short item1 = this.url;
+
+		    if (item1 != null) {
+			{
+			    sink.writeSeparator();
+			    sink.encodeKey("url");
+			    coder.encodeString(item1.stringValue(), sink);
+			}
+		    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+			sink.writeSeparator();
+			coder.encodeAbsentComponent(sink, "url");
+		    }
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendFieldContext("url", "URL-Short");
+		    throw ee;
+		}
+		sink.endObject();
+
+	    }
+
+	    /**
+	     * Implements JSON value decoder for the type (reserved for internal use).
+	     * This method is reserved for internal use and must not be invoked from the application code.
+	     */
+	    public Sequence_ decodeValue(JsonCoder coder, JsonReader source)
+		    throws IOException, DecoderException
+	    {
+		boolean[] present0 = new boolean[13];
+
+		coder.decodeObject(source);
+		if (coder.hasMoreProperties(source, true))
+		    do {
+			String tag0 = coder.nextProperty(source);
+			Sequence_.__Tag t_tag0 = Sequence_.__Tag.getTagSub(tag0);
+			if (t_tag0 == null) 
+			    t_tag0 = Sequence_.__Tag._null_;
+			switch (t_tag0) {
+			    case __frameType:
+			    // Decode field 'frameType'
+			    try {
+				String content1 = coder.decodeString(source);
+				int idx1;
+				TravelerInfoType temp1;
+
+				if (present0[0])
+				    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+				idx1 = coder.resolveName(TravelerInfoType.cConstantNameList, content1);
+				if (idx1 < 0 )
+				    temp1 = TravelerInfoType.unknownEnumerator();
+				else
+				    temp1 = TravelerInfoType.cNamedNumbers[idx1];
+				this.frameType = temp1;
+				present0[0] = true;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendFieldContext("frameType", "TravelerInfoType");
+				throw de;
+			    }
+			    break;
+			    case __msgId:
+			    // Decode field 'msgId'
+			    try {
+				if (present0[1])
+				    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+				if (this.msgId == null)
+				    this.msgId = new MsgId();
+				this.msgId.decodeValue(coder, source);
+				present0[1] = true;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendFieldContext("msgId", "CHOICE");
+				throw de;
+			    }
+			    break;
+			    case __startYear:
+			    // Decode field 'startYear'
+			    try {
+				if (!coder.isNullValue(source)) {
+				    if (present0[2])
+					throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+				    if (this.startYear == null)
+					this.startYear = new DYear();
+				    this.startYear.setValue(coder.decodeInteger(source));
+				    present0[2] = true;
+				}
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendFieldContext("startYear", "DYear");
+				throw de;
+			    }
+			    break;
+			    case __startTime:
+			    // Decode field 'startTime'
+			    try {
+				if (present0[3])
+				    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+				if (this.startTime == null)
+				    this.startTime = new MinuteOfTheYear();
+				this.startTime.setValue(coder.decodeInteger(source));
+				present0[3] = true;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendFieldContext("startTime", "MinuteOfTheYear");
+				throw de;
+			    }
+			    break;
+			    case __duratonTime:
+			    // Decode field 'duratonTime'
+			    try {
+				if (present0[4])
+				    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+				if (this.duratonTime == null)
+				    this.duratonTime = new MinutesDuration();
+				this.duratonTime.setValue(coder.decodeInteger(source));
+				present0[4] = true;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendFieldContext("duratonTime", "MinutesDuration");
+				throw de;
+			    }
+			    break;
+			    case __priority:
+			    // Decode field 'priority'
+			    try {
+				if (present0[5])
+				    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+				if (this.priority == null)
+				    this.priority = new SignPrority();
+				this.priority.setValue(coder.decodeInteger(source));
+				present0[5] = true;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendFieldContext("priority", "SignPrority");
+				throw de;
+			    }
+			    break;
+			    case __commonAnchor:
+			    // Decode field 'commonAnchor'
+			    try {
+				if (!coder.isNullValue(source)) {
+				    if (present0[6])
+					throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+				    if (this.commonAnchor == null)
+					this.commonAnchor = new Position3D();
+				    this.commonAnchor.decodeValue(coder, source);
+				    present0[6] = true;
+				}
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendFieldContext("commonAnchor", "Position3D");
+				throw de;
+			    }
+			    break;
+			    case __commonLaneWidth:
+			    // Decode field 'commonLaneWidth'
+			    try {
+				if (!coder.isNullValue(source)) {
+				    if (present0[7])
+					throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+				    if (this.commonLaneWidth == null)
+					this.commonLaneWidth = new LaneWidth();
+				    this.commonLaneWidth.setValue(coder.decodeInteger(source));
+				    present0[7] = true;
+				}
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendFieldContext("commonLaneWidth", "LaneWidth");
+				throw de;
+			    }
+			    break;
+			    case __commonDirectionality:
+			    // Decode field 'commonDirectionality'
+			    try {
+				if (!coder.isNullValue(source)) {
+				    String content1 = coder.decodeString(source);
+				    int idx1;
+				    DirectionOfUse temp1;
+
+				    if (present0[8])
+					throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+				    idx1 = coder.resolveName(DirectionOfUse.cConstantNameList, content1);
+				    if (idx1 < 0 )
+					temp1 = DirectionOfUse.unknownEnumerator();
+				    else
+					temp1 = DirectionOfUse.cNamedNumbers[idx1];
+				    this.commonDirectionality = temp1;
+				    present0[8] = true;
+				}
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendFieldContext("commonDirectionality", "DirectionOfUse");
+				throw de;
+			    }
+			    break;
+			    case __regions:
+			    // Decode field 'regions'
+			    try {
+				if (present0[9])
+				    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+				if (this.regions == null)
+				    this.regions = new Regions();
+				this.regions.decodeValue(coder, source);
+				present0[9] = true;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendFieldContext("regions", "SEQUENCE OF");
+				throw de;
+			    }
+			    break;
+			    case __content:
+			    // Decode field 'content'
+			    try {
+				if (present0[10])
+				    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+				if (this.content == null)
+				    this.content = new Content();
+				this.content.decodeValue(coder, source);
+				present0[10] = true;
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendFieldContext("content", "CHOICE");
+				throw de;
+			    }
+			    break;
+			    case __url:
+			    // Decode field 'url'
+			    try {
+				if (!coder.isNullValue(source)) {
+				    if (present0[11])
+					throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+				    this.url = new URL_Short(coder.decodeString(source));
+				    present0[11] = true;
+				}
+			    } catch (Exception e) {
+				DecoderException de = DecoderException.wrapException(e);
+				de.appendFieldContext("url", "URL-Short");
+				throw de;
+			    }
+			    break;
+			    default:
+				throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
+			}
+		    } while (coder.hasMoreProperties(source, false));
+		if (!present0[0])
+		    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'frameType'");
+		if (!present0[1])
+		    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'msgId'");
+		if (!present0[2])
+		    this.startYear = null;
+		if (!present0[3])
+		    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'startTime'");
+		if (!present0[4])
+		    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'duratonTime'");
+		if (!present0[5])
+		    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'priority'");
+		if (!present0[6])
+		    this.commonAnchor = null;
+		if (!present0[7])
+		    this.commonLaneWidth = null;
+		if (!present0[8])
+		    this.commonDirectionality = null;
+		if (!present0[9])
+		    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'regions'");
+		if (!present0[10])
+		    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'content'");
+		if (!present0[11])
+		    this.url = null;
+		return this;
+	    }
+
+	    /**
 	     * Compare 'this' object to another object to see if their contents are the same.
 	     */
 	    public boolean abstractEqualTo(AbstractData that)
@@ -1850,6 +2756,70 @@ public class TravelerInformation extends Sequence implements BEREncodable, BERDe
 	}
 
 	/**
+	 * Implements JSON value encoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public void encodeValue(JsonCoder coder, JsonWriter sink)
+		throws IOException, EncoderException
+	{
+	    int total_len0 = this.elements.size();
+	    int idx0 = 0;
+
+	    sink.beginArray();
+	    if (total_len0 > 0) {
+		while (true) {
+		    try {
+			Sequence_ item1 = this.elements.get(idx0);
+
+			item1.encodeValue(coder, sink);
+		    
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext(null, "SEQUENCE", idx0);
+		    throw ee;
+		}
+		idx0++;
+		if (idx0 == total_len0) break;
+		sink.writeSeparator();
+	    }
+	}
+	sink.endArray();
+
+    }
+
+	/**
+	 * Implements JSON value decoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public DataFrames decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	int total_len0 = 0;
+	int idx0 = 0;
+
+	if (this.elements != null)
+	    this.elements.clear();
+	else
+	    this.elements = new java.util.ArrayList<Sequence_>(total_len0);
+	coder.decodeArray(source);
+	if (coder.hasMoreElements(source, true))
+	    do {
+		try {
+		    Sequence_ item1 = new Sequence_();
+
+		    this.elements.add(item1);
+		    item1.decodeValue(coder, source);
+		} catch (Exception e) {
+		    DecoderException de = DecoderException.wrapException(e);
+		    de.appendElementContext(null, "SEQUENCE", idx0);
+		    throw de;
+		}
+		++idx0;
+	    } while (coder.hasMoreElements(source, false));
+	    return this;
+	}
+
+	/**
 	 * Compare 'this' object to another object to see if their contents are the same.
 	 */
 	public boolean abstractEqualTo(AbstractData that)
@@ -1923,6 +2893,40 @@ public class TravelerInformation extends Sequence implements BEREncodable, BERDe
      */
     public static final EPAInfo _cEPAInfo_urlB = 
 	com.bah.ode.asn.oss.dsrc.URL_Base._cEPAInfo_;
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__msgID("msgID"),
+	__packetID("packetID"),
+	__urlB("urlB"),
+	__dataFrameCount("dataFrameCount"),
+	__dataFrames("dataFrames"),
+	__crc("crc"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(7);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Encode the PDU using BER (reserved for internal use).
@@ -3180,6 +4184,287 @@ public class TravelerInformation extends Sequence implements BEREncodable, BERDe
     {
 	try {
 	    this.decodeValue(coder, source, this);
+	    return this;
+	} catch (Exception e) {
+	    DecoderException de = DecoderException.wrapException(e);
+	    de.appendFieldContext(null, "TravelerInformation");
+	    throw de;
+	}
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'msgID'
+	try {
+	    DSRCmsgID item1 = this.msgID;
+
+	    {
+		sink.encodeKey("msgID");
+		if (item1.isUnknownEnumerator()) {
+		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		} else 
+		    sink.writeString(item1.name());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msgID", "DSRCmsgID");
+	    throw ee;
+	}
+	// Encode field 'packetID'
+	try {
+	    UniqueMSGID item1 = this.packetID;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("packetID");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "packetID");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("packetID", "UniqueMSGID");
+	    throw ee;
+	}
+	// Encode field 'urlB'
+	try {
+	    URL_Base item1 = this.urlB;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("urlB");
+		    coder.encodeString(item1.stringValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "urlB");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("urlB", "URL-Base");
+	    throw ee;
+	}
+	// Encode field 'dataFrameCount'
+	try {
+	    Count item1 = this.dataFrameCount;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("dataFrameCount");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "dataFrameCount");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("dataFrameCount", "Count");
+	    throw ee;
+	}
+	// Encode field 'dataFrames'
+	try {
+	    DataFrames item1 = this.dataFrames;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("dataFrames");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("dataFrames", "SEQUENCE OF");
+	    throw ee;
+	}
+	// Encode field 'crc'
+	try {
+	    MsgCRC item1 = this.crc;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("crc");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("crc", "MsgCRC");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Encode the PDU using JSON (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encode(JsonCoder coder, JsonWriter sink)
+	    throws EncoderException
+    {
+	try {
+	    this.encodeValue(coder, sink);
+
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext(null, "TravelerInformation");
+	    throw ee;
+	}
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public TravelerInformation decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[7];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		TravelerInformation.__Tag t_tag0 = TravelerInformation.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = TravelerInformation.__Tag._null_;
+		switch (t_tag0) {
+		    case __msgID:
+		    // Decode field 'msgID'
+		    try {
+			String content1 = coder.decodeString(source);
+			int idx1;
+			DSRCmsgID temp1;
+
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			idx1 = coder.resolveName(DSRCmsgID.cConstantNameList, content1);
+			if (idx1 < 0 )
+			    temp1 = DSRCmsgID.unknownEnumerator();
+			else
+			    temp1 = DSRCmsgID.cNamedNumbers[idx1];
+			this.msgID = temp1;
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msgID", "DSRCmsgID");
+			throw de;
+		    }
+		    break;
+		    case __packetID:
+		    // Decode field 'packetID'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[1])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.packetID = new UniqueMSGID(coder.decodeOctetString(source));
+			    present0[1] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("packetID", "UniqueMSGID");
+			throw de;
+		    }
+		    break;
+		    case __urlB:
+		    // Decode field 'urlB'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[2])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.urlB = new URL_Base(coder.decodeString(source));
+			    present0[2] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("urlB", "URL-Base");
+			throw de;
+		    }
+		    break;
+		    case __dataFrameCount:
+		    // Decode field 'dataFrameCount'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[3])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.dataFrameCount == null)
+				this.dataFrameCount = new Count();
+			    this.dataFrameCount.setValue(coder.decodeInteger(source));
+			    present0[3] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("dataFrameCount", "Count");
+			throw de;
+		    }
+		    break;
+		    case __dataFrames:
+		    // Decode field 'dataFrames'
+		    try {
+			if (present0[4])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.dataFrames == null)
+			    this.dataFrames = new DataFrames();
+			this.dataFrames.decodeValue(coder, source);
+			present0[4] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("dataFrames", "SEQUENCE OF");
+			throw de;
+		    }
+		    break;
+		    case __crc:
+		    // Decode field 'crc'
+		    try {
+			if (present0[5])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.crc = new MsgCRC(coder.decodeOctetString(source));
+			present0[5] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("crc", "MsgCRC");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'msgID'");
+	if (!present0[1])
+	    this.packetID = null;
+	if (!present0[2])
+	    this.urlB = null;
+	if (!present0[3])
+	    this.dataFrameCount = null;
+	if (!present0[4])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'dataFrames'");
+	if (!present0[5])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'crc'");
+	return this;
+    }
+
+    /**
+     * Decode the PDU using JSON (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public AbstractData decode(JsonCoder coder, JsonReader source)
+	    throws DecoderException
+    {
+	try {
+	    this.decodeValue(coder, source);
 	    return this;
 	} catch (Exception e) {
 	    DecoderException de = DecoderException.wrapException(e);

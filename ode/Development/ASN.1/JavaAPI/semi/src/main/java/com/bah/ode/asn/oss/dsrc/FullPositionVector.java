@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Fri May 20 15:51:02 2016 */
+/* Created: Tue Jun 07 13:54:40 2016 */
 /* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -39,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -301,6 +304,44 @@ public class FullPositionVector extends Sequence {
 	speedConfidence = null;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__utcTime("utcTime"),
+	___long("long"),
+	__lat("lat"),
+	__elevation("elevation"),
+	__heading("heading"),
+	__speed("speed"),
+	__posAccuracy("posAccuracy"),
+	__timeConfidence("timeConfidence"),
+	__posConfidence("posConfidence"),
+	__speedConfidence("speedConfidence"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(11);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -1032,6 +1073,408 @@ public class FullPositionVector extends Sequence {
 	    }
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	String separator0 = null;
+
+	sink.beginObject();
+	// Encode field 'utcTime'
+	try {
+	    DDateTime item1 = this.utcTime;
+
+	    if (item1 != null) {
+		{
+		    separator0 = ",";
+		    sink.encodeKey("utcTime");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "utcTime");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("utcTime", "DDateTime");
+	    throw ee;
+	}
+	// Encode field 'long'
+	try {
+	    Longitude item1 = this._long;
+
+	    {
+		sink.writeSeparator(separator0);
+		sink.encodeKey("long");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("long", "Longitude");
+	    throw ee;
+	}
+	// Encode field 'lat'
+	try {
+	    Latitude item1 = this.lat;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("lat");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("lat", "Latitude");
+	    throw ee;
+	}
+	// Encode field 'elevation'
+	try {
+	    Elevation item1 = this.elevation;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("elevation");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "elevation");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("elevation", "Elevation");
+	    throw ee;
+	}
+	// Encode field 'heading'
+	try {
+	    Heading item1 = this.heading;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("heading");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "heading");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("heading", "Heading");
+	    throw ee;
+	}
+	// Encode field 'speed'
+	try {
+	    TransmissionAndSpeed item1 = this.speed;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("speed");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "speed");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("speed", "TransmissionAndSpeed");
+	    throw ee;
+	}
+	// Encode field 'posAccuracy'
+	try {
+	    PositionalAccuracy item1 = this.posAccuracy;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("posAccuracy");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "posAccuracy");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("posAccuracy", "PositionalAccuracy");
+	    throw ee;
+	}
+	// Encode field 'timeConfidence'
+	try {
+	    TimeConfidence item1 = this.timeConfidence;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("timeConfidence");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "timeConfidence");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("timeConfidence", "TimeConfidence");
+	    throw ee;
+	}
+	// Encode field 'posConfidence'
+	try {
+	    PositionConfidenceSet item1 = this.posConfidence;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("posConfidence");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "posConfidence");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("posConfidence", "PositionConfidenceSet");
+	    throw ee;
+	}
+	// Encode field 'speedConfidence'
+	try {
+	    SpeedandHeadingandThrottleConfidence item1 = this.speedConfidence;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("speedConfidence");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "speedConfidence");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("speedConfidence", "SpeedandHeadingandThrottleConfidence");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public FullPositionVector decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[11];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		FullPositionVector.__Tag t_tag0 = FullPositionVector.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = FullPositionVector.__Tag._null_;
+		switch (t_tag0) {
+		    case __utcTime:
+		    // Decode field 'utcTime'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[0])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.utcTime == null)
+				this.utcTime = new DDateTime();
+			    this.utcTime.decodeValue(coder, source);
+			    present0[0] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("utcTime", "DDateTime");
+			throw de;
+		    }
+		    break;
+		    case ___long:
+		    // Decode field 'long'
+		    try {
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this._long == null)
+			    this._long = new Longitude();
+			this._long.setValue(coder.decodeInteger(source));
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("long", "Longitude");
+			throw de;
+		    }
+		    break;
+		    case __lat:
+		    // Decode field 'lat'
+		    try {
+			if (present0[2])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.lat == null)
+			    this.lat = new Latitude();
+			this.lat.setValue(coder.decodeInteger(source));
+			present0[2] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("lat", "Latitude");
+			throw de;
+		    }
+		    break;
+		    case __elevation:
+		    // Decode field 'elevation'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[3])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.elevation = new Elevation(coder.decodeOctetString(source));
+			    present0[3] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("elevation", "Elevation");
+			throw de;
+		    }
+		    break;
+		    case __heading:
+		    // Decode field 'heading'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[4])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.heading == null)
+				this.heading = new Heading();
+			    this.heading.setValue(coder.decodeInteger(source));
+			    present0[4] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("heading", "Heading");
+			throw de;
+		    }
+		    break;
+		    case __speed:
+		    // Decode field 'speed'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[5])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.speed = new TransmissionAndSpeed(coder.decodeOctetString(source));
+			    present0[5] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("speed", "TransmissionAndSpeed");
+			throw de;
+		    }
+		    break;
+		    case __posAccuracy:
+		    // Decode field 'posAccuracy'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[6])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.posAccuracy = new PositionalAccuracy(coder.decodeOctetString(source));
+			    present0[6] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("posAccuracy", "PositionalAccuracy");
+			throw de;
+		    }
+		    break;
+		    case __timeConfidence:
+		    // Decode field 'timeConfidence'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    TimeConfidence temp1;
+
+			    if (present0[7])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(TimeConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = TimeConfidence.cNamedNumbers[idx1];
+			    this.timeConfidence = temp1;
+			    present0[7] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("timeConfidence", "TimeConfidence");
+			throw de;
+		    }
+		    break;
+		    case __posConfidence:
+		    // Decode field 'posConfidence'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[8])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.posConfidence = new PositionConfidenceSet(coder.decodeOctetString(source));
+			    present0[8] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("posConfidence", "PositionConfidenceSet");
+			throw de;
+		    }
+		    break;
+		    case __speedConfidence:
+		    // Decode field 'speedConfidence'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[9])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.speedConfidence = new SpeedandHeadingandThrottleConfidence(coder.decodeOctetString(source));
+			    present0[9] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("speedConfidence", "SpeedandHeadingandThrottleConfidence");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    this.utcTime = null;
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'long'");
+	if (!present0[2])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'lat'");
+	if (!present0[3])
+	    this.elevation = null;
+	if (!present0[4])
+	    this.heading = null;
+	if (!present0[5])
+	    this.speed = null;
+	if (!present0[6])
+	    this.posAccuracy = null;
+	if (!present0[7])
+	    this.timeConfidence = null;
+	if (!present0[8])
+	    this.posConfidence = null;
+	if (!present0[9])
+	    this.speedConfidence = null;
+	return this;
     }
 
     /**

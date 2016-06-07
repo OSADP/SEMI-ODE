@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Fri May 20 15:51:02 2016 */
+/* Created: Tue Jun 07 13:54:40 2016 */
 /* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -39,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -187,6 +190,40 @@ public class AdvisoryDetails extends Sequence {
 	this.advisoryMessage = advisoryMessage;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__asdmID("asdmID"),
+	__asdmType("asdmType"),
+	__distType("distType"),
+	__startTime("startTime"),
+	__stopTime("stopTime"),
+	__advisoryMessage("advisoryMessage"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(7);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements PER value encoder for the type (reserved for internal use).
@@ -377,6 +414,245 @@ public class AdvisoryDetails extends Sequence {
 	    throw de;
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'asdmID'
+	try {
+	    com.bah.ode.asn.oss.dsrc.TemporaryID item1 = this.asdmID;
+
+	    {
+		sink.encodeKey("asdmID");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("asdmID", "TemporaryID");
+	    throw ee;
+	}
+	// Encode field 'asdmType'
+	try {
+	    AdvisoryBroadcastType item1 = this.asdmType;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("asdmType");
+		if (item1.isUnknownEnumerator()) {
+		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		} else 
+		    sink.writeString(item1.name());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("asdmType", "AdvisoryBroadcastType");
+	    throw ee;
+	}
+	// Encode field 'distType'
+	try {
+	    DistributionType item1 = this.distType;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("distType");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("distType", "DistributionType");
+	    throw ee;
+	}
+	// Encode field 'startTime'
+	try {
+	    com.bah.ode.asn.oss.dsrc.DFullTime item1 = this.startTime;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("startTime");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "startTime");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("startTime", "DFullTime");
+	    throw ee;
+	}
+	// Encode field 'stopTime'
+	try {
+	    com.bah.ode.asn.oss.dsrc.DFullTime item1 = this.stopTime;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("stopTime");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "stopTime");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("stopTime", "DFullTime");
+	    throw ee;
+	}
+	// Encode field 'advisoryMessage'
+	try {
+	    OctetString item1 = this.advisoryMessage;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("advisoryMessage");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("advisoryMessage", "OCTET STRING");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public AdvisoryDetails decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[7];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		AdvisoryDetails.__Tag t_tag0 = AdvisoryDetails.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = AdvisoryDetails.__Tag._null_;
+		switch (t_tag0) {
+		    case __asdmID:
+		    // Decode field 'asdmID'
+		    try {
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.asdmID = new com.bah.ode.asn.oss.dsrc.TemporaryID(coder.decodeOctetString(source));
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("asdmID", "TemporaryID");
+			throw de;
+		    }
+		    break;
+		    case __asdmType:
+		    // Decode field 'asdmType'
+		    try {
+			String content1 = coder.decodeString(source);
+			int idx1;
+			AdvisoryBroadcastType temp1;
+
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			idx1 = coder.resolveName(AdvisoryBroadcastType.cConstantNameList, content1);
+			if (idx1 < 0 )
+			    temp1 = AdvisoryBroadcastType.unknownEnumerator();
+			else
+			    temp1 = AdvisoryBroadcastType.cNamedNumbers[idx1];
+			this.asdmType = temp1;
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("asdmType", "AdvisoryBroadcastType");
+			throw de;
+		    }
+		    break;
+		    case __distType:
+		    // Decode field 'distType'
+		    try {
+			if (present0[2])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.distType = new DistributionType(coder.decodeOctetString(source));
+			present0[2] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("distType", "DistributionType");
+			throw de;
+		    }
+		    break;
+		    case __startTime:
+		    // Decode field 'startTime'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[3])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.startTime == null)
+				this.startTime = new com.bah.ode.asn.oss.dsrc.DFullTime();
+			    this.startTime.decodeValue(coder, source);
+			    present0[3] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("startTime", "DFullTime");
+			throw de;
+		    }
+		    break;
+		    case __stopTime:
+		    // Decode field 'stopTime'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[4])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.stopTime == null)
+				this.stopTime = new com.bah.ode.asn.oss.dsrc.DFullTime();
+			    this.stopTime.decodeValue(coder, source);
+			    present0[4] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("stopTime", "DFullTime");
+			throw de;
+		    }
+		    break;
+		    case __advisoryMessage:
+		    // Decode field 'advisoryMessage'
+		    try {
+			if (present0[5])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.advisoryMessage = new OctetString(coder.decodeOctetString(source));
+			present0[5] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("advisoryMessage", "OCTET STRING");
+			throw de;
+		    }
+		    break;
+		    default:
+			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'asdmID'");
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'asdmType'");
+	if (!present0[2])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'distType'");
+	if (!present0[3])
+	    this.startTime = null;
+	if (!present0[4])
+	    this.stopTime = null;
+	if (!present0[5])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'advisoryMessage'");
+	return this;
     }
 
     /**

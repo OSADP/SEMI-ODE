@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Fri May 20 15:51:02 2016 */
+/* Created: Tue Jun 07 13:54:40 2016 */
 /* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -39,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -151,6 +154,37 @@ public class RegionOffsets extends Sequence {
 	zOffset = null;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__xOffset("xOffset"),
+	__yOffset("yOffset"),
+	__zOffset("zOffset"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(4);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -403,6 +437,141 @@ public class RegionOffsets extends Sequence {
 	    data.zOffset = null;
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'xOffset'
+	try {
+	    INTEGER item1 = this.xOffset;
+
+	    {
+		sink.encodeKey("xOffset");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("xOffset", "INTEGER");
+	    throw ee;
+	}
+	// Encode field 'yOffset'
+	try {
+	    INTEGER item1 = this.yOffset;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("yOffset");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("yOffset", "INTEGER");
+	    throw ee;
+	}
+	// Encode field 'zOffset'
+	try {
+	    INTEGER item1 = this.zOffset;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("zOffset");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "zOffset");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("zOffset", "INTEGER");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public RegionOffsets decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[4];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		RegionOffsets.__Tag t_tag0 = RegionOffsets.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = RegionOffsets.__Tag._null_;
+		switch (t_tag0) {
+		    case __xOffset:
+		    // Decode field 'xOffset'
+		    try {
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.xOffset == null)
+			    this.xOffset = new INTEGER();
+			this.xOffset.setValue(coder.decodeInteger(source));
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("xOffset", "INTEGER");
+			throw de;
+		    }
+		    break;
+		    case __yOffset:
+		    // Decode field 'yOffset'
+		    try {
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.yOffset == null)
+			    this.yOffset = new INTEGER();
+			this.yOffset.setValue(coder.decodeInteger(source));
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("yOffset", "INTEGER");
+			throw de;
+		    }
+		    break;
+		    case __zOffset:
+		    // Decode field 'zOffset'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[2])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.zOffset == null)
+				this.zOffset = new INTEGER();
+			    this.zOffset.setValue(coder.decodeInteger(source));
+			    present0[2] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("zOffset", "INTEGER");
+			throw de;
+		    }
+		    break;
+		    default:
+			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'xOffset'");
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'yOffset'");
+	if (!present0[2])
+	    this.zOffset = null;
+	return this;
     }
 
     /**

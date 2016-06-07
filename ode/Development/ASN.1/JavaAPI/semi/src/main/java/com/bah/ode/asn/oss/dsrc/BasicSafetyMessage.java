@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Fri May 20 15:51:02 2016 */
+/* Created: Tue Jun 07 13:54:40 2016 */
 /* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -39,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -50,7 +53,7 @@ import com.oss.coders.per.PerCoder;
  * @see Sequence
  */
 
-public class BasicSafetyMessage extends Sequence implements BEREncodable, BERDecodable, DEREncodable, PEREncodable, PERDecodable {
+public class BasicSafetyMessage extends Sequence implements BEREncodable, BERDecodable, DEREncodable, JSONEncodable, JSONDecodable, PEREncodable, PERDecodable {
     public DSRCmsgID msgID;
     public BSMblob blob1;
     public VehicleSafetyExtension safetyExt;
@@ -152,6 +155,38 @@ public class BasicSafetyMessage extends Sequence implements BEREncodable, BERDec
 	status = null;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__msgID("msgID"),
+	__blob1("blob1"),
+	__safetyExt("safetyExt"),
+	__status("status"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(5);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Encode the PDU using BER (reserved for internal use).
@@ -571,6 +606,222 @@ public class BasicSafetyMessage extends Sequence implements BEREncodable, BERDec
     {
 	try {
 	    this.decodeValue(coder, source, this);
+	    return this;
+	} catch (Exception e) {
+	    DecoderException de = DecoderException.wrapException(e);
+	    de.appendFieldContext(null, "BasicSafetyMessage");
+	    throw de;
+	}
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'msgID'
+	try {
+	    DSRCmsgID item1 = this.msgID;
+
+	    {
+		sink.encodeKey("msgID");
+		if (item1.isUnknownEnumerator()) {
+		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		} else 
+		    sink.writeString(item1.name());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msgID", "DSRCmsgID");
+	    throw ee;
+	}
+	// Encode field 'blob1'
+	try {
+	    BSMblob item1 = this.blob1;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("blob1");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("blob1", "BSMblob");
+	    throw ee;
+	}
+	// Encode field 'safetyExt'
+	try {
+	    VehicleSafetyExtension item1 = this.safetyExt;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("safetyExt");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "safetyExt");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("safetyExt", "VehicleSafetyExtension");
+	    throw ee;
+	}
+	// Encode field 'status'
+	try {
+	    VehicleStatus item1 = this.status;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("status");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "status");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("status", "VehicleStatus");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Encode the PDU using JSON (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encode(JsonCoder coder, JsonWriter sink)
+	    throws EncoderException
+    {
+	try {
+	    this.encodeValue(coder, sink);
+
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext(null, "BasicSafetyMessage");
+	    throw ee;
+	}
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public BasicSafetyMessage decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[5];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		BasicSafetyMessage.__Tag t_tag0 = BasicSafetyMessage.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = BasicSafetyMessage.__Tag._null_;
+		switch (t_tag0) {
+		    case __msgID:
+		    // Decode field 'msgID'
+		    try {
+			String content1 = coder.decodeString(source);
+			int idx1;
+			DSRCmsgID temp1;
+
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			idx1 = coder.resolveName(DSRCmsgID.cConstantNameList, content1);
+			if (idx1 < 0 )
+			    temp1 = DSRCmsgID.unknownEnumerator();
+			else
+			    temp1 = DSRCmsgID.cNamedNumbers[idx1];
+			this.msgID = temp1;
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msgID", "DSRCmsgID");
+			throw de;
+		    }
+		    break;
+		    case __blob1:
+		    // Decode field 'blob1'
+		    try {
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.blob1 = new BSMblob(coder.decodeOctetString(source));
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("blob1", "BSMblob");
+			throw de;
+		    }
+		    break;
+		    case __safetyExt:
+		    // Decode field 'safetyExt'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[2])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.safetyExt == null)
+				this.safetyExt = new VehicleSafetyExtension();
+			    this.safetyExt.decodeValue(coder, source);
+			    present0[2] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("safetyExt", "VehicleSafetyExtension");
+			throw de;
+		    }
+		    break;
+		    case __status:
+		    // Decode field 'status'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[3])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.status == null)
+				this.status = new VehicleStatus();
+			    this.status.decodeValue(coder, source);
+			    present0[3] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("status", "VehicleStatus");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'msgID'");
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'blob1'");
+	if (!present0[2])
+	    this.safetyExt = null;
+	if (!present0[3])
+	    this.status = null;
+	return this;
+    }
+
+    /**
+     * Decode the PDU using JSON (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public AbstractData decode(JsonCoder coder, JsonReader source)
+	    throws DecoderException
+    {
+	try {
+	    this.decodeValue(coder, source);
 	    return this;
 	} catch (Exception e) {
 	    DecoderException de = DecoderException.wrapException(e);

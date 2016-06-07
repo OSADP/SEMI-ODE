@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Fri May 20 15:51:02 2016 */
+/* Created: Tue Jun 07 13:54:40 2016 */
 /* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -39,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -127,6 +130,37 @@ public class Position3D extends Sequence {
 	elevation = null;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__lat("lat"),
+	___long("long"),
+	__elevation("elevation"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(4);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -372,6 +406,139 @@ public class Position3D extends Sequence {
 	    data.elevation = null;
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'lat'
+	try {
+	    Latitude item1 = this.lat;
+
+	    {
+		sink.encodeKey("lat");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("lat", "Latitude");
+	    throw ee;
+	}
+	// Encode field 'long'
+	try {
+	    Longitude item1 = this._long;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("long");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("long", "Longitude");
+	    throw ee;
+	}
+	// Encode field 'elevation'
+	try {
+	    Elevation item1 = this.elevation;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("elevation");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "elevation");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("elevation", "Elevation");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public Position3D decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[4];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		Position3D.__Tag t_tag0 = Position3D.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = Position3D.__Tag._null_;
+		switch (t_tag0) {
+		    case __lat:
+		    // Decode field 'lat'
+		    try {
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.lat == null)
+			    this.lat = new Latitude();
+			this.lat.setValue(coder.decodeInteger(source));
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("lat", "Latitude");
+			throw de;
+		    }
+		    break;
+		    case ___long:
+		    // Decode field 'long'
+		    try {
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this._long == null)
+			    this._long = new Longitude();
+			this._long.setValue(coder.decodeInteger(source));
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("long", "Longitude");
+			throw de;
+		    }
+		    break;
+		    case __elevation:
+		    // Decode field 'elevation'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[2])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.elevation = new Elevation(coder.decodeOctetString(source));
+			    present0[2] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("elevation", "Elevation");
+			throw de;
+		    }
+		    break;
+		    default:
+			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'lat'");
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'long'");
+	if (!present0[2])
+	    this.elevation = null;
+	return this;
     }
 
     /**
