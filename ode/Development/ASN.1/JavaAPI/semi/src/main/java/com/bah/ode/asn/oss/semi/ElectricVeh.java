@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Fri May 20 15:51:02 2016 */
+/* Created: Tue Jun 07 13:54:40 2016 */
 /* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -39,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -108,6 +111,37 @@ public class ElectricVeh extends Sequence {
 	this.range = range;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__soc("soc"),
+	__cap("cap"),
+	__range("range"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(4);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements PER value encoder for the type (reserved for internal use).
@@ -251,6 +285,135 @@ public class ElectricVeh extends Sequence {
 	    }
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'soc'
+	try {
+	    StateOfCharge item1 = this.soc;
+
+	    {
+		sink.encodeKey("soc");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("soc", "StateOfCharge");
+	    throw ee;
+	}
+	// Encode field 'cap'
+	try {
+	    Capacity item1 = this.cap;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("cap");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("cap", "Capacity");
+	    throw ee;
+	}
+	// Encode field 'range'
+	try {
+	    Range item1 = this.range;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("range");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("range", "Range");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public ElectricVeh decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[4];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		ElectricVeh.__Tag t_tag0 = ElectricVeh.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = ElectricVeh.__Tag._null_;
+		switch (t_tag0) {
+		    case __soc:
+		    // Decode field 'soc'
+		    try {
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.soc == null)
+			    this.soc = new StateOfCharge();
+			this.soc.setValue(coder.decodeInteger(source));
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("soc", "StateOfCharge");
+			throw de;
+		    }
+		    break;
+		    case __cap:
+		    // Decode field 'cap'
+		    try {
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.cap == null)
+			    this.cap = new Capacity();
+			this.cap.setValue(coder.decodeInteger(source));
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("cap", "Capacity");
+			throw de;
+		    }
+		    break;
+		    case __range:
+		    // Decode field 'range'
+		    try {
+			if (present0[2])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.range == null)
+			    this.range = new Range();
+			this.range.setValue(coder.decodeInteger(source));
+			present0[2] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("range", "Range");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'soc'");
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'cap'");
+	if (!present0[2])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'range'");
+	return this;
     }
 
     /**

@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Fri May 20 15:51:02 2016 */
+/* Created: Tue Jun 07 13:54:40 2016 */
 /* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -39,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -288,6 +291,70 @@ public class IntersectionBundle extends Sequence {
 	}
 
 	/**
+	 * Implements JSON value encoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public void encodeValue(JsonCoder coder, JsonWriter sink)
+		throws IOException, EncoderException
+	{
+	    int total_len0 = this.elements.size();
+	    int idx0 = 0;
+
+	    sink.beginArray();
+	    if (total_len0 > 0) {
+		while (true) {
+		    try {
+			IntersectionRecord item1 = this.elements.get(idx0);
+
+			item1.encodeValue(coder, sink);
+		    
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext(null, "IntersectionRecord", idx0);
+		    throw ee;
+		}
+		idx0++;
+		if (idx0 == total_len0) break;
+		sink.writeSeparator();
+	    }
+	}
+	sink.endArray();
+
+    }
+
+	/**
+	 * Implements JSON value decoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public IsdRecords decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	int total_len0 = 0;
+	int idx0 = 0;
+
+	if (this.elements != null)
+	    this.elements.clear();
+	else
+	    this.elements = new java.util.ArrayList<IntersectionRecord>(total_len0);
+	coder.decodeArray(source);
+	if (coder.hasMoreElements(source, true))
+	    do {
+		try {
+		    IntersectionRecord item1 = new IntersectionRecord();
+
+		    this.elements.add(item1);
+		    item1.decodeValue(coder, source);
+		} catch (Exception e) {
+		    DecoderException de = DecoderException.wrapException(e);
+		    de.appendElementContext(null, "IntersectionRecord", idx0);
+		    throw de;
+		}
+		++idx0;
+	    } while (coder.hasMoreElements(source, false));
+	    return this;
+	}
+
+	/**
 	 * Compare 'this' object to another object to see if their contents are the same.
 	 */
 	public boolean abstractEqualTo(AbstractData that)
@@ -343,6 +410,37 @@ public class IntersectionBundle extends Sequence {
 	}
     } // End class definition for IsdRecords
 
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__bundleNumber("bundleNumber"),
+	__bundleId("bundleId"),
+	__isdRecords("isdRecords"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(4);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
+    
     /**
      * Implements PER value encoder for the type (reserved for internal use).
      * This method is reserved for internal use and must not be invoked from the application code.
@@ -434,6 +532,132 @@ public class IntersectionBundle extends Sequence {
 	    throw de;
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'bundleNumber'
+	try {
+	    INTEGER item1 = this.bundleNumber;
+
+	    {
+		sink.encodeKey("bundleNumber");
+		coder.encodeInteger(item1.longValue(), sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("bundleNumber", "INTEGER");
+	    throw ee;
+	}
+	// Encode field 'bundleId'
+	try {
+	    com.bah.ode.asn.oss.dsrc.TemporaryID item1 = this.bundleId;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("bundleId");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("bundleId", "TemporaryID");
+	    throw ee;
+	}
+	// Encode field 'isdRecords'
+	try {
+	    IsdRecords item1 = this.isdRecords;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("isdRecords");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("isdRecords", "SEQUENCE OF");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public IntersectionBundle decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[4];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		IntersectionBundle.__Tag t_tag0 = IntersectionBundle.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = IntersectionBundle.__Tag._null_;
+		switch (t_tag0) {
+		    case __bundleNumber:
+		    // Decode field 'bundleNumber'
+		    try {
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.bundleNumber == null)
+			    this.bundleNumber = new INTEGER();
+			this.bundleNumber.setValue(coder.decodeInteger(source));
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("bundleNumber", "INTEGER");
+			throw de;
+		    }
+		    break;
+		    case __bundleId:
+		    // Decode field 'bundleId'
+		    try {
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.bundleId = new com.bah.ode.asn.oss.dsrc.TemporaryID(coder.decodeOctetString(source));
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("bundleId", "TemporaryID");
+			throw de;
+		    }
+		    break;
+		    case __isdRecords:
+		    // Decode field 'isdRecords'
+		    try {
+			if (present0[2])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.isdRecords == null)
+			    this.isdRecords = new IsdRecords();
+			this.isdRecords.decodeValue(coder, source);
+			present0[2] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("isdRecords", "SEQUENCE OF");
+			throw de;
+		    }
+		    break;
+		    default:
+			throw new DecoderException(ExceptionDescriptor._unknown_field, ": '" + tag0 + "'");
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'bundleNumber'");
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'bundleId'");
+	if (!present0[2])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'isdRecords'");
+	return this;
     }
 
     /**

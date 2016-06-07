@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Fri May 20 15:51:02 2016 */
+/* Created: Tue Jun 07 13:54:40 2016 */
 /* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -39,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -5437,6 +5440,266 @@ public class AllInclusive extends Sequence {
      */
     public static final EPAInfo _cEPAInfo_item8_2 = 
 	com.bah.ode.asn.oss.itis.ITIStext._cEPAInfo_;
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__item6_1("item6-1"),
+	__item6_2("item6-2"),
+	__item6_4("item6-4"),
+	__item6_5("item6-5"),
+	__item6_6("item6-6"),
+	__item6_7("item6-7"),
+	__item6_8("item6-8"),
+	__item6_9("item6-9"),
+	__item6_10("item6-10"),
+	__item6_11("item6-11"),
+	__item6_12("item6-12"),
+	__item6_13("item6-13"),
+	__item6_14("item6-14"),
+	__item6_15("item6-15"),
+	__item6_16("item6-16"),
+	__item6_17("item6-17"),
+	__item6_18("item6-18"),
+	__item6_19("item6-19"),
+	__item6_20("item6-20"),
+	__item6_21("item6-21"),
+	__item6_22("item6-22"),
+	__item6_23("item6-23"),
+	__item6_24("item6-24"),
+	__item6_25("item6-25"),
+	__item6_26("item6-26"),
+	__item6_27("item6-27"),
+	__item6_28("item6-28"),
+	__item6_29("item6-29"),
+	__item6_30("item6-30"),
+	__item6_31("item6-31"),
+	__item6_32("item6-32"),
+	__item6_33("item6-33"),
+	__item6_34("item6-34"),
+	__item6_35("item6-35"),
+	__item6_36("item6-36"),
+	__item6_37("item6-37"),
+	__item6_38("item6-38"),
+	__item6_39("item6-39"),
+	__item6_40("item6-40"),
+	__item6_41("item6-41"),
+	__item6_42("item6-42"),
+	__item6_43("item6-43"),
+	__item6_44("item6-44"),
+	__item6_45("item6-45"),
+	__item6_46("item6-46"),
+	__item6_47("item6-47"),
+	__item6_48("item6-48"),
+	__item6_49("item6-49"),
+	__item6_50("item6-50"),
+	__item6_51("item6-51"),
+	__item6_52("item6-52"),
+	__item6_53("item6-53"),
+	__item6_54("item6-54"),
+	__item6_55("item6-55"),
+	__item6_56("item6-56"),
+	__item6_57("item6-57"),
+	__item6_58("item6-58"),
+	__item6_59("item6-59"),
+	__item6_60("item6-60"),
+	__item6_61("item6-61"),
+	__item6_62("item6-62"),
+	__item6_63("item6-63"),
+	__item6_64("item6-64"),
+	__item6_65("item6-65"),
+	__item6_66("item6-66"),
+	__item6_67("item6-67"),
+	__item6_68("item6-68"),
+	__item6_69("item6-69"),
+	__item6_70("item6-70"),
+	__item6_71("item6-71"),
+	__item6_72("item6-72"),
+	__item6_73("item6-73"),
+	__item7_1("item7-1"),
+	__item7_2("item7-2"),
+	__item7_3("item7-3"),
+	__item7_4("item7-4"),
+	__item7_5("item7-5"),
+	__item7_6("item7-6"),
+	__item7_7("item7-7"),
+	__item7_8("item7-8"),
+	__item7_9("item7-9"),
+	__item7_10("item7-10"),
+	__item7_11("item7-11"),
+	__item7_12("item7-12"),
+	__item7_13("item7-13"),
+	__item7_14("item7-14"),
+	__item7_15("item7-15"),
+	__item7_16("item7-16"),
+	__item7_17("item7-17"),
+	__item7_18("item7-18"),
+	__item7_19("item7-19"),
+	__item7_20("item7-20"),
+	__item7_21("item7-21"),
+	__item7_22("item7-22"),
+	__item7_23("item7-23"),
+	__item7_24("item7-24"),
+	__item7_25("item7-25"),
+	__item7_26("item7-26"),
+	__item7_27("item7-27"),
+	__item7_28("item7-28"),
+	__item7_29("item7-29"),
+	__item7_30("item7-30"),
+	__item7_31("item7-31"),
+	__item7_32("item7-32"),
+	__item7_33("item7-33"),
+	__item7_34("item7-34"),
+	__item7_35("item7-35"),
+	__item7_36("item7-36"),
+	__item7_37("item7-37"),
+	__item7_38("item7-38"),
+	__item7_39("item7-39"),
+	__item7_40("item7-40"),
+	__item7_41("item7-41"),
+	__item7_42("item7-42"),
+	__item7_43("item7-43"),
+	__item7_44("item7-44"),
+	__item7_45("item7-45"),
+	__item7_46("item7-46"),
+	__item7_47("item7-47"),
+	__item7_48("item7-48"),
+	__item7_49("item7-49"),
+	__item7_50("item7-50"),
+	__item7_51("item7-51"),
+	__item7_52("item7-52"),
+	__item7_53("item7-53"),
+	__item7_54("item7-54"),
+	__item7_55("item7-55"),
+	__item7_56("item7-56"),
+	__item7_57("item7-57"),
+	__item7_58("item7-58"),
+	__item7_59("item7-59"),
+	__item7_60("item7-60"),
+	__item7_61("item7-61"),
+	__item7_62("item7-62"),
+	__item7_63("item7-63"),
+	__item7_64("item7-64"),
+	__item7_65("item7-65"),
+	__item7_66("item7-66"),
+	__item7_67("item7-67"),
+	__item7_68("item7-68"),
+	__item7_69("item7-69"),
+	__item7_70("item7-70"),
+	__item7_71("item7-71"),
+	__item7_72("item7-72"),
+	__item7_73("item7-73"),
+	__item7_74("item7-74"),
+	__item7_75("item7-75"),
+	__item7_76("item7-76"),
+	__item7_77("item7-77"),
+	__item7_78("item7-78"),
+	__item7_79("item7-79"),
+	__item7_80("item7-80"),
+	__item7_81("item7-81"),
+	__item7_82("item7-82"),
+	__item7_83("item7-83"),
+	__item7_84("item7-84"),
+	__item7_85("item7-85"),
+	__item7_86("item7-86"),
+	__item7_87("item7-87"),
+	__item7_88("item7-88"),
+	__item7_89("item7-89"),
+	__item7_90("item7-90"),
+	__item7_91("item7-91"),
+	__item7_92("item7-92"),
+	__item7_93("item7-93"),
+	__item7_94("item7-94"),
+	__item7_95("item7-95"),
+	__item7_96("item7-96"),
+	__item7_97("item7-97"),
+	__item7_98("item7-98"),
+	__item7_99("item7-99"),
+	__item7_100("item7-100"),
+	__item7_101("item7-101"),
+	__item7_102("item7-102"),
+	__item7_103("item7-103"),
+	__item7_104("item7-104"),
+	__item7_105("item7-105"),
+	__item7_106("item7-106"),
+	__item7_107("item7-107"),
+	__item7_108("item7-108"),
+	__item7_109("item7-109"),
+	__item7_110("item7-110"),
+	__item7_111("item7-111"),
+	__item7_112("item7-112"),
+	__item7_113("item7-113"),
+	__item7_114("item7-114"),
+	__item7_115("item7-115"),
+	__item7_116("item7-116"),
+	__item7_117("item7-117"),
+	__item7_118("item7-118"),
+	__item7_119("item7-119"),
+	__item7_120("item7-120"),
+	__item7_121("item7-121"),
+	__item7_122("item7-122"),
+	__item7_123("item7-123"),
+	__item7_124("item7-124"),
+	__item7_125("item7-125"),
+	__item7_126("item7-126"),
+	__item7_127("item7-127"),
+	__item7_128("item7-128"),
+	__item7_129("item7-129"),
+	__item7_130("item7-130"),
+	__item7_131("item7-131"),
+	__item7_132("item7-132"),
+	__item7_133("item7-133"),
+	__item7_134("item7-134"),
+	__item7_135("item7-135"),
+	__item7_136("item7-136"),
+	__item7_137("item7-137"),
+	__item7_138("item7-138"),
+	__item7_139("item7-139"),
+	__item7_140("item7-140"),
+	__item7_141("item7-141"),
+	__item7_142("item7-142"),
+	__item7_143("item7-143"),
+	__item7_144("item7-144"),
+	__item7_145("item7-145"),
+	__item7_146("item7-146"),
+	__item7_147("item7-147"),
+	__item7_148("item7-148"),
+	__item7_149("item7-149"),
+	__item8_1("item8-1"),
+	__item8_2("item8-2"),
+	__item8_3("item8-3"),
+	__item8_4("item8-4"),
+	__item8_5("item8-5"),
+	__item8_6("item8-6"),
+	__item8_7("item8-7"),
+	__item8_8("item8-8"),
+	__item8_9("item8-9"),
+	__item8_10("item8-10"),
+	__item8_11("item8-11"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(233);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -21186,6 +21449,9700 @@ public class AllInclusive extends Sequence {
 	    }
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	String separator0 = null;
+
+	sink.beginObject();
+	// Encode field 'item6-1'
+	try {
+	    AccelerationSet4Way item1 = this.item6_1;
+
+	    if (item1 != null) {
+		{
+		    separator0 = ",";
+		    sink.encodeKey("item6-1");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-1");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-1", "AccelerationSet4Way");
+	    throw ee;
+	}
+	// Encode field 'item6-2'
+	try {
+	    AccelSteerYawRateConfidence item1 = this.item6_2;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-2");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-2");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-2", "AccelSteerYawRateConfidence");
+	    throw ee;
+	}
+	// Encode field 'item6-4'
+	try {
+	    AntennaOffsetSet item1 = this.item6_4;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-4");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-4");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-4", "AntennaOffsetSet");
+	    throw ee;
+	}
+	// Encode field 'item6-5'
+	try {
+	    Approach item1 = this.item6_5;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-5");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-5");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-5", "Approach");
+	    throw ee;
+	}
+	// Encode field 'item6-6'
+	try {
+	    ApproachObject item1 = this.item6_6;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-6");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-6");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-6", "ApproachObject");
+	    throw ee;
+	}
+	// Encode field 'item6-7'
+	try {
+	    BarrierLane item1 = this.item6_7;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-7");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-7");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-7", "BarrierLane");
+	    throw ee;
+	}
+	// Encode field 'item6-8'
+	try {
+	    BrakeSystemStatus item1 = this.item6_8;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-8");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-8");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-8", "BrakeSystemStatus");
+	    throw ee;
+	}
+	// Encode field 'item6-9'
+	try {
+	    BSMblob item1 = this.item6_9;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-9");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-9");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-9", "BSMblob");
+	    throw ee;
+	}
+	// Encode field 'item6-10'
+	try {
+	    BumperHeights item1 = this.item6_10;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-10");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-10");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-10", "BumperHeights");
+	    throw ee;
+	}
+	// Encode field 'item6-11'
+	try {
+	    Circle item1 = this.item6_11;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-11");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-11");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-11", "Circle");
+	    throw ee;
+	}
+	// Encode field 'item6-12'
+	try {
+	    ConfidenceSet item1 = this.item6_12;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-12");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-12");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-12", "ConfidenceSet");
+	    throw ee;
+	}
+	// Encode field 'item6-13'
+	try {
+	    ConnectsTo item1 = this.item6_13;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-13");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-13");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-13", "ConnectsTo");
+	    throw ee;
+	}
+	// Encode field 'item6-14'
+	try {
+	    CrosswalkLane item1 = this.item6_14;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-14");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-14");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-14", "CrosswalkLane");
+	    throw ee;
+	}
+	// Encode field 'item6-15'
+	try {
+	    DataParameters item1 = this.item6_15;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-15");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-15");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-15", "DataParameters");
+	    throw ee;
+	}
+	// Encode field 'item6-16'
+	try {
+	    DDate item1 = this.item6_16;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-16");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-16");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-16", "DDate");
+	    throw ee;
+	}
+	// Encode field 'item6-17'
+	try {
+	    DDateTime item1 = this.item6_17;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-17");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-17");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-17", "DDateTime");
+	    throw ee;
+	}
+	// Encode field 'item6-18'
+	try {
+	    DFullTime item1 = this.item6_18;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-18");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-18");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-18", "DFullTime");
+	    throw ee;
+	}
+	// Encode field 'item6-19'
+	try {
+	    DMonthDay item1 = this.item6_19;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-19");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-19");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-19", "DMonthDay");
+	    throw ee;
+	}
+	// Encode field 'item6-20'
+	try {
+	    DTime item1 = this.item6_20;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-20");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-20");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-20", "DTime");
+	    throw ee;
+	}
+	// Encode field 'item6-21'
+	try {
+	    DYearMonth item1 = this.item6_21;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-21");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-21");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-21", "DYearMonth");
+	    throw ee;
+	}
+	// Encode field 'item6-22'
+	try {
+	    FullPositionVector item1 = this.item6_22;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-22");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-22");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-22", "FullPositionVector");
+	    throw ee;
+	}
+	// Encode field 'item6-23'
+	try {
+	    Intersection_ item1 = this.item6_23;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-23");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-23");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-23", "Intersection");
+	    throw ee;
+	}
+	// Encode field 'item6-24'
+	try {
+	    IntersectionState item1 = this.item6_24;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-24");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-24");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-24", "IntersectionState");
+	    throw ee;
+	}
+	// Encode field 'item6-25'
+	try {
+	    ExitService item1 = this.item6_25;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-25");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-25");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-25", "ExitService");
+	    throw ee;
+	}
+	// Encode field 'item6-26'
+	try {
+	    GenericSignage item1 = this.item6_26;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-26");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-26");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-26", "GenericSignage");
+	    throw ee;
+	}
+	// Encode field 'item6-27'
+	try {
+	    SpeedLimit item1 = this.item6_27;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-27");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-27");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-27", "SpeedLimit");
+	    throw ee;
+	}
+	// Encode field 'item6-28'
+	try {
+	    WorkZone item1 = this.item6_28;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-28");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-28");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-28", "WorkZone");
+	    throw ee;
+	}
+	// Encode field 'item6-29'
+	try {
+	    J1939data item1 = this.item6_29;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-29");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-29");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-29", "J1939data");
+	    throw ee;
+	}
+	// Encode field 'item6-30'
+	try {
+	    MovementState item1 = this.item6_30;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-30");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-30");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-30", "MovementState");
+	    throw ee;
+	}
+	// Encode field 'item6-31'
+	try {
+	    NodeList item1 = this.item6_31;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-31");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-31");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-31", "NodeList");
+	    throw ee;
+	}
+	// Encode field 'item6-32'
+	try {
+	    Offsets item1 = this.item6_32;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-32");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-32");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-32", "Offsets");
+	    throw ee;
+	}
+	// Encode field 'item6-33'
+	try {
+	    PathHistory item1 = this.item6_33;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-33");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-33");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-33", "PathHistory");
+	    throw ee;
+	}
+	// Encode field 'item6-34'
+	try {
+	    PathHistoryPointType_01 item1 = this.item6_34;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-34");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-34");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-34", "PathHistoryPointType-01");
+	    throw ee;
+	}
+	// Encode field 'item6-35'
+	try {
+	    PathHistoryPointType_02 item1 = this.item6_35;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-35");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-35");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-35", "PathHistoryPointType-02");
+	    throw ee;
+	}
+	// Encode field 'item6-36'
+	try {
+	    PathHistoryPointType_03 item1 = this.item6_36;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-36");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-36");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-36", "PathHistoryPointType-03");
+	    throw ee;
+	}
+	// Encode field 'item6-37'
+	try {
+	    PathHistoryPointType_04 item1 = this.item6_37;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-37");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-37");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-37", "PathHistoryPointType-04");
+	    throw ee;
+	}
+	// Encode field 'item6-38'
+	try {
+	    PathHistoryPointType_05 item1 = this.item6_38;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-38");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-38");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-38", "PathHistoryPointType-05");
+	    throw ee;
+	}
+	// Encode field 'item6-39'
+	try {
+	    PathHistoryPointType_06 item1 = this.item6_39;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-39");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-39");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-39", "PathHistoryPointType-06");
+	    throw ee;
+	}
+	// Encode field 'item6-40'
+	try {
+	    PathHistoryPointType_07 item1 = this.item6_40;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-40");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-40");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-40", "PathHistoryPointType-07");
+	    throw ee;
+	}
+	// Encode field 'item6-41'
+	try {
+	    PathHistoryPointType_08 item1 = this.item6_41;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-41");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-41");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-41", "PathHistoryPointType-08");
+	    throw ee;
+	}
+	// Encode field 'item6-42'
+	try {
+	    PathHistoryPointType_09 item1 = this.item6_42;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-42");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-42");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-42", "PathHistoryPointType-09");
+	    throw ee;
+	}
+	// Encode field 'item6-43'
+	try {
+	    PathHistoryPointType_10 item1 = this.item6_43;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-43");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-43");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-43", "PathHistoryPointType-10");
+	    throw ee;
+	}
+	// Encode field 'item6-44'
+	try {
+	    PathPrediction item1 = this.item6_44;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-44");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-44");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-44", "PathPrediction");
+	    throw ee;
+	}
+	// Encode field 'item6-45'
+	try {
+	    Position3D item1 = this.item6_45;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-45");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-45");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-45", "Position3D");
+	    throw ee;
+	}
+	// Encode field 'item6-46'
+	try {
+	    PositionalAccuracy item1 = this.item6_46;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-46");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-46");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-46", "PositionalAccuracy");
+	    throw ee;
+	}
+	// Encode field 'item6-47'
+	try {
+	    PositionConfidenceSet item1 = this.item6_47;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-47");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-47");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-47", "PositionConfidenceSet");
+	    throw ee;
+	}
+	// Encode field 'item6-48'
+	try {
+	    RegionList item1 = this.item6_48;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-48");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-48");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-48", "RegionList");
+	    throw ee;
+	}
+	// Encode field 'item6-49'
+	try {
+	    RegionOffsets item1 = this.item6_49;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-49");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-49");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-49", "RegionOffsets");
+	    throw ee;
+	}
+	// Encode field 'item6-50'
+	try {
+	    RegionPointSet item1 = this.item6_50;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-50");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-50");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-50", "RegionPointSet");
+	    throw ee;
+	}
+	// Encode field 'item6-51'
+	try {
+	    RoadSignID item1 = this.item6_51;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-51");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-51");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-51", "RoadSignID");
+	    throw ee;
+	}
+	// Encode field 'item6-52'
+	try {
+	    RTCMHeader item1 = this.item6_52;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-52");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-52");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-52", "RTCMHeader");
+	    throw ee;
+	}
+	// Encode field 'item6-53'
+	try {
+	    RTCMmsg item1 = this.item6_53;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-53");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-53");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-53", "RTCMmsg");
+	    throw ee;
+	}
+	// Encode field 'item6-54'
+	try {
+	    RTCMPackage item1 = this.item6_54;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-54");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-54");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-54", "RTCMPackage");
+	    throw ee;
+	}
+	// Encode field 'item6-55'
+	try {
+	    Sample item1 = this.item6_55;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-55");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-55");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-55", "Sample");
+	    throw ee;
+	}
+	// Encode field 'item6-56'
+	try {
+	    ShapePointSet item1 = this.item6_56;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-56");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-56");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-56", "ShapePointSet");
+	    throw ee;
+	}
+	// Encode field 'item6-57'
+	try {
+	    SignalControlZone item1 = this.item6_57;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-57");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-57");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-57", "SignalControlZone");
+	    throw ee;
+	}
+	// Encode field 'item6-58'
+	try {
+	    SignalRequest item1 = this.item6_58;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-58");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-58");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-58", "SignalRequest");
+	    throw ee;
+	}
+	// Encode field 'item6-59'
+	try {
+	    SnapshotDistance item1 = this.item6_59;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-59");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-59");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-59", "SnapshotDistance");
+	    throw ee;
+	}
+	// Encode field 'item6-60'
+	try {
+	    Snapshot item1 = this.item6_60;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-60");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-60");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-60", "Snapshot");
+	    throw ee;
+	}
+	// Encode field 'item6-61'
+	try {
+	    SnapshotTime item1 = this.item6_61;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-61");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-61");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-61", "SnapshotTime");
+	    throw ee;
+	}
+	// Encode field 'item6-62'
+	try {
+	    SpecialLane item1 = this.item6_62;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-62");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-62");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-62", "SpecialLane");
+	    throw ee;
+	}
+	// Encode field 'item6-63'
+	try {
+	    SpeedandHeadingandThrottleConfidence item1 = this.item6_63;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-63");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-63");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-63", "SpeedandHeadingandThrottleConfidence");
+	    throw ee;
+	}
+	// Encode field 'item6-64'
+	try {
+	    TransmissionAndSpeed item1 = this.item6_64;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-64");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-64");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-64", "TransmissionAndSpeed");
+	    throw ee;
+	}
+	// Encode field 'item6-65'
+	try {
+	    ValidRegion item1 = this.item6_65;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-65");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-65");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-65", "ValidRegion");
+	    throw ee;
+	}
+	// Encode field 'item6-66'
+	try {
+	    VehicleComputedLane item1 = this.item6_66;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-66");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-66");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-66", "VehicleComputedLane");
+	    throw ee;
+	}
+	// Encode field 'item6-67'
+	try {
+	    VehicleIdent item1 = this.item6_67;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-67");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-67");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-67", "VehicleIdent");
+	    throw ee;
+	}
+	// Encode field 'item6-68'
+	try {
+	    VehicleReferenceLane item1 = this.item6_68;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-68");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-68");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-68", "VehicleReferenceLane");
+	    throw ee;
+	}
+	// Encode field 'item6-69'
+	try {
+	    VehicleSafetyExtension item1 = this.item6_69;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-69");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-69");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-69", "VehicleSafetyExtension");
+	    throw ee;
+	}
+	// Encode field 'item6-70'
+	try {
+	    VehicleSize item1 = this.item6_70;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-70");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-70");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-70", "VehicleSize");
+	    throw ee;
+	}
+	// Encode field 'item6-71'
+	try {
+	    VehicleStatusRequest item1 = this.item6_71;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-71");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-71");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-71", "VehicleStatusRequest");
+	    throw ee;
+	}
+	// Encode field 'item6-72'
+	try {
+	    VehicleStatus item1 = this.item6_72;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-72");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-72");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-72", "VehicleStatus");
+	    throw ee;
+	}
+	// Encode field 'item6-73'
+	try {
+	    WiperStatus item1 = this.item6_73;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item6-73");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item6-73");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item6-73", "WiperStatus");
+	    throw ee;
+	}
+	// Encode field 'item7-1'
+	try {
+	    Acceleration item1 = this.item7_1;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-1");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-1");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-1", "Acceleration");
+	    throw ee;
+	}
+	// Encode field 'item7-2'
+	try {
+	    AccelerationConfidence item1 = this.item7_2;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-2");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-2");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-2", "AccelerationConfidence");
+	    throw ee;
+	}
+	// Encode field 'item7-3'
+	try {
+	    AmbientAirPressure item1 = this.item7_3;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-3");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-3");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-3", "AmbientAirPressure");
+	    throw ee;
+	}
+	// Encode field 'item7-4'
+	try {
+	    AmbientAirTemperature item1 = this.item7_4;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-4");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-4");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-4", "AmbientAirTemperature");
+	    throw ee;
+	}
+	// Encode field 'item7-5'
+	try {
+	    AntiLockBrakeStatus item1 = this.item7_5;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-5");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-5");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-5", "AntiLockBrakeStatus");
+	    throw ee;
+	}
+	// Encode field 'item7-6'
+	try {
+	    ApproachNumber item1 = this.item7_6;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-6");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-6");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-6", "ApproachNumber");
+	    throw ee;
+	}
+	// Encode field 'item7-7'
+	try {
+	    AuxiliaryBrakeStatus item1 = this.item7_7;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-7");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-7");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-7", "AuxiliaryBrakeStatus");
+	    throw ee;
+	}
+	// Encode field 'item7-8'
+	try {
+	    BarrierAttributes item1 = this.item7_8;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-8");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-8");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-8", "BarrierAttributes");
+	    throw ee;
+	}
+	// Encode field 'item7-9'
+	try {
+	    BrakeAppliedPressure item1 = this.item7_9;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-9");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-9");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-9", "BrakeAppliedPressure");
+	    throw ee;
+	}
+	// Encode field 'item7-10'
+	try {
+	    BrakeAppliedStatus item1 = this.item7_10;
+
+	    if (item1 != null) {
+		{
+		    int len1 = item1.getSize();
+		    byte[] temp1 = item1.byteArrayValue();
+
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-10");
+		    coder.encodeBitString(temp1, len1, -1, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-10");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-10", "BrakeAppliedStatus");
+	    throw ee;
+	}
+	// Encode field 'item7-11'
+	try {
+	    BrakeBoostApplied item1 = this.item7_11;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-11");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-11");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-11", "BrakeBoostApplied");
+	    throw ee;
+	}
+	// Encode field 'item7-12'
+	try {
+	    BumperHeightFront item1 = this.item7_12;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-12");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-12");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-12", "BumperHeightFront");
+	    throw ee;
+	}
+	// Encode field 'item7-13'
+	try {
+	    BumperHeightRear item1 = this.item7_13;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-13");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-13");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-13", "BumperHeightRear");
+	    throw ee;
+	}
+	// Encode field 'item7-14'
+	try {
+	    CodeWord item1 = this.item7_14;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-14");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-14");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-14", "CodeWord");
+	    throw ee;
+	}
+	// Encode field 'item7-15'
+	try {
+	    CoefficientOfFriction item1 = this.item7_15;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-15");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-15");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-15", "CoefficientOfFriction");
+	    throw ee;
+	}
+	// Encode field 'item7-16'
+	try {
+	    ColorState item1 = this.item7_16;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-16");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-16");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-16", "ColorState");
+	    throw ee;
+	}
+	// Encode field 'item7-17'
+	try {
+	    Count item1 = this.item7_17;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-17");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-17");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-17", "Count");
+	    throw ee;
+	}
+	// Encode field 'item7-18'
+	try {
+	    CrosswalkLaneAttributes item1 = this.item7_18;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-18");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-18");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-18", "CrosswalkLaneAttributes");
+	    throw ee;
+	}
+	// Encode field 'item7-19'
+	try {
+	    DDay item1 = this.item7_19;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-19");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-19");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-19", "DDay");
+	    throw ee;
+	}
+	// Encode field 'item7-20'
+	try {
+	    DescriptiveName item1 = this.item7_20;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-20");
+		    coder.encodeString(item1.stringValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-20");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-20", "DescriptiveName");
+	    throw ee;
+	}
+	// Encode field 'item7-21'
+	try {
+	    DHour item1 = this.item7_21;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-21");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-21");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-21", "DHour");
+	    throw ee;
+	}
+	// Encode field 'item7-22'
+	try {
+	    DirectionOfUse item1 = this.item7_22;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-22");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-22");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-22", "DirectionOfUse");
+	    throw ee;
+	}
+	// Encode field 'item7-23'
+	try {
+	    DMinute item1 = this.item7_23;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-23");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-23");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-23", "DMinute");
+	    throw ee;
+	}
+	// Encode field 'item7-24'
+	try {
+	    DMonth item1 = this.item7_24;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-24");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-24");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-24", "DMonth");
+	    throw ee;
+	}
+	// Encode field 'item7-25'
+	try {
+	    DOffset item1 = this.item7_25;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-25");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-25");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-25", "DOffset");
+	    throw ee;
+	}
+	// Encode field 'item7-26'
+	try {
+	    DrivenLineOffset item1 = this.item7_26;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-26");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-26");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-26", "DrivenLineOffset");
+	    throw ee;
+	}
+	// Encode field 'item7-27'
+	try {
+	    DrivingWheelAngle item1 = this.item7_27;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-27");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-27");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-27", "DrivingWheelAngle");
+	    throw ee;
+	}
+	// Encode field 'item7-28'
+	try {
+	    DSecond item1 = this.item7_28;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-28");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-28");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-28", "DSecond");
+	    throw ee;
+	}
+	// Encode field 'item7-29'
+	try {
+	    DSignalSeconds item1 = this.item7_29;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-29");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-29");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-29", "DSignalSeconds");
+	    throw ee;
+	}
+	// Encode field 'item7-30'
+	try {
+	    DSRCmsgID item1 = this.item7_30;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-30");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-30");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-30", "DSRCmsgID");
+	    throw ee;
+	}
+	// Encode field 'item7-31'
+	try {
+	    DYear item1 = this.item7_31;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-31");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-31");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-31", "DYear");
+	    throw ee;
+	}
+	// Encode field 'item7-32'
+	try {
+	    ElevationConfidence item1 = this.item7_32;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-32");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-32");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-32", "ElevationConfidence");
+	    throw ee;
+	}
+	// Encode field 'item7-33'
+	try {
+	    Elevation item1 = this.item7_33;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-33");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-33");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-33", "Elevation");
+	    throw ee;
+	}
+	// Encode field 'item7-34'
+	try {
+	    EmergencyDetails item1 = this.item7_34;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-34");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-34");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-34", "EmergencyDetails");
+	    throw ee;
+	}
+	// Encode field 'item7-35'
+	try {
+	    EventFlags item1 = this.item7_35;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-35");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-35");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-35", "EventFlags");
+	    throw ee;
+	}
+	// Encode field 'item7-36'
+	try {
+	    Extent item1 = this.item7_36;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-36");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-36");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-36", "Extent");
+	    throw ee;
+	}
+	// Encode field 'item7-37'
+	try {
+	    ExteriorLights item1 = this.item7_37;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-37");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-37");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-37", "ExteriorLights");
+	    throw ee;
+	}
+	// Encode field 'item7-38'
+	try {
+	    FurtherInfoID item1 = this.item7_38;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-38");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-38");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-38", "FurtherInfoID");
+	    throw ee;
+	}
+	// Encode field 'item7-39'
+	try {
+	    GPSstatus item1 = this.item7_39;
+
+	    if (item1 != null) {
+		{
+		    int len1 = item1.getSize();
+		    byte[] temp1 = item1.byteArrayValue();
+
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-39");
+		    coder.encodeBitString(temp1, len1, -1, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-39");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-39", "GPSstatus");
+	    throw ee;
+	}
+	// Encode field 'item7-40'
+	try {
+	    HeadingConfidence item1 = this.item7_40;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-40");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-40");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-40", "HeadingConfidence");
+	    throw ee;
+	}
+	// Encode field 'item7-41'
+	try {
+	    Heading item1 = this.item7_41;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-41");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-41");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-41", "Heading");
+	    throw ee;
+	}
+	// Encode field 'item7-42'
+	try {
+	    HeadingSlice item1 = this.item7_42;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-42");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-42");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-42", "HeadingSlice");
+	    throw ee;
+	}
+	// Encode field 'item7-43'
+	try {
+	    IntersectionStatusObject item1 = this.item7_43;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-43");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-43");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-43", "IntersectionStatusObject");
+	    throw ee;
+	}
+	// Encode field 'item7-44'
+	try {
+	    IntersectionID item1 = this.item7_44;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-44");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-44");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-44", "IntersectionID");
+	    throw ee;
+	}
+	// Encode field 'item7-45'
+	try {
+	    AxleLocation item1 = this.item7_45;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-45");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-45");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-45", "AxleLocation");
+	    throw ee;
+	}
+	// Encode field 'item7-46'
+	try {
+	    AxleWeight item1 = this.item7_46;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-46");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-46");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-46", "AxleWeight");
+	    throw ee;
+	}
+	// Encode field 'item7-47'
+	try {
+	    CargoWeight item1 = this.item7_47;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-47");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-47");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-47", "CargoWeight");
+	    throw ee;
+	}
+	// Encode field 'item7-48'
+	try {
+	    DriveAxleLiftAirPressure item1 = this.item7_48;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-48");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-48");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-48", "DriveAxleLiftAirPressure");
+	    throw ee;
+	}
+	// Encode field 'item7-49'
+	try {
+	    DriveAxleLocation item1 = this.item7_49;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-49");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-49");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-49", "DriveAxleLocation");
+	    throw ee;
+	}
+	// Encode field 'item7-50'
+	try {
+	    DriveAxleLubePressure item1 = this.item7_50;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-50");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-50");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-50", "DriveAxleLubePressure");
+	    throw ee;
+	}
+	// Encode field 'item7-51'
+	try {
+	    DriveAxleTemperature item1 = this.item7_51;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-51");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-51");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-51", "DriveAxleTemperature");
+	    throw ee;
+	}
+	// Encode field 'item7-52'
+	try {
+	    SteeringAxleLubePressure item1 = this.item7_52;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-52");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-52");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-52", "SteeringAxleLubePressure");
+	    throw ee;
+	}
+	// Encode field 'item7-53'
+	try {
+	    SteeringAxleTemperature item1 = this.item7_53;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-53");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-53");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-53", "SteeringAxleTemperature");
+	    throw ee;
+	}
+	// Encode field 'item7-54'
+	try {
+	    TireLeakageRate item1 = this.item7_54;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-54");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-54");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-54", "TireLeakageRate");
+	    throw ee;
+	}
+	// Encode field 'item7-55'
+	try {
+	    TireLocation item1 = this.item7_55;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-55");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-55");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-55", "TireLocation");
+	    throw ee;
+	}
+	// Encode field 'item7-56'
+	try {
+	    TirePressureThresholdDetection item1 = this.item7_56;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-56");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-56");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-56", "TirePressureThresholdDetection");
+	    throw ee;
+	}
+	// Encode field 'item7-57'
+	try {
+	    TirePressure item1 = this.item7_57;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-57");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-57");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-57", "TirePressure");
+	    throw ee;
+	}
+	// Encode field 'item7-58'
+	try {
+	    TireTemp item1 = this.item7_58;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-58");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-58");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-58", "TireTemp");
+	    throw ee;
+	}
+	// Encode field 'item7-59'
+	try {
+	    TrailerWeight item1 = this.item7_59;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-59");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-59");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-59", "TrailerWeight");
+	    throw ee;
+	}
+	// Encode field 'item7-60'
+	try {
+	    WheelEndElectFault item1 = this.item7_60;
+
+	    if (item1 != null) {
+		{
+		    int len1 = item1.getSize();
+		    byte[] temp1 = item1.byteArrayValue();
+
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-60");
+		    coder.encodeBitString(temp1, len1, -1, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-60");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-60", "WheelEndElectFault");
+	    throw ee;
+	}
+	// Encode field 'item7-61'
+	try {
+	    WheelSensorStatus item1 = this.item7_61;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-61");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-61");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-61", "WheelSensorStatus");
+	    throw ee;
+	}
+	// Encode field 'item7-62'
+	try {
+	    LaneCount item1 = this.item7_62;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-62");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-62");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-62", "LaneCount");
+	    throw ee;
+	}
+	// Encode field 'item7-63'
+	try {
+	    LaneManeuverCode item1 = this.item7_63;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-63");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-63");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-63", "LaneManeuverCode");
+	    throw ee;
+	}
+	// Encode field 'item7-64'
+	try {
+	    LaneNumber item1 = this.item7_64;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-64");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-64");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-64", "LaneNumber");
+	    throw ee;
+	}
+	// Encode field 'item7-65'
+	try {
+	    LaneSet item1 = this.item7_65;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-65");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-65");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-65", "LaneSet");
+	    throw ee;
+	}
+	// Encode field 'item7-66'
+	try {
+	    LaneWidth item1 = this.item7_66;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-66");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-66");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-66", "LaneWidth");
+	    throw ee;
+	}
+	// Encode field 'item7-67'
+	try {
+	    Latitude item1 = this.item7_67;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-67");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-67");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-67", "Latitude");
+	    throw ee;
+	}
+	// Encode field 'item7-68'
+	try {
+	    LayerID item1 = this.item7_68;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-68");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-68");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-68", "LayerID");
+	    throw ee;
+	}
+	// Encode field 'item7-69'
+	try {
+	    LayerType item1 = this.item7_69;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-69");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-69");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-69", "LayerType");
+	    throw ee;
+	}
+	// Encode field 'item7-70'
+	try {
+	    LightbarInUse item1 = this.item7_70;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-70");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-70");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-70", "LightbarInUse");
+	    throw ee;
+	}
+	// Encode field 'item7-71'
+	try {
+	    Longitude item1 = this.item7_71;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-71");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-71");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-71", "Longitude");
+	    throw ee;
+	}
+	// Encode field 'item7-72'
+	try {
+	    Location_quality item1 = this.item7_72;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-72");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-72");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-72", "Location-quality");
+	    throw ee;
+	}
+	// Encode field 'item7-73'
+	try {
+	    Location_tech item1 = this.item7_73;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-73");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-73");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-73", "Location-tech");
+	    throw ee;
+	}
+	// Encode field 'item7-74'
+	try {
+	    MinuteOfTheYear item1 = this.item7_74;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-74");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-74");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-74", "MinuteOfTheYear");
+	    throw ee;
+	}
+	// Encode field 'item7-75'
+	try {
+	    MinutesDuration item1 = this.item7_75;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-75");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-75");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-75", "MinutesDuration");
+	    throw ee;
+	}
+	// Encode field 'item7-76'
+	try {
+	    MsgCount item1 = this.item7_76;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-76");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-76");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-76", "MsgCount");
+	    throw ee;
+	}
+	// Encode field 'item7-77'
+	try {
+	    MsgCRC item1 = this.item7_77;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-77");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-77");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-77", "MsgCRC");
+	    throw ee;
+	}
+	// Encode field 'item7-78'
+	try {
+	    MultiVehicleResponse item1 = this.item7_78;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-78");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-78");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-78", "MultiVehicleResponse");
+	    throw ee;
+	}
+	// Encode field 'item7-79'
+	try {
+	    MUTCDCode item1 = this.item7_79;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-79");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-79");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-79", "MUTCDCode");
+	    throw ee;
+	}
+	// Encode field 'item7-80'
+	try {
+	    NMEA_MsgType item1 = this.item7_80;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-80");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-80");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-80", "NMEA-MsgType");
+	    throw ee;
+	}
+	// Encode field 'item7-81'
+	try {
+	    NMEA_Payload item1 = this.item7_81;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-81");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-81");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-81", "NMEA-Payload");
+	    throw ee;
+	}
+	// Encode field 'item7-82'
+	try {
+	    NMEA_Revision item1 = this.item7_82;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-82");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-82");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-82", "NMEA-Revision");
+	    throw ee;
+	}
+	// Encode field 'item7-83'
+	try {
+	    NTCIPVehicleclass item1 = this.item7_83;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-83");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-83");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-83", "NTCIPVehicleclass");
+	    throw ee;
+	}
+	// Encode field 'item7-84'
+	try {
+	    ObjectCount item1 = this.item7_84;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-84");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-84");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-84", "ObjectCount");
+	    throw ee;
+	}
+	// Encode field 'item7-85'
+	try {
+	    ObstacleDirection item1 = this.item7_85;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-85");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-85");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-85", "ObstacleDirection");
+	    throw ee;
+	}
+	// Encode field 'item7-86'
+	try {
+	    ObstacleDistance item1 = this.item7_86;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-86");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-86");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-86", "ObstacleDistance");
+	    throw ee;
+	}
+	// Encode field 'item7-87'
+	try {
+	    PayloadData item1 = this.item7_87;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-87");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-87");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-87", "PayloadData");
+	    throw ee;
+	}
+	// Encode field 'item7-88'
+	try {
+	    Payload item1 = this.item7_88;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-88");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-88");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-88", "Payload");
+	    throw ee;
+	}
+	// Encode field 'item7-89'
+	try {
+	    PedestrianDetect item1 = this.item7_89;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-89");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-89");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-89", "PedestrianDetect");
+	    throw ee;
+	}
+	// Encode field 'item7-90'
+	try {
+	    PedestrianSignalState item1 = this.item7_90;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-90");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-90");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-90", "PedestrianSignalState");
+	    throw ee;
+	}
+	// Encode field 'item7-91'
+	try {
+	    PositionConfidence item1 = this.item7_91;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-91");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-91");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-91", "PositionConfidence");
+	    throw ee;
+	}
+	// Encode field 'item7-92'
+	try {
+	    PreemptState item1 = this.item7_92;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-92");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-92");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-92", "PreemptState");
+	    throw ee;
+	}
+	// Encode field 'item7-93'
+	try {
+	    Priority item1 = this.item7_93;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-93");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-93");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-93", "Priority");
+	    throw ee;
+	}
+	// Encode field 'item7-94'
+	try {
+	    PriorityState item1 = this.item7_94;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-94");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-94");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-94", "PriorityState");
+	    throw ee;
+	}
+	// Encode field 'item7-95'
+	try {
+	    ProbeSegmentNumber item1 = this.item7_95;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-95");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-95");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-95", "ProbeSegmentNumber");
+	    throw ee;
+	}
+	// Encode field 'item7-96'
+	try {
+	    RainSensor item1 = this.item7_96;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-96");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-96");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-96", "RainSensor");
+	    throw ee;
+	}
+	// Encode field 'item7-97'
+	try {
+	    RequestedItem item1 = this.item7_97;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-97");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-97");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-97", "RequestedItem");
+	    throw ee;
+	}
+	// Encode field 'item7-98'
+	try {
+	    ResponseType item1 = this.item7_98;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-98");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-98");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-98", "ResponseType");
+	    throw ee;
+	}
+	// Encode field 'item7-99'
+	try {
+	    RTCM_ID item1 = this.item7_99;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-99");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-99");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-99", "RTCM-ID");
+	    throw ee;
+	}
+	// Encode field 'item7-100'
+	try {
+	    RTCM_Payload item1 = this.item7_100;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-100");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-100");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-100", "RTCM-Payload");
+	    throw ee;
+	}
+	// Encode field 'item7-101'
+	try {
+	    RTCM_Revision item1 = this.item7_101;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-101");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-101");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-101", "RTCM-Revision");
+	    throw ee;
+	}
+	// Encode field 'item7-102'
+	try {
+	    SignalLightState item1 = this.item7_102;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-102");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-102");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-102", "SignalLightState");
+	    throw ee;
+	}
+	// Encode field 'item7-103'
+	try {
+	    SignalReqScheme item1 = this.item7_103;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-103");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-103");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-103", "SignalReqScheme");
+	    throw ee;
+	}
+	// Encode field 'item7-104'
+	try {
+	    SignalState item1 = this.item7_104;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-104");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-104");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-104", "SignalState");
+	    throw ee;
+	}
+	// Encode field 'item7-105'
+	try {
+	    SignPrority item1 = this.item7_105;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-105");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-105");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-105", "SignPrority");
+	    throw ee;
+	}
+	// Encode field 'item7-106'
+	try {
+	    SirenInUse item1 = this.item7_106;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-106");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-106");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-106", "SirenInUse");
+	    throw ee;
+	}
+	// Encode field 'item7-107'
+	try {
+	    SpecialLaneAttributes item1 = this.item7_107;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-107");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-107");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-107", "SpecialLaneAttributes");
+	    throw ee;
+	}
+	// Encode field 'item7-108'
+	try {
+	    SpecialSignalState item1 = this.item7_108;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-108");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-108");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-108", "SpecialSignalState");
+	    throw ee;
+	}
+	// Encode field 'item7-109'
+	try {
+	    SpeedConfidence item1 = this.item7_109;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-109");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-109");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-109", "SpeedConfidence");
+	    throw ee;
+	}
+	// Encode field 'item7-110'
+	try {
+	    Speed item1 = this.item7_110;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-110");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-110");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-110", "Speed");
+	    throw ee;
+	}
+	// Encode field 'item7-111'
+	try {
+	    StabilityControlStatus item1 = this.item7_111;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-111");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-111");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-111", "StabilityControlStatus");
+	    throw ee;
+	}
+	// Encode field 'item7-112'
+	try {
+	    StateConfidence item1 = this.item7_112;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-112");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-112");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-112", "StateConfidence");
+	    throw ee;
+	}
+	// Encode field 'item7-113'
+	try {
+	    SteeringWheelAngleConfidence item1 = this.item7_113;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-113");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-113");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-113", "SteeringWheelAngleConfidence");
+	    throw ee;
+	}
+	// Encode field 'item7-114'
+	try {
+	    SteeringWheelAngleRateOfChange item1 = this.item7_114;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-114");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-114");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-114", "SteeringWheelAngleRateOfChange");
+	    throw ee;
+	}
+	// Encode field 'item7-115'
+	try {
+	    SteeringWheelAngle item1 = this.item7_115;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-115");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-115");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-115", "SteeringWheelAngle");
+	    throw ee;
+	}
+	// Encode field 'item7-116'
+	try {
+	    SunSensor item1 = this.item7_116;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-116");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-116");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-116", "SunSensor");
+	    throw ee;
+	}
+	// Encode field 'item7-117'
+	try {
+	    TemporaryID item1 = this.item7_117;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-117");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-117");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-117", "TemporaryID");
+	    throw ee;
+	}
+	// Encode field 'item7-118'
+	try {
+	    TermDistance item1 = this.item7_118;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-118");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-118");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-118", "TermDistance");
+	    throw ee;
+	}
+	// Encode field 'item7-119'
+	try {
+	    TermTime item1 = this.item7_119;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-119");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-119");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-119", "TermTime");
+	    throw ee;
+	}
+	// Encode field 'item7-120'
+	try {
+	    ThrottleConfidence item1 = this.item7_120;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-120");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-120");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-120", "ThrottleConfidence");
+	    throw ee;
+	}
+	// Encode field 'item7-121'
+	try {
+	    ThrottlePosition item1 = this.item7_121;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-121");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-121");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-121", "ThrottlePosition");
+	    throw ee;
+	}
+	// Encode field 'item7-122'
+	try {
+	    TimeConfidence item1 = this.item7_122;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-122");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-122");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-122", "TimeConfidence");
+	    throw ee;
+	}
+	// Encode field 'item7-123'
+	try {
+	    TimeMark item1 = this.item7_123;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-123");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-123");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-123", "TimeMark");
+	    throw ee;
+	}
+	// Encode field 'item7-124'
+	try {
+	    TractionControlState item1 = this.item7_124;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-124");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-124");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-124", "TractionControlState");
+	    throw ee;
+	}
+	// Encode field 'item7-125'
+	try {
+	    TransitPreEmptionRequest item1 = this.item7_125;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-125");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-125");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-125", "TransitPreEmptionRequest");
+	    throw ee;
+	}
+	// Encode field 'item7-126'
+	try {
+	    TransitStatus item1 = this.item7_126;
+
+	    if (item1 != null) {
+		{
+		    int len1 = item1.getSize();
+		    byte[] temp1 = item1.byteArrayValue();
+
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-126");
+		    coder.encodeBitStringWithNamedBits(temp1, len1, 6, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-126");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-126", "TransitStatus");
+	    throw ee;
+	}
+	// Encode field 'item7-127'
+	try {
+	    TransmissionState item1 = this.item7_127;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-127");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-127");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-127", "TransmissionState");
+	    throw ee;
+	}
+	// Encode field 'item7-128'
+	try {
+	    TxTime item1 = this.item7_128;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-128");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-128");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-128", "TxTime");
+	    throw ee;
+	}
+	// Encode field 'item7-129'
+	try {
+	    TravelerInfoType item1 = this.item7_129;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-129");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-129");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-129", "TravelerInfoType");
+	    throw ee;
+	}
+	// Encode field 'item7-130'
+	try {
+	    UniqueMSGID item1 = this.item7_130;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-130");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-130");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-130", "UniqueMSGID");
+	    throw ee;
+	}
+	// Encode field 'item7-131'
+	try {
+	    URL_Base item1 = this.item7_131;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-131");
+		    coder.encodeString(item1.stringValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-131");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-131", "URL-Base");
+	    throw ee;
+	}
+	// Encode field 'item7-132'
+	try {
+	    URL_Link item1 = this.item7_132;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-132");
+		    coder.encodeString(item1.stringValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-132");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-132", "URL-Link");
+	    throw ee;
+	}
+	// Encode field 'item7-133'
+	try {
+	    URL_Short item1 = this.item7_133;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-133");
+		    coder.encodeString(item1.stringValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-133");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-133", "URL-Short");
+	    throw ee;
+	}
+	// Encode field 'item7-134'
+	try {
+	    VehicleHeight item1 = this.item7_134;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-134");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-134");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-134", "VehicleHeight");
+	    throw ee;
+	}
+	// Encode field 'item7-135'
+	try {
+	    VehicleLaneAttributes item1 = this.item7_135;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-135");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-135");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-135", "VehicleLaneAttributes");
+	    throw ee;
+	}
+	// Encode field 'item7-136'
+	try {
+	    VehicleLength item1 = this.item7_136;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-136");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-136");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-136", "VehicleLength");
+	    throw ee;
+	}
+	// Encode field 'item7-137'
+	try {
+	    VehicleMass item1 = this.item7_137;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-137");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-137");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-137", "VehicleMass");
+	    throw ee;
+	}
+	// Encode field 'item7-138'
+	try {
+	    VehicleRequestStatus item1 = this.item7_138;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-138");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-138");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-138", "VehicleRequestStatus");
+	    throw ee;
+	}
+	// Encode field 'item7-139'
+	try {
+	    VehicleStatusDeviceTypeTag item1 = this.item7_139;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-139");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-139");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-139", "VehicleStatusDeviceTypeTag");
+	    throw ee;
+	}
+	// Encode field 'item7-140'
+	try {
+	    VehicleType item1 = this.item7_140;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-140");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-140");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-140", "VehicleType");
+	    throw ee;
+	}
+	// Encode field 'item7-141'
+	try {
+	    VehicleWidth item1 = this.item7_141;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-141");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-141");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-141", "VehicleWidth");
+	    throw ee;
+	}
+	// Encode field 'item7-142'
+	try {
+	    VerticalAccelerationThreshold item1 = this.item7_142;
+
+	    if (item1 != null) {
+		{
+		    int len1 = item1.getSize();
+		    byte[] temp1 = item1.byteArrayValue();
+
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-142");
+		    coder.encodeBitString(temp1, len1, -1, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-142");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-142", "VerticalAccelerationThreshold");
+	    throw ee;
+	}
+	// Encode field 'item7-143'
+	try {
+	    VerticalAcceleration item1 = this.item7_143;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-143");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-143");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-143", "VerticalAcceleration");
+	    throw ee;
+	}
+	// Encode field 'item7-144'
+	try {
+	    VINstring item1 = this.item7_144;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-144");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-144");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-144", "VINstring");
+	    throw ee;
+	}
+	// Encode field 'item7-145'
+	try {
+	    WiperRate item1 = this.item7_145;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-145");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-145");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-145", "WiperRate");
+	    throw ee;
+	}
+	// Encode field 'item7-146'
+	try {
+	    WiperStatusFront item1 = this.item7_146;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-146");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-146");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-146", "WiperStatusFront");
+	    throw ee;
+	}
+	// Encode field 'item7-147'
+	try {
+	    WiperStatusRear item1 = this.item7_147;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-147");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-147");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-147", "WiperStatusRear");
+	    throw ee;
+	}
+	// Encode field 'item7-148'
+	try {
+	    YawRateConfidence item1 = this.item7_148;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-148");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-148");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-148", "YawRateConfidence");
+	    throw ee;
+	}
+	// Encode field 'item7-149'
+	try {
+	    YawRate item1 = this.item7_149;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item7-149");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item7-149");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item7-149", "YawRate");
+	    throw ee;
+	}
+	// Encode field 'item8-1'
+	try {
+	    com.bah.ode.asn.oss.itis.IncidentResponseEquipment item1 = this.item8_1;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item8-1");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item8-1");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item8-1", "IncidentResponseEquipment");
+	    throw ee;
+	}
+	// Encode field 'item8-2'
+	try {
+	    com.bah.ode.asn.oss.itis.ITIStext item1 = this.item8_2;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item8-2");
+		    coder.encodeString(item1.stringValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item8-2");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item8-2", "ITIStext");
+	    throw ee;
+	}
+	// Encode field 'item8-3'
+	try {
+	    com.bah.ode.asn.oss.itis.ResponderGroupAffected item1 = this.item8_3;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item8-3");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item8-3");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item8-3", "ResponderGroupAffected");
+	    throw ee;
+	}
+	// Encode field 'item8-4'
+	try {
+	    com.bah.ode.asn.oss.itis.VehicleGroupAffected item1 = this.item8_4;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item8-4");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item8-4");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item8-4", "VehicleGroupAffected");
+	    throw ee;
+	}
+	// Encode field 'item8-5'
+	try {
+	    com.bah.ode.asn.oss.itis.ITIScodesAndText item1 = this.item8_5;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item8-5");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item8-5");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item8-5", "ITIScodesAndText");
+	    throw ee;
+	}
+	// Encode field 'item8-6'
+	try {
+	    com.bah.ode.asn.oss.ntcip.EssMobileFriction item1 = this.item8_6;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item8-6");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item8-6");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item8-6", "EssMobileFriction");
+	    throw ee;
+	}
+	// Encode field 'item8-7'
+	try {
+	    com.bah.ode.asn.oss.ntcip.EssPrecipRate item1 = this.item8_7;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item8-7");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item8-7");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item8-7", "EssPrecipRate");
+	    throw ee;
+	}
+	// Encode field 'item8-8'
+	try {
+	    com.bah.ode.asn.oss.ntcip.EssPrecipSituation item1 = this.item8_8;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item8-8");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item8-8");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item8-8", "EssPrecipSituation");
+	    throw ee;
+	}
+	// Encode field 'item8-9'
+	try {
+	    com.bah.ode.asn.oss.ntcip.EssPrecipYesNo item1 = this.item8_9;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item8-9");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item8-9");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item8-9", "EssPrecipYesNo");
+	    throw ee;
+	}
+	// Encode field 'item8-10'
+	try {
+	    com.bah.ode.asn.oss.ntcip.EssSolarRadiation item1 = this.item8_10;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item8-10");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item8-10");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item8-10", "EssSolarRadiation");
+	    throw ee;
+	}
+	// Encode field 'item8-11'
+	try {
+	    com.bah.ode.asn.oss.itis.ITIScodes item1 = this.item8_11;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator(separator0);
+		    separator0 = ",";
+		    sink.encodeKey("item8-11");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator(separator0);
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "item8-11");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("item8-11", "ITIScodes");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public AllInclusive decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[233];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		AllInclusive.__Tag t_tag0 = AllInclusive.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = AllInclusive.__Tag._null_;
+		switch (t_tag0) {
+		    case __item6_1:
+		    // Decode field 'item6-1'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[0])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_1 = new AccelerationSet4Way(coder.decodeOctetString(source));
+			    present0[0] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-1", "AccelerationSet4Way");
+			throw de;
+		    }
+		    break;
+		    case __item6_2:
+		    // Decode field 'item6-2'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[1])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_2 == null)
+				this.item6_2 = new AccelSteerYawRateConfidence();
+			    this.item6_2.decodeValue(coder, source);
+			    present0[1] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-2", "AccelSteerYawRateConfidence");
+			throw de;
+		    }
+		    break;
+		    case __item6_4:
+		    // Decode field 'item6-4'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[2])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_4 = new AntennaOffsetSet(coder.decodeOctetString(source));
+			    present0[2] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-4", "AntennaOffsetSet");
+			throw de;
+		    }
+		    break;
+		    case __item6_5:
+		    // Decode field 'item6-5'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[3])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_5 == null)
+				this.item6_5 = new Approach();
+			    this.item6_5.decodeValue(coder, source);
+			    present0[3] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-5", "Approach");
+			throw de;
+		    }
+		    break;
+		    case __item6_6:
+		    // Decode field 'item6-6'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[4])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_6 == null)
+				this.item6_6 = new ApproachObject();
+			    this.item6_6.decodeValue(coder, source);
+			    present0[4] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-6", "ApproachObject");
+			throw de;
+		    }
+		    break;
+		    case __item6_7:
+		    // Decode field 'item6-7'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[5])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_7 == null)
+				this.item6_7 = new BarrierLane();
+			    this.item6_7.decodeValue(coder, source);
+			    present0[5] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-7", "BarrierLane");
+			throw de;
+		    }
+		    break;
+		    case __item6_8:
+		    // Decode field 'item6-8'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[6])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_8 = new BrakeSystemStatus(coder.decodeOctetString(source));
+			    present0[6] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-8", "BrakeSystemStatus");
+			throw de;
+		    }
+		    break;
+		    case __item6_9:
+		    // Decode field 'item6-9'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[7])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_9 = new BSMblob(coder.decodeOctetString(source));
+			    present0[7] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-9", "BSMblob");
+			throw de;
+		    }
+		    break;
+		    case __item6_10:
+		    // Decode field 'item6-10'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[8])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_10 == null)
+				this.item6_10 = new BumperHeights();
+			    this.item6_10.decodeValue(coder, source);
+			    present0[8] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-10", "BumperHeights");
+			throw de;
+		    }
+		    break;
+		    case __item6_11:
+		    // Decode field 'item6-11'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[9])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_11 == null)
+				this.item6_11 = new Circle();
+			    this.item6_11.decodeValue(coder, source);
+			    present0[9] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-11", "Circle");
+			throw de;
+		    }
+		    break;
+		    case __item6_12:
+		    // Decode field 'item6-12'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[10])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_12 == null)
+				this.item6_12 = new ConfidenceSet();
+			    this.item6_12.decodeValue(coder, source);
+			    present0[10] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-12", "ConfidenceSet");
+			throw de;
+		    }
+		    break;
+		    case __item6_13:
+		    // Decode field 'item6-13'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[11])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_13 = new ConnectsTo(coder.decodeOctetString(source));
+			    present0[11] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-13", "ConnectsTo");
+			throw de;
+		    }
+		    break;
+		    case __item6_14:
+		    // Decode field 'item6-14'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[12])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_14 == null)
+				this.item6_14 = new CrosswalkLane();
+			    this.item6_14.decodeValue(coder, source);
+			    present0[12] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-14", "CrosswalkLane");
+			throw de;
+		    }
+		    break;
+		    case __item6_15:
+		    // Decode field 'item6-15'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[13])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_15 == null)
+				this.item6_15 = new DataParameters();
+			    this.item6_15.decodeValue(coder, source);
+			    present0[13] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-15", "DataParameters");
+			throw de;
+		    }
+		    break;
+		    case __item6_16:
+		    // Decode field 'item6-16'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[14])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_16 == null)
+				this.item6_16 = new DDate();
+			    this.item6_16.decodeValue(coder, source);
+			    present0[14] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-16", "DDate");
+			throw de;
+		    }
+		    break;
+		    case __item6_17:
+		    // Decode field 'item6-17'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[15])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_17 == null)
+				this.item6_17 = new DDateTime();
+			    this.item6_17.decodeValue(coder, source);
+			    present0[15] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-17", "DDateTime");
+			throw de;
+		    }
+		    break;
+		    case __item6_18:
+		    // Decode field 'item6-18'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[16])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_18 == null)
+				this.item6_18 = new DFullTime();
+			    this.item6_18.decodeValue(coder, source);
+			    present0[16] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-18", "DFullTime");
+			throw de;
+		    }
+		    break;
+		    case __item6_19:
+		    // Decode field 'item6-19'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[17])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_19 == null)
+				this.item6_19 = new DMonthDay();
+			    this.item6_19.decodeValue(coder, source);
+			    present0[17] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-19", "DMonthDay");
+			throw de;
+		    }
+		    break;
+		    case __item6_20:
+		    // Decode field 'item6-20'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[18])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_20 == null)
+				this.item6_20 = new DTime();
+			    this.item6_20.decodeValue(coder, source);
+			    present0[18] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-20", "DTime");
+			throw de;
+		    }
+		    break;
+		    case __item6_21:
+		    // Decode field 'item6-21'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[19])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_21 == null)
+				this.item6_21 = new DYearMonth();
+			    this.item6_21.decodeValue(coder, source);
+			    present0[19] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-21", "DYearMonth");
+			throw de;
+		    }
+		    break;
+		    case __item6_22:
+		    // Decode field 'item6-22'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[20])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_22 == null)
+				this.item6_22 = new FullPositionVector();
+			    this.item6_22.decodeValue(coder, source);
+			    present0[20] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-22", "FullPositionVector");
+			throw de;
+		    }
+		    break;
+		    case __item6_23:
+		    // Decode field 'item6-23'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[21])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_23 == null)
+				this.item6_23 = new Intersection_();
+			    this.item6_23.decodeValue(coder, source);
+			    present0[21] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-23", "Intersection");
+			throw de;
+		    }
+		    break;
+		    case __item6_24:
+		    // Decode field 'item6-24'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[22])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_24 == null)
+				this.item6_24 = new IntersectionState();
+			    this.item6_24.decodeValue(coder, source);
+			    present0[22] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-24", "IntersectionState");
+			throw de;
+		    }
+		    break;
+		    case __item6_25:
+		    // Decode field 'item6-25'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[23])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_25 == null)
+				this.item6_25 = new ExitService();
+			    this.item6_25.decodeValue(coder, source);
+			    present0[23] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-25", "ExitService");
+			throw de;
+		    }
+		    break;
+		    case __item6_26:
+		    // Decode field 'item6-26'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[24])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_26 == null)
+				this.item6_26 = new GenericSignage();
+			    this.item6_26.decodeValue(coder, source);
+			    present0[24] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-26", "GenericSignage");
+			throw de;
+		    }
+		    break;
+		    case __item6_27:
+		    // Decode field 'item6-27'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[25])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_27 == null)
+				this.item6_27 = new SpeedLimit();
+			    this.item6_27.decodeValue(coder, source);
+			    present0[25] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-27", "SpeedLimit");
+			throw de;
+		    }
+		    break;
+		    case __item6_28:
+		    // Decode field 'item6-28'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[26])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_28 == null)
+				this.item6_28 = new WorkZone();
+			    this.item6_28.decodeValue(coder, source);
+			    present0[26] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-28", "WorkZone");
+			throw de;
+		    }
+		    break;
+		    case __item6_29:
+		    // Decode field 'item6-29'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[27])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_29 == null)
+				this.item6_29 = new J1939data();
+			    this.item6_29.decodeValue(coder, source);
+			    present0[27] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-29", "J1939data");
+			throw de;
+		    }
+		    break;
+		    case __item6_30:
+		    // Decode field 'item6-30'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[28])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_30 == null)
+				this.item6_30 = new MovementState();
+			    this.item6_30.decodeValue(coder, source);
+			    present0[28] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-30", "MovementState");
+			throw de;
+		    }
+		    break;
+		    case __item6_31:
+		    // Decode field 'item6-31'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[29])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_31 == null)
+				this.item6_31 = new NodeList();
+			    this.item6_31.decodeValue(coder, source);
+			    present0[29] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-31", "NodeList");
+			throw de;
+		    }
+		    break;
+		    case __item6_32:
+		    // Decode field 'item6-32'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[30])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_32 = new Offsets(coder.decodeOctetString(source));
+			    present0[30] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-32", "Offsets");
+			throw de;
+		    }
+		    break;
+		    case __item6_33:
+		    // Decode field 'item6-33'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[31])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_33 == null)
+				this.item6_33 = new PathHistory();
+			    this.item6_33.decodeValue(coder, source);
+			    present0[31] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-33", "PathHistory");
+			throw de;
+		    }
+		    break;
+		    case __item6_34:
+		    // Decode field 'item6-34'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[32])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_34 == null)
+				this.item6_34 = new PathHistoryPointType_01();
+			    this.item6_34.decodeValue(coder, source);
+			    present0[32] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-34", "PathHistoryPointType-01");
+			throw de;
+		    }
+		    break;
+		    case __item6_35:
+		    // Decode field 'item6-35'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[33])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_35 = new PathHistoryPointType_02(coder.decodeOctetString(source));
+			    present0[33] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-35", "PathHistoryPointType-02");
+			throw de;
+		    }
+		    break;
+		    case __item6_36:
+		    // Decode field 'item6-36'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[34])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_36 = new PathHistoryPointType_03(coder.decodeOctetString(source));
+			    present0[34] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-36", "PathHistoryPointType-03");
+			throw de;
+		    }
+		    break;
+		    case __item6_37:
+		    // Decode field 'item6-37'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[35])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_37 = new PathHistoryPointType_04(coder.decodeOctetString(source));
+			    present0[35] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-37", "PathHistoryPointType-04");
+			throw de;
+		    }
+		    break;
+		    case __item6_38:
+		    // Decode field 'item6-38'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[36])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_38 = new PathHistoryPointType_05(coder.decodeOctetString(source));
+			    present0[36] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-38", "PathHistoryPointType-05");
+			throw de;
+		    }
+		    break;
+		    case __item6_39:
+		    // Decode field 'item6-39'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[37])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_39 = new PathHistoryPointType_06(coder.decodeOctetString(source));
+			    present0[37] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-39", "PathHistoryPointType-06");
+			throw de;
+		    }
+		    break;
+		    case __item6_40:
+		    // Decode field 'item6-40'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[38])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_40 = new PathHistoryPointType_07(coder.decodeOctetString(source));
+			    present0[38] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-40", "PathHistoryPointType-07");
+			throw de;
+		    }
+		    break;
+		    case __item6_41:
+		    // Decode field 'item6-41'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[39])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_41 = new PathHistoryPointType_08(coder.decodeOctetString(source));
+			    present0[39] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-41", "PathHistoryPointType-08");
+			throw de;
+		    }
+		    break;
+		    case __item6_42:
+		    // Decode field 'item6-42'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[40])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_42 = new PathHistoryPointType_09(coder.decodeOctetString(source));
+			    present0[40] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-42", "PathHistoryPointType-09");
+			throw de;
+		    }
+		    break;
+		    case __item6_43:
+		    // Decode field 'item6-43'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[41])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_43 = new PathHistoryPointType_10(coder.decodeOctetString(source));
+			    present0[41] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-43", "PathHistoryPointType-10");
+			throw de;
+		    }
+		    break;
+		    case __item6_44:
+		    // Decode field 'item6-44'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[42])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_44 == null)
+				this.item6_44 = new PathPrediction();
+			    this.item6_44.decodeValue(coder, source);
+			    present0[42] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-44", "PathPrediction");
+			throw de;
+		    }
+		    break;
+		    case __item6_45:
+		    // Decode field 'item6-45'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[43])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_45 == null)
+				this.item6_45 = new Position3D();
+			    this.item6_45.decodeValue(coder, source);
+			    present0[43] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-45", "Position3D");
+			throw de;
+		    }
+		    break;
+		    case __item6_46:
+		    // Decode field 'item6-46'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[44])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_46 = new PositionalAccuracy(coder.decodeOctetString(source));
+			    present0[44] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-46", "PositionalAccuracy");
+			throw de;
+		    }
+		    break;
+		    case __item6_47:
+		    // Decode field 'item6-47'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[45])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_47 = new PositionConfidenceSet(coder.decodeOctetString(source));
+			    present0[45] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-47", "PositionConfidenceSet");
+			throw de;
+		    }
+		    break;
+		    case __item6_48:
+		    // Decode field 'item6-48'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[46])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_48 == null)
+				this.item6_48 = new RegionList();
+			    this.item6_48.decodeValue(coder, source);
+			    present0[46] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-48", "RegionList");
+			throw de;
+		    }
+		    break;
+		    case __item6_49:
+		    // Decode field 'item6-49'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[47])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_49 == null)
+				this.item6_49 = new RegionOffsets();
+			    this.item6_49.decodeValue(coder, source);
+			    present0[47] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-49", "RegionOffsets");
+			throw de;
+		    }
+		    break;
+		    case __item6_50:
+		    // Decode field 'item6-50'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[48])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_50 == null)
+				this.item6_50 = new RegionPointSet();
+			    this.item6_50.decodeValue(coder, source);
+			    present0[48] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-50", "RegionPointSet");
+			throw de;
+		    }
+		    break;
+		    case __item6_51:
+		    // Decode field 'item6-51'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[49])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_51 == null)
+				this.item6_51 = new RoadSignID();
+			    this.item6_51.decodeValue(coder, source);
+			    present0[49] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-51", "RoadSignID");
+			throw de;
+		    }
+		    break;
+		    case __item6_52:
+		    // Decode field 'item6-52'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[50])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_52 = new RTCMHeader(coder.decodeOctetString(source));
+			    present0[50] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-52", "RTCMHeader");
+			throw de;
+		    }
+		    break;
+		    case __item6_53:
+		    // Decode field 'item6-53'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[51])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_53 == null)
+				this.item6_53 = new RTCMmsg();
+			    this.item6_53.decodeValue(coder, source);
+			    present0[51] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-53", "RTCMmsg");
+			throw de;
+		    }
+		    break;
+		    case __item6_54:
+		    // Decode field 'item6-54'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[52])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_54 == null)
+				this.item6_54 = new RTCMPackage();
+			    this.item6_54.decodeValue(coder, source);
+			    present0[52] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-54", "RTCMPackage");
+			throw de;
+		    }
+		    break;
+		    case __item6_55:
+		    // Decode field 'item6-55'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[53])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_55 == null)
+				this.item6_55 = new Sample();
+			    this.item6_55.decodeValue(coder, source);
+			    present0[53] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-55", "Sample");
+			throw de;
+		    }
+		    break;
+		    case __item6_56:
+		    // Decode field 'item6-56'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[54])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_56 == null)
+				this.item6_56 = new ShapePointSet();
+			    this.item6_56.decodeValue(coder, source);
+			    present0[54] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-56", "ShapePointSet");
+			throw de;
+		    }
+		    break;
+		    case __item6_57:
+		    // Decode field 'item6-57'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[55])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_57 == null)
+				this.item6_57 = new SignalControlZone();
+			    this.item6_57.decodeValue(coder, source);
+			    present0[55] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-57", "SignalControlZone");
+			throw de;
+		    }
+		    break;
+		    case __item6_58:
+		    // Decode field 'item6-58'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[56])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_58 == null)
+				this.item6_58 = new SignalRequest();
+			    this.item6_58.decodeValue(coder, source);
+			    present0[56] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-58", "SignalRequest");
+			throw de;
+		    }
+		    break;
+		    case __item6_59:
+		    // Decode field 'item6-59'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[57])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_59 == null)
+				this.item6_59 = new SnapshotDistance();
+			    this.item6_59.decodeValue(coder, source);
+			    present0[57] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-59", "SnapshotDistance");
+			throw de;
+		    }
+		    break;
+		    case __item6_60:
+		    // Decode field 'item6-60'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[58])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_60 == null)
+				this.item6_60 = new Snapshot();
+			    this.item6_60.decodeValue(coder, source);
+			    present0[58] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-60", "Snapshot");
+			throw de;
+		    }
+		    break;
+		    case __item6_61:
+		    // Decode field 'item6-61'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[59])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_61 == null)
+				this.item6_61 = new SnapshotTime();
+			    this.item6_61.decodeValue(coder, source);
+			    present0[59] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-61", "SnapshotTime");
+			throw de;
+		    }
+		    break;
+		    case __item6_62:
+		    // Decode field 'item6-62'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[60])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_62 == null)
+				this.item6_62 = new SpecialLane();
+			    this.item6_62.decodeValue(coder, source);
+			    present0[60] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-62", "SpecialLane");
+			throw de;
+		    }
+		    break;
+		    case __item6_63:
+		    // Decode field 'item6-63'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[61])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_63 = new SpeedandHeadingandThrottleConfidence(coder.decodeOctetString(source));
+			    present0[61] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-63", "SpeedandHeadingandThrottleConfidence");
+			throw de;
+		    }
+		    break;
+		    case __item6_64:
+		    // Decode field 'item6-64'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[62])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item6_64 = new TransmissionAndSpeed(coder.decodeOctetString(source));
+			    present0[62] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-64", "TransmissionAndSpeed");
+			throw de;
+		    }
+		    break;
+		    case __item6_65:
+		    // Decode field 'item6-65'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[63])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_65 == null)
+				this.item6_65 = new ValidRegion();
+			    this.item6_65.decodeValue(coder, source);
+			    present0[63] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-65", "ValidRegion");
+			throw de;
+		    }
+		    break;
+		    case __item6_66:
+		    // Decode field 'item6-66'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[64])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_66 == null)
+				this.item6_66 = new VehicleComputedLane();
+			    this.item6_66.decodeValue(coder, source);
+			    present0[64] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-66", "VehicleComputedLane");
+			throw de;
+		    }
+		    break;
+		    case __item6_67:
+		    // Decode field 'item6-67'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[65])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_67 == null)
+				this.item6_67 = new VehicleIdent();
+			    this.item6_67.decodeValue(coder, source);
+			    present0[65] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-67", "VehicleIdent");
+			throw de;
+		    }
+		    break;
+		    case __item6_68:
+		    // Decode field 'item6-68'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[66])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_68 == null)
+				this.item6_68 = new VehicleReferenceLane();
+			    this.item6_68.decodeValue(coder, source);
+			    present0[66] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-68", "VehicleReferenceLane");
+			throw de;
+		    }
+		    break;
+		    case __item6_69:
+		    // Decode field 'item6-69'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[67])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_69 == null)
+				this.item6_69 = new VehicleSafetyExtension();
+			    this.item6_69.decodeValue(coder, source);
+			    present0[67] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-69", "VehicleSafetyExtension");
+			throw de;
+		    }
+		    break;
+		    case __item6_70:
+		    // Decode field 'item6-70'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[68])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_70 == null)
+				this.item6_70 = new VehicleSize();
+			    this.item6_70.decodeValue(coder, source);
+			    present0[68] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-70", "VehicleSize");
+			throw de;
+		    }
+		    break;
+		    case __item6_71:
+		    // Decode field 'item6-71'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[69])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_71 == null)
+				this.item6_71 = new VehicleStatusRequest();
+			    this.item6_71.decodeValue(coder, source);
+			    present0[69] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-71", "VehicleStatusRequest");
+			throw de;
+		    }
+		    break;
+		    case __item6_72:
+		    // Decode field 'item6-72'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[70])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_72 == null)
+				this.item6_72 = new VehicleStatus();
+			    this.item6_72.decodeValue(coder, source);
+			    present0[70] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-72", "VehicleStatus");
+			throw de;
+		    }
+		    break;
+		    case __item6_73:
+		    // Decode field 'item6-73'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[71])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item6_73 == null)
+				this.item6_73 = new WiperStatus();
+			    this.item6_73.decodeValue(coder, source);
+			    present0[71] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item6-73", "WiperStatus");
+			throw de;
+		    }
+		    break;
+		    case __item7_1:
+		    // Decode field 'item7-1'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[72])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_1 == null)
+				this.item7_1 = new Acceleration();
+			    this.item7_1.setValue(coder.decodeInteger(source));
+			    present0[72] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-1", "Acceleration");
+			throw de;
+		    }
+		    break;
+		    case __item7_2:
+		    // Decode field 'item7-2'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    AccelerationConfidence temp1;
+
+			    if (present0[73])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(AccelerationConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = AccelerationConfidence.cNamedNumbers[idx1];
+			    this.item7_2 = temp1;
+			    present0[73] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-2", "AccelerationConfidence");
+			throw de;
+		    }
+		    break;
+		    case __item7_3:
+		    // Decode field 'item7-3'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[74])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_3 == null)
+				this.item7_3 = new AmbientAirPressure();
+			    this.item7_3.setValue(coder.decodeInteger(source));
+			    present0[74] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-3", "AmbientAirPressure");
+			throw de;
+		    }
+		    break;
+		    case __item7_4:
+		    // Decode field 'item7-4'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[75])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_4 == null)
+				this.item7_4 = new AmbientAirTemperature();
+			    this.item7_4.setValue(coder.decodeInteger(source));
+			    present0[75] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-4", "AmbientAirTemperature");
+			throw de;
+		    }
+		    break;
+		    case __item7_5:
+		    // Decode field 'item7-5'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    AntiLockBrakeStatus temp1;
+
+			    if (present0[76])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(AntiLockBrakeStatus.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = AntiLockBrakeStatus.cNamedNumbers[idx1];
+			    this.item7_5 = temp1;
+			    present0[76] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-5", "AntiLockBrakeStatus");
+			throw de;
+		    }
+		    break;
+		    case __item7_6:
+		    // Decode field 'item7-6'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[77])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_6 == null)
+				this.item7_6 = new ApproachNumber();
+			    this.item7_6.setValue(coder.decodeInteger(source));
+			    present0[77] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-6", "ApproachNumber");
+			throw de;
+		    }
+		    break;
+		    case __item7_7:
+		    // Decode field 'item7-7'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    AuxiliaryBrakeStatus temp1;
+
+			    if (present0[78])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(AuxiliaryBrakeStatus.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = AuxiliaryBrakeStatus.cNamedNumbers[idx1];
+			    this.item7_7 = temp1;
+			    present0[78] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-7", "AuxiliaryBrakeStatus");
+			throw de;
+		    }
+		    break;
+		    case __item7_8:
+		    // Decode field 'item7-8'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[79])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_8 == null)
+				this.item7_8 = new BarrierAttributes();
+			    this.item7_8.setValue(coder.decodeInteger(source));
+			    present0[79] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-8", "BarrierAttributes");
+			throw de;
+		    }
+		    break;
+		    case __item7_9:
+		    // Decode field 'item7-9'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    BrakeAppliedPressure temp1;
+
+			    if (present0[80])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(BrakeAppliedPressure.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = BrakeAppliedPressure.cNamedNumbers[idx1];
+			    this.item7_9 = temp1;
+			    present0[80] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-9", "BrakeAppliedPressure");
+			throw de;
+		    }
+		    break;
+		    case __item7_10:
+		    // Decode field 'item7-10'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[81])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_10 == null)
+				this.item7_10 = new BrakeAppliedStatus();
+			    coder.decodeBitString(-1, source, this.item7_10);
+			    present0[81] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-10", "BrakeAppliedStatus");
+			throw de;
+		    }
+		    break;
+		    case __item7_11:
+		    // Decode field 'item7-11'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    BrakeBoostApplied temp1;
+
+			    if (present0[82])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(BrakeBoostApplied.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = BrakeBoostApplied.cNamedNumbers[idx1];
+			    this.item7_11 = temp1;
+			    present0[82] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-11", "BrakeBoostApplied");
+			throw de;
+		    }
+		    break;
+		    case __item7_12:
+		    // Decode field 'item7-12'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[83])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_12 == null)
+				this.item7_12 = new BumperHeightFront();
+			    this.item7_12.setValue(coder.decodeInteger(source));
+			    present0[83] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-12", "BumperHeightFront");
+			throw de;
+		    }
+		    break;
+		    case __item7_13:
+		    // Decode field 'item7-13'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[84])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_13 == null)
+				this.item7_13 = new BumperHeightRear();
+			    this.item7_13.setValue(coder.decodeInteger(source));
+			    present0[84] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-13", "BumperHeightRear");
+			throw de;
+		    }
+		    break;
+		    case __item7_14:
+		    // Decode field 'item7-14'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[85])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_14 = new CodeWord(coder.decodeOctetString(source));
+			    present0[85] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-14", "CodeWord");
+			throw de;
+		    }
+		    break;
+		    case __item7_15:
+		    // Decode field 'item7-15'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[86])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_15 == null)
+				this.item7_15 = new CoefficientOfFriction();
+			    this.item7_15.setValue(coder.decodeInteger(source));
+			    present0[86] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-15", "CoefficientOfFriction");
+			throw de;
+		    }
+		    break;
+		    case __item7_16:
+		    // Decode field 'item7-16'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    ColorState temp1;
+
+			    if (present0[87])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(ColorState.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = ColorState.cNamedNumbers[idx1];
+			    this.item7_16 = temp1;
+			    present0[87] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-16", "ColorState");
+			throw de;
+		    }
+		    break;
+		    case __item7_17:
+		    // Decode field 'item7-17'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[88])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_17 == null)
+				this.item7_17 = new Count();
+			    this.item7_17.setValue(coder.decodeInteger(source));
+			    present0[88] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-17", "Count");
+			throw de;
+		    }
+		    break;
+		    case __item7_18:
+		    // Decode field 'item7-18'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    CrosswalkLaneAttributes temp1;
+
+			    if (present0[89])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(CrosswalkLaneAttributes.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = CrosswalkLaneAttributes.cNamedNumbers[idx1];
+			    this.item7_18 = temp1;
+			    present0[89] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-18", "CrosswalkLaneAttributes");
+			throw de;
+		    }
+		    break;
+		    case __item7_19:
+		    // Decode field 'item7-19'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[90])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_19 == null)
+				this.item7_19 = new DDay();
+			    this.item7_19.setValue(coder.decodeInteger(source));
+			    present0[90] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-19", "DDay");
+			throw de;
+		    }
+		    break;
+		    case __item7_20:
+		    // Decode field 'item7-20'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[91])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_20 = new DescriptiveName(coder.decodeString(source));
+			    present0[91] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-20", "DescriptiveName");
+			throw de;
+		    }
+		    break;
+		    case __item7_21:
+		    // Decode field 'item7-21'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[92])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_21 == null)
+				this.item7_21 = new DHour();
+			    this.item7_21.setValue(coder.decodeInteger(source));
+			    present0[92] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-21", "DHour");
+			throw de;
+		    }
+		    break;
+		    case __item7_22:
+		    // Decode field 'item7-22'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    DirectionOfUse temp1;
+
+			    if (present0[93])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(DirectionOfUse.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = DirectionOfUse.unknownEnumerator();
+			    else
+				temp1 = DirectionOfUse.cNamedNumbers[idx1];
+			    this.item7_22 = temp1;
+			    present0[93] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-22", "DirectionOfUse");
+			throw de;
+		    }
+		    break;
+		    case __item7_23:
+		    // Decode field 'item7-23'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[94])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_23 == null)
+				this.item7_23 = new DMinute();
+			    this.item7_23.setValue(coder.decodeInteger(source));
+			    present0[94] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-23", "DMinute");
+			throw de;
+		    }
+		    break;
+		    case __item7_24:
+		    // Decode field 'item7-24'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[95])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_24 == null)
+				this.item7_24 = new DMonth();
+			    this.item7_24.setValue(coder.decodeInteger(source));
+			    present0[95] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-24", "DMonth");
+			throw de;
+		    }
+		    break;
+		    case __item7_25:
+		    // Decode field 'item7-25'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[96])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_25 == null)
+				this.item7_25 = new DOffset();
+			    this.item7_25.setValue(coder.decodeInteger(source));
+			    present0[96] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-25", "DOffset");
+			throw de;
+		    }
+		    break;
+		    case __item7_26:
+		    // Decode field 'item7-26'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[97])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_26 == null)
+				this.item7_26 = new DrivenLineOffset();
+			    this.item7_26.setValue(coder.decodeInteger(source));
+			    present0[97] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-26", "DrivenLineOffset");
+			throw de;
+		    }
+		    break;
+		    case __item7_27:
+		    // Decode field 'item7-27'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[98])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_27 == null)
+				this.item7_27 = new DrivingWheelAngle();
+			    this.item7_27.setValue(coder.decodeInteger(source));
+			    present0[98] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-27", "DrivingWheelAngle");
+			throw de;
+		    }
+		    break;
+		    case __item7_28:
+		    // Decode field 'item7-28'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[99])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_28 == null)
+				this.item7_28 = new DSecond();
+			    this.item7_28.setValue(coder.decodeInteger(source));
+			    present0[99] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-28", "DSecond");
+			throw de;
+		    }
+		    break;
+		    case __item7_29:
+		    // Decode field 'item7-29'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[100])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_29 == null)
+				this.item7_29 = new DSignalSeconds();
+			    this.item7_29.setValue(coder.decodeInteger(source));
+			    present0[100] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-29", "DSignalSeconds");
+			throw de;
+		    }
+		    break;
+		    case __item7_30:
+		    // Decode field 'item7-30'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    DSRCmsgID temp1;
+
+			    if (present0[101])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(DSRCmsgID.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = DSRCmsgID.unknownEnumerator();
+			    else
+				temp1 = DSRCmsgID.cNamedNumbers[idx1];
+			    this.item7_30 = temp1;
+			    present0[101] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-30", "DSRCmsgID");
+			throw de;
+		    }
+		    break;
+		    case __item7_31:
+		    // Decode field 'item7-31'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[102])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_31 == null)
+				this.item7_31 = new DYear();
+			    this.item7_31.setValue(coder.decodeInteger(source));
+			    present0[102] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-31", "DYear");
+			throw de;
+		    }
+		    break;
+		    case __item7_32:
+		    // Decode field 'item7-32'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    ElevationConfidence temp1;
+
+			    if (present0[103])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(ElevationConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = ElevationConfidence.cNamedNumbers[idx1];
+			    this.item7_32 = temp1;
+			    present0[103] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-32", "ElevationConfidence");
+			throw de;
+		    }
+		    break;
+		    case __item7_33:
+		    // Decode field 'item7-33'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[104])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_33 = new Elevation(coder.decodeOctetString(source));
+			    present0[104] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-33", "Elevation");
+			throw de;
+		    }
+		    break;
+		    case __item7_34:
+		    // Decode field 'item7-34'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[105])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_34 == null)
+				this.item7_34 = new EmergencyDetails();
+			    this.item7_34.setValue(coder.decodeInteger(source));
+			    present0[105] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-34", "EmergencyDetails");
+			throw de;
+		    }
+		    break;
+		    case __item7_35:
+		    // Decode field 'item7-35'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[106])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_35 == null)
+				this.item7_35 = new EventFlags();
+			    this.item7_35.setValue(coder.decodeInteger(source));
+			    present0[106] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-35", "EventFlags");
+			throw de;
+		    }
+		    break;
+		    case __item7_36:
+		    // Decode field 'item7-36'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    Extent temp1;
+
+			    if (present0[107])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(Extent.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = Extent.cNamedNumbers[idx1];
+			    this.item7_36 = temp1;
+			    present0[107] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-36", "Extent");
+			throw de;
+		    }
+		    break;
+		    case __item7_37:
+		    // Decode field 'item7-37'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[108])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_37 == null)
+				this.item7_37 = new ExteriorLights();
+			    this.item7_37.setValue(coder.decodeInteger(source));
+			    present0[108] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-37", "ExteriorLights");
+			throw de;
+		    }
+		    break;
+		    case __item7_38:
+		    // Decode field 'item7-38'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[109])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_38 = new FurtherInfoID(coder.decodeOctetString(source));
+			    present0[109] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-38", "FurtherInfoID");
+			throw de;
+		    }
+		    break;
+		    case __item7_39:
+		    // Decode field 'item7-39'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[110])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_39 == null)
+				this.item7_39 = new GPSstatus();
+			    coder.decodeBitString(-1, source, this.item7_39);
+			    present0[110] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-39", "GPSstatus");
+			throw de;
+		    }
+		    break;
+		    case __item7_40:
+		    // Decode field 'item7-40'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    HeadingConfidence temp1;
+
+			    if (present0[111])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(HeadingConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = HeadingConfidence.cNamedNumbers[idx1];
+			    this.item7_40 = temp1;
+			    present0[111] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-40", "HeadingConfidence");
+			throw de;
+		    }
+		    break;
+		    case __item7_41:
+		    // Decode field 'item7-41'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[112])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_41 == null)
+				this.item7_41 = new Heading();
+			    this.item7_41.setValue(coder.decodeInteger(source));
+			    present0[112] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-41", "Heading");
+			throw de;
+		    }
+		    break;
+		    case __item7_42:
+		    // Decode field 'item7-42'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[113])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_42 = new HeadingSlice(coder.decodeOctetString(source));
+			    present0[113] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-42", "HeadingSlice");
+			throw de;
+		    }
+		    break;
+		    case __item7_43:
+		    // Decode field 'item7-43'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[114])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_43 = new IntersectionStatusObject(coder.decodeOctetString(source));
+			    present0[114] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-43", "IntersectionStatusObject");
+			throw de;
+		    }
+		    break;
+		    case __item7_44:
+		    // Decode field 'item7-44'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[115])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_44 = new IntersectionID(coder.decodeOctetString(source));
+			    present0[115] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-44", "IntersectionID");
+			throw de;
+		    }
+		    break;
+		    case __item7_45:
+		    // Decode field 'item7-45'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[116])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_45 == null)
+				this.item7_45 = new AxleLocation();
+			    this.item7_45.setValue(coder.decodeInteger(source));
+			    present0[116] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-45", "AxleLocation");
+			throw de;
+		    }
+		    break;
+		    case __item7_46:
+		    // Decode field 'item7-46'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[117])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_46 == null)
+				this.item7_46 = new AxleWeight();
+			    this.item7_46.setValue(coder.decodeInteger(source));
+			    present0[117] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-46", "AxleWeight");
+			throw de;
+		    }
+		    break;
+		    case __item7_47:
+		    // Decode field 'item7-47'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[118])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_47 == null)
+				this.item7_47 = new CargoWeight();
+			    this.item7_47.setValue(coder.decodeInteger(source));
+			    present0[118] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-47", "CargoWeight");
+			throw de;
+		    }
+		    break;
+		    case __item7_48:
+		    // Decode field 'item7-48'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[119])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_48 == null)
+				this.item7_48 = new DriveAxleLiftAirPressure();
+			    this.item7_48.setValue(coder.decodeInteger(source));
+			    present0[119] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-48", "DriveAxleLiftAirPressure");
+			throw de;
+		    }
+		    break;
+		    case __item7_49:
+		    // Decode field 'item7-49'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[120])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_49 == null)
+				this.item7_49 = new DriveAxleLocation();
+			    this.item7_49.setValue(coder.decodeInteger(source));
+			    present0[120] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-49", "DriveAxleLocation");
+			throw de;
+		    }
+		    break;
+		    case __item7_50:
+		    // Decode field 'item7-50'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[121])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_50 == null)
+				this.item7_50 = new DriveAxleLubePressure();
+			    this.item7_50.setValue(coder.decodeInteger(source));
+			    present0[121] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-50", "DriveAxleLubePressure");
+			throw de;
+		    }
+		    break;
+		    case __item7_51:
+		    // Decode field 'item7-51'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[122])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_51 == null)
+				this.item7_51 = new DriveAxleTemperature();
+			    this.item7_51.setValue(coder.decodeInteger(source));
+			    present0[122] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-51", "DriveAxleTemperature");
+			throw de;
+		    }
+		    break;
+		    case __item7_52:
+		    // Decode field 'item7-52'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[123])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_52 == null)
+				this.item7_52 = new SteeringAxleLubePressure();
+			    this.item7_52.setValue(coder.decodeInteger(source));
+			    present0[123] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-52", "SteeringAxleLubePressure");
+			throw de;
+		    }
+		    break;
+		    case __item7_53:
+		    // Decode field 'item7-53'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[124])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_53 == null)
+				this.item7_53 = new SteeringAxleTemperature();
+			    this.item7_53.setValue(coder.decodeInteger(source));
+			    present0[124] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-53", "SteeringAxleTemperature");
+			throw de;
+		    }
+		    break;
+		    case __item7_54:
+		    // Decode field 'item7-54'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[125])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_54 == null)
+				this.item7_54 = new TireLeakageRate();
+			    this.item7_54.setValue(coder.decodeInteger(source));
+			    present0[125] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-54", "TireLeakageRate");
+			throw de;
+		    }
+		    break;
+		    case __item7_55:
+		    // Decode field 'item7-55'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[126])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_55 == null)
+				this.item7_55 = new TireLocation();
+			    this.item7_55.setValue(coder.decodeInteger(source));
+			    present0[126] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-55", "TireLocation");
+			throw de;
+		    }
+		    break;
+		    case __item7_56:
+		    // Decode field 'item7-56'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    TirePressureThresholdDetection temp1;
+
+			    if (present0[127])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(TirePressureThresholdDetection.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = TirePressureThresholdDetection.unknownEnumerator();
+			    else
+				temp1 = TirePressureThresholdDetection.cNamedNumbers[idx1];
+			    this.item7_56 = temp1;
+			    present0[127] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-56", "TirePressureThresholdDetection");
+			throw de;
+		    }
+		    break;
+		    case __item7_57:
+		    // Decode field 'item7-57'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[128])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_57 == null)
+				this.item7_57 = new TirePressure();
+			    this.item7_57.setValue(coder.decodeInteger(source));
+			    present0[128] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-57", "TirePressure");
+			throw de;
+		    }
+		    break;
+		    case __item7_58:
+		    // Decode field 'item7-58'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[129])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_58 == null)
+				this.item7_58 = new TireTemp();
+			    this.item7_58.setValue(coder.decodeInteger(source));
+			    present0[129] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-58", "TireTemp");
+			throw de;
+		    }
+		    break;
+		    case __item7_59:
+		    // Decode field 'item7-59'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[130])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_59 == null)
+				this.item7_59 = new TrailerWeight();
+			    this.item7_59.setValue(coder.decodeInteger(source));
+			    present0[130] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-59", "TrailerWeight");
+			throw de;
+		    }
+		    break;
+		    case __item7_60:
+		    // Decode field 'item7-60'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[131])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_60 == null)
+				this.item7_60 = new WheelEndElectFault();
+			    coder.decodeBitString(-1, source, this.item7_60);
+			    present0[131] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-60", "WheelEndElectFault");
+			throw de;
+		    }
+		    break;
+		    case __item7_61:
+		    // Decode field 'item7-61'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    WheelSensorStatus temp1;
+
+			    if (present0[132])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(WheelSensorStatus.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = WheelSensorStatus.cNamedNumbers[idx1];
+			    this.item7_61 = temp1;
+			    present0[132] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-61", "WheelSensorStatus");
+			throw de;
+		    }
+		    break;
+		    case __item7_62:
+		    // Decode field 'item7-62'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[133])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_62 == null)
+				this.item7_62 = new LaneCount();
+			    this.item7_62.setValue(coder.decodeInteger(source));
+			    present0[133] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-62", "LaneCount");
+			throw de;
+		    }
+		    break;
+		    case __item7_63:
+		    // Decode field 'item7-63'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    LaneManeuverCode temp1;
+
+			    if (present0[134])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(LaneManeuverCode.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = LaneManeuverCode.unknownEnumerator();
+			    else
+				temp1 = LaneManeuverCode.cNamedNumbers[idx1];
+			    this.item7_63 = temp1;
+			    present0[134] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-63", "LaneManeuverCode");
+			throw de;
+		    }
+		    break;
+		    case __item7_64:
+		    // Decode field 'item7-64'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[135])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_64 = new LaneNumber(coder.decodeOctetString(source));
+			    present0[135] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-64", "LaneNumber");
+			throw de;
+		    }
+		    break;
+		    case __item7_65:
+		    // Decode field 'item7-65'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[136])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_65 = new LaneSet(coder.decodeOctetString(source));
+			    present0[136] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-65", "LaneSet");
+			throw de;
+		    }
+		    break;
+		    case __item7_66:
+		    // Decode field 'item7-66'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[137])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_66 == null)
+				this.item7_66 = new LaneWidth();
+			    this.item7_66.setValue(coder.decodeInteger(source));
+			    present0[137] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-66", "LaneWidth");
+			throw de;
+		    }
+		    break;
+		    case __item7_67:
+		    // Decode field 'item7-67'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[138])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_67 == null)
+				this.item7_67 = new Latitude();
+			    this.item7_67.setValue(coder.decodeInteger(source));
+			    present0[138] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-67", "Latitude");
+			throw de;
+		    }
+		    break;
+		    case __item7_68:
+		    // Decode field 'item7-68'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[139])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_68 == null)
+				this.item7_68 = new LayerID();
+			    this.item7_68.setValue(coder.decodeInteger(source));
+			    present0[139] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-68", "LayerID");
+			throw de;
+		    }
+		    break;
+		    case __item7_69:
+		    // Decode field 'item7-69'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    LayerType temp1;
+
+			    if (present0[140])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(LayerType.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = LayerType.unknownEnumerator();
+			    else
+				temp1 = LayerType.cNamedNumbers[idx1];
+			    this.item7_69 = temp1;
+			    present0[140] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-69", "LayerType");
+			throw de;
+		    }
+		    break;
+		    case __item7_70:
+		    // Decode field 'item7-70'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    LightbarInUse temp1;
+
+			    if (present0[141])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(LightbarInUse.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = LightbarInUse.cNamedNumbers[idx1];
+			    this.item7_70 = temp1;
+			    present0[141] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-70", "LightbarInUse");
+			throw de;
+		    }
+		    break;
+		    case __item7_71:
+		    // Decode field 'item7-71'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[142])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_71 == null)
+				this.item7_71 = new Longitude();
+			    this.item7_71.setValue(coder.decodeInteger(source));
+			    present0[142] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-71", "Longitude");
+			throw de;
+		    }
+		    break;
+		    case __item7_72:
+		    // Decode field 'item7-72'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    Location_quality temp1;
+
+			    if (present0[143])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(Location_quality.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = Location_quality.cNamedNumbers[idx1];
+			    this.item7_72 = temp1;
+			    present0[143] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-72", "Location-quality");
+			throw de;
+		    }
+		    break;
+		    case __item7_73:
+		    // Decode field 'item7-73'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    Location_tech temp1;
+
+			    if (present0[144])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(Location_tech.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = Location_tech.unknownEnumerator();
+			    else
+				temp1 = Location_tech.cNamedNumbers[idx1];
+			    this.item7_73 = temp1;
+			    present0[144] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-73", "Location-tech");
+			throw de;
+		    }
+		    break;
+		    case __item7_74:
+		    // Decode field 'item7-74'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[145])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_74 == null)
+				this.item7_74 = new MinuteOfTheYear();
+			    this.item7_74.setValue(coder.decodeInteger(source));
+			    present0[145] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-74", "MinuteOfTheYear");
+			throw de;
+		    }
+		    break;
+		    case __item7_75:
+		    // Decode field 'item7-75'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[146])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_75 == null)
+				this.item7_75 = new MinutesDuration();
+			    this.item7_75.setValue(coder.decodeInteger(source));
+			    present0[146] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-75", "MinutesDuration");
+			throw de;
+		    }
+		    break;
+		    case __item7_76:
+		    // Decode field 'item7-76'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[147])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_76 == null)
+				this.item7_76 = new MsgCount();
+			    this.item7_76.setValue(coder.decodeInteger(source));
+			    present0[147] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-76", "MsgCount");
+			throw de;
+		    }
+		    break;
+		    case __item7_77:
+		    // Decode field 'item7-77'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[148])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_77 = new MsgCRC(coder.decodeOctetString(source));
+			    present0[148] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-77", "MsgCRC");
+			throw de;
+		    }
+		    break;
+		    case __item7_78:
+		    // Decode field 'item7-78'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    MultiVehicleResponse temp1;
+
+			    if (present0[149])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(MultiVehicleResponse.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = MultiVehicleResponse.cNamedNumbers[idx1];
+			    this.item7_78 = temp1;
+			    present0[149] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-78", "MultiVehicleResponse");
+			throw de;
+		    }
+		    break;
+		    case __item7_79:
+		    // Decode field 'item7-79'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    MUTCDCode temp1;
+
+			    if (present0[150])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(MUTCDCode.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = MUTCDCode.unknownEnumerator();
+			    else
+				temp1 = MUTCDCode.cNamedNumbers[idx1];
+			    this.item7_79 = temp1;
+			    present0[150] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-79", "MUTCDCode");
+			throw de;
+		    }
+		    break;
+		    case __item7_80:
+		    // Decode field 'item7-80'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[151])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_80 == null)
+				this.item7_80 = new NMEA_MsgType();
+			    this.item7_80.setValue(coder.decodeInteger(source));
+			    present0[151] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-80", "NMEA-MsgType");
+			throw de;
+		    }
+		    break;
+		    case __item7_81:
+		    // Decode field 'item7-81'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[152])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_81 = new NMEA_Payload(coder.decodeOctetString(source));
+			    present0[152] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-81", "NMEA-Payload");
+			throw de;
+		    }
+		    break;
+		    case __item7_82:
+		    // Decode field 'item7-82'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    NMEA_Revision temp1;
+
+			    if (present0[153])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(NMEA_Revision.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = NMEA_Revision.unknownEnumerator();
+			    else
+				temp1 = NMEA_Revision.cNamedNumbers[idx1];
+			    this.item7_82 = temp1;
+			    present0[153] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-82", "NMEA-Revision");
+			throw de;
+		    }
+		    break;
+		    case __item7_83:
+		    // Decode field 'item7-83'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[154])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_83 = new NTCIPVehicleclass(coder.decodeOctetString(source));
+			    present0[154] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-83", "NTCIPVehicleclass");
+			throw de;
+		    }
+		    break;
+		    case __item7_84:
+		    // Decode field 'item7-84'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[155])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_84 == null)
+				this.item7_84 = new ObjectCount();
+			    this.item7_84.setValue(coder.decodeInteger(source));
+			    present0[155] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-84", "ObjectCount");
+			throw de;
+		    }
+		    break;
+		    case __item7_85:
+		    // Decode field 'item7-85'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[156])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_85 == null)
+				this.item7_85 = new ObstacleDirection();
+			    this.item7_85.setValue(coder.decodeInteger(source));
+			    present0[156] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-85", "ObstacleDirection");
+			throw de;
+		    }
+		    break;
+		    case __item7_86:
+		    // Decode field 'item7-86'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[157])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_86 == null)
+				this.item7_86 = new ObstacleDistance();
+			    this.item7_86.setValue(coder.decodeInteger(source));
+			    present0[157] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-86", "ObstacleDistance");
+			throw de;
+		    }
+		    break;
+		    case __item7_87:
+		    // Decode field 'item7-87'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[158])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_87 = new PayloadData(coder.decodeOctetString(source));
+			    present0[158] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-87", "PayloadData");
+			throw de;
+		    }
+		    break;
+		    case __item7_88:
+		    // Decode field 'item7-88'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[159])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_88 = new Payload(coder.decodeOctetString(source));
+			    present0[159] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-88", "Payload");
+			throw de;
+		    }
+		    break;
+		    case __item7_89:
+		    // Decode field 'item7-89'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    PedestrianDetect temp1;
+
+			    if (present0[160])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(PedestrianDetect.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = PedestrianDetect.unknownEnumerator();
+			    else
+				temp1 = PedestrianDetect.cNamedNumbers[idx1];
+			    this.item7_89 = temp1;
+			    present0[160] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-89", "PedestrianDetect");
+			throw de;
+		    }
+		    break;
+		    case __item7_90:
+		    // Decode field 'item7-90'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    PedestrianSignalState temp1;
+
+			    if (present0[161])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(PedestrianSignalState.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = PedestrianSignalState.unknownEnumerator();
+			    else
+				temp1 = PedestrianSignalState.cNamedNumbers[idx1];
+			    this.item7_90 = temp1;
+			    present0[161] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-90", "PedestrianSignalState");
+			throw de;
+		    }
+		    break;
+		    case __item7_91:
+		    // Decode field 'item7-91'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    PositionConfidence temp1;
+
+			    if (present0[162])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(PositionConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = PositionConfidence.cNamedNumbers[idx1];
+			    this.item7_91 = temp1;
+			    present0[162] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-91", "PositionConfidence");
+			throw de;
+		    }
+		    break;
+		    case __item7_92:
+		    // Decode field 'item7-92'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    PreemptState temp1;
+
+			    if (present0[163])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(PreemptState.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = PreemptState.unknownEnumerator();
+			    else
+				temp1 = PreemptState.cNamedNumbers[idx1];
+			    this.item7_92 = temp1;
+			    present0[163] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-92", "PreemptState");
+			throw de;
+		    }
+		    break;
+		    case __item7_93:
+		    // Decode field 'item7-93'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[164])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_93 = new Priority(coder.decodeOctetString(source));
+			    present0[164] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-93", "Priority");
+			throw de;
+		    }
+		    break;
+		    case __item7_94:
+		    // Decode field 'item7-94'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    PriorityState temp1;
+
+			    if (present0[165])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(PriorityState.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = PriorityState.unknownEnumerator();
+			    else
+				temp1 = PriorityState.cNamedNumbers[idx1];
+			    this.item7_94 = temp1;
+			    present0[165] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-94", "PriorityState");
+			throw de;
+		    }
+		    break;
+		    case __item7_95:
+		    // Decode field 'item7-95'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[166])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_95 == null)
+				this.item7_95 = new ProbeSegmentNumber();
+			    this.item7_95.setValue(coder.decodeInteger(source));
+			    present0[166] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-95", "ProbeSegmentNumber");
+			throw de;
+		    }
+		    break;
+		    case __item7_96:
+		    // Decode field 'item7-96'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    RainSensor temp1;
+
+			    if (present0[167])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(RainSensor.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = RainSensor.cNamedNumbers[idx1];
+			    this.item7_96 = temp1;
+			    present0[167] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-96", "RainSensor");
+			throw de;
+		    }
+		    break;
+		    case __item7_97:
+		    // Decode field 'item7-97'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    RequestedItem temp1;
+
+			    if (present0[168])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(RequestedItem.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = RequestedItem.unknownEnumerator();
+			    else
+				temp1 = RequestedItem.cNamedNumbers[idx1];
+			    this.item7_97 = temp1;
+			    present0[168] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-97", "RequestedItem");
+			throw de;
+		    }
+		    break;
+		    case __item7_98:
+		    // Decode field 'item7-98'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    ResponseType temp1;
+
+			    if (present0[169])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(ResponseType.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = ResponseType.cNamedNumbers[idx1];
+			    this.item7_98 = temp1;
+			    present0[169] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-98", "ResponseType");
+			throw de;
+		    }
+		    break;
+		    case __item7_99:
+		    // Decode field 'item7-99'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[170])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_99 == null)
+				this.item7_99 = new RTCM_ID();
+			    this.item7_99.setValue(coder.decodeInteger(source));
+			    present0[170] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-99", "RTCM-ID");
+			throw de;
+		    }
+		    break;
+		    case __item7_100:
+		    // Decode field 'item7-100'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[171])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_100 = new RTCM_Payload(coder.decodeOctetString(source));
+			    present0[171] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-100", "RTCM-Payload");
+			throw de;
+		    }
+		    break;
+		    case __item7_101:
+		    // Decode field 'item7-101'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    RTCM_Revision temp1;
+
+			    if (present0[172])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(RTCM_Revision.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = RTCM_Revision.unknownEnumerator();
+			    else
+				temp1 = RTCM_Revision.cNamedNumbers[idx1];
+			    this.item7_101 = temp1;
+			    present0[172] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-101", "RTCM-Revision");
+			throw de;
+		    }
+		    break;
+		    case __item7_102:
+		    // Decode field 'item7-102'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[173])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_102 == null)
+				this.item7_102 = new SignalLightState();
+			    this.item7_102.setValue(coder.decodeInteger(source));
+			    present0[173] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-102", "SignalLightState");
+			throw de;
+		    }
+		    break;
+		    case __item7_103:
+		    // Decode field 'item7-103'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[174])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_103 = new SignalReqScheme(coder.decodeOctetString(source));
+			    present0[174] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-103", "SignalReqScheme");
+			throw de;
+		    }
+		    break;
+		    case __item7_104:
+		    // Decode field 'item7-104'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[175])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_104 = new SignalState(coder.decodeOctetString(source));
+			    present0[175] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-104", "SignalState");
+			throw de;
+		    }
+		    break;
+		    case __item7_105:
+		    // Decode field 'item7-105'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[176])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_105 == null)
+				this.item7_105 = new SignPrority();
+			    this.item7_105.setValue(coder.decodeInteger(source));
+			    present0[176] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-105", "SignPrority");
+			throw de;
+		    }
+		    break;
+		    case __item7_106:
+		    // Decode field 'item7-106'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    SirenInUse temp1;
+
+			    if (present0[177])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(SirenInUse.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = SirenInUse.cNamedNumbers[idx1];
+			    this.item7_106 = temp1;
+			    present0[177] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-106", "SirenInUse");
+			throw de;
+		    }
+		    break;
+		    case __item7_107:
+		    // Decode field 'item7-107'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    SpecialLaneAttributes temp1;
+
+			    if (present0[178])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(SpecialLaneAttributes.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = SpecialLaneAttributes.cNamedNumbers[idx1];
+			    this.item7_107 = temp1;
+			    present0[178] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-107", "SpecialLaneAttributes");
+			throw de;
+		    }
+		    break;
+		    case __item7_108:
+		    // Decode field 'item7-108'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    SpecialSignalState temp1;
+
+			    if (present0[179])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(SpecialSignalState.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = SpecialSignalState.unknownEnumerator();
+			    else
+				temp1 = SpecialSignalState.cNamedNumbers[idx1];
+			    this.item7_108 = temp1;
+			    present0[179] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-108", "SpecialSignalState");
+			throw de;
+		    }
+		    break;
+		    case __item7_109:
+		    // Decode field 'item7-109'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    SpeedConfidence temp1;
+
+			    if (present0[180])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(SpeedConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = SpeedConfidence.cNamedNumbers[idx1];
+			    this.item7_109 = temp1;
+			    present0[180] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-109", "SpeedConfidence");
+			throw de;
+		    }
+		    break;
+		    case __item7_110:
+		    // Decode field 'item7-110'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[181])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_110 == null)
+				this.item7_110 = new Speed();
+			    this.item7_110.setValue(coder.decodeInteger(source));
+			    present0[181] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-110", "Speed");
+			throw de;
+		    }
+		    break;
+		    case __item7_111:
+		    // Decode field 'item7-111'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    StabilityControlStatus temp1;
+
+			    if (present0[182])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(StabilityControlStatus.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = StabilityControlStatus.cNamedNumbers[idx1];
+			    this.item7_111 = temp1;
+			    present0[182] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-111", "StabilityControlStatus");
+			throw de;
+		    }
+		    break;
+		    case __item7_112:
+		    // Decode field 'item7-112'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    StateConfidence temp1;
+
+			    if (present0[183])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(StateConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = StateConfidence.unknownEnumerator();
+			    else
+				temp1 = StateConfidence.cNamedNumbers[idx1];
+			    this.item7_112 = temp1;
+			    present0[183] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-112", "StateConfidence");
+			throw de;
+		    }
+		    break;
+		    case __item7_113:
+		    // Decode field 'item7-113'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    SteeringWheelAngleConfidence temp1;
+
+			    if (present0[184])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(SteeringWheelAngleConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = SteeringWheelAngleConfidence.cNamedNumbers[idx1];
+			    this.item7_113 = temp1;
+			    present0[184] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-113", "SteeringWheelAngleConfidence");
+			throw de;
+		    }
+		    break;
+		    case __item7_114:
+		    // Decode field 'item7-114'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[185])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_114 == null)
+				this.item7_114 = new SteeringWheelAngleRateOfChange();
+			    this.item7_114.setValue(coder.decodeInteger(source));
+			    present0[185] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-114", "SteeringWheelAngleRateOfChange");
+			throw de;
+		    }
+		    break;
+		    case __item7_115:
+		    // Decode field 'item7-115'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[186])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_115 = new SteeringWheelAngle(coder.decodeOctetString(source));
+			    present0[186] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-115", "SteeringWheelAngle");
+			throw de;
+		    }
+		    break;
+		    case __item7_116:
+		    // Decode field 'item7-116'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[187])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_116 == null)
+				this.item7_116 = new SunSensor();
+			    this.item7_116.setValue(coder.decodeInteger(source));
+			    present0[187] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-116", "SunSensor");
+			throw de;
+		    }
+		    break;
+		    case __item7_117:
+		    // Decode field 'item7-117'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[188])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_117 = new TemporaryID(coder.decodeOctetString(source));
+			    present0[188] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-117", "TemporaryID");
+			throw de;
+		    }
+		    break;
+		    case __item7_118:
+		    // Decode field 'item7-118'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[189])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_118 == null)
+				this.item7_118 = new TermDistance();
+			    this.item7_118.setValue(coder.decodeInteger(source));
+			    present0[189] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-118", "TermDistance");
+			throw de;
+		    }
+		    break;
+		    case __item7_119:
+		    // Decode field 'item7-119'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[190])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_119 == null)
+				this.item7_119 = new TermTime();
+			    this.item7_119.setValue(coder.decodeInteger(source));
+			    present0[190] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-119", "TermTime");
+			throw de;
+		    }
+		    break;
+		    case __item7_120:
+		    // Decode field 'item7-120'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    ThrottleConfidence temp1;
+
+			    if (present0[191])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(ThrottleConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = ThrottleConfidence.cNamedNumbers[idx1];
+			    this.item7_120 = temp1;
+			    present0[191] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-120", "ThrottleConfidence");
+			throw de;
+		    }
+		    break;
+		    case __item7_121:
+		    // Decode field 'item7-121'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[192])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_121 == null)
+				this.item7_121 = new ThrottlePosition();
+			    this.item7_121.setValue(coder.decodeInteger(source));
+			    present0[192] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-121", "ThrottlePosition");
+			throw de;
+		    }
+		    break;
+		    case __item7_122:
+		    // Decode field 'item7-122'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    TimeConfidence temp1;
+
+			    if (present0[193])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(TimeConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = TimeConfidence.cNamedNumbers[idx1];
+			    this.item7_122 = temp1;
+			    present0[193] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-122", "TimeConfidence");
+			throw de;
+		    }
+		    break;
+		    case __item7_123:
+		    // Decode field 'item7-123'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[194])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_123 == null)
+				this.item7_123 = new TimeMark();
+			    this.item7_123.setValue(coder.decodeInteger(source));
+			    present0[194] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-123", "TimeMark");
+			throw de;
+		    }
+		    break;
+		    case __item7_124:
+		    // Decode field 'item7-124'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    TractionControlState temp1;
+
+			    if (present0[195])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(TractionControlState.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = TractionControlState.cNamedNumbers[idx1];
+			    this.item7_124 = temp1;
+			    present0[195] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-124", "TractionControlState");
+			throw de;
+		    }
+		    break;
+		    case __item7_125:
+		    // Decode field 'item7-125'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    TransitPreEmptionRequest temp1;
+
+			    if (present0[196])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(TransitPreEmptionRequest.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = TransitPreEmptionRequest.unknownEnumerator();
+			    else
+				temp1 = TransitPreEmptionRequest.cNamedNumbers[idx1];
+			    this.item7_125 = temp1;
+			    present0[196] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-125", "TransitPreEmptionRequest");
+			throw de;
+		    }
+		    break;
+		    case __item7_126:
+		    // Decode field 'item7-126'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[197])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_126 == null)
+				this.item7_126 = new TransitStatus();
+			    coder.decodeBitString(6, source, this.item7_126);
+			    present0[197] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-126", "TransitStatus");
+			throw de;
+		    }
+		    break;
+		    case __item7_127:
+		    // Decode field 'item7-127'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    TransmissionState temp1;
+
+			    if (present0[198])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(TransmissionState.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = TransmissionState.unknownEnumerator();
+			    else
+				temp1 = TransmissionState.cNamedNumbers[idx1];
+			    this.item7_127 = temp1;
+			    present0[198] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-127", "TransmissionState");
+			throw de;
+		    }
+		    break;
+		    case __item7_128:
+		    // Decode field 'item7-128'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[199])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_128 == null)
+				this.item7_128 = new TxTime();
+			    this.item7_128.setValue(coder.decodeInteger(source));
+			    present0[199] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-128", "TxTime");
+			throw de;
+		    }
+		    break;
+		    case __item7_129:
+		    // Decode field 'item7-129'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    TravelerInfoType temp1;
+
+			    if (present0[200])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(TravelerInfoType.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = TravelerInfoType.unknownEnumerator();
+			    else
+				temp1 = TravelerInfoType.cNamedNumbers[idx1];
+			    this.item7_129 = temp1;
+			    present0[200] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-129", "TravelerInfoType");
+			throw de;
+		    }
+		    break;
+		    case __item7_130:
+		    // Decode field 'item7-130'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[201])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_130 = new UniqueMSGID(coder.decodeOctetString(source));
+			    present0[201] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-130", "UniqueMSGID");
+			throw de;
+		    }
+		    break;
+		    case __item7_131:
+		    // Decode field 'item7-131'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[202])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_131 = new URL_Base(coder.decodeString(source));
+			    present0[202] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-131", "URL-Base");
+			throw de;
+		    }
+		    break;
+		    case __item7_132:
+		    // Decode field 'item7-132'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[203])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_132 = new URL_Link(coder.decodeString(source));
+			    present0[203] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-132", "URL-Link");
+			throw de;
+		    }
+		    break;
+		    case __item7_133:
+		    // Decode field 'item7-133'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[204])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_133 = new URL_Short(coder.decodeString(source));
+			    present0[204] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-133", "URL-Short");
+			throw de;
+		    }
+		    break;
+		    case __item7_134:
+		    // Decode field 'item7-134'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[205])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_134 == null)
+				this.item7_134 = new VehicleHeight();
+			    this.item7_134.setValue(coder.decodeInteger(source));
+			    present0[205] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-134", "VehicleHeight");
+			throw de;
+		    }
+		    break;
+		    case __item7_135:
+		    // Decode field 'item7-135'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[206])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_135 == null)
+				this.item7_135 = new VehicleLaneAttributes();
+			    this.item7_135.setValue(coder.decodeInteger(source));
+			    present0[206] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-135", "VehicleLaneAttributes");
+			throw de;
+		    }
+		    break;
+		    case __item7_136:
+		    // Decode field 'item7-136'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[207])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_136 == null)
+				this.item7_136 = new VehicleLength();
+			    this.item7_136.setValue(coder.decodeInteger(source));
+			    present0[207] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-136", "VehicleLength");
+			throw de;
+		    }
+		    break;
+		    case __item7_137:
+		    // Decode field 'item7-137'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[208])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_137 == null)
+				this.item7_137 = new VehicleMass();
+			    this.item7_137.setValue(coder.decodeInteger(source));
+			    present0[208] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-137", "VehicleMass");
+			throw de;
+		    }
+		    break;
+		    case __item7_138:
+		    // Decode field 'item7-138'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[209])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_138 = new VehicleRequestStatus(coder.decodeOctetString(source));
+			    present0[209] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-138", "VehicleRequestStatus");
+			throw de;
+		    }
+		    break;
+		    case __item7_139:
+		    // Decode field 'item7-139'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    VehicleStatusDeviceTypeTag temp1;
+
+			    if (present0[210])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(VehicleStatusDeviceTypeTag.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = VehicleStatusDeviceTypeTag.unknownEnumerator();
+			    else
+				temp1 = VehicleStatusDeviceTypeTag.cNamedNumbers[idx1];
+			    this.item7_139 = temp1;
+			    present0[210] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-139", "VehicleStatusDeviceTypeTag");
+			throw de;
+		    }
+		    break;
+		    case __item7_140:
+		    // Decode field 'item7-140'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    VehicleType temp1;
+
+			    if (present0[211])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(VehicleType.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = VehicleType.unknownEnumerator();
+			    else
+				temp1 = VehicleType.cNamedNumbers[idx1];
+			    this.item7_140 = temp1;
+			    present0[211] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-140", "VehicleType");
+			throw de;
+		    }
+		    break;
+		    case __item7_141:
+		    // Decode field 'item7-141'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[212])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_141 == null)
+				this.item7_141 = new VehicleWidth();
+			    this.item7_141.setValue(coder.decodeInteger(source));
+			    present0[212] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-141", "VehicleWidth");
+			throw de;
+		    }
+		    break;
+		    case __item7_142:
+		    // Decode field 'item7-142'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[213])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_142 == null)
+				this.item7_142 = new VerticalAccelerationThreshold();
+			    coder.decodeBitString(-1, source, this.item7_142);
+			    present0[213] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-142", "VerticalAccelerationThreshold");
+			throw de;
+		    }
+		    break;
+		    case __item7_143:
+		    // Decode field 'item7-143'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[214])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_143 == null)
+				this.item7_143 = new VerticalAcceleration();
+			    this.item7_143.setValue(coder.decodeInteger(source));
+			    present0[214] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-143", "VerticalAcceleration");
+			throw de;
+		    }
+		    break;
+		    case __item7_144:
+		    // Decode field 'item7-144'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[215])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item7_144 = new VINstring(coder.decodeOctetString(source));
+			    present0[215] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-144", "VINstring");
+			throw de;
+		    }
+		    break;
+		    case __item7_145:
+		    // Decode field 'item7-145'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[216])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_145 == null)
+				this.item7_145 = new WiperRate();
+			    this.item7_145.setValue(coder.decodeInteger(source));
+			    present0[216] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-145", "WiperRate");
+			throw de;
+		    }
+		    break;
+		    case __item7_146:
+		    // Decode field 'item7-146'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    WiperStatusFront temp1;
+
+			    if (present0[217])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(WiperStatusFront.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = WiperStatusFront.unknownEnumerator();
+			    else
+				temp1 = WiperStatusFront.cNamedNumbers[idx1];
+			    this.item7_146 = temp1;
+			    present0[217] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-146", "WiperStatusFront");
+			throw de;
+		    }
+		    break;
+		    case __item7_147:
+		    // Decode field 'item7-147'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    WiperStatusRear temp1;
+
+			    if (present0[218])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(WiperStatusRear.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = WiperStatusRear.unknownEnumerator();
+			    else
+				temp1 = WiperStatusRear.cNamedNumbers[idx1];
+			    this.item7_147 = temp1;
+			    present0[218] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-147", "WiperStatusRear");
+			throw de;
+		    }
+		    break;
+		    case __item7_148:
+		    // Decode field 'item7-148'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    YawRateConfidence temp1;
+
+			    if (present0[219])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(YawRateConfidence.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = YawRateConfidence.cNamedNumbers[idx1];
+			    this.item7_148 = temp1;
+			    present0[219] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-148", "YawRateConfidence");
+			throw de;
+		    }
+		    break;
+		    case __item7_149:
+		    // Decode field 'item7-149'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[220])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item7_149 == null)
+				this.item7_149 = new YawRate();
+			    this.item7_149.setValue(coder.decodeInteger(source));
+			    present0[220] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item7-149", "YawRate");
+			throw de;
+		    }
+		    break;
+		    case __item8_1:
+		    // Decode field 'item8-1'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    com.bah.ode.asn.oss.itis.IncidentResponseEquipment temp1;
+
+			    if (present0[221])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(com.bah.ode.asn.oss.itis.IncidentResponseEquipment.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = com.bah.ode.asn.oss.itis.IncidentResponseEquipment.unknownEnumerator();
+			    else
+				temp1 = com.bah.ode.asn.oss.itis.IncidentResponseEquipment.cNamedNumbers[idx1];
+			    this.item8_1 = temp1;
+			    present0[221] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item8-1", "IncidentResponseEquipment");
+			throw de;
+		    }
+		    break;
+		    case __item8_2:
+		    // Decode field 'item8-2'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[222])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.item8_2 = new com.bah.ode.asn.oss.itis.ITIStext(coder.decodeString(source));
+			    present0[222] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item8-2", "ITIStext");
+			throw de;
+		    }
+		    break;
+		    case __item8_3:
+		    // Decode field 'item8-3'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    com.bah.ode.asn.oss.itis.ResponderGroupAffected temp1;
+
+			    if (present0[223])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(com.bah.ode.asn.oss.itis.ResponderGroupAffected.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = com.bah.ode.asn.oss.itis.ResponderGroupAffected.unknownEnumerator();
+			    else
+				temp1 = com.bah.ode.asn.oss.itis.ResponderGroupAffected.cNamedNumbers[idx1];
+			    this.item8_3 = temp1;
+			    present0[223] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item8-3", "ResponderGroupAffected");
+			throw de;
+		    }
+		    break;
+		    case __item8_4:
+		    // Decode field 'item8-4'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    com.bah.ode.asn.oss.itis.VehicleGroupAffected temp1;
+
+			    if (present0[224])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(com.bah.ode.asn.oss.itis.VehicleGroupAffected.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = com.bah.ode.asn.oss.itis.VehicleGroupAffected.unknownEnumerator();
+			    else
+				temp1 = com.bah.ode.asn.oss.itis.VehicleGroupAffected.cNamedNumbers[idx1];
+			    this.item8_4 = temp1;
+			    present0[224] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item8-4", "VehicleGroupAffected");
+			throw de;
+		    }
+		    break;
+		    case __item8_5:
+		    // Decode field 'item8-5'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[225])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item8_5 == null)
+				this.item8_5 = new com.bah.ode.asn.oss.itis.ITIScodesAndText();
+			    this.item8_5.decodeValue(coder, source);
+			    present0[225] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item8-5", "ITIScodesAndText");
+			throw de;
+		    }
+		    break;
+		    case __item8_6:
+		    // Decode field 'item8-6'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[226])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item8_6 == null)
+				this.item8_6 = new com.bah.ode.asn.oss.ntcip.EssMobileFriction();
+			    this.item8_6.setValue(coder.decodeInteger(source));
+			    present0[226] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item8-6", "EssMobileFriction");
+			throw de;
+		    }
+		    break;
+		    case __item8_7:
+		    // Decode field 'item8-7'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[227])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item8_7 == null)
+				this.item8_7 = new com.bah.ode.asn.oss.ntcip.EssPrecipRate();
+			    this.item8_7.setValue(coder.decodeInteger(source));
+			    present0[227] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item8-7", "EssPrecipRate");
+			throw de;
+		    }
+		    break;
+		    case __item8_8:
+		    // Decode field 'item8-8'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    com.bah.ode.asn.oss.ntcip.EssPrecipSituation temp1;
+
+			    if (present0[228])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(com.bah.ode.asn.oss.ntcip.EssPrecipSituation.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = com.bah.ode.asn.oss.ntcip.EssPrecipSituation.cNamedNumbers[idx1];
+			    this.item8_8 = temp1;
+			    present0[228] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item8-8", "EssPrecipSituation");
+			throw de;
+		    }
+		    break;
+		    case __item8_9:
+		    // Decode field 'item8-9'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    com.bah.ode.asn.oss.ntcip.EssPrecipYesNo temp1;
+
+			    if (present0[229])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(com.bah.ode.asn.oss.ntcip.EssPrecipYesNo.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = com.bah.ode.asn.oss.ntcip.EssPrecipYesNo.cNamedNumbers[idx1];
+			    this.item8_9 = temp1;
+			    present0[229] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item8-9", "EssPrecipYesNo");
+			throw de;
+		    }
+		    break;
+		    case __item8_10:
+		    // Decode field 'item8-10'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[230])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item8_10 == null)
+				this.item8_10 = new com.bah.ode.asn.oss.ntcip.EssSolarRadiation();
+			    this.item8_10.setValue(coder.decodeInteger(source));
+			    present0[230] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item8-10", "EssSolarRadiation");
+			throw de;
+		    }
+		    break;
+		    case __item8_11:
+		    // Decode field 'item8-11'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[231])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.item8_11 == null)
+				this.item8_11 = new com.bah.ode.asn.oss.itis.ITIScodes();
+			    this.item8_11.setValue(coder.decodeInteger(source));
+			    present0[231] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("item8-11", "ITIScodes");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    this.item6_1 = null;
+	if (!present0[1])
+	    this.item6_2 = null;
+	if (!present0[2])
+	    this.item6_4 = null;
+	if (!present0[3])
+	    this.item6_5 = null;
+	if (!present0[4])
+	    this.item6_6 = null;
+	if (!present0[5])
+	    this.item6_7 = null;
+	if (!present0[6])
+	    this.item6_8 = null;
+	if (!present0[7])
+	    this.item6_9 = null;
+	if (!present0[8])
+	    this.item6_10 = null;
+	if (!present0[9])
+	    this.item6_11 = null;
+	if (!present0[10])
+	    this.item6_12 = null;
+	if (!present0[11])
+	    this.item6_13 = null;
+	if (!present0[12])
+	    this.item6_14 = null;
+	if (!present0[13])
+	    this.item6_15 = null;
+	if (!present0[14])
+	    this.item6_16 = null;
+	if (!present0[15])
+	    this.item6_17 = null;
+	if (!present0[16])
+	    this.item6_18 = null;
+	if (!present0[17])
+	    this.item6_19 = null;
+	if (!present0[18])
+	    this.item6_20 = null;
+	if (!present0[19])
+	    this.item6_21 = null;
+	if (!present0[20])
+	    this.item6_22 = null;
+	if (!present0[21])
+	    this.item6_23 = null;
+	if (!present0[22])
+	    this.item6_24 = null;
+	if (!present0[23])
+	    this.item6_25 = null;
+	if (!present0[24])
+	    this.item6_26 = null;
+	if (!present0[25])
+	    this.item6_27 = null;
+	if (!present0[26])
+	    this.item6_28 = null;
+	if (!present0[27])
+	    this.item6_29 = null;
+	if (!present0[28])
+	    this.item6_30 = null;
+	if (!present0[29])
+	    this.item6_31 = null;
+	if (!present0[30])
+	    this.item6_32 = null;
+	if (!present0[31])
+	    this.item6_33 = null;
+	if (!present0[32])
+	    this.item6_34 = null;
+	if (!present0[33])
+	    this.item6_35 = null;
+	if (!present0[34])
+	    this.item6_36 = null;
+	if (!present0[35])
+	    this.item6_37 = null;
+	if (!present0[36])
+	    this.item6_38 = null;
+	if (!present0[37])
+	    this.item6_39 = null;
+	if (!present0[38])
+	    this.item6_40 = null;
+	if (!present0[39])
+	    this.item6_41 = null;
+	if (!present0[40])
+	    this.item6_42 = null;
+	if (!present0[41])
+	    this.item6_43 = null;
+	if (!present0[42])
+	    this.item6_44 = null;
+	if (!present0[43])
+	    this.item6_45 = null;
+	if (!present0[44])
+	    this.item6_46 = null;
+	if (!present0[45])
+	    this.item6_47 = null;
+	if (!present0[46])
+	    this.item6_48 = null;
+	if (!present0[47])
+	    this.item6_49 = null;
+	if (!present0[48])
+	    this.item6_50 = null;
+	if (!present0[49])
+	    this.item6_51 = null;
+	if (!present0[50])
+	    this.item6_52 = null;
+	if (!present0[51])
+	    this.item6_53 = null;
+	if (!present0[52])
+	    this.item6_54 = null;
+	if (!present0[53])
+	    this.item6_55 = null;
+	if (!present0[54])
+	    this.item6_56 = null;
+	if (!present0[55])
+	    this.item6_57 = null;
+	if (!present0[56])
+	    this.item6_58 = null;
+	if (!present0[57])
+	    this.item6_59 = null;
+	if (!present0[58])
+	    this.item6_60 = null;
+	if (!present0[59])
+	    this.item6_61 = null;
+	if (!present0[60])
+	    this.item6_62 = null;
+	if (!present0[61])
+	    this.item6_63 = null;
+	if (!present0[62])
+	    this.item6_64 = null;
+	if (!present0[63])
+	    this.item6_65 = null;
+	if (!present0[64])
+	    this.item6_66 = null;
+	if (!present0[65])
+	    this.item6_67 = null;
+	if (!present0[66])
+	    this.item6_68 = null;
+	if (!present0[67])
+	    this.item6_69 = null;
+	if (!present0[68])
+	    this.item6_70 = null;
+	if (!present0[69])
+	    this.item6_71 = null;
+	if (!present0[70])
+	    this.item6_72 = null;
+	if (!present0[71])
+	    this.item6_73 = null;
+	if (!present0[72])
+	    this.item7_1 = null;
+	if (!present0[73])
+	    this.item7_2 = null;
+	if (!present0[74])
+	    this.item7_3 = null;
+	if (!present0[75])
+	    this.item7_4 = null;
+	if (!present0[76])
+	    this.item7_5 = null;
+	if (!present0[77])
+	    this.item7_6 = null;
+	if (!present0[78])
+	    this.item7_7 = null;
+	if (!present0[79])
+	    this.item7_8 = null;
+	if (!present0[80])
+	    this.item7_9 = null;
+	if (!present0[81])
+	    this.item7_10 = null;
+	if (!present0[82])
+	    this.item7_11 = null;
+	if (!present0[83])
+	    this.item7_12 = null;
+	if (!present0[84])
+	    this.item7_13 = null;
+	if (!present0[85])
+	    this.item7_14 = null;
+	if (!present0[86])
+	    this.item7_15 = null;
+	if (!present0[87])
+	    this.item7_16 = null;
+	if (!present0[88])
+	    this.item7_17 = null;
+	if (!present0[89])
+	    this.item7_18 = null;
+	if (!present0[90])
+	    this.item7_19 = null;
+	if (!present0[91])
+	    this.item7_20 = null;
+	if (!present0[92])
+	    this.item7_21 = null;
+	if (!present0[93])
+	    this.item7_22 = null;
+	if (!present0[94])
+	    this.item7_23 = null;
+	if (!present0[95])
+	    this.item7_24 = null;
+	if (!present0[96])
+	    this.item7_25 = null;
+	if (!present0[97])
+	    this.item7_26 = null;
+	if (!present0[98])
+	    this.item7_27 = null;
+	if (!present0[99])
+	    this.item7_28 = null;
+	if (!present0[100])
+	    this.item7_29 = null;
+	if (!present0[101])
+	    this.item7_30 = null;
+	if (!present0[102])
+	    this.item7_31 = null;
+	if (!present0[103])
+	    this.item7_32 = null;
+	if (!present0[104])
+	    this.item7_33 = null;
+	if (!present0[105])
+	    this.item7_34 = null;
+	if (!present0[106])
+	    this.item7_35 = null;
+	if (!present0[107])
+	    this.item7_36 = null;
+	if (!present0[108])
+	    this.item7_37 = null;
+	if (!present0[109])
+	    this.item7_38 = null;
+	if (!present0[110])
+	    this.item7_39 = null;
+	if (!present0[111])
+	    this.item7_40 = null;
+	if (!present0[112])
+	    this.item7_41 = null;
+	if (!present0[113])
+	    this.item7_42 = null;
+	if (!present0[114])
+	    this.item7_43 = null;
+	if (!present0[115])
+	    this.item7_44 = null;
+	if (!present0[116])
+	    this.item7_45 = null;
+	if (!present0[117])
+	    this.item7_46 = null;
+	if (!present0[118])
+	    this.item7_47 = null;
+	if (!present0[119])
+	    this.item7_48 = null;
+	if (!present0[120])
+	    this.item7_49 = null;
+	if (!present0[121])
+	    this.item7_50 = null;
+	if (!present0[122])
+	    this.item7_51 = null;
+	if (!present0[123])
+	    this.item7_52 = null;
+	if (!present0[124])
+	    this.item7_53 = null;
+	if (!present0[125])
+	    this.item7_54 = null;
+	if (!present0[126])
+	    this.item7_55 = null;
+	if (!present0[127])
+	    this.item7_56 = null;
+	if (!present0[128])
+	    this.item7_57 = null;
+	if (!present0[129])
+	    this.item7_58 = null;
+	if (!present0[130])
+	    this.item7_59 = null;
+	if (!present0[131])
+	    this.item7_60 = null;
+	if (!present0[132])
+	    this.item7_61 = null;
+	if (!present0[133])
+	    this.item7_62 = null;
+	if (!present0[134])
+	    this.item7_63 = null;
+	if (!present0[135])
+	    this.item7_64 = null;
+	if (!present0[136])
+	    this.item7_65 = null;
+	if (!present0[137])
+	    this.item7_66 = null;
+	if (!present0[138])
+	    this.item7_67 = null;
+	if (!present0[139])
+	    this.item7_68 = null;
+	if (!present0[140])
+	    this.item7_69 = null;
+	if (!present0[141])
+	    this.item7_70 = null;
+	if (!present0[142])
+	    this.item7_71 = null;
+	if (!present0[143])
+	    this.item7_72 = null;
+	if (!present0[144])
+	    this.item7_73 = null;
+	if (!present0[145])
+	    this.item7_74 = null;
+	if (!present0[146])
+	    this.item7_75 = null;
+	if (!present0[147])
+	    this.item7_76 = null;
+	if (!present0[148])
+	    this.item7_77 = null;
+	if (!present0[149])
+	    this.item7_78 = null;
+	if (!present0[150])
+	    this.item7_79 = null;
+	if (!present0[151])
+	    this.item7_80 = null;
+	if (!present0[152])
+	    this.item7_81 = null;
+	if (!present0[153])
+	    this.item7_82 = null;
+	if (!present0[154])
+	    this.item7_83 = null;
+	if (!present0[155])
+	    this.item7_84 = null;
+	if (!present0[156])
+	    this.item7_85 = null;
+	if (!present0[157])
+	    this.item7_86 = null;
+	if (!present0[158])
+	    this.item7_87 = null;
+	if (!present0[159])
+	    this.item7_88 = null;
+	if (!present0[160])
+	    this.item7_89 = null;
+	if (!present0[161])
+	    this.item7_90 = null;
+	if (!present0[162])
+	    this.item7_91 = null;
+	if (!present0[163])
+	    this.item7_92 = null;
+	if (!present0[164])
+	    this.item7_93 = null;
+	if (!present0[165])
+	    this.item7_94 = null;
+	if (!present0[166])
+	    this.item7_95 = null;
+	if (!present0[167])
+	    this.item7_96 = null;
+	if (!present0[168])
+	    this.item7_97 = null;
+	if (!present0[169])
+	    this.item7_98 = null;
+	if (!present0[170])
+	    this.item7_99 = null;
+	if (!present0[171])
+	    this.item7_100 = null;
+	if (!present0[172])
+	    this.item7_101 = null;
+	if (!present0[173])
+	    this.item7_102 = null;
+	if (!present0[174])
+	    this.item7_103 = null;
+	if (!present0[175])
+	    this.item7_104 = null;
+	if (!present0[176])
+	    this.item7_105 = null;
+	if (!present0[177])
+	    this.item7_106 = null;
+	if (!present0[178])
+	    this.item7_107 = null;
+	if (!present0[179])
+	    this.item7_108 = null;
+	if (!present0[180])
+	    this.item7_109 = null;
+	if (!present0[181])
+	    this.item7_110 = null;
+	if (!present0[182])
+	    this.item7_111 = null;
+	if (!present0[183])
+	    this.item7_112 = null;
+	if (!present0[184])
+	    this.item7_113 = null;
+	if (!present0[185])
+	    this.item7_114 = null;
+	if (!present0[186])
+	    this.item7_115 = null;
+	if (!present0[187])
+	    this.item7_116 = null;
+	if (!present0[188])
+	    this.item7_117 = null;
+	if (!present0[189])
+	    this.item7_118 = null;
+	if (!present0[190])
+	    this.item7_119 = null;
+	if (!present0[191])
+	    this.item7_120 = null;
+	if (!present0[192])
+	    this.item7_121 = null;
+	if (!present0[193])
+	    this.item7_122 = null;
+	if (!present0[194])
+	    this.item7_123 = null;
+	if (!present0[195])
+	    this.item7_124 = null;
+	if (!present0[196])
+	    this.item7_125 = null;
+	if (!present0[197])
+	    this.item7_126 = null;
+	if (!present0[198])
+	    this.item7_127 = null;
+	if (!present0[199])
+	    this.item7_128 = null;
+	if (!present0[200])
+	    this.item7_129 = null;
+	if (!present0[201])
+	    this.item7_130 = null;
+	if (!present0[202])
+	    this.item7_131 = null;
+	if (!present0[203])
+	    this.item7_132 = null;
+	if (!present0[204])
+	    this.item7_133 = null;
+	if (!present0[205])
+	    this.item7_134 = null;
+	if (!present0[206])
+	    this.item7_135 = null;
+	if (!present0[207])
+	    this.item7_136 = null;
+	if (!present0[208])
+	    this.item7_137 = null;
+	if (!present0[209])
+	    this.item7_138 = null;
+	if (!present0[210])
+	    this.item7_139 = null;
+	if (!present0[211])
+	    this.item7_140 = null;
+	if (!present0[212])
+	    this.item7_141 = null;
+	if (!present0[213])
+	    this.item7_142 = null;
+	if (!present0[214])
+	    this.item7_143 = null;
+	if (!present0[215])
+	    this.item7_144 = null;
+	if (!present0[216])
+	    this.item7_145 = null;
+	if (!present0[217])
+	    this.item7_146 = null;
+	if (!present0[218])
+	    this.item7_147 = null;
+	if (!present0[219])
+	    this.item7_148 = null;
+	if (!present0[220])
+	    this.item7_149 = null;
+	if (!present0[221])
+	    this.item8_1 = null;
+	if (!present0[222])
+	    this.item8_2 = null;
+	if (!present0[223])
+	    this.item8_3 = null;
+	if (!present0[224])
+	    this.item8_4 = null;
+	if (!present0[225])
+	    this.item8_5 = null;
+	if (!present0[226])
+	    this.item8_6 = null;
+	if (!present0[227])
+	    this.item8_7 = null;
+	if (!present0[228])
+	    this.item8_8 = null;
+	if (!present0[229])
+	    this.item8_9 = null;
+	if (!present0[230])
+	    this.item8_10 = null;
+	if (!present0[231])
+	    this.item8_11 = null;
+	return this;
     }
 
     /**

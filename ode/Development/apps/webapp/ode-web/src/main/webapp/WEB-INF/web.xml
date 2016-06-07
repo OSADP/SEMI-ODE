@@ -74,7 +74,7 @@
    <context-param>
       <param-name>spark.master</param-name>
       <!--param-value>yarn-cluster OR yarn-client OR local[2]</param-value -->
-      <param-value>yarn-client</param-value>
+      <param-value>local[2]</param-value>
    </context-param>
    <context-param>
       <param-name>spark.streaming.microbatch.duration.ms</param-name>

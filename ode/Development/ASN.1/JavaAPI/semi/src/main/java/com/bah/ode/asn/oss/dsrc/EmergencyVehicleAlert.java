@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Fri May 20 15:51:02 2016 */
+/* Created: Tue Jun 07 13:54:40 2016 */
 /* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -39,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -50,7 +53,7 @@ import com.oss.coders.per.PerCoder;
  * @see Sequence
  */
 
-public class EmergencyVehicleAlert extends Sequence implements BEREncodable, BERDecodable, DEREncodable, PEREncodable, PERDecodable {
+public class EmergencyVehicleAlert extends Sequence implements BEREncodable, BERDecodable, DEREncodable, JSONEncodable, JSONDecodable, PEREncodable, PERDecodable {
     public DSRCmsgID msgID;
     public TemporaryID id;
     public RoadSideAlert rsaMsg;
@@ -318,6 +321,45 @@ public class EmergencyVehicleAlert extends Sequence implements BEREncodable, BER
 	this.crc = crc;
     }
     
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__msgID("msgID"),
+	__id("id"),
+	__rsaMsg("rsaMsg"),
+	__responseType("responseType"),
+	__details("details"),
+	__mass("mass"),
+	__basicType("basicType"),
+	__vehicleType("vehicleType"),
+	__responseEquip("responseEquip"),
+	__responderType("responderType"),
+	__crc("crc"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(12);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Encode the PDU using BER (reserved for internal use).
@@ -1601,6 +1643,526 @@ public class EmergencyVehicleAlert extends Sequence implements BEREncodable, BER
     {
 	try {
 	    this.decodeValue(coder, source, this);
+	    return this;
+	} catch (Exception e) {
+	    DecoderException de = DecoderException.wrapException(e);
+	    de.appendFieldContext(null, "EmergencyVehicleAlert");
+	    throw de;
+	}
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	sink.beginObject();
+	// Encode field 'msgID'
+	try {
+	    DSRCmsgID item1 = this.msgID;
+
+	    {
+		sink.encodeKey("msgID");
+		if (item1.isUnknownEnumerator()) {
+		    throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		} else 
+		    sink.writeString(item1.name());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("msgID", "DSRCmsgID");
+	    throw ee;
+	}
+	// Encode field 'id'
+	try {
+	    TemporaryID item1 = this.id;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("id");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "id");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("id", "TemporaryID");
+	    throw ee;
+	}
+	// Encode field 'rsaMsg'
+	try {
+	    RoadSideAlert item1 = this.rsaMsg;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("rsaMsg");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("rsaMsg", "RoadSideAlert");
+	    throw ee;
+	}
+	// Encode field 'responseType'
+	try {
+	    ResponseType item1 = this.responseType;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("responseType");
+		    sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "responseType");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("responseType", "ResponseType");
+	    throw ee;
+	}
+	// Encode field 'details'
+	try {
+	    EmergencyDetails item1 = this.details;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("details");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "details");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("details", "EmergencyDetails");
+	    throw ee;
+	}
+	// Encode field 'mass'
+	try {
+	    VehicleMass item1 = this.mass;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("mass");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "mass");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("mass", "VehicleMass");
+	    throw ee;
+	}
+	// Encode field 'basicType'
+	try {
+	    VehicleType item1 = this.basicType;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("basicType");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "basicType");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("basicType", "VehicleType");
+	    throw ee;
+	}
+	// Encode field 'vehicleType'
+	try {
+	    com.bah.ode.asn.oss.itis.VehicleGroupAffected item1 = this.vehicleType;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("vehicleType");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "vehicleType");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("vehicleType", "VehicleGroupAffected");
+	    throw ee;
+	}
+	// Encode field 'responseEquip'
+	try {
+	    com.bah.ode.asn.oss.itis.IncidentResponseEquipment item1 = this.responseEquip;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("responseEquip");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "responseEquip");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("responseEquip", "IncidentResponseEquipment");
+	    throw ee;
+	}
+	// Encode field 'responderType'
+	try {
+	    com.bah.ode.asn.oss.itis.ResponderGroupAffected item1 = this.responderType;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("responderType");
+		    if (item1.isUnknownEnumerator()) {
+			throw new EncoderException(com.oss.util.ExceptionDescriptor._relay_error, null, "relay-safe encoding has not been enabled");
+		    } else 
+			sink.writeString(item1.name());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "responderType");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("responderType", "ResponderGroupAffected");
+	    throw ee;
+	}
+	// Encode field 'crc'
+	try {
+	    MsgCRC item1 = this.crc;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("crc");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("crc", "MsgCRC");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Encode the PDU using JSON (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encode(JsonCoder coder, JsonWriter sink)
+	    throws EncoderException
+    {
+	try {
+	    this.encodeValue(coder, sink);
+
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext(null, "EmergencyVehicleAlert");
+	    throw ee;
+	}
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public EmergencyVehicleAlert decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[12];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		EmergencyVehicleAlert.__Tag t_tag0 = EmergencyVehicleAlert.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = EmergencyVehicleAlert.__Tag._null_;
+		switch (t_tag0) {
+		    case __msgID:
+		    // Decode field 'msgID'
+		    try {
+			String content1 = coder.decodeString(source);
+			int idx1;
+			DSRCmsgID temp1;
+
+			if (present0[0])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			idx1 = coder.resolveName(DSRCmsgID.cConstantNameList, content1);
+			if (idx1 < 0 )
+			    temp1 = DSRCmsgID.unknownEnumerator();
+			else
+			    temp1 = DSRCmsgID.cNamedNumbers[idx1];
+			this.msgID = temp1;
+			present0[0] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("msgID", "DSRCmsgID");
+			throw de;
+		    }
+		    break;
+		    case __id:
+		    // Decode field 'id'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[1])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.id = new TemporaryID(coder.decodeOctetString(source));
+			    present0[1] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("id", "TemporaryID");
+			throw de;
+		    }
+		    break;
+		    case __rsaMsg:
+		    // Decode field 'rsaMsg'
+		    try {
+			if (present0[2])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.rsaMsg == null)
+			    this.rsaMsg = new RoadSideAlert();
+			this.rsaMsg.decodeValue(coder, source);
+			present0[2] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("rsaMsg", "RoadSideAlert");
+			throw de;
+		    }
+		    break;
+		    case __responseType:
+		    // Decode field 'responseType'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    ResponseType temp1;
+
+			    if (present0[3])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(ResponseType.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				throw new DecoderException(ExceptionDescriptor._not_enumerated, null, "value = " + content1);
+			    else
+				temp1 = ResponseType.cNamedNumbers[idx1];
+			    this.responseType = temp1;
+			    present0[3] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("responseType", "ResponseType");
+			throw de;
+		    }
+		    break;
+		    case __details:
+		    // Decode field 'details'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[4])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.details == null)
+				this.details = new EmergencyDetails();
+			    this.details.setValue(coder.decodeInteger(source));
+			    present0[4] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("details", "EmergencyDetails");
+			throw de;
+		    }
+		    break;
+		    case __mass:
+		    // Decode field 'mass'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[5])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.mass == null)
+				this.mass = new VehicleMass();
+			    this.mass.setValue(coder.decodeInteger(source));
+			    present0[5] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("mass", "VehicleMass");
+			throw de;
+		    }
+		    break;
+		    case __basicType:
+		    // Decode field 'basicType'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    VehicleType temp1;
+
+			    if (present0[6])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(VehicleType.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = VehicleType.unknownEnumerator();
+			    else
+				temp1 = VehicleType.cNamedNumbers[idx1];
+			    this.basicType = temp1;
+			    present0[6] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("basicType", "VehicleType");
+			throw de;
+		    }
+		    break;
+		    case __vehicleType:
+		    // Decode field 'vehicleType'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    com.bah.ode.asn.oss.itis.VehicleGroupAffected temp1;
+
+			    if (present0[7])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(com.bah.ode.asn.oss.itis.VehicleGroupAffected.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = com.bah.ode.asn.oss.itis.VehicleGroupAffected.unknownEnumerator();
+			    else
+				temp1 = com.bah.ode.asn.oss.itis.VehicleGroupAffected.cNamedNumbers[idx1];
+			    this.vehicleType = temp1;
+			    present0[7] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("vehicleType", "VehicleGroupAffected");
+			throw de;
+		    }
+		    break;
+		    case __responseEquip:
+		    // Decode field 'responseEquip'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    com.bah.ode.asn.oss.itis.IncidentResponseEquipment temp1;
+
+			    if (present0[8])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(com.bah.ode.asn.oss.itis.IncidentResponseEquipment.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = com.bah.ode.asn.oss.itis.IncidentResponseEquipment.unknownEnumerator();
+			    else
+				temp1 = com.bah.ode.asn.oss.itis.IncidentResponseEquipment.cNamedNumbers[idx1];
+			    this.responseEquip = temp1;
+			    present0[8] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("responseEquip", "IncidentResponseEquipment");
+			throw de;
+		    }
+		    break;
+		    case __responderType:
+		    // Decode field 'responderType'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    String content1 = coder.decodeString(source);
+			    int idx1;
+			    com.bah.ode.asn.oss.itis.ResponderGroupAffected temp1;
+
+			    if (present0[9])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    idx1 = coder.resolveName(com.bah.ode.asn.oss.itis.ResponderGroupAffected.cConstantNameList, content1);
+			    if (idx1 < 0 )
+				temp1 = com.bah.ode.asn.oss.itis.ResponderGroupAffected.unknownEnumerator();
+			    else
+				temp1 = com.bah.ode.asn.oss.itis.ResponderGroupAffected.cNamedNumbers[idx1];
+			    this.responderType = temp1;
+			    present0[9] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("responderType", "ResponderGroupAffected");
+			throw de;
+		    }
+		    break;
+		    case __crc:
+		    // Decode field 'crc'
+		    try {
+			if (present0[10])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.crc = new MsgCRC(coder.decodeOctetString(source));
+			present0[10] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("crc", "MsgCRC");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'msgID'");
+	if (!present0[1])
+	    this.id = null;
+	if (!present0[2])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'rsaMsg'");
+	if (!present0[3])
+	    this.responseType = null;
+	if (!present0[4])
+	    this.details = null;
+	if (!present0[5])
+	    this.mass = null;
+	if (!present0[6])
+	    this.basicType = null;
+	if (!present0[7])
+	    this.vehicleType = null;
+	if (!present0[8])
+	    this.responseEquip = null;
+	if (!present0[9])
+	    this.responderType = null;
+	if (!present0[10])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'crc'");
+	return this;
+    }
+
+    /**
+     * Decode the PDU using JSON (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public AbstractData decode(JsonCoder coder, JsonReader source)
+	    throws DecoderException
+    {
+	try {
+	    this.decodeValue(coder, source);
 	    return this;
 	} catch (Exception e) {
 	    DecoderException de = DecoderException.wrapException(e);

@@ -11,13 +11,11 @@
  * only for project "US DOT ITS Connected Vehicle Data Program". */
 /* Abstract syntax: semi_asn */
 /* ASN.1 Java project: com.bah.ode.asn.oss.Oss */
-/* Created: Fri May 20 15:51:02 2016 */
+/* Created: Tue Jun 07 13:54:40 2016 */
 /* ASN.1 Compiler for Java version: 6.3 */
 /* ASN.1 compiler options and file names specified:
- * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -root -noSampleCode
- * -messageFormat msvc
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/DSRC_R36_Source.asn
- * C:/Users/572682/Projects/ODE/GitRepo/ode/Development/ASN.1/SEMI_ASN.1_Structures_2.2.asn
+ * -toed -output com.bah.ode.asn.oss -per -uper -ber -der -json -root
+ * ../../DSRC_R36_Source.asn ../../SEMI_ASN.1_Structures_2.2.asn
  */
 
 
@@ -39,6 +37,11 @@ import com.oss.coders.ber.BerCoder;
 import com.oss.coders.ber.BEREncodable;
 import com.oss.coders.der.DEREncodable;
 import com.oss.coders.der.DerCoder;
+import com.oss.coders.json.JsonWriter;
+import com.oss.coders.json.JSONEncodable;
+import com.oss.coders.json.JsonReader;
+import com.oss.coders.json.JSONDecodable;
+import com.oss.coders.json.JsonCoder;
 import com.oss.coders.OutputBitStream;
 import com.oss.coders.per.PEREncodable;
 import com.oss.coders.InputBitStream;
@@ -418,6 +421,70 @@ public class Intersection_ extends Sequence {
 	}
 
 	/**
+	 * Implements JSON value encoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public void encodeValue(JsonCoder coder, JsonWriter sink)
+		throws IOException, EncoderException
+	{
+	    int total_len0 = this.elements.size();
+	    int idx0 = 0;
+
+	    sink.beginArray();
+	    if (total_len0 > 0) {
+		while (true) {
+		    try {
+			ApproachObject item1 = this.elements.get(idx0);
+
+			item1.encodeValue(coder, sink);
+		    
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext(null, "ApproachObject", idx0);
+		    throw ee;
+		}
+		idx0++;
+		if (idx0 == total_len0) break;
+		sink.writeSeparator();
+	    }
+	}
+	sink.endArray();
+
+    }
+
+	/**
+	 * Implements JSON value decoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public Approaches decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	int total_len0 = 0;
+	int idx0 = 0;
+
+	if (this.elements != null)
+	    this.elements.clear();
+	else
+	    this.elements = new java.util.ArrayList<ApproachObject>(total_len0);
+	coder.decodeArray(source);
+	if (coder.hasMoreElements(source, true))
+	    do {
+		try {
+		    ApproachObject item1 = new ApproachObject();
+
+		    this.elements.add(item1);
+		    item1.decodeValue(coder, source);
+		} catch (Exception e) {
+		    DecoderException de = DecoderException.wrapException(e);
+		    de.appendElementContext(null, "ApproachObject", idx0);
+		    throw de;
+		}
+		++idx0;
+	    } while (coder.hasMoreElements(source, false));
+	    return this;
+	}
+
+	/**
 	 * Compare 'this' object to another object to see if their contents are the same.
 	 */
 	public boolean abstractEqualTo(AbstractData that)
@@ -654,6 +721,70 @@ public class Intersection_ extends Sequence {
 	    if (total_len0 < 1)
 		throw new DecoderException(com.oss.util.ExceptionDescriptor._sizeConstraint, null, "length = " + total_len0);
 	    return data;
+	}
+
+	/**
+	 * Implements JSON value encoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public void encodeValue(JsonCoder coder, JsonWriter sink)
+		throws IOException, EncoderException
+	{
+	    int total_len0 = this.elements.size();
+	    int idx0 = 0;
+
+	    sink.beginArray();
+	    if (total_len0 > 0) {
+		while (true) {
+		    try {
+			SignalControlZone item1 = this.elements.get(idx0);
+
+			item1.encodeValue(coder, sink);
+		    
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext(null, "SignalControlZone", idx0);
+		    throw ee;
+		}
+		idx0++;
+		if (idx0 == total_len0) break;
+		sink.writeSeparator();
+	    }
+	}
+	sink.endArray();
+
+    }
+
+	/**
+	 * Implements JSON value decoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public PreemptZones decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	int total_len0 = 0;
+	int idx0 = 0;
+
+	if (this.elements != null)
+	    this.elements.clear();
+	else
+	    this.elements = new java.util.ArrayList<SignalControlZone>(total_len0);
+	coder.decodeArray(source);
+	if (coder.hasMoreElements(source, true))
+	    do {
+		try {
+		    SignalControlZone item1 = new SignalControlZone();
+
+		    this.elements.add(item1);
+		    item1.decodeValue(coder, source);
+		} catch (Exception e) {
+		    DecoderException de = DecoderException.wrapException(e);
+		    de.appendElementContext(null, "SignalControlZone", idx0);
+		    throw de;
+		}
+		++idx0;
+	    } while (coder.hasMoreElements(source, false));
+	    return this;
 	}
 
 	/**
@@ -896,6 +1027,70 @@ public class Intersection_ extends Sequence {
 	}
 
 	/**
+	 * Implements JSON value encoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public void encodeValue(JsonCoder coder, JsonWriter sink)
+		throws IOException, EncoderException
+	{
+	    int total_len0 = this.elements.size();
+	    int idx0 = 0;
+
+	    sink.beginArray();
+	    if (total_len0 > 0) {
+		while (true) {
+		    try {
+			SignalControlZone item1 = this.elements.get(idx0);
+
+			item1.encodeValue(coder, sink);
+		    
+		} catch (Exception e) {
+		    EncoderException ee = EncoderException.wrapException(e);
+		    ee.appendElementContext(null, "SignalControlZone", idx0);
+		    throw ee;
+		}
+		idx0++;
+		if (idx0 == total_len0) break;
+		sink.writeSeparator();
+	    }
+	}
+	sink.endArray();
+
+    }
+
+	/**
+	 * Implements JSON value decoder for the type (reserved for internal use).
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public PriorityZones decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	int total_len0 = 0;
+	int idx0 = 0;
+
+	if (this.elements != null)
+	    this.elements.clear();
+	else
+	    this.elements = new java.util.ArrayList<SignalControlZone>(total_len0);
+	coder.decodeArray(source);
+	if (coder.hasMoreElements(source, true))
+	    do {
+		try {
+		    SignalControlZone item1 = new SignalControlZone();
+
+		    this.elements.add(item1);
+		    item1.decodeValue(coder, source);
+		} catch (Exception e) {
+		    DecoderException de = DecoderException.wrapException(e);
+		    de.appendElementContext(null, "SignalControlZone", idx0);
+		    throw de;
+		}
+		++idx0;
+	    } while (coder.hasMoreElements(source, false));
+	    return this;
+	}
+
+	/**
 	 * Compare 'this' object to another object to see if their contents are the same.
 	 */
 	public boolean abstractEqualTo(AbstractData that)
@@ -957,6 +1152,44 @@ public class Intersection_ extends Sequence {
      */
     public static final EPAInfo _cEPAInfo_name = 
 	com.bah.ode.asn.oss.dsrc.DescriptiveName._cEPAInfo_;
+    
+    /**
+     * Hashtable for tags (reserved for internal use).
+     * This class is reserved for internal use and must not be used in the application code.
+     */
+    public static enum __Tag
+    {
+	__name("name"),
+	__id("id"),
+	__refPoint("refPoint"),
+	__refInterNum("refInterNum"),
+	__orientation("orientation"),
+	__laneWidth("laneWidth"),
+	__type("type"),
+	__approaches("approaches"),
+	__preemptZones("preemptZones"),
+	__priorityZones("priorityZones"),
+	_null_("_null_");
+	private String tag;
+	private static java.util.HashMap<String, __Tag> map =
+	    new java.util.HashMap<String, __Tag>(11);
+	private __Tag(String tag) {
+	    this.tag = tag;
+	}
+	private String getTag() {
+	    return tag;
+	}
+	/**
+	 * This method is reserved for internal use and must not be invoked from the application code.
+	 */
+	public static __Tag getTagSub(String tag) {
+	    return map.get(tag);
+	}
+	static {
+	    for (__Tag t:values())
+		map.put(t.getTag(), t);
+	}
+    }
     
     /**
      * Implements BER value encoder for the type (reserved for internal use).
@@ -1839,6 +2072,403 @@ public class Intersection_ extends Sequence {
 	    }
 	}
 	return data;
+    }
+
+    /**
+     * Implements JSON value encoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public void encodeValue(JsonCoder coder, JsonWriter sink)
+	    throws IOException, EncoderException
+    {
+	String separator0 = null;
+
+	sink.beginObject();
+	// Encode field 'name'
+	try {
+	    DescriptiveName item1 = this.name;
+
+	    if (item1 != null) {
+		{
+		    separator0 = ",";
+		    sink.encodeKey("name");
+		    coder.encodeString(item1.stringValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		separator0 = ",";
+		coder.encodeAbsentComponent(sink, "name");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("name", "DescriptiveName");
+	    throw ee;
+	}
+	// Encode field 'id'
+	try {
+	    IntersectionID item1 = this.id;
+
+	    {
+		sink.writeSeparator(separator0);
+		sink.encodeKey("id");
+		sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("id", "IntersectionID");
+	    throw ee;
+	}
+	// Encode field 'refPoint'
+	try {
+	    Position3D item1 = this.refPoint;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("refPoint");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "refPoint");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("refPoint", "Position3D");
+	    throw ee;
+	}
+	// Encode field 'refInterNum'
+	try {
+	    IntersectionID item1 = this.refInterNum;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("refInterNum");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "refInterNum");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("refInterNum", "IntersectionID");
+	    throw ee;
+	}
+	// Encode field 'orientation'
+	try {
+	    Heading item1 = this.orientation;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("orientation");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "orientation");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("orientation", "Heading");
+	    throw ee;
+	}
+	// Encode field 'laneWidth'
+	try {
+	    LaneWidth item1 = this.laneWidth;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("laneWidth");
+		    coder.encodeInteger(item1.longValue(), sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "laneWidth");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("laneWidth", "LaneWidth");
+	    throw ee;
+	}
+	// Encode field 'type'
+	try {
+	    IntersectionStatusObject item1 = this.type;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("type");
+		    sink.encodeOctetString(item1.byteArrayValue(), item1.getSize());
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "type");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("type", "IntersectionStatusObject");
+	    throw ee;
+	}
+	// Encode field 'approaches'
+	try {
+	    Approaches item1 = this.approaches;
+
+	    {
+		sink.writeSeparator();
+		sink.encodeKey("approaches");
+		item1.encodeValue(coder, sink);
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("approaches", "SEQUENCE OF");
+	    throw ee;
+	}
+	// Encode field 'preemptZones'
+	try {
+	    PreemptZones item1 = this.preemptZones;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("preemptZones");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "preemptZones");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("preemptZones", "SEQUENCE OF");
+	    throw ee;
+	}
+	// Encode field 'priorityZones'
+	try {
+	    PriorityZones item1 = this.priorityZones;
+
+	    if (item1 != null) {
+		{
+		    sink.writeSeparator();
+		    sink.encodeKey("priorityZones");
+		    item1.encodeValue(coder, sink);
+		}
+	    } else if (coder.isEncodingOfAbsentComponentsEnabled()) {
+		sink.writeSeparator();
+		coder.encodeAbsentComponent(sink, "priorityZones");
+	    }
+	} catch (Exception e) {
+	    EncoderException ee = EncoderException.wrapException(e);
+	    ee.appendFieldContext("priorityZones", "SEQUENCE OF");
+	    throw ee;
+	}
+	sink.endObject();
+
+    }
+
+    /**
+     * Implements JSON value decoder for the type (reserved for internal use).
+     * This method is reserved for internal use and must not be invoked from the application code.
+     */
+    public Intersection_ decodeValue(JsonCoder coder, JsonReader source)
+	    throws IOException, DecoderException
+    {
+	boolean[] present0 = new boolean[11];
+
+	coder.decodeObject(source);
+	if (coder.hasMoreProperties(source, true))
+	    do {
+		String tag0 = coder.nextProperty(source);
+		Intersection_.__Tag t_tag0 = Intersection_.__Tag.getTagSub(tag0);
+		if (t_tag0 == null) 
+		    t_tag0 = Intersection_.__Tag._null_;
+		switch (t_tag0) {
+		    case __name:
+		    // Decode field 'name'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[0])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.name = new DescriptiveName(coder.decodeString(source));
+			    present0[0] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("name", "DescriptiveName");
+			throw de;
+		    }
+		    break;
+		    case __id:
+		    // Decode field 'id'
+		    try {
+			if (present0[1])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			this.id = new IntersectionID(coder.decodeOctetString(source));
+			present0[1] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("id", "IntersectionID");
+			throw de;
+		    }
+		    break;
+		    case __refPoint:
+		    // Decode field 'refPoint'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[2])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.refPoint == null)
+				this.refPoint = new Position3D();
+			    this.refPoint.decodeValue(coder, source);
+			    present0[2] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("refPoint", "Position3D");
+			throw de;
+		    }
+		    break;
+		    case __refInterNum:
+		    // Decode field 'refInterNum'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[3])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.refInterNum = new IntersectionID(coder.decodeOctetString(source));
+			    present0[3] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("refInterNum", "IntersectionID");
+			throw de;
+		    }
+		    break;
+		    case __orientation:
+		    // Decode field 'orientation'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[4])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.orientation == null)
+				this.orientation = new Heading();
+			    this.orientation.setValue(coder.decodeInteger(source));
+			    present0[4] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("orientation", "Heading");
+			throw de;
+		    }
+		    break;
+		    case __laneWidth:
+		    // Decode field 'laneWidth'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[5])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.laneWidth == null)
+				this.laneWidth = new LaneWidth();
+			    this.laneWidth.setValue(coder.decodeInteger(source));
+			    present0[5] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("laneWidth", "LaneWidth");
+			throw de;
+		    }
+		    break;
+		    case __type:
+		    // Decode field 'type'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[6])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    this.type = new IntersectionStatusObject(coder.decodeOctetString(source));
+			    present0[6] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("type", "IntersectionStatusObject");
+			throw de;
+		    }
+		    break;
+		    case __approaches:
+		    // Decode field 'approaches'
+		    try {
+			if (present0[7])
+			    throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			if (this.approaches == null)
+			    this.approaches = new Approaches();
+			this.approaches.decodeValue(coder, source);
+			present0[7] = true;
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("approaches", "SEQUENCE OF");
+			throw de;
+		    }
+		    break;
+		    case __preemptZones:
+		    // Decode field 'preemptZones'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[8])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.preemptZones == null)
+				this.preemptZones = new PreemptZones();
+			    this.preemptZones.decodeValue(coder, source);
+			    present0[8] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("preemptZones", "SEQUENCE OF");
+			throw de;
+		    }
+		    break;
+		    case __priorityZones:
+		    // Decode field 'priorityZones'
+		    try {
+			if (!coder.isNullValue(source)) {
+			    if (present0[9])
+				throw new DecoderException(ExceptionDescriptor._field_repeat, null);
+			    if (this.priorityZones == null)
+				this.priorityZones = new PriorityZones();
+			    this.priorityZones.decodeValue(coder, source);
+			    present0[9] = true;
+			}
+		    } catch (Exception e) {
+			DecoderException de = DecoderException.wrapException(e);
+			de.appendFieldContext("priorityZones", "SEQUENCE OF");
+			throw de;
+		    }
+		    break;
+		    default:
+			coder.skipValue(source);
+			break;
+		}
+	    } while (coder.hasMoreProperties(source, false));
+	if (!present0[0])
+	    this.name = null;
+	if (!present0[1])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'id'");
+	if (!present0[2])
+	    this.refPoint = null;
+	if (!present0[3])
+	    this.refInterNum = null;
+	if (!present0[4])
+	    this.orientation = null;
+	if (!present0[5])
+	    this.laneWidth = null;
+	if (!present0[6])
+	    this.type = null;
+	if (!present0[7])
+	    throw new DecoderException(ExceptionDescriptor._field_omit, ": 'approaches'");
+	if (!present0[8])
+	    this.preemptZones = null;
+	if (!present0[9])
+	    this.priorityZones = null;
+	return this;
     }
 
     /**
