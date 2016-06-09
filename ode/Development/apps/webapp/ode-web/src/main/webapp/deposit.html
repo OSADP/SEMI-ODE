@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>ODE Deposit Web UI</title>
+<title>ODE Publish Web UI</title>
 
 <!-- Start Stylesheets -->
 <link rel="stylesheet" type="text/css" href="style.css" />
@@ -19,71 +19,91 @@
 </head>
 <body>
 
-   <div class="deposit-container">
+   <div class="container">
 
       <div class="column-left">
 
          <div class="leftsection">
             <div id="title">
-               <div align="center">ODE Deposit Web UI</div>
+               <div align="center">ODE Publish Web UI</div>
             </div>
 
             <h1>Publish</h1>
-            <form action="" id="selectSourceForm">
-                  <input id = "sdc" type="radio" name="source" value="DEPOSIT_SDC"/>
-                  <label for="sdc">Vehicle Situation Data</label> <br/> 
-                  <input id = "sdw" type="radio" name="source" value="DEPOSIT_SDW">
-                  <label for="sdw">Traveller Advisory Data</label> <br/> 
+            <form action="">
+               <p class="radioText1">
+                  <input type="radio" name="source" value="DEPOSIT_SDC">
+                  Vehicle Situation Data
+               </p>
+               <p class="radioText1">
+                  <input type="radio" name="source" value="DEPOSIT_SDW">
+                  Traveler Advisory Data
+               </p>
             </form>
             <form action="" id="selectDataForm">
                <h1>Data Format</h1>
-               <!--
-                  <input id="vehicles" type="radio" name="data" value="veh">
-                  <label for="vehicles">Vehicles JSON</label> <br/> 
-                  <input id="advisory" type="radio" name="data" value="adv">
-                  <label for="advisory">Advisory JSON</label> <br/> 
+               <p class="radioText2" id="asnBase64Radio">
+                  <input type="radio" name="data" value="asnbase64">
+                  ASN.1 Base 64
+               </p>
+               <p class="radioText2" id="asnHexradio">
+                  <input type="radio" name="data" value="asnhex">
+                  ASN.1 Hex
+               </p>
+               <!-- 
+               <p class="radioText2" id="vehJsonRadio">
+                  <input type="radio" name="data" value="veh">
+                  Vehicles JSON
+               </p>
+               <p class="radioText2" id="advJasonRadio">
+                  <input type="radio" name="data" value="adv">
+                  Advisory JSON
+               </p>
                -->
-                  <input id="asnBase64" type="radio" name="data" value="asnbase64">
-                  <label for="asn">ASN.1 Base 64</label> <br/> 
-                  <input id="asnHex" type="radio" name="data" value="asnhex">
-                  <label for="asn">ASN.1 Hex</label> <br/> 
-               <hr/>
                <div align="center">
                   <input id="requestUri" placeholder="Websocket URI">
                   <br/> <br/> <input id="requestId"
                      placeholder="RequestID">
                </div>
+               
                <br/>
                <div id="io">
                   <input type="file" id="files" name="files[]"
                      multiple="multiple" onchange="handleFileSelect(this.files)" /><br />
                   <output id="list"></output>
                </div>
-               
             </form>
          </div>
       </div>
 
       <div class="column-center">
-         <div class="deposit-options">
-            <div class="geoRegion" id="geoRegion">
-               <label>NW Latitude</label> <input id="nwLatSub" type="text" value="42.53790" size="40" class="georegion-text" /> <br /> 
-               <label>NW Longitude</label> <input id="nwLonSub" type="text" value="-83.47790" size="40" class="georegion-text" /> <br />
-               <label>SE Latitude</label> <input id="seLatSub" type="text" value="42.30575" size="40" class="georegion-text" /> <br /> 
-               <label>SE Longitude</label> <input id="seLonSub" type="text" value="-82.84275" size="40" class="georegion-text" /> <br />
-            </div>
-            <hr/>
-            <h2>Options:</h2>
-            <div class="options" id="options">
-               <label for="timeBuffer">Miliseconds between sending each batch (optional): </label> <br/> 
-               <input id="timeBuffer" type="text" size="40" style="width: 100px"> <br/> <br/>
-               <label for="recordsPerBatch">Number of records per batch (optional): </label> <br/> 
-               <input id="recordsPerBatch" type="text" size="40" style="width: 100px"> <br/>
-            </div>
+         <div class="geoRegion">
+            <h2>Geographic Region</h2>
+            <label>NW Latitude</label> 
+            <input id="nwLat"
+               type="text" value="42.53790" size="40"
+               class="column-center-text" /> <br /> 
+            <label>NW Longitude</label>
+            <input id="nwLon" type="text"
+               value="-83.47790" size="40"
+               class="column-center-text" /> <br />
+            <label>SE Latitude</label>
+            <input id="seLat" type="text"
+               value="42.30575" size="40"
+               class="column-center-text" /> <br />
+            <label>SE Longitude</label>
+            <input id="seLon" type="text"
+               value="-82.84275" size="40"
+               class="column-center-text" /> <br />
          </div>
-
+         <div class="options" id="options">
+            <hr/>
+            <h2>Options</h2>
+            <label for="recordsPerBatch">Number of records per batch: </label> <br/> 
+            <input id="recordsPerBatch" type="text" size="40" style="width: 100px"> <br/>
+            <label for="timeBuffer">Milliseconds between sending each batch: </label> <br/> 
+            <input id="timeBuffer" type="text" size="40" style="width: 100px"> <br/> <br/>
+         </div>
       </div>
-
       <div class="column-right">
 
          <div id="map" class="map"></div>
@@ -123,28 +143,25 @@
             <input id="recordCounter" type="text"
                value="Records Received: 0" size="50"
                style="margin-top: 1%; float: right; height: 80%;" />
-
          </div>
-
       </div>
-
    </div>
 
-   <div id="dialog-form" title="Access Token">
+   <div id="dialog-form" title="Login">
       <p class="validateTips">All form fields are required.</p>
 
       <form>
          <fieldset>
             <label for="email">Email</label> <input type="text"
-               name="email" id="email" value="sampleUser@liferay.com"
-               class="text ui-widget-content ui-corner-all"> <label
+               name="email" id="email" value=""
+               class="text ui-widget-content ui-corner-all"/> <label
                for="password">Password</label> <input type="password"
-               name="password" id="password" value="ComplexPassword"
-               class="text ui-widget-content ui-corner-all">
+               name="password" id="password" value=""
+               class="text ui-widget-content ui-corner-all"/>
 
             <!-- Allow form submission with keyboard without duplicating the dialog button -->
             <input type="submit" tabindex="-1"
-               style="position: absolute; top: -1000px">
+               style="position: absolute; top: -1000px"/>
          </fieldset>
       </form>
    </div>

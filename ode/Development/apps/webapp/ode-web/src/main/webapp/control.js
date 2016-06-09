@@ -79,8 +79,8 @@ $(document)
                var now = new Date();
                var yesterday = new Date();
                yesterday.setDate(now.getDate() - 1);
-               $("#startDateQuery").val(yesterday.toISOString());
-               $("#endDateQuery").val(now.toISOString());
+               $("#startDate").val(yesterday.toISOString());
+               $("#endDate").val(now.toISOString());
 
                $('#nextEntry')
                      .on(
@@ -149,11 +149,9 @@ $(document)
                                  $('#' + segmentLng).val(newSeg[0]);
                                  $('#' + segmentLat).val(newSeg[1]);
                                  $('#' + segmentDocId).text('Set Coordinates');
-                                 if (segmentDocId.indexOf('q') == 0) {
-                                    createRoads(1);
-                                 } else {
-                                    createRoads(0);
-                                 }
+                                 
+                                 createRoads();
+                                 
                                  segmentDocId = null;
                                  segmentLng = null;
                                  segmentLat = null;
@@ -208,84 +206,69 @@ $(document)
                      maxFeatures = newMax;
                   }
                });
-               $('#n1LatSub').change(function() {
+               
+               $('#n1Lat').change(function() {
                   if (isNumeric($(this).val()))
-                     createRoads(0);
+                     createRoads();
                });
-               $('#n1LngSub').change(function() {
+               $('#n1Lng').change(function() {
                   if (isNumeric($(this).val()))
-                     createRoads(0);
+                     createRoads();
                });
-               $('#n2LatSub').change(function() {
+               $('#n2Lat').change(function() {
                   if (isNumeric($(this).val()))
-                     createRoads(0);
+                     createRoads();
                });
-               $('#n2LngSub').change(function() {
+               $('#n2Lng').change(function() {
                   if (isNumeric($(this).val()))
-                     createRoads(0);
+                     createRoads();
                });
-               $('#n3LatSub').change(function() {
+               $('#n3Lat').change(function() {
                   if (isNumeric($(this).val()))
-                     createRoads(0);
+                     createRoads();
                });
-               $('#n3LngSub').change(function() {
+               $('#n3Lng').change(function() {
                   if (isNumeric($(this).val()))
-                     createRoads(0);
+                     createRoads();
                });
-               $('#n1LatQuery').change(function() {
+               $('#n4Lat').change(function() {
                   if (isNumeric($(this).val()))
-                     createRoads(1);
+                     createRoads();
                });
-               $('#n1LngQuery').change(function() {
+               $('#n4Lng').change(function() {
                   if (isNumeric($(this).val()))
-                     createRoads(1);
+                     createRoads();
                });
-               $('#n2LatQuery').change(function() {
+               $('#n5Lat').change(function() {
                   if (isNumeric($(this).val()))
-                     createRoads(1);
+                     createRoads();
                });
-               $('#n2LngQuery').change(function() {
+               $('#n5Lng').change(function() {
                   if (isNumeric($(this).val()))
-                     createRoads(1);
+                     createRoads();
                });
-               $('#n3LatQuery').change(function() {
+               $('#n6Lat').change(function() {
                   if (isNumeric($(this).val()))
-                     createRoads(1);
+                     createRoads();
                });
-               $('#n3LngQuery').change(function() {
+               $('#n6Lng').change(function() {
                   if (isNumeric($(this).val()))
-                     createRoads(1);
+                     createRoads();
                });
 
-               $('#nwLatSub').change(function() {
+               $('#nwLat').change(function() {
                   if (isNumeric($(this).val()))
                      map.getView().setCenter(getLonLat());
                });
-               $('#nwLonSub').change(function() {
+               $('#nwLon').change(function() {
                   if (isNumeric($(this).val()))
                      map.getView().setCenter(getLonLat());
                });
-               $('#seLatSub').change(function() {
+               $('#seLat').change(function() {
                   if (isNumeric($(this).val()))
                      map.getView().setCenter(getLonLat());
                });
-               $('#seLonSub').change(function() {
-                  if (isNumeric($(this).val()))
-                     map.getView().setCenter(getLonLat());
-               });
-               $('#nwLatQuery').change(function() {
-                  if (isNumeric($(this).val()))
-                     map.getView().setCenter(getLonLat());
-               });
-               $('#nwLonQuery').change(function() {
-                  if (isNumeric($(this).val()))
-                     map.getView().setCenter(getLonLat());
-               });
-               $('#seLatQuery').change(function() {
-                  if (isNumeric($(this).val()))
-                     map.getView().setCenter(getLonLat());
-               });
-               $('#seLonQuery').change(function() {
+               $('#seLon').change(function() {
                   if (isNumeric($(this).val()))
                      map.getView().setCenter(getLonLat());
                });
@@ -305,84 +288,89 @@ $(document)
 
                   $('.column-center').show()
                   $('.column-right').show();
-
-                  createRoads(dataSource);
-
                   $("input[name=data]:radio").attr('disabled', false);
                   $("#selectDataForm").show();
 
+                  sourceController(clear)
+                  createRoads();
+
                   isTest = false;
                   if (dataSource == "SDC") {
-                     sourceController(".subscription");
                      partOneURI = "/ode/api/ws/sub/";
 
                      $('#advisoryRadio').hide();
                      $('#aggRadio').show();
                      $('.testRadio').hide();
-                     $('#intersectionRadio').show();
                      $('#vehicleRadio').show();
-                     $('#testUploadOnly').hide();
+                     $('#intersectionRadio').show();
+                     $('#mapRadio').show();
+                     $('#spatRadio').show();
+                     $('#skipLimit').hide();
                      $('#deposit').show();
+                     
                   } else if (dataSource == "SDPC") {
-                     sourceController(".query");
                      partOneURI = "/ode/api/ws/qry/";
 
-                     $('#advisoryRadio').show();
+                     $('#advisoryRadio').hide();
                      $('#aggRadio').show();
                      $('.testRadio').hide();
                      $('#intersectionRadio').show();
+                     $('#mapRadio').show();
+                     $('#spatRadio').show();
                      $('#vehicleRadio').show();
                      $('#deposit').hide();
                   } else if (dataSource == "SDW") {
-                     sourceController(".query");
                      partOneURI = "/ode/api/ws/qry/";
 
                      $('#advisoryRadio').show();
                      $('#aggRadio').show();
                      $('#intersectionRadio').show();
+                     $('#mapRadio').show();
+                     $('#spatRadio').show();
                      $('#vehicleRadio').show();
                      $('.testRadio').hide();
                      $('#deposit').hide();
                   } else if (dataSource == "TEST_UPLOAD") {
                      isTest = true;
-                     sourceController(".subscription");
                      partOneURI = "/ode/api/ws/tst/";
 
                      $('.testRadio').show();
-                     $('#mapRadio').hide();
-                     $('#spatRadio').hide();
                      $('#aggRadio').hide();
                      $('#advisoryRadio').hide();
                      $('#intersectionRadio').hide();
+                     $('#mapRadio').hide();
+                     $('#spatRadio').hide();
                      $('#vehicleRadio').hide();
-                     $('#testUploadOnly').show();
+                     $('#skipLimit').show();
                      $('#deposit').hide();
                   } else if (dataSource == "DEPOSIT_SDC") {
-                     sourceController(".subscription");
                      partOneURI = "/ode/api/ws/dep/";
 
                      $('.testRadio').hide();
-                     $('#mapRadio').hide();
-                     $('#spatRadio').hide();
                      $('#aggRadio').hide();
                      $('#vehicleRadio').show();
                      $('#advisoryRadio').show();
-                     $('#asnRadio').show();
-                     $('#geoRegion').hide();
+                     $('#intersectionRadio').hide();
+                     $('#mapRadio').hide();
+                     $('#spatRadio').hide();
+                     $('#asnBase64Radio').show();
+                     $('#asnHexRadio').show();
+                     $('#vehJsonRadio').show();
+                     $('.geoRegion').hide();
                   } else if (dataSource == "DEPOSIT_SDW") {
-                     sourceController(".subscription");
                      partOneURI = "/ode/api/ws/dep/";
 
                      $('.testRadio').hide();
-                     $('#mapRadio').hide();
-                     $('#spatRadio').hide();
                      $('#aggRadio').hide();
                      $('#vehicleRadio').show();
                      $('#advisoryRadio').show();
-                     $('#asnRadio').show();
-                     $('#geoRegion').hide();
-                  } else {
-                     sourceController(clear);
+                     $('#intersectionRadio').hide();
+                     $('#mapRadio').hide();
+                     $('#spatRadio').hide();
+                     $('#asnBase64Radio').show();
+                     $('#asnHexRadio').show();
+                     $('#advJsonRadio').show();
+                     $('.geoRegion').hide();
                   }
 
                   $("input[name=data]:radio").attr('checked', false);
@@ -397,13 +385,53 @@ $(document)
                   dataType = $(this).val();
                   disconnect();
                   
-                  if (dataType == "asnbase64")
-                     encodeType = "base64";
-                  else if (dataType == "asnhex")
-                     encodeType = "hex";
-                  else
-                     encodeType = "json";
-
+                  if (dataType == "veh") {
+                     $('.geoRegion').show();
+                     if (dataSource == "SDC")
+                        $('.skipLimit').hide();
+                     else
+                        $('.skipLimit').show();
+                     $('.mapIndicators').show();
+                     $('.roadSeg').show();
+                  } else if (dataType == "agg") {
+                     $('.geoRegion').show();
+                     if (dataSource == "SDC")
+                        $('.skipLimit').hide();
+                     else
+                        $('.skipLimit').show();
+                     $('.mapIndicators').hide();
+                     $('.roadSeg').show();
+                  } else if (dataType == "int" || dataType == "spat" || dataType == "map") {
+                     $('.geoRegion').show();
+                     if (dataSource == "SDC")
+                        $('.skipLimit').hide();
+                     else
+                        $('.skipLimit').show();
+                     $('.mapIndicators').hide();
+                     $('.roadSeg').hide();
+                  } else if (dataType == "adv") {
+                     $('.geoRegion').show();
+                     if (dataSource == "SDC")
+                        $('.skipLimit').hide();
+                     else
+                        $('.skipLimit').show();
+                     $('.mapIndicators').hide();
+                     $('.roadSeg').hide();
+                  } else {
+                     $('.geoRegion').hide();
+                     $('.skipLimit').hide();
+                     $('.mapIndicators').hide();
+                     $('.roadSeg').hide();
+                     
+                     if (dataType == "asnbase64") {
+                        encodeType = "base64";
+                     } else if (dataType == "asnhex") {
+                        encodeType = "hex";
+                     } else {
+                        encodeType = "json";
+                     }
+                  }
+                  
                   updateRequestUri();
                });
 
@@ -421,7 +449,7 @@ $(document)
                   width : 350,
                   modal : true,
                   buttons : {
-                     "Request Token" : addUser,
+                     "OK" : addUser,
                      Cancel : function() {
                         dialog.dialog("close");
                      }
@@ -505,10 +533,10 @@ $(document)
             });
 
 function sourceController(clazz) {
-   $('.subscription').hide();
-   $('.query').hide();
-   $('#mapRadio').show();
-   $('#spatRadio').show();
+   $('.geoRegion').hide();
+   $('.skipLimit').hide();
+   $('.mapIndicators').hide();
+   $('.roadSeg').hide();
 
    if (clazz != clear) {
       $(clazz).show();
@@ -651,170 +679,98 @@ function disconnect() {
 function send() {
    var request = {};
    request["dataSource"] = dataSource;
-   if (dataSource == "SDC" || dataSource == "TEST_UPLOAD") { // subscribe
-      if (ws != null) {
-         request["nwLat"] = document.getElementById('nwLatSub').value;
-         request["nwLon"] = document.getElementById('nwLonSub').value;
-         request["seLat"] = document.getElementById('seLatSub').value;
-         request["seLon"] = document.getElementById('seLonSub').value;
-         if (dataSource == "TEST_UPLOAD") {
+   if (ws != null) {
+      request["nwLat"] = document.getElementById('nwLat').value;
+      request["nwLon"] = document.getElementById('nwLon').value;
+      request["seLat"] = document.getElementById('seLat').value;
+      request["seLon"] = document.getElementById('seLon').value;
+      if (dataSource == "TEST_UPLOAD" || dataSource == "SDPC" || dataSource == "SDW") {
 
-            var requestStart = document.getElementById('startDateSub').value;
-            var requestEnd = document.getElementById('endDateSub').value;
-            var requestSkip = $("#skipSub").val();
-            var requestLimit = $("#limitSub").val();
+         var requestStart = document.getElementById('startDate').value;
+         var requestEnd = document.getElementById('endDate').value;
+         var requestSkip = $("#skip").val();
+         var requestLimit = $("#limit").val();
 
-            if (requestStart.length !== 0) {
-               request["startDate"] = requestStart;
-            }
-            if (requestEnd.length !== 0) {
-               request["endDate"] = requestEnd;
-            }
-            if (requestSkip.length !== 0) {
-               request["skip"] = requestSkip;
-            }
-            if (requestLimit.length !== 0) {
-               request["limit"] = requestLimit;
-            }
-
+         if (requestStart.length !== 0) {
+            request["startDate"] = requestStart;
+         }
+         if (requestEnd.length !== 0) {
+            request["endDate"] = requestEnd;
+         }
+         if (requestSkip.length !== 0) {
+            request["skip"] = requestSkip;
+         }
+         if (requestLimit.length !== 0) {
+            request["limit"] = requestLimit;
          }
 
+      }
+
+      if (dataType == "veh" || dataType == "agg") { 
          var s1 = {};
-         s1["id"] = document.getElementById('n1Sub').value + '-'
-               + document.getElementById('n2Sub').value;
+         s1["id"] = document.getElementById('n1').value + '-'
+               + document.getElementById('n2').value;
          s1["startPoint"] = {
-            "latitude" : document.getElementById('n1LatSub').value,
-            "longitude" : document.getElementById('n1LngSub').value
+            "latitude" : document.getElementById('n1Lat').value,
+            "longitude" : document.getElementById('n1Lng').value
          };// W. Larned and Shelby
          s1["endPoint"] = {
-            "latitude" : document.getElementById('n2LatSub').value,
-            "longitude" : document.getElementById('n2LngSub').value
+            "latitude" : document.getElementById('n2Lat').value,
+            "longitude" : document.getElementById('n2Lng').value
          };// W. Larned and Griswold
-
+   
          var s2 = {};
-         s2["id"] = document.getElementById('n2Sub').value + '-'
-               + document.getElementById('n3Sub').value;
+         s2["id"] = document.getElementById('n2').value + '-'
+               + document.getElementById('n3').value;
          s2["prevSegment"] = s1["id"];
          s2["endPoint"] = {
-            "latitude" : document.getElementById('n3LatSub').value,
-            "longitude" : document.getElementById('n3LngSub').value
+            "latitude" : document.getElementById('n3Lat').value,
+            "longitude" : document.getElementById('n3Lng').value
          };// W. Larned and Randolph
-
+   
          var s3 = {};
-         s3["id"] = document.getElementById('n4Sub').value + '-'
-               + document.getElementById('n5Sub').value;
+         s3["id"] = document.getElementById('n4').value + '-'
+               + document.getElementById('n5').value;
          s3["startPoint"] = {
-            "latitude" : document.getElementById('n4LatSub').value,
-            "longitude" : document.getElementById('n4LngSub').value
+            "latitude" : document.getElementById('n4Lat').value,
+            "longitude" : document.getElementById('n4Lng').value
          };// TelegraphBingham
          s3["endPoint"] = {
-            "latitude" : document.getElementById('n5LatSub').value,
-            "longitude" : document.getElementById('n5LngSub').value
+            "latitude" : document.getElementById('n5Lat').value,
+            "longitude" : document.getElementById('n5Lng').value
          };// TelegraphW12Mile
-
+   
          var s4 = {};
-         s4["id"] = document.getElementById('n5Sub').value + '-'
-               + document.getElementById('n6Sub').value;
+         s4["id"] = document.getElementById('n5').value + '-'
+               + document.getElementById('n6').value;
          s4["prevSegment"] = s3["id"];
          s4["endPoint"] = {
-            "latitude" : document.getElementById('n6LatSub').value,
-            "longitude" : document.getElementById('n6LngSub').value
+            "latitude" : document.getElementById('n6Lat').value,
+            "longitude" : document.getElementById('n6Lng').value
          };// TelegraphCivicCtr
-
+   
          var polyline = [];
          polyline.push(s1);
          polyline.push(s2);
          polyline.push(s3);
          polyline.push(s4);
-
+   
          request["polyline"] = {
             "segments" : polyline
          };
-      } else {
-         alert('WebSocket connection not established, please connect.');
-      }
-   } else if (dataSource == "SDPC" || dataSource == "SDW") { // query
-
-      if (ws != null) {
-         request["nwLat"] = document.getElementById('nwLatQuery').value;
-         request["nwLon"] = document.getElementById('nwLonQuery').value;
-         request["seLat"] = document.getElementById('seLatQuery').value;
-         request["seLon"] = document.getElementById('seLonQuery').value;
-         request["startDate"] = document.getElementById('startDateQuery').value;
-         request["endDate"] = document.getElementById('endDateQuery').value;
-         request["skip"] = $("#skipQuery").val();
-         request["limit"] = $("#limitQuery").val();
-
-         var s1 = {};
-         s1["id"] = document.getElementById('n1Query').value + '-'
-               + document.getElementById('n2Query').value;
-         s1["startPoint"] = {
-            "latitude" : document.getElementById('n1LatQuery').value,
-            "longitude" : document.getElementById('n1LngQuery').value
-         };// W. Larned and Shelby
-         s1["endPoint"] = {
-            "latitude" : document.getElementById('n2LatQuery').value,
-            "longitude" : document.getElementById('n2LngQuery').value
-         };// W. Larned and Griswold
-
-         var s2 = {};
-         s2["id"] = document.getElementById('n2Query').value + '-'
-               + document.getElementById('n3Query').value;
-         s2["prevSegment"] = s1["id"];
-         s2["endPoint"] = {
-            "latitude" : document.getElementById('n3LatQuery').value,
-            "longitude" : document.getElementById('n3LngQuery').value
-         };// Larned and Randolph
-
-         var s3 = {};
-         s3["id"] = document.getElementById('n4Query').value + '-'
-               + document.getElementById('n5Query').value;
-         s3["startPoint"] = {
-            "latitude" : document.getElementById('n4LatQuery').value,
-            "longitude" : document.getElementById('n4LngQuery').value
-         };// TelegraphBingham
-         s3["endPoint"] = {
-            "latitude" : document.getElementById('n5LatQuery').value,
-            "longitude" : document.getElementById('n5LngQuery').value
-         };// TelegraphW12Mile
-
-         var s4 = {};
-         s4["id"] = document.getElementById('n5Query').value + '-'
-               + document.getElementById('n6Query').value;
-         s4["prevSegment"] = s3["id"];
-         s4["endPoint"] = {
-            "latitude" : document.getElementById('n6LatQuery').value,
-            "longitude" : document.getElementById('n6LngQuery').value
-         };// TelegraphCivicCtr
-
-         var polyline = [];
-         polyline.push(s1);
-         polyline.push(s2);
-         polyline.push(s3);
-         polyline.push(s4);
-
-         request["polyline"] = {
-            "segments" : polyline
-         };
-      } else {
-         alert('WebSocket connection not established, please connect.');
       }
 
-   }
-
-   if (dataSource == "DEPOSIT_SDC" || dataSource == "DEPOSIT_SDW") { // deposit
-      if (ws != null) {
+      if (dataSource == "DEPOSIT_SDC" || dataSource == "DEPOSIT_SDW") { // deposit
          sendFiles();
       } else {
-         alert('WebSocket connection not established, please connect.');
-      }
-   } else {
-      if (ws != null) {
          var reqStr = JSON.stringify(request);
          ws.send(reqStr);
          log("sent-console", 'Sent: ' + reqStr);
       }
+   } else {
+      alert('WebSocket connection not established, please connect.');
    }
+
 }
 
 function log(consoleId, msgOrData) {
@@ -893,7 +849,7 @@ function sendFiles() {
    var files = $("#files").prop("files");
    for (var i = 0, numFiles = files.length; i < numFiles; i++) {
       var file = files[i];
-      reader.readAsBinaryString(file);
+      reader.readAsText(file);
 
       if (!isNaN(recordsPerBatch) && !isNaN(milisecondsBetween)) {
          recordLoc = 0;
@@ -975,17 +931,10 @@ function getLonLat() {
    var seLat;
    var seLon;
 
-   if (dataSource == "SDC") {
-      nwLat = parseFloat($('#nwLatSub').val());
-      nwLon = parseFloat($('#nwLonSub').val());
-      seLat = parseFloat($('#seLatSub').val());
-      seLon = parseFloat($('#seLonSub').val());
-   } else {
-      nwLat = parseFloat($('#nwLatQuery').val());
-      nwLon = parseFloat($('#nwLonQuery').val());
-      seLat = parseFloat($('#seLatQuery').val());
-      seLon = parseFloat($('#seLonQuery').val());
-   }
+   nwLat = parseFloat($('#nwLat').val());
+   nwLon = parseFloat($('#nwLon').val());
+   seLat = parseFloat($('#seLat').val());
+   seLon = parseFloat($('#seLon').val());
 
    var centerLat = (nwLat + seLat) / 2;
    var centerLon = (nwLon + seLon) / 2;
@@ -1020,17 +969,10 @@ function setLonLat() {
    var se = new ol.proj.transform([ extent[2], extent[1] ], 'EPSG:3857',
          'EPSG:4326');
 
-   if (dataSource == "SDC" || dataSource == "TEST_UPLOAD") {
-      $('#nwLatSub').val(nw[1]);
-      $('#nwLonSub').val(nw[0]);
-      $('#seLatSub').val(se[1]);
-      $('#seLonSub').val(se[0]);
-   } else {
-      $('#nwLatQuery').val(nw[1]);
-      $('#nwLonQuery').val(nw[0]);
-      $('#seLatQuery').val(se[1]);
-      $('#seLonQuery').val(se[0]);
-   }
+   $('#nwLat').val(nw[1]);
+   $('#nwLon').val(nw[0]);
+   $('#seLat').val(se[1]);
+   $('#seLon').val(se[0]);
 }
 
 function getPayload(str) {
@@ -1177,26 +1119,17 @@ function updateClustersOnMap() {
    map.addLayer(clusters);
 }
 
-function createRoads(type) {
+function createRoads() {
    map.removeLayer(layerMarkers);
    map.removeLayer(layerLines);
 
    roadSegments = [];
-   if (type === "SDC") {
-      roadSegments.push([ $('#n1LatSub').val(), $('#n1LngSub').val() ]);
-      roadSegments.push([ $('#n2LatSub').val(), $('#n2LngSub').val() ]);
-      roadSegments.push([ $('#n3LatSub').val(), $('#n3LngSub').val() ]);
-      roadSegments.push([ $('#n4LatSub').val(), $('#n4LngSub').val() ]);
-      roadSegments.push([ $('#n5LatSub').val(), $('#n5LngSub').val() ]);
-      roadSegments.push([ $('#n6LatSub').val(), $('#n6LngSub').val() ]);
-   } else {
-      roadSegments.push([ $('#n1LatQuery').val(), $('#n1LngQuery').val() ]);
-      roadSegments.push([ $('#n2LatQuery').val(), $('#n2LngQuery').val() ]);
-      roadSegments.push([ $('#n3LatQuery').val(), $('#n3LngQuery').val() ]);
-      roadSegments.push([ $('#n4LatQuery').val(), $('#n4LngQuery').val() ]);
-      roadSegments.push([ $('#n5LatQuery').val(), $('#n5LngQuery').val() ]);
-      roadSegments.push([ $('#n6LatQuery').val(), $('#n6LngQuery').val() ]);
-   }
+   roadSegments.push([ $('#n1Lat').val(), $('#n1Lng').val() ]);
+   roadSegments.push([ $('#n2Lat').val(), $('#n2Lng').val() ]);
+   roadSegments.push([ $('#n3Lat').val(), $('#n3Lng').val() ]);
+   roadSegments.push([ $('#n4Lat').val(), $('#n4Lng').val() ]);
+   roadSegments.push([ $('#n5Lat').val(), $('#n5Lng').val() ]);
+   roadSegments.push([ $('#n6Lat').val(), $('#n6Lng').val() ]);
 
    layerMarkers = AddMarkers();
    layerLines = new ol.layer.Vector({

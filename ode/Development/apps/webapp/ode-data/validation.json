@@ -1,7 +1,7 @@
 {"fieldName":"accelLong","minValue":-20.0,"maxValue":20.0}
 {"fieldName":"accelLat","minValue":-20.0,"maxValue":20.0}
 {"fieldName":"accelVert","minValue":-3.4,"maxValue":1.54}
-{"fieldName":"accellYaw","minValue":-327.67,"maxValue":327.67}
+{"fieldName":"accelYaw","minValue":-327.67,"maxValue":327.67}
 {"fieldName":"heading","minValue":0.0,"maxValue":360.0}
 {"fieldName":"speed","minValue":0.0,"maxValue":163.8}
 {"fieldName":"sizeLength","minValue":0,"maxValue":16383}

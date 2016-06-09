@@ -28,38 +28,40 @@
                <div align="center">Subscription and Query Web UI</div>
             </div>
 
-            <h1>Data Sources</h1>
+            <h1>Data Source</h1>
             <form action="">
                <p class="radioText1">
                   <input type="radio" name="source" value="SDC">
-                  Real-time Data Subscription
+                  Real-time Subscription
                </p>
                <p class="radioText1">
                   <input type="radio" name="source" value="SDPC">
-                  Long-term Historical Data Query
+                  Long-term Historical Query
                </p>
                <p class="radioText1">
                   <input type="radio" name="source" value="SDW">
-                  Short-term Historical Data Query
+                  Short-term Historical Query
                </p>
+               <!-- 
                <p class="radioText1">
                   <input type="radio" name="source" value="TEST_UPLOAD">
                   Uploaded Test Data Subscription
                </p>
+               -->
             </form>
             <form action="" id="selectDataForm">
-               <h1>Select Data</h1>
+               <h1>Data Type</h1>
                <p class="radioText2" id="vehicleRadio">
                   <input type="radio" name="data" value="veh">
                   Vehicles
                </p>
-               <p class="radioText2" id="intersectionRadio">
-                  <input type="radio" name="data" value="int">
-                  Intersections
-               </p>
                <p class="radioText2" id="aggRadio">
                   <input type="radio" name="data" value="agg">
                   Aggregates
+               </p>
+               <p class="radioText2" id="intersectionRadio">
+                  <input type="radio" name="data" value="int">
+                  Intersections
                </p>
                <p class="radioText2" id="mapRadio">
                   <input type="radio" name="data" value="map">
@@ -99,7 +101,7 @@
                      Deposit
                   </button>
                   -->
-                  <a href='deposit.html' target='_blank'>Deposit</a>
+                  <a href='deposit.html' target='_blank'>Publish Data</a>
                </div>
             </form>
 
@@ -108,227 +110,112 @@
       </div>
 
       <div class="column-center">
-
-         <div class="subscription">
-            <div class="geoRegion">
-               <h2>Enter Geographic Region</h2>
-               <label>NW Latitude</label> <input id="nwLatSub"
-                  type="text" value="42.53790" size="40"
-                  class="georegion-text" /> <br /> <label>NW
-                  Longitude</label> <input id="nwLonSub" type="text"
-                  value="-83.47790" size="40"
-                  class="georegion-text" /> <br /> <label>SE
-                  Latitude</label> <input id="seLatSub" type="text"
-                  value="42.30575" size="40"
-                  class="georegion-text" /> <br /> <label>SE
-                  Longitude</label> <input id="seLonSub" type="text"
-                  value="-82.84275" size="40"
-                  class="georegion-text" /> <br />
-
+         <div class="geoRegion">
+            <h2>Geographic Region</h2>
+            <label>NW Latitude</label> 
+            <input id="nwLat"
+               type="text" value="42.53790" size="40"
+               class="column-center-text" /> <br /> 
+            <label>NW Longitude</label>
+            <input id="nwLon" type="text"
+               value="-83.47790" size="40"
+               class="column-center-text" /> <br />
+            <label>SE Latitude</label>
+            <input id="seLat" type="text"
+               value="42.30575" size="40"
+               class="column-center-text" /> <br />
+            <label>SE Longitude</label>
+            <input id="seLon" type="text"
+               value="-82.84275" size="40"
+               class="column-center-text" /> <br />
+         </div>
+         <div class="skipLimit">
+            <hr />
+            <label>Skip | Limit</label><br /> 
+            <input id="skip" type="text" size="10" style="width: 100px" class="column-center-text" placeholder="Skip" /> 
+            <input id="limit" type="text" size="10" style="width: 100px" class="column-center-text" placeholder="Limit" /><br /><br />
+            <label>Start Date-Time</label><br />
+            <input id="startDate" type="text" size="40" style="width: 90%;" /><br /> 
+            <label>End Date-Time</label><br />
+            <input id="endDate" type="text" size="40" style="width: 90%;" /><br />
+         </div>
+         <div class="mapIndicators">
+            <hr />
+            <label>Maximum Unique Record Locations</label><br />
+            <input id="maxFeatures" type="text" value="100" size="10"
+               style="width: 90%;" class="column-center-text" /><br />
+            <br />
+         </div>
+         <div class="roadSeg">
                <hr />
-
-               <h2>Options:</h2>
-               <div id="testUploadOnly">
-                  <label>Skip | Limit</label><br /> <input id="skipSub"
-                     type="text" size="10" style="width: 100px"
-                     class="georegion-text" placeholder="Skip" /> <input
-                     id="limitSub" type="text" size="10"
-                     style="width: 100px" class="georegion-text"
-                     placeholder="Limit" /><br />
-                  <br /> <label>Start Date-Time</label><br />
-                  <input id="startDateSub" type="text" size="40"
-                     style="width: 90%;" /><br /> <label>End
-                     Date-Time</label><br />
-                  <input id="endDateSub" type="text" size="40"
-                     style="width: 90%;" /><br />
-               </div>
-               <label>Maximum Unique Record Locations</label><br />
-               <input id="maxFeatures" type="text" value="100" size="10"
-                  style="width: 90%;" class="georegion-text" /><br />
-               <br />
-
-               <hr />
-
                <h3>Road Segment Nodes</h3>
                <p>Node One</p>
                <button id="s1set"
-                  onclick="setNode('s1set', 'n1LatSub', 'n1LngSub')">
+                  onclick="setNode('s1set', 'n1Lat', 'n1Lng')">
                   Set Coordinates</button>
-               <input id="n1Sub" type="text" value="LarnedShelby"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n1LatSub" type="text" value="42.328468" size="10"
-                  class="georegion-text" /> <br /> <input id="n1LngSub"
+               <input id="n1" type="text" value="LarnedShelby"
+                  size="10" class="column-center-text" /> <br /> <input
+                  id="n1Lat" type="text" value="42.328468" size="10"
+                  class="column-center-text" /> <br /> <input id="n1Lng"
                   type="text" value="-83.04747" size="10"
-                  class="georegion-text" /> <br />
+                  class="column-center-text" /> <br />
                   
                <p>Node Two</p>
                <button id="s2set"
-                  onclick="setNode('s2set', 'n2LatSub', 'n2LngSub')">
+                  onclick="setNode('s2set', 'n2Lat', 'n2Lng')">
                   Set Coordinates</button>
-               <input id="n2Sub" type="text" value="LarnedGriswold"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n2LatSub" type="text" value="42.329067" size="10"
-                  class="georegion-text" /> <br /> <input id="n2LngSub"
+               <input id="n2" type="text" value="LarnedGriswold"
+                  size="10" class="column-center-text" /> <br /> <input
+                  id="n2Lat" type="text" value="42.329067" size="10"
+                  class="column-center-text" /> <br /> <input id="n2Lng"
                   type="text" value="-83.046086" size="10"
-                  class="georegion-text" /> <br />
+                  class="column-center-text" /> <br />
                   
                <p>Node Three</p>
                <button id="s3set"
-                  onclick="setNode('s3set', 'n3LatSub', 'n3LngSub')">
+                  onclick="setNode('s3set', 'n3Lat', 'n3Lng')">
                   Set Coordinates</button>
-               <input id="n3Sub" type="text" value="LarnedRandolph"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n3LatSub" type="text" value="42.33053" size="10"
-                  class="georegion-text" /> <br /> <input id="n3LngSub"
+               <input id="n3" type="text" value="LarnedRandolph"
+                  size="10" class="column-center-text" /> <br /> <input
+                  id="n3Lat" type="text" value="42.33053" size="10"
+                  class="column-center-text" /> <br /> <input id="n3Lng"
                   type="text" value="-83.042701" size="10"
-                  class="georegion-text" />
+                  class="column-center-text" />
 
                <p>Node Four</p>
                <button id="s4set"
-                  onclick="setNode('s4set', 'n4LatSub', 'n4LngSub')">
+                  onclick="setNode('s4set', 'n4Lat', 'n4Lng')">
                   Set Coordinates</button>
-               <input id="n4Sub" type="text" value="TelegraphBingham"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n4LatSub" type="text" value="42.51555" size="10"
-                  class="georegion-text" /> <br /> <input id="n4LngSub"
+               <input id="n4" type="text" value="TelegraphBingham"
+                  size="10" class="column-center-text" /> <br /> <input
+                  id="n4Lat" type="text" value="42.51555" size="10"
+                  class="column-center-text" /> <br /> <input id="n4Lng"
                   type="text" value="-83.28530" size="10"
-                  class="georegion-text" /> <br />
+                  class="column-center-text" /> <br />
 
                <p>Node Five</p>
                <button id="s5set"
-                  onclick="setNode('s5set', 'n5LatSub', 'n5LngSub')">
+                  onclick="setNode('s5set', 'n5Lat', 'n5Lng')">
                   Set Coordinates</button>
-               <input id="n5Sub" type="text" value="TelegraphW12Mile"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n5LatSub" type="text" value="42.50113" size="10"
-                  class="georegion-text" /> <br /> <input id="n5LngSub"
+               <input id="n5" type="text" value="TelegraphW12Mile"
+                  size="10" class="column-center-text" /> <br /> <input
+                  id="n5Lat" type="text" value="42.50113" size="10"
+                  class="column-center-text" /> <br /> <input id="n5Lng"
                   type="text" value="-83.28470" size="10"
-                  class="georegion-text" /> <br />
+                  class="column-center-text" /> <br />
 
                <p>Node Six</p>
                <button id="s6set"
-                  onclick="setNode('s6set', 'n6LatSub', 'n6LngSub')">
+                  onclick="setNode('s6set', 'n6Lat', 'n6Lng')">
                   Set Coordinates</button>
-               <input id="n6Sub" type="text" value="TelegraphCivicCtr"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n6LatSub" type="text" value="42.47965" size="10"
-                  class="georegion-text" /> <br /> <input id="n6LngSub"
+               <input id="n6" type="text" value="TelegraphCivicCtr"
+                  size="10" class="column-center-text" /> <br /> <input
+                  id="n6Lat" type="text" value="42.47965" size="10"
+                  class="column-center-text" /> <br /> <input id="n6Lng"
                   type="text" value="-83.28444" size="10"
-                  class="georegion-text" /> <br />
-
+                  class="column-center-text" /> <br />
             </div>
          </div>
-
-         <div class="query">
-
-            <div class="geoRegion">
-               <h2>Enter Geographic Region</h2>
-               <label>NW Latitude</label> <input id="nwLatQuery"
-                  type="text" value="42.53790" size="40"
-                  class="georegion-text" /> <br /> <label>NW
-                  Longitude</label> <input id="nwLonQuery" type="text"
-                  value="-83.47790" size="40"
-                  class="georegion-text" /> <br /> <label>SE
-                  Latitude</label> <input id="seLatQuery" type="text"
-                  value="42.30575" size="40"
-                  class="georegion-text" /> <br /> <label>SE
-                  Longitude</label> <input id="seLonQuery" type="text"
-                  value="-82.84275" size="40"
-                  class="georegion-text" /> <br />
-
-               <h2>Options:</h2>
-               <label>Skip | Limit</label><br /> <input id="skipQuery"
-                  type="text" value="0" size="10" style="width: 100px"
-                  class="georegion-text" placeholder="Skip" /> <input
-                  id="limitQuery" type="text" value="100" size="10"
-                  style="width: 100px" class="georegion-text"
-                  placeholder="Limit" /><br />
-               <br /> <label>Start Date-Time</label> <input
-                  id="startDateQuery" type="text"
-                  value="yyyy-MM-ddTHH:mm:ss" size="40"
-                  style="width: 90%;" /><br /> <label>End
-                  Date-Time</label> <input id="endDateQuery" type="text"
-                  value="yyyy-MM-ddTHH:mm:ss" size="40"
-                  style="width: 90%;" /><br /> <label>Maximum
-                  Unique Record Locations</label><br />
-               <input id="maxFeatures" type="text" value="100" size="10"
-                  style="width: 90%;" class="georegion-text" /><br />
-               <br />
-
-               <hr />
-
-               <h3>Road Segment Nodes</h3>
-               <p>Node One</p>
-               <button id="q1set"
-                  onclick="setNode('q1set', 'n1LatQuery', 'n1LngQuery')">
-                  Set Coordinates</button>
-               <input id="n1Query" type="text" value="LarnedShelby"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n1LatQuery" type="text" value="42.328468"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n1LngQuery" type="text" value="-83.04747"
-                  size="10" class="georegion-text" /> <br />
-                  
-               <p>Node Two</p>
-               <button id="q2set"
-                  onclick="setNode('q2set', 'n2LatQuery', 'n2LngQuery')">
-                  Set Coordinates</button>
-               <input id="n2Query" type="text" value="LarnedGriswold"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n2LatQuery" type="text" value="42.329067"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n2LngQuery" type="text" value="-83.046086"
-                  size="10" class="georegion-text" /> <br />
-                  
-               <p>Node Three</p>
-               <button id="q3set"
-                  onclick="setNode('q3set', 'n3LatQuery', 'n3LngQuery')">
-                  Set Coordinates</button>
-               <input id="n3Query" type="text" value="LarnedRandolph"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n3LatQuery" type="text" value="42.33053" size="10"
-                  class="georegion-text" /> <br /> <input
-                  id="n3LngQuery" type="text" value="-83.042701"
-                  size="10" class="georegion-text" /> <br />
-
-               <p>Node Four</p>
-               <button id="q4set"
-                  onclick="setNode('q4set', 'n4LatQuery', 'n4LngQuery')">
-                  Set Coordinates</button>
-               <input id="n4Query" type="text" value="TelegraphBingham"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n4LatQuery" type="text" value="42.51555"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n4LngQuery" type="text" value="-83.28530"
-                  size="10" class="georegion-text" /> <br />
-
-               <p>Node Five</p>
-               <button id="q5set"
-                  onclick="setNode('q5set', 'n5LatQuery', 'n5LngQuery')">
-                  Set Coordinates</button>
-               <input id="n5Query" type="text" value="TelegraphW12Mile"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n5LatQuery" type="text" value="42.50113"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n5LngQuery" type="text" value="-83.28470"
-                  size="10" class="georegion-text" /> <br />
-
-               <p>Node Six</p>
-               <button id="q6set"
-                  onclick="setNode('q6set', 'n6LatQuery', 'n6LngQuery')">
-                  Set Coordinates</button>
-               <input id="n6Query" type="text" value="TelegraphCivicCtr"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n6LatQuery" type="text" value="42.47965"
-                  size="10" class="georegion-text" /> <br /> <input
-                  id="n6LngQuery" type="text" value="-83.28444"
-                  size="10" class="georegion-text" /> <br />
-
-            </div>
-
-         </div>
-
-      </div>
 
       <div class="column-right">
 
@@ -373,24 +260,23 @@
          </div>
 
       </div>
-
    </div>
 
-   <div id="dialog-form" title="Access Token">
+   <div id="dialog-form" title="Login">
       <p class="validateTips">All form fields are required.</p>
 
       <form>
          <fieldset>
             <label for="email">Email</label> <input type="text"
-               name="email" id="email" value="sampleUser@liferay.com"
-               class="text ui-widget-content ui-corner-all"> </input> <label
+               name="email" id="email" value=""
+               class="text ui-widget-content ui-corner-all"/> <label
                for="password">Password</label> <input type="password"
-               name="password" id="password" value="ComplexPassword"
-               class="text ui-widget-content ui-corner-all"> </input>
+               name="password" id="password" value=""
+               class="text ui-widget-content ui-corner-all"/>
 
             <!-- Allow form submission with keyboard without duplicating the dialog button -->
             <input type="submit" tabindex="-1"
-               style="position: absolute; top: -1000px"> </input>
+               style="position: absolute; top: -1000px"/>
          </fieldset>
       </form>
    </div>
