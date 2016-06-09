@@ -42,7 +42,7 @@ input[type="radio"] {
 }
 
 .radioText1 {
-	font-size: 0.8em;
+	font-size: 1.2em;
 }
 
 .radioText2 {
@@ -64,11 +64,11 @@ input[type="radio"] {
 	overflow-y: auto;
 }
 
-.georegion {
+.column-center {
 	text-align: center;
 }
 
-.georegion-text {
+.column-center-text {
 	width: 95%;
 }
 

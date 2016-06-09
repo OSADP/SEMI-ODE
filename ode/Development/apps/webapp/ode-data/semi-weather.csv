@@ -11,3 +11,5 @@ SourceId,ObsTypeID,ObsTypeName,SensorID,SensorIndex,Latitude,Longitude,Elevation
 1,ot2,essAirTemperature,s5,1,42.479669,-83.285406,473,25,C
 1,ot1,essAtmosphericPressure,s6,0,42.465519,-83.279015,473,1006,mbar
 1,ot2,essAirTemperature,s6,1,42.465519,-83.279015,473,26,C
+1,ot1,essAtmosphericPressure,s7,0,42.370139,-82.825844,473,10001,mbar
+1,ot2,essAirTemperature,s7,1,42.370139,-82.825844,473,201,C
