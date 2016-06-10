@@ -4,7 +4,7 @@
 
   <groupId>asn.1</groupId>
   <artifactId>semi</artifactId>
-  <version>2.2</version>
+  <version>2.2.1</version>
   <packaging>jar</packaging>
 
   <name>oss</name>
@@ -21,7 +21,7 @@
     <dependency>
        <groupId>asn.1</groupId>
        <artifactId>oss.runtime</artifactId>
-       <version>6.2</version>
+       <version>6.3</version>
     </dependency>
   </dependencies>
 
