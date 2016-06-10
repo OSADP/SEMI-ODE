@@ -4,6 +4,8 @@ set -e       # Exit script on error
 set -x      # Print commands and arguments
 
 echo "Disabling firewall"
+#sudo service iptables stop
+#sudo chkconfig iptables off
 sudo service firewalld stop
 sudo chkconfig firewalld off
 setenforce 0 
