@@ -537,6 +537,11 @@ function sourceController(clazz) {
    $('.skipLimit').hide();
    $('.mapIndicators').hide();
    $('.roadSeg').hide();
+   
+   if (window.location.hostname == 'ec2-52-87-98-38.compute-1.amazonaws.com' ||
+       window.location.hostname == '52.87.98.38') {
+      $('.testRadio').hide();
+   }
 
    if (clazz != clear) {
       $(clazz).show();
