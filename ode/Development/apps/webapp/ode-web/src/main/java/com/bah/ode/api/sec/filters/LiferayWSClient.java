@@ -41,7 +41,7 @@ public class LiferayWSClient {
       Client client = buildAuthenticationClient(userEmailAddress, password);
 
       return Long.parseLong(client.target(liferayHostname)
-            .path("/api/jsonws/liferay.user/get-user-id-by-email-address/")
+            .path("/api/jsonws/user/get-user-id-by-email-address/")
             .path("company-id").path(companyId).path("email-address")
             .path(userEmailAddress).request(MediaType.WILDCARD_TYPE)
             .get(String.class));
@@ -63,7 +63,7 @@ public class LiferayWSClient {
       Client client = buildAuthenticationClient(user, pass);
 
       return client.target(liferayHostname)
-            .path("/api/jsonws/liferay.role/get-user-roles/userId/")
+            .path("/api/jsonws/role/get-user-roles/userId/")
             .path(String.valueOf(userId)).request(MediaType.WILDCARD_TYPE)
             .get(String.class);
    }

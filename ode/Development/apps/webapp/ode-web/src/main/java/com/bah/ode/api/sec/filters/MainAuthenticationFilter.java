@@ -107,13 +107,14 @@ public class MainAuthenticationFilter implements ContainerRequestFilter {
       long userId;
 
       try {
+         logger.info("Authenticating {}", lap[0]);
          userId = client.getUserIdByEmail(lap[0], lap[1]);
          crc.setProperty("userId", new Long(userId));
 
       } catch (Exception e) {
-         logger.error("Unable to Authenticate.", e);
+         logger.error("Unable to Authenticate " + lap[0], e);
          abortRequest(crc, Response.Status.UNAUTHORIZED,
-               "Unable to Authenticate. Error " + e.toString());
+               "Unable to Authenticate " + lap[0] + ". Error: "+ e.toString());
       }
    }
 
