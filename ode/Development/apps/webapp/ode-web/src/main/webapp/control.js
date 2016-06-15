@@ -909,9 +909,13 @@ function getToken(email, password) {
          }
       },
       error : function(jqXHR, textStatus, errorThrown) {
-         log("sent-console", "Status: " + textStatus);
-         log("sent-console", "Error Thrown: " + errorThrown);
-         log("sent-console", "Details: " + JSON.stringify(jqXHR));
+         var jsonMsg = {'Status': textStatus, 
+                    'Error Thrown':errorThrown,  
+                    'Details': JSON.stringify(jqXHR)};
+         var msg = JSON.stringify(jsonMsg);
+         alert(msg);
+
+         log("sent-console", msg);
       }
    });
 }
