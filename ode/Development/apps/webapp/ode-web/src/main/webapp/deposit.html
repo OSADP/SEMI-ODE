@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>ODE Publish Web UI</title>
+<title>SEMI ODE Publish Web UI</title>
 
 <!-- Start Stylesheets -->
 <link rel="stylesheet" type="text/css" href="style.css" />
@@ -24,10 +24,13 @@
       <div class="column-left">
 
          <div class="leftsection">
+            <img alt="SEMI ODE" src="LogoLarge.png" width="100%">
             <div id="title">
-               <div align="center">ODE Publish Web UI</div>
+               <div align="center">Publish Web UI</div>
             </div>
 
+            <a href="SEMI-ODE-Web-UI-UG.pdf" target="_blank">Quick Start Guide</a>
+            <br/>
             <h1>Publish</h1>
             <form action="">
                <p class="radioText1">
@@ -99,9 +102,9 @@
             <hr/>
             <h2>Options</h2>
             <label for="recordsPerBatch">Number of records per batch: </label> <br/> 
-            <input id="recordsPerBatch" type="text" size="40" style="width: 100px"> <br/>
+            <input id="recordsPerBatch" type="text" value="5" size="40" style="width: 100px"> <br/>
             <label for="timeBuffer">Milliseconds between sending each batch: </label> <br/> 
-            <input id="timeBuffer" type="text" size="40" style="width: 100px"> <br/> <br/>
+            <input id="timeBuffer" type="text" value="1000" size="40" style="width: 100px"> <br/> <br/>
          </div>
       </div>
       <div class="column-right">

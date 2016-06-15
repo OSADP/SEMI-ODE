@@ -636,7 +636,7 @@ function connect() {
          }
       }
       log("received-console", event.data);
-      if (clustersUpdateCnt++ >= updateClustersConstant) {
+      if (++clustersUpdateCnt >= updateClustersConstant) {
          updateClustersConstant = updateClusters(event.data);
          clustersUpdateCnt = 0;
       }
@@ -909,9 +909,13 @@ function getToken(email, password) {
          }
       },
       error : function(jqXHR, textStatus, errorThrown) {
-         log("sent-console", "Status: " + textStatus);
-         log("sent-console", "Error Thrown: " + errorThrown);
-         log("sent-console", "Details: " + JSON.stringify(jqXHR));
+         var jsonMsg = {'Status': textStatus, 
+                    'Error Thrown':errorThrown,  
+                    'Details': JSON.stringify(jqXHR)};
+         var msg = JSON.stringify(jsonMsg);
+         alert(msg);
+
+         log("sent-console", msg);
       }
    });
 }
