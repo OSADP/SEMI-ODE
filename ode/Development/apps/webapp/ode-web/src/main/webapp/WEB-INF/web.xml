@@ -11,101 +11,139 @@
    </context-param>
 
    <context-param>
+      <!-- The root context for ODE (NOT USED)-->
       <param-name>web.server.root</param-name>
-      <param-value></param-value>
+      <param-value>ode</param-value>
    </context-param>
    <context-param>
+      <!-- The root context for Liferay portal -->
       <param-name>liferay.ws.serverhost</param-name>
       <param-value>http://localhost:8080</param-value>
    </context-param>
    <context-param>
+      <!-- Company ID of the Lifray portal instance. Will vary based on Destination installation -->
       <param-name>liferay.ws.companyId</param-name>
-      <param-value>10157</param-value> <!-- Will vary based on Destination installation 20155 -->
-      <!-- <param-value>10157</param-value> -->
+      <param-value>10157</param-value> 
    </context-param>
    <context-param>
+      <!-- Liferay Portal database name -->
       <param-name>liferay.db.name</param-name>
       <param-value>lportal</param-value>
    </context-param>
    <context-param>
+      <!-- Liferay Portal database host name -->
       <param-name>liferay.db.host</param-name>
       <param-value>localhost</param-value>
    </context-param>
    <context-param>
+      <!-- smtp mail server host name (NOT USED)-->
       <param-name>mail.smtp.host</param-name>
       <param-value></param-value>
    </context-param>
    <context-param>
+      <!-- smtp mail server port number (NOT USED)-->
       <param-name>mail.smtp.port</param-name>
       <param-value>25</param-value>
    </context-param>
    <context-param>
+      <!-- smtp mail server socket factory port number (NOT USED)-->
       <param-name>mail.smtp.socketFactory.port</param-name>
       <param-value>25</param-value>
    </context-param>
    <context-param>
+      <!-- FROM email address used for notifications (NOT USED)-->
       <param-name>mail.from</param-name>
       <param-value></param-value>
    </context-param>
    <context-param>
+      <!-- smtp mail server username (NOT USED)-->
       <param-name>mail.user</param-name>
       <param-value></param-value>
    </context-param>
    <context-param>
+      <!-- smtp mail server password (NOT USED)-->
       <param-name>mail.password</param-name>
       <param-value></param-value>
    </context-param>
    <context-param>
+      <!-- USDOT CAS URL used for authenticating requests -->
       <param-name>dds.cas.url</param-name>
       <param-value>https://cas.connectedvcs.com/accounts/v1/tickets</param-value>
    </context-param>
    <context-param>
+      <!-- USDOT CAS username used for authenticating requests -->
       <param-name>dds.cas.username</param-name>
-      <param-value>Musavi_hamid@bah.com</param-value>
+      <param-value>${dds.cas.username}</param-value>
    </context-param>
    <context-param>
+      <!-- USDOT CAS password used for authenticating requests -->
       <param-name>dds.cas.password</param-name>
-      <param-value>CV2015</param-value>
+      <param-value>${dds.cas.password}</param-value>
    </context-param>
    <context-param>
+      <!-- USDOT Warehouse Tools WebSocket URI -->
       <param-name>dds.websocket.uri</param-name>
       <param-value>wss://webapp.connectedvcs.com/whtools22/websocket</param-value>
    </context-param>
    <context-param>
+      <!-- Spark Master specifies if spark job is to run locally with K worker
+           threads (locak[k]) or on yarn (yarn-client or yarn-cluster). 
+           If on yarn, whether to deploy your driver on the worker nodes (yarn-cluster)
+           or locally as an external client (yarn-client) (default: client)   
+      -->
       <param-name>spark.master</param-name>
-      <!--param-value>yarn-cluster OR yarn-client OR local[2]</param-value -->
       <param-value>yarn-client</param-value>
    </context-param>
    <context-param>
+      <!-- Spark microbatch duration in milliseconds -->
       <param-name>spark.streaming.microbatch.duration.ms</param-name>
       <param-value>1000</param-value>
    </context-param>
    <context-param>
+      <!-- Spark streaming sliding window duration in number of microbatches.
+           multiply spark.streaming.window.microbatches by 
+           spark.streaming.microbatch.duration.ms to get the sliding window
+           duration in milliseconds.
+       -->
       <param-name>spark.streaming.window.microbatches</param-name>
       <param-value>60</param-value>
    </context-param>
    <context-param>
+      <!-- Spark streaming sliding window slide duration in number of microbatches.
+           multiply spark.streaming.slide.microbatches by 
+           spark.streaming.microbatch.duration.ms to get the slide duration 
+           in milliseconds.
+       -->
       <param-name>spark.streaming.slide.microbatches</param-name>
       <param-value>30</param-value>
    </context-param>
    
    <context-param>
+      <!-- Weather integration file  
+         CAN BE HDFS OR LOCAL 
+         Local example: /home/centos/semi-weather.csv</param-value
+         HDFS example: hdfs://ip-10-0-16-10.ec2.internal:8020/user/hdfs/semi-weather.csv
+      -->
       <param-name>spark.static.weather.file.location</param-name>
-      <!-- CAN BE HDFS OR LOCAL -->
       <param-value>hdfs://ip-10-0-16-10.ec2.internal:8020/user/hdfs/semi-weather.csv</param-value>
-      <!--param-value>/home/centos/semi-weather.csv</param-value -->
    </context-param>
    <context-param>
-      <!-- CAN BE HDFS OR LOCAL -->
+      <!-- Sanitization file  
+         CAN BE HDFS OR LOCAL 
+         Local example: /home/centos/sanitization.json</param-value
+         HDFS example: hdfs://ip-10-0-16-10.ec2.internal:8020/user/hdfs/sanitization.json
+      -->
       <param-name>spark.static.sanitization.file.location</param-name>
       <param-value>hdfs://ip-10-0-16-10.ec2.internal:8020/user/hdfs/sanitization.json</param-value>
-      <!--param-value>/home/centos/sanitization.json</param-value -->
    </context-param>
    <context-param>
-      <!-- CAN BE HDFS OR LOCAL -->
+      <!-- Validation file  
+         CAN BE HDFS OR LOCAL 
+         Local example: /home/centos/validation.json</param-value 
+         HDFS example: hdfs://ip-10-0-16-10.ec2.internal:8020/user/hdfs/validation.json
+      -->
       <param-name>spark.static.validation.file.location</param-name>
       <param-value>hdfs://ip-10-0-16-10.ec2.internal:8020/user/hdfs/validation.json</param-value>
-      <!--param-value>/home/centos/validation.json</param-value -->
    </context-param>
    <context-param>
       <param-name>spark.road.segment.snapping.tolerance</param-name>
@@ -113,17 +151,19 @@
    </context-param>
 
 
-   <!-- Spark Assembly to be uploaded to Yarn Cluster Assumed to be installed 
-      on the Web application Server This param specifies the name based on HDP 
-      naming convention -->
    <context-param>
+      <!-- Spark Assembly to be uploaded to Yarn Cluster Assumed to be installed 
+         on the Web application Server This param specifies the name based on HDP 
+         naming convention
+      -->
       <param-name>spark.assembly.jar</param-name>
       <param-value>spark-assembly-1.3.1.2.3.0.0-2557-hadoop2.7.1.2.3.0.0-2557.jar</param-value>
    </context-param>
 
    <context-param>
+      <!-- List of Kafka broker server host names ad port numbers-->
       <param-name>kafka.metadata.broker.list</param-name>
-      <param-value>ip-10-0-16-115.ec2.internal:6667,ip-10-0-16-143.ec2.internal:6667</param-value>
+      <param-value>ip-10-0-16-115.ec2.internal:6667,ip-10-0-16-143.ec2.internal:6667,ip-10-0-16-10.ec2.internal:6667</param-value>
    </context-param>
    <context-param>
       <param-name>data.sequence.reorder.delay</param-name>
@@ -134,21 +174,27 @@
       <param-value>1000</param-value>
    </context-param>
    <context-param>
+      <!-- List of Zookeeper server host names and port numbers-->
       <param-name>zk.connection.strings</param-name>
       <param-value>ip-10-0-16-115.ec2.internal:2181,ip-10-0-16-10.ec2.internal:2181,ip-10-0-16-143.ec2.internal:2181</param-value>
    </context-param>
    <context-param>
+      <!-- jar file name containing Spark ODE applications -->
       <param-name>ode.spark.jar</param-name>
       <param-value>ode-spark-0.0.1-SNAPSHOT.jar</param-value>
    </context-param>
    <context-param>
+      <!-- RSA Keystore file used in ODE authentication -->
       <param-name>token.key.rsa.pem</param-name>
       <param-value>mykey.pem</param-value>
    </context-param>
 
-   <!-- Param value can be empty to disable the inclusion of external properties 
+   <!-- Configuration files and directory for Spark jobs. Currently two jobs
+      are launched by the ODE: Transformer job and Aggregator job/ 
+      Param value can be empty to disable the inclusion of external properties 
       files. Must be located within Servelet context, such as in /WEB-INF only 
-      used in yarn-client or yarn-master modes -->
+      used in yarn-client or yarn-master modes 
+   -->
    <context-param>
       <param-name>spark.yarn.transformer.configuration.file</param-name>
       <param-value>/WEB-INF/spark-yarn-transformer.properties</param-value>
@@ -163,8 +209,10 @@
    </context-param>
 
 
-   <!-- Properties Value set in the Parent POM since the values are used 
-      in more than one file -->
+   <!-- 
+      Properties Value set in the Parent POM since the values are used 
+      in more than one file 
+   -->
    <context-param>
       <param-name>spark.metrics.transformer.configuration.file</param-name>
       <param-value>${spark.metrics.transformer.file}</param-value>
@@ -173,6 +221,8 @@
       <param-name>spark.metrics.aggregator.configuration.file</param-name>
       <param-value>${spark.metrics.aggregator.file}</param-value>
    </context-param>
+   
+   <!-- Metrics parameters -->
    <context-param>
       <param-name>metrics.prefix</param-name>
       <param-value>ode-</param-value>
@@ -190,7 +240,7 @@
       <param-value>2003</param-value>
    </context-param>
 
-   <!-- *** PERFORMANCE PARAMS -->
+   <!-- *** PERFORMANCE PARAMS *** -->
    <context-param>
       <param-name>dds.num.vsr.in.bundle.to.use</param-name>
       <param-value>10</param-value>
@@ -257,6 +307,7 @@
       <param-name>spark.run.ode.aggregator.in.vdp</param-name>
       <param-value>false</param-value>
    </context-param>
+   <!-- Number of kafka consumer threads -->
    <context-param>
       <param-name>kafka.consumer.threads</param-name>
       <param-value>9</param-value>
