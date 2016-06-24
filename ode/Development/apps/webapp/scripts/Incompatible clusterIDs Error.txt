@@ -1,0 +1,12 @@
+2016-02-15 15:56:29,594 WARN  common.Storage (DataStorage.java:addStorageLocations(375)) - java.io.IOException: Incompatible clusterIDs idfs/data: namenode clusterID = CID-371058f2-ca94-4186-8a73-4dd340281478; datanode clusterID = CID-65b3f9cd-0a16-4630-bae6-be815253db8d
+2016-02-15 15:56:29,595 FATAL datanode.DataNode (BPServiceActor.java:run(807)) - Initialization failed for Block pool <registering> (Data0b-6ec2-41f5-8054-7b0c86c77c05) service to ip-10-0-16-10.ec2.internal/10.0.16.10:8020. Exiting.
+java.io.IOException: All specified directories are failed to load.
+        at org.apache.hadoop.hdfs.server.datanode.DataStorage.recoverTransitionRead(DataStorage.java:477)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.initStorage(DataNode.java:1383)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.initBlockPool(DataNode.java:1348)
+        at org.apache.hadoop.hdfs.server.datanode.BPOfferService.verifyAndSetNamespaceInfo(BPOfferService.java:317)
+        at org.apache.hadoop.hdfs.server.datanode.BPServiceActor.connectToNNAndHandshake(BPServiceActor.java:221)
+        at org.apache.hadoop.hdfs.server.datanode.BPServiceActor.run(BPServiceActor.java:795)
+        at java.lang.Thread.run(Thread.java:745)
+
+        

@@ -1,0 +1,109 @@
+yarn:
+  sudo rm -rf /data/hadoop/yarn/local
+  sudo rm -rf /data/hadoop/yarn/log
+  sudo mkdir -p /data/hadoop/yarn/local
+  sudo mkdir -p /data/hadoop/yarn/log
+  sudo rm -rf /var/log/hadoop/hdfs/hadoop-hdfs-datanode-
+
+Ambari server:
+  sudo rm -rf /var/log/ambari-server/*.log.*
+  sudo rm -rf /var/log/ambari-agent/*.log.*
+  
+Nodes:
+  sudo rm -rf /var/log/ambari-agent/*.log.*
+  sudo rm -rf /var/log/kafka/*.log.*
+  sudo rm -rf /var/log/kafka/*.out.*
+  sudo rm -rf /var/log/hadoop-yarn/yarn/*.log.*
+  sudo rm -rf /var/log/hadoop-yarn/yarn/*.out.*
+  sudo rm -rf /var/log/hadoop/hdfs/*.log.*
+  sudo rm -rf /var/log/hadoop/hdfs/*.out.*
+
+hdfs:
+  sudo su hdfs
+  hadoop fs -ls /user/root/.sparkStaging
+  hadoop fs -rm -r -f -skipTrash /user/root/.sparkStaging/application_
+  hadoop fs -ls /app-logs/root/logs
+  hadoop fs -rm -r -f -skipTrash /app-logs/root/logs/application_
+
+extend file system
+  sudo df -h
+  sudo resize2fs /dev/xvdb
+  sudo df -h
+
+  # MOunting a new disk device #
+  ##############################
+  
+  #list attached block devices
+  lsblk 
+  
+  # outputs something like this
+  [centos@ip-10-0-1-104 hamid]$ lsblk
+  NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+  xvda    202:0    0  16G  0 disk
+  └─xvda1 202:1    0  16G  0 part /
+  xvdb    202:16   0  15G  0 disk /data
+
+  #create a file system on the new drive (format the drive) if not formatted.
+  sudo mkfs -t ext4 /dev/xvdb
+  
+  #You should mount the partition not the disk (IF THERE IS A PARTITION)
+  #/dev/xvdf1 is a partition
+  #/dev/xvdf  is a disk
+
+  #Use this command to mount a device if your filesystem type is ext4:
+  sudo mkdir /data
+  sudo mount /dev/xvdb /data -t ext4 #where /data is the mount point
+
+  # Add a line to /etc/fstab file
+  sudo vi /etc/fstab
+  /dev/xvdb /data ext4 defaults,nofail 0 2
+  
+  #If you do not know the filesystem type of your volume, you can check it with this command:
+  blkid /dev/xvdf
+  
+  #It will output something like this:
+
+  root@ip-172-31-9-188:/home/ubuntu# blkid /dev/xvdf
+  /dev/xvdf: UUID="a97aa85f-ef3d-4b2e-bb8f-e4e357949093" TYPE="ext4" 
+  #Use what it says for TYPE="" and update your mount command to use that type after the -t flag as written at the top of this answer.
+  
+
+DEV/TEST Portal
+  sudo rm -rf /mnt/backup/2016-01-
+  
+Kafka
+ sudo chown kafka:hadoop -R /data/kafka-logs/*  
+ 
+ #Change retention time of topics
+ kafka-topics.sh --zookeeper ip-10-0-16-10.ec2.internal:2181,ip-10-0-16-115.ec2.internal:2181,ip-10-0-16-143.ec2.internal:2181 --alter --topic MyTopic --config retention.ms=1000
+ 
+Graphite
+  sudo /usr/sbin/collectd -C /etc/collectd.conf
+
+DEV Server  
+  Instance type = c3.large
+  Availability zone = us-east-1c
+  Security groups = sg-fd92e39a ()dev-ode-hadoopCluster23-publicAPISG1-1U0B21940F0GV)
+  VPC ID = vpc-f907f59d
+  Root device = /dev/sda1
+  Block devices = 
+    /dev/xvdb
+    /dev/sda1
+
+
+Updating files on HDFS
+======================
+sudo su hdfs
+ls -l /tmp
+sudo rm /tmp/validation.json
+hadoop fs -get /user/hdfs/validation.json /tmp/validation.json
+ls -l /tmp
+vi /tmp/validation.json
+hadoop fs -put -f /tmp/validation.json /user/hdfs/validation.json
+hadoop fs -ls /user/hdfs/
+
+
+Deleting files from Git tree Permanently
+========================================
+git filter-branch --tree-filter 'rm -rf ode/file/path*' HEAD
+git push origin --force --all
