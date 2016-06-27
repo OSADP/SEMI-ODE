@@ -16,7 +16,10 @@
  *******************************************************************************/
 package com.bah.ode.wrapper;
 
+import javax.websocket.CloseReason;
+import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
+import javax.websocket.Session;
 
 /**
  * This interface abstracts the use of {@link MessageHandler.Whole} from the 
@@ -25,5 +28,11 @@ import javax.websocket.MessageHandler;
  * @param <T> - the type of message being handled by this message handler.
  */
 public interface WebSocketMessageHandler<T> extends MessageHandler.Whole<T> {
+
+   void onOpen(Session session, EndpointConfig config);
+
+   void onClose(Session session, CloseReason reason);
+
+   void onError(Session session, Throwable t);
 
 }

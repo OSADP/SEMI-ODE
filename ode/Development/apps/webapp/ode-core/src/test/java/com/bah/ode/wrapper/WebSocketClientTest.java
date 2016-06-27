@@ -59,6 +59,24 @@ public class WebSocketClientTest {
       public void onMessage(Integer message) {
          assertEquals(expectedMessage, message);
       }
+
+      @Override
+      public void onOpen(Session session, EndpointConfig config) {
+         // TODO Auto-generated method stub
+         
+      }
+
+      @Override
+      public void onClose(Session session, CloseReason reason) {
+         // TODO Auto-generated method stub
+         
+      }
+
+      @Override
+      public void onError(Session session, Throwable t) {
+         // TODO Auto-generated method stub
+         
+      }
    };
    
    @BeforeClass
@@ -174,6 +192,7 @@ public class WebSocketClientTest {
          wsSession.addMessageHandler(handler);
          wsSession.getId(); result = "Test WebSocket Session";
          wsSession.close();
+         wsSession.getId(); result = "Test WebSocket Session";
       }};
       
       wsClient.connect();

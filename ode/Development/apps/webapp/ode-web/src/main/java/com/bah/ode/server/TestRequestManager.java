@@ -1,33 +1,20 @@
 package com.bah.ode.server;
 
-import com.bah.ode.distributors.BaseDataPropagator;
 import com.bah.ode.model.OdeMetadata;
+import com.bah.ode.model.OdeRequest;
 
-public class TestRequestManager {
-   private OdeMetadata metadata;
-
-   // FOR LOOPBACK TEST ONLY
-   private BaseDataPropagator loopbackTestPropagator;
-   
-   public BaseDataPropagator getLoopbackTestPropagator() {
-      return loopbackTestPropagator;
-   }
-   public void setLoopbackTestPropagator(BaseDataPropagator propagator) {
-      this.loopbackTestPropagator = propagator;
-   }
-   // FOR LOOPBACK TEST ONLY
+public class TestRequestManager extends AbstractDataSourceManager {
 
    public TestRequestManager(OdeMetadata metadata) {
       this.metadata = metadata;
    }
 
-   public OdeMetadata getMetadata() {
-      return metadata;
+   @Override
+   public void sendRequest(OdeRequest odeRequest)
+         throws DataSourceManagerException {
    }
 
-   public void setMetadata(OdeMetadata metadata) {
-      this.metadata = metadata;
+   @Override
+   public void close() throws DataSourceManagerException {
    }
-
-   
 }

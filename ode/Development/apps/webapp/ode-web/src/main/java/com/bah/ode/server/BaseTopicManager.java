@@ -42,6 +42,10 @@ public class BaseTopicManager {
    }
 
    public int addSubscriber(String topicName) {
+      AtomicInteger atomicSubscribers = subscribers.get(topicName);
+      if (atomicSubscribers == null || atomicSubscribers.get() == 0) {
+         getOrCreateTopic(topicName);
+      }
       return subscribers.get(topicName).incrementAndGet();
    }
    

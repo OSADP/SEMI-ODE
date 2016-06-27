@@ -273,7 +273,8 @@ public class WebSocketClient<T> extends Endpoint {
     */
    @Override
    public void onOpen(Session session, EndpointConfig config) {
-      logger.info("Connection opened");
+      handler.onOpen(session, config);
+      logger.info("Connection opened. Session ID {}", session.getId());
    }
 
    /*
@@ -284,7 +285,8 @@ public class WebSocketClient<T> extends Endpoint {
     */
    @Override
    public void onClose(Session session, CloseReason reason) {
-      logger.info("Connection closed. Reason: {}", reason);
+      handler.onClose(session, reason);
+      logger.info("Connection closed. Session ID {}. Reason: {}", session.getId(), reason);
       this.wsSession = null;
    }
 
@@ -296,7 +298,8 @@ public class WebSocketClient<T> extends Endpoint {
     */
    @Override
    public void onError(Session session, Throwable t) {
-      logger.error("WebSocket Error", t);
+      handler.onError(session, t);
+      logger.error("WebSocket Error. Session ID " + session.getId(), t);
    }
 
    /**

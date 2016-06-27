@@ -78,7 +78,7 @@ public class QueryDataPropagator extends BaseDataPropagator {
                      if (recordCount < limit) {
                         if (applyFilters((OdeFilterable)payload)) {
                            recordCount++;
-                           WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
+                           queueDataInOrder(dataMsg);
                         }
 
                         if (recordCount >= limit) {
@@ -96,7 +96,7 @@ public class QueryDataPropagator extends BaseDataPropagator {
                   } else { // We DON'T have a limit
                      if (applyFilters((OdeFilterable)payload)) {
                         recordCount++;
-                        WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
+                        queueDataInOrder(dataMsg);
                      }
 
                      if (stopRecord != null &&
@@ -114,7 +114,7 @@ public class QueryDataPropagator extends BaseDataPropagator {
          baseMeter.mark();
       } catch (Exception e) {
          //if the session is not open, ignore the exception
-         if (clientSession.isOpen())
+         if (clientSessionIsOpen())
             logger.error("Error processing data.", e);
       } finally {
          context.stop();

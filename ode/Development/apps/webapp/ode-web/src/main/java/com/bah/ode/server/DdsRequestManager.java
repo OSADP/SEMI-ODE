@@ -2,6 +2,8 @@ package com.bah.ode.server;
 
 import java.io.IOException;
 
+import javax.websocket.Session;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,9 +11,11 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.AsdDecoder;
 import com.bah.ode.dds.client.ws.DdsClientFactory;
+import com.bah.ode.dds.client.ws.DdsMessageHandler;
 import com.bah.ode.dds.client.ws.DepositResponseDecoder;
 import com.bah.ode.dds.client.ws.IsdDecoder;
 import com.bah.ode.dds.client.ws.VsdDecoder;
+import com.bah.ode.distributors.BaseDataPropagator;
 import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.DdsDepRequest;
 import com.bah.ode.model.DdsQryRequest;
@@ -35,18 +39,18 @@ import com.bah.ode.wrapper.WebSocketMessageDecoder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class DdsRequestManager {
+public class DdsRequestManager extends AbstractDataSourceManager {
    private static Logger logger = 
          LoggerFactory.getLogger(DdsRequestManager.class);
 
    private static AppContext appContext = AppContext.getInstance();
    
-   private OdeMetadata metadata;
    private WebSocketClient<?> ddsClient;
+   private Session session;
    
    @SuppressWarnings("unchecked")
    public DdsRequestManager(OdeMetadata metadata) 
-         throws DdsRequestManagerException {
+         throws DataSourceManagerException {
       this.metadata = metadata;
       
       OdeRequest odeRequest = this.metadata.getOdeRequest();
@@ -73,19 +77,15 @@ public class DdsRequestManager {
                (Class<? extends WebSocketMessageDecoder<?>>) decoder);
          
          if (ddsClient == null)
-            throw new DdsRequestManagerException("Error creating DDS Client");
-         
-         logger.info("Connecting to DDS");
-         ddsClient.connect();
-         
+            throw new DataSourceManagerException("Error creating DDS Client");
       } catch (Exception e) {
-         throw new DdsRequestManagerException("Error sending Data Request.", e);
+         throw new DataSourceManagerException("Error sending Data Request.", e);
       }
    }
 
 
    public static DdsRequest buildDdsRequest(OdeRequest odeRequest)
-               throws DdsRequestManagerException, OdeException, IOException {
+               throws DataSourceManagerException, OdeException, IOException {
       OdeStatus status = new OdeStatus();
       DdsRequest ddsRequest;
       OdeRequestType requestType = odeRequest.getRequestType();
@@ -132,7 +132,7 @@ public class DdsRequestManager {
                            requestType.getShortName(),
                            OdeRequestType.shortNames()));
          logger.error(status.toString());
-         throw new DdsRequestManagerException(status.toString());
+         throw new DataSourceManagerException(status.toString());
       }
 
       if (requestType != OdeRequestType.Deposit) {
@@ -162,7 +162,7 @@ public class DdsRequestManager {
                         "Invalid data type %s requested. Valid data types are %s",
                         dataType, OdeDataType.shortNames()));
             logger.error(status.toString());
-            throw new DdsRequestManagerException(status.getMessage());
+            throw new DataSourceManagerException(status.getMessage());
          }
       }
 
@@ -171,7 +171,7 @@ public class DdsRequestManager {
    }
 
    private static DdsDepRequest buildDepositRequest(OdeDepRequest odeDepReq) 
-         throws IOException, DdsRequestManagerException {
+         throws IOException, DataSourceManagerException {
       DdsDepRequest ddsDepReq = new DdsDepRequest();
       
       String sEncodeType = StringUtils.lowerCase(odeDepReq.getEncodeType());
@@ -184,7 +184,7 @@ public class DdsRequestManager {
       } else {
          // If the message does not appear to be a json, throw exception
          if (!JsonUtils.isValid(odeDepReq.getData()))
-            throw new DdsRequestManagerException("Invalid Data for Deposit");
+            throw new DataSourceManagerException("Invalid Data for Deposit");
          
          ObjectNode odm = OdeDataMessage.jsonStringToObjectNode(odeDepReq.getData());
          if (odm != null) {
@@ -203,15 +203,15 @@ public class DdsRequestManager {
                      break;
    
                   default:
-                     throw new DdsRequestManagerException(
+                     throw new DataSourceManagerException(
                            "Unsupported payloadType: " + payloadTypeNode.textValue()); 
                   }
                } else {
-                  throw new DdsRequestManagerException(
+                  throw new DataSourceManagerException(
                         "Invalid payloadType: " + payloadTypeNode.textValue()); 
                }
             } else { // unsupported message
-               throw new DdsRequestManagerException(
+               throw new DataSourceManagerException(
                      "Unsupported message: " + odeDepReq.getData() +
                      "\npayload and metadata are required."); 
             }
@@ -264,14 +264,20 @@ public class DdsRequestManager {
    }
 
 
-   public void sendDdsDataRequest(OdeRequest odeRequest) throws DdsRequestManagerException {
-      if (odeRequest.getRequestType() != OdeRequestType.Deposit)
-         logger.info("Sending request to DDS for topic: {}", metadata.getInputTopic());
-      else
-         logger.debug("Sending request to DDS for topic: {}", metadata.getInputTopic());
-         
+   @Override
+   public void sendRequest(OdeRequest odeRequest) throws DataSourceManagerException {
       try {
-         if (ddsClient.getWsSession() != null) {
+         if (session == null) {
+            logger.info("Connecting to DDS");
+            session = ddsClient.connect();
+         }
+         
+         if (odeRequest.getRequestType() != OdeRequestType.Deposit)
+            logger.info("Sending request to DDS for topic: {}", metadata.getInputTopic());
+         else
+            logger.debug("Sending request to DDS for topic: {}", metadata.getInputTopic());
+            
+         if (session != null) {
             // Send the new request
             DdsRequest ddsRequest = buildDdsRequest(odeRequest);
             if (ddsRequest != null) {
@@ -283,7 +289,7 @@ public class DdsRequestManager {
                ddsClient.send(sDdsRequest);
             }
          } else {
-            throw new DdsRequestManagerException("DDS Client Session is null, probably NOT CONNECTED.");
+            throw new DataSourceManagerException("DDS Client Session is null, probably NOT CONNECTED.");
          }
       } catch (Exception e) {
          try {
@@ -291,7 +297,7 @@ public class DdsRequestManager {
          } catch (WebSocketException e1) {
             logger.error("Error Closing DDS Client.", e1);
          }
-         throw new DdsRequestManagerException("Error sending Data Request.", e);
+         throw new DataSourceManagerException("Error sending Data Request.", e);
       }
    }
 
@@ -301,28 +307,31 @@ public class DdsRequestManager {
    }
 
 
-   public static class DdsRequestManagerException extends Exception {
-      private static final long serialVersionUID = 1L;
-
-      public DdsRequestManagerException(String message, Exception e) {
-         super(message, e);
-      }
-
-      public DdsRequestManagerException(String message) {
-         super(message);
-      }
-      
-   }
-
-
-   public void cancelDdsSubscription() throws DdsRequestManagerException {
+   public void close() throws DataSourceManagerException {
       if (ddsClient != null) {
          try {
             logger.info("Closing WebSocket Client for Request {}", this.metadata.getKey());
             ddsClient.close();
          } catch (WebSocketException e) {
-            throw new DdsRequestManagerException("Error closing DDS Client: ", e);
+            throw new DataSourceManagerException("Error closing DDS Client: ", e);
          }
       }
    }
+
+
+   @Override
+   public void setPropagator(BaseDataPropagator propagator) {
+      super.setPropagator(propagator);
+      DdsMessageHandler handler = (DdsMessageHandler) ddsClient.getHandler();
+      handler.setLoopbackTestPropagator(propagator);
+   }
+
+   @Override
+   public void setMetadata(OdeMetadata metadata) {
+      super.setMetadata(metadata);
+      DdsMessageHandler handler = (DdsMessageHandler) ddsClient.getHandler();
+      handler.setMetadata(metadata);
+   }
+
+
 }

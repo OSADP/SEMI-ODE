@@ -27,8 +27,8 @@ public class DepositDataPropagator extends BaseDataPropagator {
    @Override
    public synchronized Future<String> process(String data)
          throws com.bah.ode.wrapper.DataProcessor.DataProcessorException {
-      //Disregard the deposit response
       try {
+         if (clientSessionIsOpen())
          WebSocketUtils.send(clientSession, data);
       } catch (Exception e) {
          throw new DataProcessorException(

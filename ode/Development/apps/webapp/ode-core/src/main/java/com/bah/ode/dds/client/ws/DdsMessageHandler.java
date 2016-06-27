@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.websocket.CloseReason;
+import javax.websocket.EndpointConfig;
+import javax.websocket.Session;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +46,6 @@ import com.bah.ode.model.OdeFullMessage;
 import com.bah.ode.model.OdeIntersectionData;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeQryRequest;
-import com.bah.ode.model.OdeRequestType;
 import com.bah.ode.model.OdeVehicleDataFlat;
 import com.bah.ode.wrapper.DataProcessor.DataProcessorException;
 import com.bah.ode.wrapper.MQProducer;
@@ -57,9 +60,9 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    private long bundleId;
    private Integer limit;
    private Integer skip;
-   private long skipCount = 0;
-   private long recordCount = 0;
-   private long receivedRecordCount = 0;
+   private long skipCount;
+   private long recordCount;
+   private long receivedRecordCount;
 
    private MQProducer<String, String> producer;
    private OdeMetadata metadata;
@@ -89,13 +92,23 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
                      AppContext.getInstance().getParam(
                            AppContext.KAFKA_METADATA_BROKER_LIST));
       }
-      this.metadata = metadata;
       this.streamId = UUID.randomUUID().toString();
       this.bundleId = new Long(0);
-      if (this.metadata.getOdeRequest().getRequestType() == OdeRequestType.Query) {
-         OdeQryRequest queryReq = (OdeQryRequest) this.metadata.getOdeRequest();
-         skip = queryReq.getSkip();
-         limit = queryReq.getLimit();
+      this.metadata = metadata;
+      initSkipLimit(metadata);
+   }
+   private void initSkipLimit(OdeMetadata metadata) {
+      if (metadata.getOdeRequest() != null) {
+         if (metadata.getOdeRequest() instanceof OdeQryRequest) {
+            OdeQryRequest qryReq = (OdeQryRequest) metadata.getOdeRequest();
+            
+            this.setSkip(qryReq.getSkip());
+            this.setLimit(qryReq.getLimit());
+            
+            skipCount = 0;
+            recordCount = 0;
+            receivedRecordCount = 0;
+         }
       }
    }
 
@@ -243,4 +256,65 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
       }
    }
 
+   private void sendControlMessage(OdeControlData controlData) {
+      InternalDataMessage idm = new InternalDataMessage();
+      idm.setMetadata(metadata);
+      idm.setPayload(controlData );
+
+      if (!AppContext.loopbackTest()) {
+         producer.send(metadata.getOutputTopic().getName(), 
+               idm.getKey(), idm.toJson());
+      } else {
+         try {
+            loopbackTestPropagator.process(new OdeDataMessage(idm.getPayload()).toJson());
+         } catch (DataProcessorException e) {
+            logger.error("Propagation failed.", e);
+         }
+      }
+   }
+   
+   @Override
+   public void onOpen(Session session, EndpointConfig config) {
+      OdeControlData controlData = new OdeControlData(ControlTag.OPENED);
+      controlData.setMessage("DDS Connection Opened.");
+
+      sendControlMessage(controlData);
+   }
+   
+   @Override
+   public void onClose(Session session, CloseReason reason) {
+      OdeControlData controlData = new OdeControlData(ControlTag.CLOSED);
+      controlData.setMessage("DDS Connection Closed. Reason: " + reason.getReasonPhrase());
+
+      sendControlMessage(controlData);
+   }
+
+   @Override
+   public void onError(Session session, Throwable t) {
+      OdeControlData controlData = new OdeControlData(ControlTag.ERROR);
+      controlData.setMessage("DDS Connection Errored. Message: " + t.getMessage());
+
+      sendControlMessage(controlData);
+   }
+   
+   public OdeMetadata getMetadata() {
+      return metadata;
+   }
+   
+   public void setMetadata(OdeMetadata metadata2) {
+      this.metadata = metadata2;
+      this.initSkipLimit(metadata2);
+   }
+   public Integer getLimit() {
+      return limit;
+   }
+   public void setLimit(Integer limit) {
+      this.limit = limit;
+   }
+   public Integer getSkip() {
+      return skip;
+   }
+   public void setSkip(Integer skip) {
+      this.skip = skip;
+   }
 }

@@ -16,7 +16,9 @@ import com.bah.ode.exception.OdeException;
 import com.bah.ode.metrics.OdeMetrics;
 import com.bah.ode.metrics.OdeMetrics.Context;
 import com.bah.ode.metrics.OdeMetrics.Timer;
+import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeMetadata;
+import com.bah.ode.model.OdeRequest;
 import com.bah.ode.wrapper.MQConsumerGroup;
 import com.bah.ode.wrapper.MQTopic;
 
@@ -80,8 +82,17 @@ public class DataDistributionWorker {
          logger.info("Shutting down consumerGroup {}", 
                consumerGroup.getTopic().getName());
          consumerGroup.shutDown();
+         consumerGroup = null;
       }
-      timerTask.cancel();
+      if (timerTask != null) {
+         timerTask.cancel();
+         timerTask = null;
+      }
+      
+      if (propagator.getMetadata() != null) {
+         OdeRequest request = propagator.getMetadata().getOdeRequest();
+         OdeRequestManager.removeSubscriber(request.getId(), request.getDataType());
+      }
    }
 
    public void startIfNotAlive(OdeMetadata metadata) {
@@ -108,7 +119,7 @@ public class DataDistributionWorker {
                @Override
                public void run() {
                   synchronized (propagator) {
-                     TreeMap<Integer, ArrayList<String>> records = propagator.records();
+                     TreeMap<Integer, ArrayList<OdeDataMessage>> records = propagator.records();
                      /*
                       * Sends the batch every second without waiting for the next bundle
                       * if it hasn't arrived yet.
@@ -116,15 +127,15 @@ public class DataDistributionWorker {
                      if (records.size() != 0) {
                         Context context = timer.time();
                         try {
-                           TreeMap<Integer, ArrayList<String>> sendMap = 
-                                 new TreeMap<Integer, ArrayList<String>>(records);
+                           TreeMap<Integer, ArrayList<OdeDataMessage>> sendMap = 
+                                 new TreeMap<Integer, ArrayList<OdeDataMessage>>(records);
                            records.clear();
                            Iterator<Integer> iter = sendMap.navigableKeySet().iterator();
                            while (iter.hasNext()) {
                               int key = iter.next();
-                              ArrayList<String> vList = sendMap.get(key);
+                              ArrayList<OdeDataMessage> vList = sendMap.get(key);
                               for (int i = 0; i < vList.size(); i++) {
-                                 String msg = vList.get(i);
+                                 OdeDataMessage msg = vList.get(i);
                                  if (msg != null) {
                                     propagator.filterAndSend(msg);
                                  }

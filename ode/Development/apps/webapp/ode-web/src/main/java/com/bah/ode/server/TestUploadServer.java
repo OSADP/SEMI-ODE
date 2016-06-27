@@ -64,7 +64,7 @@ public class TestUploadServer {
    private static Logger logger = LoggerFactory.getLogger(TestUploadServer.class);
    
    private MQProducer<String, String> producer;
-   private TestRequestManager testMgr;
+   private AbstractDataSourceManager testMgr;
 
    private Meter meter = OdeMetrics.getInstance().meter("TotalRecordsReceived");
    private Meter vsdMeter = OdeMetrics.getInstance().meter("VSD_BundlesReceived");
@@ -117,7 +117,7 @@ public class TestUploadServer {
          
          DataSourceConnector connector = WebSocketServer.getConnector(requestId);
          if (connector != null)
-            this.testMgr = connector.getTestMgr();
+            this.testMgr = connector.getDataSourceManager();
       } catch (Exception ex) {
          msg.setCode(OdeStatus.Code.SOURCE_CONNECTION_ERROR).setMessage(
                String.format("Error processing connection request %s",
@@ -289,7 +289,7 @@ public class TestUploadServer {
       
       //FOR TEST ONLY
       if (AppContext.loopbackTest()) {
-         testMgr.getLoopbackTestPropagator().process(new OdeDataMessage(msgPayload).toJson());
+         testMgr.getPropagator().process(new OdeDataMessage(msgPayload).toJson());
       }
    }
 

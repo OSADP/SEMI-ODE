@@ -11,6 +11,7 @@ public class OdeControlData extends OdeMsgPayload {
    private Long sentRecordCount; 
    private Long depositCount; 
    private ControlTag tag;
+   private String message;
    
    public OdeControlData() {
       super();
@@ -72,6 +73,15 @@ public class OdeControlData extends OdeMsgPayload {
       this.tag = tag;
    }
 
+   
+   public String getMessage() {
+      return message;
+   }
+
+   public void setMessage(String message) {
+      this.message = message;
+   }
+
    @Override
    public int hashCode() {
       final int prime = 31;
@@ -79,7 +89,10 @@ public class OdeControlData extends OdeMsgPayload {
       result = prime * result + ((dataSourceBundleCount == null) ? 0
             : dataSourceBundleCount.hashCode());
       result = prime * result
-            + (int) (receivedRecordCount ^ (receivedRecordCount >>> 32));
+            + ((depositCount == null) ? 0 : depositCount.hashCode());
+      result = prime * result + ((message == null) ? 0 : message.hashCode());
+      result = prime * result + ((receivedRecordCount == null) ? 0
+            : receivedRecordCount.hashCode());
       result = prime * result
             + ((sentRecordCount == null) ? 0 : sentRecordCount.hashCode());
       result = prime * result + ((tag == null) ? 0 : tag.hashCode());
@@ -100,7 +113,20 @@ public class OdeControlData extends OdeMsgPayload {
             return false;
       } else if (!dataSourceBundleCount.equals(other.dataSourceBundleCount))
          return false;
-      if (receivedRecordCount != other.receivedRecordCount)
+      if (depositCount == null) {
+         if (other.depositCount != null)
+            return false;
+      } else if (!depositCount.equals(other.depositCount))
+         return false;
+      if (message == null) {
+         if (other.message != null)
+            return false;
+      } else if (!message.equals(other.message))
+         return false;
+      if (receivedRecordCount == null) {
+         if (other.receivedRecordCount != null)
+            return false;
+      } else if (!receivedRecordCount.equals(other.receivedRecordCount))
          return false;
       if (sentRecordCount == null) {
          if (other.sentRecordCount != null)

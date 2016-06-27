@@ -153,11 +153,11 @@ public class WebSocketServer {
                outputTopic = MQTopic.create(UUID.randomUUID().toString(), 
                      MQTopic.defaultPartitions());
 
-               createDistributionWorker(session, requestType, dataType);
+               distroWorker = 
+                     createDistributionWorker(session, requestType, dataType);
                
             }
             WebSocketUtils.send(session, new OdeDataMessage(msg).toJson());
-            
     	  } // end if 
       } 
       catch (Exception ex) {
@@ -312,6 +312,10 @@ public class WebSocketServer {
       }//End of Synchronized block
    }
    private void startDistroWorker(String requestId, OdeMetadata metadata) {
+      if (odeRequest.getRequestType() !=  OdeRequestType.Deposit) {
+         distroWorker.shutDown();
+      }
+      
       MQTopic tempTopic;
       if (odeRequest.getDataType() == OdeDataType.AggregateData) {
          //ODE-169 - Aggregate Query Data Results also contain Vehicle Data Records
@@ -351,7 +355,7 @@ public class WebSocketServer {
       shutDown(session, new CloseReason(CloseCodes.VIOLATED_POLICY, throwable.getMessage()));
    }
    
-   private void createDistributionWorker(Session session, 
+   private DataDistributionWorker createDistributionWorker(Session session, 
          OdeRequestType requestType, OdeDataType dataType) {
       
       logger.info("Creating new Propagator for client session {}, "
@@ -370,7 +374,7 @@ public class WebSocketServer {
          propagator = new SubscriptionDataPropagator(session);
       }
       
-      distroWorker = new DataDistributionWorker(session, propagator);
+      return new DataDistributionWorker(session, propagator);
    }
 
    /**
@@ -406,20 +410,32 @@ public class WebSocketServer {
                
                if (remaining <= 0) {
                   if (connector != null) {
-                     logger.info("Cancelling data request {}", 
+                     if (connector.getMetadata() != null &&
+                         connector.getMetadata().getOdeRequest() != null) {
+                        logger.info("Cancelling data request {}", 
+                              connector.getMetadata().getOdeRequest().getId());
+                     }
+
+                     connector.close();
+
+                     if (connector.getMetadata() != null &&
+                           connector.getMetadata().getOdeRequest() != null) {
+                        logger.info("Removing connector {}", 
                            connector.getMetadata().getOdeRequest().getId());
-                     connector.cancelDataRequest();
-                     logger.info("Removing connector {}", 
-                           connector.getMetadata().getOdeRequest().getId());
-                              connectors.remove(connector.getMetadata().getOutputTopic().getName());
+                        connectors.remove(connector.getMetadata().getOutputTopic().getName());
+                     }
                   }
-                        
                }
             }
                
             if (distroWorker != null) {
-            logger.info("Shutting down distribution worker {}", 
-                  distroWorker.getPropagator().getMetadata().getOdeRequest().getId());
+               if (distroWorker.getPropagator()!= null &&
+                  distroWorker.getPropagator().getMetadata() != null &&
+                  distroWorker.getPropagator().getMetadata().getOdeRequest() != null) {
+               logger.info("Shutting down distribution worker {}", 
+                     distroWorker.getPropagator().getMetadata().getOdeRequest().getId());
+               }
+            
                distroWorker.shutDown();
             }
    

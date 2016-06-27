@@ -5,10 +5,11 @@ import java.text.ParseException;
 import java.util.concurrent.Future;
 
 import com.bah.ode.exception.OdeException;
+import com.bah.ode.model.OdeDataMessage;
 
 public interface DataProcessor<D, R> {
    Future<R> process(D data) throws DataProcessorException;
-   public void filterAndSend(D msg) throws DataProcessorException, IOException, ParseException;
+   void filterAndSend(OdeDataMessage dataMsg) throws IOException, ParseException;
 
    public static class DataProcessorException extends OdeException {
 

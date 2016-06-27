@@ -1,16 +1,17 @@
 package com.bah.ode.server;
 
+import javax.websocket.CloseReason;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
-import com.bah.ode.dds.client.ws.DdsMessageHandler;
 import com.bah.ode.distributors.BaseDataPropagator;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.model.OdeRequestType;
-import com.bah.ode.server.DdsRequestManager.DdsRequestManagerException;
+import com.bah.ode.server.AbstractDataSourceManager.DataSourceManagerException;
 import com.bah.ode.wrapper.MQTopic;
 
 public class DataSourceConnector {
@@ -18,8 +19,8 @@ public class DataSourceConnector {
    private static AppContext appContext = AppContext.getInstance();
 
    private OdeMetadata metadata;
-   private DdsRequestManager ddsMgr;
-   private TestRequestManager testMgr;
+   
+   private AbstractDataSourceManager dataSoureMgr;
    
    private BaseDataPropagator propagator;
    
@@ -54,7 +55,7 @@ public class DataSourceConnector {
                if (odeRequest.getRequestType() == OdeRequestType.Test) {
                   connectToTestDataSource();
                } else {
-                  sendRequestToDDS(odeRequest);
+                  connectToDDS(odeRequest);
                }
                break;
             case IntersectionData:
@@ -64,7 +65,7 @@ public class DataSourceConnector {
                if (odeRequest.getRequestType() == OdeRequestType.Test) {
                   connectToTestDataSource();
                } else {
-                  sendRequestToDDS(odeRequest);
+                  connectToDDS(odeRequest);
                }
                break;
             case WeatherData:
@@ -72,11 +73,21 @@ public class DataSourceConnector {
                break;
             case AsnBase64:
             case AsnHex:
-               sendRequestToDDS(odeRequest);
+               connectToDDS(odeRequest);
                break;
             default:
             
          } // End of switch statement
+         
+         dataSoureMgr.setMetadata(metadata);
+         
+         //FOR TEST ONLY
+         if (AppContext.loopbackTest()) {
+            dataSoureMgr.setPropagator(propagator);
+         }
+         //FOR TEST ONLY
+         
+         dataSoureMgr.sendRequest(odeRequest);
       } catch (Exception e) {
          throw new DataSourceConnectorException("Error sending data request.", e);
       }
@@ -86,38 +97,34 @@ public class DataSourceConnector {
       // TODO Auto-generated method stub
       
    }
+   
    private void connectToTestDataSource() {
-      if (testMgr == null) {
-         testMgr = new TestRequestManager(metadata);
+      if (dataSoureMgr == null) {
+         TestRequestManager testMgr = 
+               new TestRequestManager(metadata);
          
-         //FOR TEST ONLY
-         if (AppContext.loopbackTest()) {
-            testMgr.setLoopbackTestPropagator(propagator);
-         }
-         //FOR TEST ONLY
+         dataSoureMgr = testMgr;
       }
    }
 
-   private void sendRequestToDDS(OdeRequest odeRequest)
-         throws DdsRequestManagerException {
-      if (ddsMgr == null)
+   private void connectToDDS(OdeRequest odeRequest)
+         throws DataSourceManagerException {
+      DdsRequestManager ddsMgr;
+      if (dataSoureMgr == null) {
          ddsMgr = new DdsRequestManager(metadata);
-
-      //FOR TEST ONLY
-      if (AppContext.loopbackTest()) {
-         DdsMessageHandler handler = (DdsMessageHandler) 
-               ddsMgr.getDdsClient().getHandler();
-         handler.setLoopbackTestPropagator(propagator);
+         dataSoureMgr = ddsMgr;
+      } else {
+         dataSoureMgr.setMetadata(metadata);
       }
-      //FOR TEST ONLY
-      
-      ddsMgr.sendDdsDataRequest(odeRequest);
    }
    
-   public void cancelDataRequest() throws DataSourceConnectorException {
+   public void close() throws DataSourceConnectorException {
       try {
-         if (ddsMgr != null) {
-            ddsMgr.cancelDdsSubscription();
+         propagator.close(new CloseReason(
+               CloseReason.CloseCodes.NORMAL_CLOSURE,
+               "Data Request Canceled"));
+         if (dataSoureMgr != null) {
+            dataSoureMgr.close();
          }
       } catch (Exception e) {
          throw new DataSourceConnectorException("Error canceling data request.", e);
@@ -125,8 +132,8 @@ public class DataSourceConnector {
    }
 
 
-   public TestRequestManager getTestMgr() {
-      return testMgr;
+   public AbstractDataSourceManager getDataSourceManager() {
+      return dataSoureMgr;
    }
 
    

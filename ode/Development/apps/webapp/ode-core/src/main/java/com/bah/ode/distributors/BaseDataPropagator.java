@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.Future;
 
+import javax.websocket.CloseReason;
 import javax.websocket.Session;
 
 import org.slf4j.Logger;
@@ -19,7 +20,9 @@ import com.bah.ode.metrics.OdeMetrics;
 import com.bah.ode.metrics.OdeMetrics.Context;
 import com.bah.ode.metrics.OdeMetrics.Meter;
 import com.bah.ode.metrics.OdeMetrics.Timer;
+import com.bah.ode.model.ControlTag;
 import com.bah.ode.model.InternalDataMessage;
+import com.bah.ode.model.OdeControlData;
 import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
@@ -40,7 +43,7 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
    protected Session clientSession;
    protected OdeMetadata metadata;
    protected List<OdeFilter> filters;
-   private TreeMap<Integer, ArrayList<String>> records;
+   private TreeMap<Integer, ArrayList<OdeDataMessage>> records;
    
    //Metrics
    protected Meter baseMeter = OdeMetrics.getInstance().meter("TotalRecordsPropagated");
@@ -67,79 +70,60 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
    public BaseDataPropagator(Session session) {
       this.clientSession = session;
       timer = OdeMetrics.getInstance().timer(this.getClass().getName(), "timer");
-      this.records = new TreeMap<Integer, ArrayList<String>>();
+      this.records = new TreeMap<Integer, ArrayList<OdeDataMessage>>();
    }
 
    protected abstract List<OdeFilter> createFilters();
    
    @Override
-    public synchronized Future<String> process(String data)
+   public synchronized Future<String> process(String data)
           throws DataProcessorException {
       
       Context context = timer.time();
 
-
       try {
-         if (AppContext.getInstance().getInt(
-               AppContext.DATA_SEQUENCE_REORDER_PERIOD, 0)  <= 0) {
-            filterAndSend(data);
-            return null;
-         }
-         
-         ObjectNode bundleObject = JsonUtils.toObjectNode(data);
-
-         JsonNode payloadNode = bundleObject.get(AppContext.PAYLOAD_STRING);
-         if (payloadNode == null) {
-            filterAndSend(data);
-         } else {
-            JsonNode serialIdNode = payloadNode
-                  .get(AppContext.SERIAL_ID_STRING);
-            if (serialIdNode == null) {
-               filterAndSend(data);
-            } else {
-               String tempSerialId = serialIdNode.asText();
-               if (tempSerialId == null || tempSerialId.equals("")) {
-                  filterAndSend(data);
+         OdeDataMessage dataMsg = getDataMsg(data);
+         if (dataMsg != null) {
+            if (dataMsg.getPayload() instanceof OdeData) {
+               OdeData payload = (OdeData)dataMsg.getPayload();
+               
+               String tempSerialId = payload.getSerialId();
+               if (tempSerialId == null || tempSerialId.equals("") ||
+                   AppContext.getInstance().getInt(
+                         AppContext.DATA_SEQUENCE_REORDER_PERIOD, 0)  <= 0) {
+                  // serialId is blank or re-ordering disabled. 
+                  filterAndSend(dataMsg);
                } else {
-                  try {
-                     String[] splitId = tempSerialId.split(
-                           "[^\\w-]+"); /* Non-alphanumerics and hyphen */
-                     int bundleId = Integer.parseInt(splitId[1]);
-                     int recordId = Integer.parseInt(splitId[2]);
-
-                     /*
-                      * vList is an array with the recordId as the index that
-                      * way there is no need to loop twice through arrays
-                      *
-                      * uses map as to not lose records if multiple record Ids
-                      * come in scrambled
-                      */
-                     ArrayList<String> vList = records.get(bundleId);
-                     if (vList == null) {
-                        vList = new ArrayList<String>();
-                        while (recordId + 1 > vList.size()) {
-                           vList.add(vList.size(), null);
-                        }
-                        vList.set(recordId, data);
-                        records.put(bundleId, vList);
-                     } else {
-                        while (recordId + 1 > vList.size()) {
-                           vList.add(vList.size(), null);
-                        }
-                        records.get(bundleId).set(recordId, data);
-                     }
-                  } catch (Exception e) {
-                     logger.info("ERROR IN CODE. Sending message as is : ", e);
-                     filterAndSend(data);
-                  }
-
+                  
+                  //serialId is not blank and re-ordering is enabled 
+                  queueDataInOrder(dataMsg);
                } // End of serial ID is not blank
-            } // End of 'has serialId' block
-         } // End of 'has payload' block
+            } else { // Not a OdeData instance
+               WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
+               
+               // check if it is a control message
+               OdeDataType payloadType = OdeDataType
+                     .getByShortName(dataMsg.getMetadata().getPayloadType());
+               if (payloadType == OdeDataType.Control) {
+                  OdeControlData controlRec = (OdeControlData) dataMsg.getPayload();
+                  if (controlRec != null && controlRec.getTag() == ControlTag.CLOSED) {
+                     // Source connection closed. Close the connection to the client
+                     // forcing the client to reconnect and re-send data request 
+                     close(new CloseReason(
+                           CloseReason.CloseCodes.CLOSED_ABNORMALLY,
+                           controlRec.getMessage()));
+                  }
+               }
+            }
+         } else { // Not a OdeDataMessage. Send the raw data
+            if (clientSessionIsOpen()) {
+               WebSocketUtils.send(clientSession, data);
+            }
+         }
          baseMeter.mark();
       } catch (Exception e) {
          //if the session is not open, ignore the exception
-         if (clientSession.isOpen())
+         if (clientSessionIsOpen())
             logger.error("Error processing data.", e);
       } finally {
          context.stop();
@@ -148,16 +132,50 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
       return null;
    }
 
-   public void filterAndSend(String data)
-         throws com.bah.ode.wrapper.DataProcessor.DataProcessorException,
-         IOException, ParseException {
-      OdeDataMessage dataMsg = getDataMsg(data);
-      if (dataMsg != null && dataMsg.getPayload() instanceof OdeFilterable) {
-         if (applyFilters((OdeFilterable)dataMsg.getPayload())) {
+   protected void queueDataInOrder(OdeDataMessage dataMsg) throws DataProcessorException {
+      try {
+         OdeData odeData = (OdeData) dataMsg.getPayload();
+         String serialId = odeData.getSerialId();
+         String[] splitId = serialId.split(
+               "[^\\w-]+"); /* Non-alphanumerics and hyphen */
+         int bundleId = Integer.parseInt(splitId[1]);
+         int recordId = Integer.parseInt(splitId[2]);
+
+         /*
+          * vList is an array with the recordId as the index that
+          * way there is no need to loop twice through arrays
+          *
+          * uses map as to not lose records if multiple record Ids
+          * come in scrambled
+          */
+         ArrayList<OdeDataMessage> vList = records.get(bundleId);
+         if (vList == null) {
+            vList = new ArrayList<OdeDataMessage>();
+            while (recordId + 1 > vList.size()) {
+               vList.add(vList.size(), null);
+            }
+            vList.set(recordId, dataMsg);
+            records.put(bundleId, vList);
+         } else {
+            while (recordId + 1 > vList.size()) {
+               vList.add(vList.size(), null);
+            }
+            records.get(bundleId).set(recordId, dataMsg);
+         }
+      } catch (Exception e) {
+         throw new DataProcessorException("Error quing data.", e);
+      }
+   }
+
+   public void filterAndSend(OdeDataMessage dataMsg) throws IOException, ParseException {
+      if (clientSessionIsOpen()) {
+         if (dataMsg != null && dataMsg.getPayload() instanceof OdeFilterable) {
+            if (applyFilters((OdeFilterable)dataMsg.getPayload())) {
+               WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
+            }
+         } else {
             WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
          }
-      } else {
-         WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
       }
    }
 
@@ -280,7 +298,22 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
       this.metadata = metadata;
    }
 
-   public TreeMap<Integer, ArrayList<String>> records() {
+   public TreeMap<Integer, ArrayList<OdeDataMessage>> records() {
       return records;
+   }
+
+   public void close(CloseReason reason) throws IOException {
+      if (clientSessionIsOpen()) {
+         try {
+            clientSession.close(reason);
+            } catch (java.lang.IllegalStateException e) {
+            //ignore exception. isOpen returns true even when session is closed
+         }
+      }
+      clientSession = null;
+   }
+
+   protected boolean clientSessionIsOpen() {
+      return clientSession != null && clientSession.isOpen();
    }
 }
