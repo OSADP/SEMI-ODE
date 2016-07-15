@@ -1,0 +1,27 @@
+RELEASE-NOTES:
+The code version available in this folder is version 1.1 developed for the Small Scale Field Test conducted in April 2016. The code is in Python 2.7 and uses both internal libraries and external software for its working.
+
+Two folders have been provided:
+1. Logger - consists of a logging application to log all data coming through ODE.
+2. Application - consists of an overarching framework in which four applications are coded.
+
+Requirements:
+1. Install INFLOApps available at INFLO-SIM Repository on the OSADP.
+2. Install Python 2.7 (64-bit)
+3. Install following Python Libraries
+	a. sys
+	b. PySide
+	c. thread
+	d. logging
+	e. datetime
+	f. matplotlib
+	g. win32com
+	h. odeClient (available in this repository)
+	i. pythoncom
+	j. json
+4. Initiation details.
+	a. InfloLink - should point to installed INFLOApps.exe
+	b. INFLODatabase.accdb - configured for INFLO
+	c. Obtain ODE IP and Login Credentials
+	d. Configure today's date in Lines 48 and 51 of maw.py
+	e. Initiation File is ODE_v2.py

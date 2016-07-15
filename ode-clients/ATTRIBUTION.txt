@@ -1,0 +1,12 @@
+The key contributors to this code repository are:
+1. Raj Kamalanathsharma (Booz Allen Hamilton)
+2. Hamid Musavi (Booz Allen Hamilton)
+3. Matthew Kowalsky (Booz Allen Hamilton)
+4. Catherine Slesnick (Booz Allen Hamilton)
+5. Jerome Froelich (Booz Allen Hamilton)
+
+The applications used by this code are developed by:
+1. INFLO Application - Texas Transportation Insitute (Available in OSADP)
+2. INC-ZONE Application - Booz Allen Hamilton (Available in OSADP)
+3. Eco Approach and Departure Application - Booz Allen Hamilton (Excerpts provided)
+4. Motorists Advisory and Warnings - Booz Allen Hamilton
