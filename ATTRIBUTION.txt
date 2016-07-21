@@ -1,15 +1,27 @@
-Example:
-Key contributors to the development of the Trajectory Conversion Algorithm (TCA) software 2.3,
-development of the TCA 2.3 test data set, and development of the documentation include:
-Taylor Deurbrouck, Rick Glassco, Carl Kain, Jim Larkin, James O'Hara, Meenakshy Vasudevan and Karl Wunderlich of Noblis.
+The key contributors to the development of the SEMI ODE and related files are:
+(in alphabetical order)
+* Jerome Froelich - Emulated Client Application Developer (Booz Allen)
+* Raj Kamalanathsharma - Emulated Client Application Developer and Lead (Booz Allen)
+* Matthew Kowalsky - SEMI ODE Developer (Booz Allen)
+* Hamid Musavi - SEMI ODE Architect and Technical Lead (Booz Allen)
+* Catherine Slesnick - Emulated Client Application Developer (Booz Allen)
+* Alex Whipp - SEMI ODE Developer (Booz Allen)
+
+
+The team utilized the following external codes or excerpts for developing and testing Connected Vehicle applications:
+1. INFLO application developed by Texas Transportation Institute and Kittelson Associates.
+2. Eco Approach and Departure application was developed based on the AERIS codebase developed by Booz Allen Hamilton and University of California Riverside.
+3. Incident Zone Alerts and Warning application was developed based on the code developed by Booz Allen Hamilton.
 
 The developers also wish to acknowledge several contributors to this study:
-
-BSM Data Emulator Task Lead: Jim McCarthy (Federal Highway Administration (FHWA)
-MN Division), for his support and comments.
-
-BSM Data Emulator Key Content Review Team: 
-Vivien Hoang (FHWA-CA Division), Gene McHale (FHWA), Dale Thompson (RITA), John Halkias (FHWA), 
-James Pol (RITA), James Colyar (FHWA), James Sturrock (FHWA-Resource Center)
+(in alphabetical order)
+* Walter During (US DOT)
+* Jeremy Durst (Leidos)
+* Rick Glassco (Noblis)
+* Ariel Gold (US DOT)
+* Dwayne Henclewood (Booz Allen)
+* Cristian Ianculescu (Booz Allen)
+* Ram Kandarpa (Booz Allen)
+* Brien Miller (Booz Allen)
 
 Thanks to the ITS Joint Program Office for their support of the effort.
