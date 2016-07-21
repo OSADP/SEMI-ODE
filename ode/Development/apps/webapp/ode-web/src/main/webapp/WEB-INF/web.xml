@@ -21,7 +21,7 @@
       <param-value>http://localhost:8080</param-value>
    </context-param>
    <context-param>
-      <!-- Company ID of the Lifray portal instance. Will vary based on Destination installation -->
+      <!-- Company ID of the Liferay portal instance. Will vary based on Destination installation -->
       <param-name>liferay.ws.companyId</param-name>
       <param-value>10157</param-value> 
    </context-param>
@@ -87,7 +87,7 @@
    </context-param>
    <context-param>
       <!-- Spark Master specifies if spark job is to run locally with K worker
-           threads (locak[k]) or on yarn (yarn-client or yarn-cluster). 
+           threads (local[k]) or on yarn (yarn-client or yarn-cluster). 
            If on yarn, whether to deploy your driver on the worker nodes (yarn-cluster)
            or locally as an external client (yarn-client) (default: client)   
       -->

@@ -11,7 +11,6 @@ import com.bah.ode.model.InternalDataMessage;
 import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataType;
 import com.bah.ode.model.OdeMetadata;
-import com.bah.ode.model.OdePayloadViolation;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQProducer;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
@@ -72,21 +71,7 @@ public class PartitionDistributor extends BaseDistributor implements
                   }
                   
                   if (aggregatorInputTopic != null) {
-                     if (metadata.getViolations() != null) {
-                        boolean hasSpeedViolation = false;
-                        for (OdePayloadViolation violation : metadata.getViolations()) {
-                           if (violation.getFieldName().equals("speed")) {
-                              hasSpeedViolation = true;
-                              break;
-                           }
-                        }
-                        
-                        if (!hasSpeedViolation) {
-                           send(producer, aggregatorInputTopic, key, idm.toJson());
-                        }
-                     } else {
                         send(producer, aggregatorInputTopic, key, idm.toJson());
-                     }
                   }
                }
                   
@@ -96,7 +81,6 @@ public class PartitionDistributor extends BaseDistributor implements
          producerPool.value().checkIn(producer);
          stopTimer();
       }
-
    }
 
    private void send(

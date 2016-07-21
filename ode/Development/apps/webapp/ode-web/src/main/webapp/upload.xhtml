@@ -299,19 +299,17 @@ var recordLoc = 0;
     <div id="controls-container">
       <div id="left-container">
         <div id="selectData">
-          <h2>Select Data:</h2>
-          <br /><input id="vsd" type="radio" name="group1"
+          <h2>Select Data:</h2><br />
+          <input id="vsd" type="radio" name="group1"
           value="/ode/tst/ws/veh/"
           onclick="updateRequestUri(this.value);" />
-          <label for="vsd">Vehicles</label>
-          <br /> <input id="isd" type="radio" name="group1"
+          <label for="vsd">Vehicles</label><br />
+          
+          <input id="isd" type="radio" name="group1"
           value="/ode/tst/ws/int/"
           onclick="updateRequestUri(this.value);" />
-          <label for="isd">Intersections</label>
-          <br /> <input id="agg" type="radio" name="group1"
-          value="/ode/tst/ws/agg/"
-          onclick="updateRequestUri(this.value);" />
-          <label for="agg">Aggregates</label>
+          <label for="isd">Intersections</label><br />
+          
           <br /> <br /> <input id="requestUri" type="text" size="40" style="width: 350px" />
           <br /> <br /> <label for="requestId">Request ID: </label>
           <br /> <input id="requestId" type="text" size="40" style="width: 350px" />

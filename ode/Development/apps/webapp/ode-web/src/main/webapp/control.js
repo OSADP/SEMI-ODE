@@ -300,7 +300,7 @@ $(document)
 
                      $('#advisoryRadio').hide();
                      $('#aggRadio').show();
-                     $('.testRadio').hide();
+                     $('.testDataType').hide();
                      $('#vehicleRadio').show();
                      $('#intersectionRadio').show();
                      $('#mapRadio').show();
@@ -313,7 +313,7 @@ $(document)
 
                      $('#advisoryRadio').hide();
                      $('#aggRadio').show();
-                     $('.testRadio').hide();
+                     $('.testDataType').hide();
                      $('#intersectionRadio').show();
                      $('#mapRadio').show();
                      $('#spatRadio').show();
@@ -328,7 +328,7 @@ $(document)
                      $('#mapRadio').show();
                      $('#spatRadio').show();
                      $('#vehicleRadio').show();
-                     $('.testRadio').hide();
+                     $('.testDataType').hide();
                      $('#deposit').hide();
                   } else if (dataSource == "TEST_UPLOAD") {
                      isTest = true;
@@ -538,8 +538,10 @@ function sourceController(clazz) {
    $('.mapIndicators').hide();
    $('.roadSeg').hide();
    
-   if (window.location.hostname == 'ec2-52-87-98-38.compute-1.amazonaws.com' ||
-       window.location.hostname == '52.87.98.38') {
+   //If there is a hash, assume it's for testing and show the test radion buttons
+   if(window.location.hash){
+      $('.testRadio').show();
+   } else {
       $('.testRadio').hide();
    }
 

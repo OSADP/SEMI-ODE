@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.metrics.SparkInstrumentation;
-import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
 import com.bah.ode.wrapper.MQTopic;
 
@@ -19,16 +18,23 @@ import scala.Tuple2;
 public class VehicleDataAggregator extends SparkJob {
    private static Logger logger = LoggerFactory.getLogger(VehicleDataAggregator.class);
 
-   public JavaPairDStream<String, String> setup(JavaStreamingContext ssc,
+   public JavaPairDStream<String, Tuple2<String, String>> setup(JavaStreamingContext ssc,
          MQTopic topic, String zkConnectionStrings,
          String brokerList) {
 
       SparkConf conf = ssc.sparkContext().getConf();
-      JavaPairDStream<String, String> unifiedStream = super.unifiedStream(
-            ssc, topic, zkConnectionStrings, brokerList);
-//      JavaPairDStream<String, String> unifiedStream = super.receiveDirect(
+      JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata = 
+            super.unifiedStream(ssc, topic, zkConnectionStrings, brokerList);
+//      JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata = 
+//            super.receiveDirect(
 //            ssc, topic, brokerList);
-
+      
+      payloadAndMetadata = payloadAndMetadata.filter(new SpeedValidator(
+                  new SparkInstrumentation(
+                        ssc.sparkContext(),
+                        "ode",
+                        "SpeedValidator").register()));
+      
       Integer microbatchDuration = Integer.valueOf(conf.get(
             AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS, String.valueOf(
                   AppContext.DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS)));
@@ -42,13 +48,6 @@ public class VehicleDataAggregator extends SparkJob {
                   AppContext.DEFAULT_SPARK_STREAMING_SLIDE_MICROBATCHES)));
 
       try {
-         JavaPairDStream<String, String> payloadStream = unifiedStream
-               .mapToPair(
-                     pam -> new Tuple2<String, String>(pam._1,
-                           JsonUtils
-                                 .getJsonNode(pam._2, AppContext.PAYLOAD_STRING)
-                                 .toString())).repartition(topic.getPartitions());
-
          final Broadcast<MQSerialazableProducerPool> producerPool = ssc
                .sparkContext()
                .broadcast(new MQSerialazableProducerPool(brokerList));
@@ -67,7 +66,7 @@ public class VehicleDataAggregator extends SparkJob {
           * set for the size of the aggregation window, will do. 
           */
          if (aggInVDP || useWindow) {
-            payloadStream = payloadStream
+            payloadAndMetadata = payloadAndMetadata
                   .window(
                         Durations
                               .milliseconds(microbatchDuration * windowDuration),
@@ -75,19 +74,19 @@ public class VehicleDataAggregator extends SparkJob {
                               .milliseconds(microbatchDuration * slideDuration));
          }
          
-         /*
-          * Vehicle Data Aggregation and Distribution
-          */
-         payloadStream.foreachRDD(new PayloadAggregator(
-               new SparkInstrumentation(ssc.sparkContext(), "ode", "PayloadAggregator").register(),
-               new SparkInstrumentation(ssc.sparkContext(), "ode", "AggregateDataDistributor").register(),
-               producerPool, conf.get(
-               AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC)));
-
+         payloadAndMetadata.foreachRDD(
+               new Aggregator(
+                     new SparkInstrumentation(ssc.sparkContext(), "ode", "Aggregator").register(),
+                     new PayloadAggregator(
+                        new SparkInstrumentation(ssc.sparkContext(), "ode", "PayloadAggregator").register(),
+                        new SparkInstrumentation(ssc.sparkContext(), "ode", "AggregateDataDistributor").register(),
+                        producerPool, 
+                        conf.get(AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC))));
+         
       } catch (Exception e) {
          logger.info("Error in Spark Job {}", e);
       }
       
-      return unifiedStream;
+      return payloadAndMetadata;
    }
 }

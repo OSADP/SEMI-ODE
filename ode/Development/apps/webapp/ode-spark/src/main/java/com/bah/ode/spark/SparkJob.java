@@ -12,9 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
+import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQTopic;
 
 import kafka.serializer.StringDecoder;
+import scala.Tuple2;
 
 public abstract class SparkJob {
    private static Logger logger = LoggerFactory.getLogger(SparkJob.class);
@@ -48,7 +50,7 @@ public abstract class SparkJob {
       return unifiedStream;
    }
 
-   public JavaPairDStream<String, String> receiveDirect (
+   public JavaPairDStream<String,Tuple2<String,String>> receiveDirect (
          final JavaStreamingContext ssc, MQTopic topic, String brokerList) {
       HashSet<String> topicsSet = new HashSet<String>();
       topicsSet.add(topic.getName());
@@ -63,10 +65,15 @@ public abstract class SparkJob {
             topicsSet
         );
 
-      return unifiedStream;
+      JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata = 
+            joinPayloadAndMetadata(
+            topic, unifiedStream);
+
+      
+      return payloadAndMetadata;
    }
 
-   public JavaPairDStream<String, String> unifiedStream(
+   public JavaPairDStream<String, Tuple2<String, String>> unifiedStream(
          final JavaStreamingContext ssc, MQTopic topic,
          String zkConnectionStrings, String brokerList) {
 
@@ -84,7 +91,49 @@ public abstract class SparkJob {
          unifiedStream = singleReceiver(ssc, this.getClass().getName(), topic,
                zkConnectionStrings, brokerList);
       }
-      return unifiedStream;
+      
+      JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata = 
+            joinPayloadAndMetadata(
+            topic, unifiedStream);
+
+      
+      return payloadAndMetadata;
+   }
+
+   private JavaPairDStream<String, Tuple2<String, String>> joinPayloadAndMetadata(
+         MQTopic topic, JavaPairDStream<String, String> unifiedStream) {
+      // System.out.println("unifiedStream");
+      // System.out.println("===============");
+      // unifiedStream.cache().print(10);
+
+      JavaPairDStream<String, String> payloadStream = unifiedStream
+            .mapToPair(
+                  pam -> new Tuple2<String, String>(pam._1,
+                        JsonUtils
+                              .getJsonNode(pam._2, AppContext.PAYLOAD_STRING)
+                              .toString()));
+
+      // System.out.println("payloadStream");
+      // System.out.println("===============");
+      // payloadStream.cache().print(10);
+
+      JavaPairDStream<String, String> metadataStream = unifiedStream
+            .mapToPair(pam -> new Tuple2<String, String>(pam._1,
+                  JsonUtils.getJsonNode(pam._2, AppContext.METADATA_STRING)
+                        .toString()));
+
+      // System.out.println("metadataStream");
+      // System.out.println("===============");
+      // metadataStream.cache().print(10);
+
+
+      JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata = 
+            payloadStream.join(metadataStream);
+
+      // System.out.println("joinedStream");
+      // System.out.println("===============");
+      // joinedStream.cache().print(10);
+      return payloadAndMetadata;
    }
 
 }
