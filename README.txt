@@ -1,60 +1,25 @@
-Open Source Overview
-============================
-<Application name> 
-<Version number> 
-<Application description>
-<Primary functions>
-<Installation and removal instructions>
-Example:
-The Software Solution (SS) Software is designed to test different strategies for producing, transmitting, and storing Connected Vehicle information. The SS reads in and uses vehicle trajectory information or Vissim output, roadside equipment (RSE) location information, cellular or event region information and strategy information to produce a series of snapshots that a connected vehicle would produce. Vehicles can be equipped to generate and transmit Probe Data Messages (PDMs), Basic Safety Messages (BSMs), Cooperative Awareness Messages (CAMs) or ITS SPOT messages which can be transmitted by Dedicated Short Range Communication (DSRC) and/or via cellular. The SS program version 2 build 3 or 2.3 includes simulated communication disruptions between vehicles and roadside equipment. As soon as a vehicle equipped to transmit via DSRC is in range of a RSE, it will download all of its snapshot information directly with a probabilistic uncertainty of the data being lost. Similarly, if the vehicle is equipped to transmit via cellular, it will download all its snapshot information directly but those snapshots might be lost or delayed due to user-defined loss rate and latency. In SS 2.3, BSMs and PDMs can also be made to transmit at user-defined intervals.
+#Southeast Michigan (SEMI) Operational Data Environment (ODE)
+=============================================================
+The South East Michigan (SEMI) Operational Data Environment (ODE) is an early 
+release of software that was developed to acquire connected vehicle data, 
+conduct data valuation, aggregation and integration functions, and provide it 
+to clients that have connected to it. While a prior white paper described an 
+end-state for the ODE, the current state of the software remains in research & 
+development, and is meant to support parallel research with Connected Vehicle 
+(CV) Pilots and Connected Cities. 
 
-License information
--------------------
-<open source license applied>
-Example:
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
-file except in compliance with the License.
-You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied. See the License for the specific language governing
-permissions and limitations under the License.
+For further details on the SEMI ODE and emulated client applications, users 
+are encouraged to read the specific README files in the ode and ode-client
+folders and review documents located in the DOCUMENTATION folder:
 
-System Requirements
--------------------------
-<Minimum memory (MB)>
-<Processing power (CPU, Mhz)>
-<Connectivity (wireless, wired)>
-<Hardware supported> 
-<Operating systems supported>
-Example:
-The SS 2.0 software can run on most standard Window or Linux based computers with 
-Pentium core processers, with at least two gigabits of RAM and at least 100 MB of drive space.
-Performance of the software will be based on the computing power and available RAM in 
-the system.  Larger datasets can require much larger space requirements depending on the 
-amount of data being read into the software.
+* SEMI-ODE_System-Design-Document.pdf: This document details the software 
+  architecture and related design decisions needed to implement the SEMI-ODE 
+  as part of the USDOT Intelligent Transportation Systems Connected Vehicle 
+  Data Program.
+* SEMI-ODE_Technical-Report.pdf: This document details how the SEMI-ODE 
+  software can be deployed in a hosting environment, and how client 
+  applications can interface with it to acquire CV data, in particular, 
+  Vehicle Situation Data (VSD) and infrastructure data such as 
+  Intersection Situation Data (ISD).
 
-The SS 2.0 software application was developed using the open source
-programming language Python 2.7 (www.python.org).  The application requires Python 2.7
-or higher to run.  Note that Python 3.0 is a change from Python 2.X language and will not
-run the DMA performance measurement application.  Python versions 2.7.X – 2.9.X will work.
 
-The application can be run on Windows, Linux, or Mac operating systems.  Python is installed
-by default on many Linux and Mac operating systems.
-
-Documentation
--------------
-<Instructions>
-<Reference to online documentation>
-Example:
-The SS 2.0 software is packaged with Word based User Guide
-"The Trajectory Convertor Algorithm 2 3 User manual.doc" that contains all information about background
-purpose, benefits, objectives, inputs/outputs, how to run the software and requirements for the software.
-
-Web sites
----------
-<Web locations of publication>
-<Application support email (optional)>
-Example:
-The SS 2.0 software is distributed through the USDOT's JPO Open Source Application Development Portal (OSADP)
-http://itsforge.net/ 

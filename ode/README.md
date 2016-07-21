@@ -7,9 +7,9 @@
 	
 ```
 $ git config --global http.sslVerify false
-$ git clone https://hamidmusavi@buildforge.cnsi.com:9443/scm/ode/ode-repo.git GitRepo
-	Cloning into 'GitRepo'...
-	Password for 'https://hamidmusavi@buildforge.cnsi.com:9443': <your taskforge password>
+$ git clone https://your.repository.url/semi-ode.git semi-ode
+	Cloning into 'semi-ode'...
+	Password for 'https://your.repository.url': your.repository.password
 ``` 
     
 	The first command will configure git globally to ignore SSL certificate errors. This
@@ -23,9 +23,9 @@ $ mkdir GitRepo
 $ cd GitRepo
 $ git init
 $ git config http.sslVerify false
-$ git remote add origin https://hamidmusavi@buildforge.cnsi.com:9443/scm/ode/ode-repo.git
-		Cloning into 'GitRepo'...
-		Password for 'https://hamidmusavi@buildforge.cnsi.com:9443': <your taskforge password>
+$ git remote add origin https://your.repository.url/semi-ode.git semi-ode
+	Cloning into 'semi-ode'...
+	Password for 'https://your.repository.url': your.repository.password
 $ git pull origin master
 ```
 > Written with [StackEdit](https://stackedit.io/).
