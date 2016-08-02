@@ -30,14 +30,14 @@ public class LocalSparkProcessor {
          if (ssc == null) {
             logger.info("Creating Spark Streaming Context...");
             ssc = new JavaStreamingContext(
-                  appContext.getOrSetSparkContextLocal(),
+                  appContext.getSparkContext(),
                   Durations.milliseconds(AppContext.getInstance().getInt(
                               AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS,
                               AppContext.DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS)));
          }
          
          if (vehicleTransformer == null) {
-            logger.info("Creating OVDF Process Flow...");
+            logger.info("Creating Transgator Process Flow...");
             vehicleTransformer = new VehicleDataTransformer();
             vehicleTransformer.setup(ssc,
                   MQTopic.create(appContext.getParam(

@@ -197,11 +197,11 @@
    -->
    <context-param>
       <param-name>spark.yarn.transformer.configuration.file</param-name>
-      <param-value>/WEB-INF/spark-yarn-transformer.properties</param-value>
+      <param-value>spark-yarn-transformer.properties</param-value>
    </context-param>
    <context-param>
       <param-name>spark.yarn.aggregator.configuration.file</param-name>
-      <param-value>/WEB-INF/spark-yarn-aggregator.properties</param-value>
+      <param-value>spark-yarn-aggregator.properties</param-value>
    </context-param>
    <context-param>
       <param-name>spark.configuration.file.directory</param-name>

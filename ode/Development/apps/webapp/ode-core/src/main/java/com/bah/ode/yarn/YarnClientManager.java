@@ -1,10 +1,6 @@
 package com.bah.ode.yarn;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Properties;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -24,8 +20,6 @@ public class YarnClientManager {
    private static String HADOOP_HOME = "/usr/hdp/current/hadoop-client";
    private static String HADOOP_CONF_DIR = HADOOP_HOME + "/conf";
 
-   private SparkConf sparkConf;
-
    private String numPartitions;
    private String inputTopic;
    private String zkConnectionString;
@@ -41,8 +35,7 @@ public class YarnClientManager {
    private ApplicationId appId;
    private ArrayList<String> filesList;
    
-   public YarnClientManager(SparkConf conf) {
-      this.sparkConf = conf;
+   public YarnClientManager() {
       this.filesList = new ArrayList<String>();
    }
 
@@ -118,20 +111,7 @@ public class YarnClientManager {
    }
    
 
-   public YarnClientManager setSparkConfPropertyFile(InputStream file) throws IOException
-   {
-      Properties sparkYarnPropertyFile = new Properties();
-      sparkYarnPropertyFile.load(file);
-      Enumeration<?> sparkYarnProperties =  sparkYarnPropertyFile.propertyNames();
-       
-       while (sparkYarnProperties.hasMoreElements()){
-          String key =  (String) sparkYarnProperties.nextElement();
-          sparkConf.set(key,sparkYarnPropertyFile.getProperty(key));
-       }
-       return this;
-   }
-   
-   public ApplicationId submitSparkJob() throws Throwable {
+   public ApplicationId submitSparkJob(SparkConf sparkConf) throws Throwable {
 
       Configuration config = getHadoopConfiguration();
 
