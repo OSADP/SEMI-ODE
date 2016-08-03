@@ -36,6 +36,7 @@ public enum OdeDataType {
    WeatherData("weather", OdeWeatherData.class),
    AsnBase64("asnbase64", String.class),
    AsnHex("asnhex", String.class),
+   VehicleCount("vehCount", OdeVehicleCount.class),
    OtherData("other", OdeMsgPayload.class), 
    Unknown("unknown", OdeMsgPayload.class);
    

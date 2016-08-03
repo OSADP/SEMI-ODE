@@ -13,6 +13,11 @@ public class LongGauge implements Gauge<Long> {
    public void setValue(Long value) {
       this.value = value;
    }
+
+   @Override
+   public void register(String prefix, String... names) {
+      OdeMetrics.getInstance().registerGauge(this, prefix, names);
+   }
    
    
 }

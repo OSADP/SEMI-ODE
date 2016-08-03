@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
-import com.bah.ode.spark.VehicleDataTransformer;
+import com.bah.ode.spark.JobVehicleDataTransformer;
 import com.bah.ode.wrapper.MQTopic;
 
 public class LocalSparkProcessor {
@@ -14,7 +14,7 @@ public class LocalSparkProcessor {
    private static Logger logger = 
          LoggerFactory.getLogger(LocalSparkProcessor.class);
    
-   private static VehicleDataTransformer vehicleTransformer;
+   private static JobVehicleDataTransformer vehicleTransformer;
    private static JavaStreamingContext ssc;
    private static boolean streamingContextStarted = false;
    
@@ -38,7 +38,7 @@ public class LocalSparkProcessor {
          
          if (vehicleTransformer == null) {
             logger.info("Creating Transgator Process Flow...");
-            vehicleTransformer = new VehicleDataTransformer();
+            vehicleTransformer = new JobVehicleDataTransformer();
             vehicleTransformer.setup(ssc,
                   MQTopic.create(appContext.getParam(
                         AppContext.SPARK_TRANSFORMER_INPUT_TOPIC), numParitions),

@@ -17,4 +17,10 @@ public class InboundTopicManagerSingleton extends BaseTopicManager {
    private InboundTopicManagerSingleton() {
    }
 
+   @Override
+   public void reportMetrics() {
+      // TODO Auto-generated method stub
+      
+   }
+
 }

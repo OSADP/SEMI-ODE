@@ -14,7 +14,7 @@ import com.bah.ode.model.OdeAggregateData;
 import com.bah.ode.wrapper.MQProducer;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
 
-public class AggregateDataDistributor extends BaseDistributor 
+public class AggregateSpeedDistributor extends BaseDistributor 
    implements VoidFunction<Iterator<Row>> {
 
    private static final long serialVersionUID = -4182433155035620976L;
@@ -23,7 +23,7 @@ public class AggregateDataDistributor extends BaseDistributor
    private String streamId = UUID.randomUUID().toString();
    private long recordId = 0;
    
-   public AggregateDataDistributor(
+   public AggregateSpeedDistributor(
          Accumulator<Integer> accumulator,
          Broadcast<MQSerialazableProducerPool> producerPool,
          String outputTopic) {
@@ -41,11 +41,20 @@ public class AggregateDataDistributor extends BaseDistributor
          Row record = partitionOfRecords.next();
 
          OdeAggregateData payload = new OdeAggregateData(streamId, 0L, recordId++);
-         payload.setKey(record.getString(0));
-         payload.setCount(record.getLong(1));
-         payload.setMinSpeed(BigDecimal.valueOf(record.getDouble(2)));
-         payload.setAvgSpeed(BigDecimal.valueOf(record.getDouble(3)));
-         payload.setMaxSpeed(BigDecimal.valueOf(record.getDouble(4)));
+         if (!record.isNullAt(0))
+            payload.setKey(record.getString(0));
+            
+         if (!record.isNullAt(1))
+            payload.setCount(record.getLong(1));
+         
+         if (!record.isNullAt(2))
+            payload.setMinSpeed(BigDecimal.valueOf(record.getDouble(2)));
+         
+         if (!record.isNullAt(3))
+            payload.setAvgSpeed(BigDecimal.valueOf(record.getDouble(3)));
+         
+         if (!record.isNullAt(4))
+            payload.setMaxSpeed(BigDecimal.valueOf(record.getDouble(4)));
 
          InternalDataMessage idm = new InternalDataMessage(
                payload.getSerialId(),

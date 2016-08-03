@@ -7,7 +7,7 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 
 import com.bah.ode.wrapper.MQTopic;
 
-public class VehicleDataAggregatorWrapper {
+public class WrapperVehicleDataAggregator {
 
    /**
     * 
@@ -19,7 +19,7 @@ public class VehicleDataAggregatorWrapper {
 
       SparkConf sparkConf = new SparkConf();
 
-      VehicleDataAggregator vdap = new VehicleDataAggregator();
+      JobVehicleDataAggregator vdap = new JobVehicleDataAggregator();
 
       String numPartitions = args[0];
       String odeVehDataFlatTopic = args[1];

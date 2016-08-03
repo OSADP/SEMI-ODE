@@ -568,7 +568,8 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
          //YawRate ::= INTEGER (-32767..32767) 
          //    -- LSB units of 0.01 degrees per second (signed)
          accel = bb.getShort();
-         setAccelYaw(BigDecimal.valueOf(accel, 2));
+         if (accel < 32767)
+            setAccelYaw(BigDecimal.valueOf(accel, 2));
 
       }
    }

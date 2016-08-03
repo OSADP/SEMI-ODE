@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.Row;
@@ -15,6 +16,7 @@ import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.slf4j.Logger;
@@ -22,14 +24,16 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.metrics.SparkInstrumentation;
+import com.bah.ode.model.OdeVehicleDataFlat;
+import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
 import com.bah.ode.wrapper.MQTopic;
 
 import scala.Tuple2;
 
-public class VehicleDataTransformer extends SparkJob {
+public class JobVehicleDataTransformer extends SparkJob {
    private static Logger logger = LoggerFactory
-         .getLogger(VehicleDataTransformer.class);
+         .getLogger(JobVehicleDataTransformer.class);
 
    public JavaPairDStream<String, Tuple2<String, String>> setup(JavaStreamingContext ssc,
          MQTopic topic, String zkConnectionStrings,
@@ -188,19 +192,53 @@ public class VehicleDataTransformer extends SparkJob {
                                  "ode",
                                  "SpeedValidator").register()));
 
+               //Cache it for multipe use
+               aggregationEligibleRecords.cache();
+               
                // Aggregate here
-               aggregationEligibleRecords.window(
+               JavaPairDStream<String, Tuple2<String, String>> windowedEligibleRecords = 
+                     aggregationEligibleRecords.window(
                      Durations.milliseconds(
                                  microbatchDuration * windowDuration),
-                     Durations.milliseconds(microbatchDuration * slideDuration))
-                        .foreachRDD(
-                           new Aggregator(
-                                 new SparkInstrumentation(ssc.sparkContext(), "ode", "Aggregator").register(),
-                                 new PayloadAggregator(
-                                    new SparkInstrumentation(ssc.sparkContext(), "ode", "PayloadAggregator").register(),
+                     Durations.milliseconds(microbatchDuration * slideDuration));
+               
+               windowedEligibleRecords.foreachRDD(
+                           new PayloadAggregator(
+                                 new SparkInstrumentation(ssc.sparkContext(), "ode", "PayloadAggregator").register(),
+                                 new VehicleSpeedAggregator(
+                                    new SparkInstrumentation(ssc.sparkContext(), "ode", "VehicleSpeedAggregator").register(),
                                     new SparkInstrumentation(ssc.sparkContext(), "ode", "AggregateDataDistributor").register(),
                                     producerPool, 
                                     conf.get(AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC))));
+
+               /*
+                * Calculate number of tempIds to represent the number of vehicles
+                * in the system
+                */
+               JavaPairDStream<String, Integer> tempIdStream = 
+                     windowedEligibleRecords.mapToPair(
+                     (PairFunction<Tuple2<String, Tuple2<String, String>>, String, Integer>) 
+                     pam -> {
+                        Tuple2<String, String> value = pam._2();
+                        String sPayload = value._1();
+
+                        OdeVehicleDataFlat ovdf = 
+                              (OdeVehicleDataFlat) JsonUtils.fromJson(sPayload, 
+                                    OdeVehicleDataFlat.class);
+                        
+                        Tuple2<String, Integer> tempId = 
+                              new Tuple2<String, Integer>(ovdf.getTempId(), 1);
+                        
+                        return tempId;
+                     }).reduceByKey((v1, v2) -> v1 + v2);
+               
+               JavaDStream<Long> vehicleCount = tempIdStream.count();
+
+               vehicleCount.foreachRDD(new VehicleCountDistributor(
+                     new SparkInstrumentation(ssc.sparkContext(), "ode", "VehicleCountDistributor").register(),
+                     producerPool, 
+                     conf.get(AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC)));
+
             } else {
                logger.info("Aggregator is disabled");
             }

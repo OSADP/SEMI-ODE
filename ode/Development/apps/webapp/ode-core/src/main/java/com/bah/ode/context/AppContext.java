@@ -514,7 +514,7 @@ public class AppContext {
                      .setSparkStreamingMicrobatchDuration(
                            getParam(SPARK_STREAMING_MICROBATCH_DURATION_MS,
                                  String.valueOf(DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS)))
-                     .setClass("com.bah.ode.spark.VehicleDataTransformerWrapper")
+                     .setClass("com.bah.ode.spark.WrapperVehicleDataTransformer")
                      .addFiles("file://" + sparkConfigDirHome + "/"
                            + getParam(SPARK_METRICS_TRANSFORMER_CONFIGURATION_FILE))
                      .setUserJar(DEPLOY_HOME + File.separator
@@ -589,7 +589,7 @@ public class AppContext {
                            + getParam(ODE_SPARK_JAR))
                      .addFiles("file://" + sparkConfigDirHome + "/"
                            + getParam(SPARK_METRICS_AGGREGATOR_CONFIGURATION_FILE))
-                     .setClass("com.bah.ode.spark.VehicleDataAggregatorWrapper");
+                     .setClass("com.bah.ode.spark.WrapperVehicleDataAggregator");
                
                /*
                 * If the aggregator is to run in a sliding window, the microbatch

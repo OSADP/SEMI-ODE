@@ -23,7 +23,7 @@ public class OdeMetrics {
    public void cacheOut() {
       cacheCounter.dec();
    }
-
+   
    public static OdeMetrics getInstance() {
       if (null == instance) {
          synchronized (OdeMetrics.class) {
@@ -56,6 +56,7 @@ public class OdeMetrics {
    }
 
    public interface Gauge<T> extends com.codahale.metrics.Gauge<T> {
+      void register(String prefix, String... names);
    }
 
    public class Counter {

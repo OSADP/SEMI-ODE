@@ -2,8 +2,8 @@
     "warehouseURL": "wss://webapp.connectedvcs.com/whtools22/websocket",
 
     "casURL": "https://cas.connectedvcs.com/accounts/v1/tickets",
-    "casUserName": "Musavi_hamid@bah.com",
-    "casPassword": "CV2015",
+    "casUserName": "YourUserName",
+    "casPassword": "YourPassword",
     
     "requestDir": "requests",
     "responseDir": "responses",

@@ -30,6 +30,7 @@ import com.bah.ode.model.OdeFilterable;
 import com.bah.ode.model.OdeIntersectionData;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeMsgPayload;
+import com.bah.ode.model.OdeVehicleCount;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.util.WebSocketUtils;
 import com.bah.ode.wrapper.DataProcessor;
@@ -51,12 +52,15 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
    private static final LongGauge isdLatency = new LongGauge();
    private static final LongGauge asdLatency = new LongGauge();
    private static final LongGauge aggLatency = new LongGauge();
+   private static final LongGauge numVehicles = new LongGauge();
+
 
    static {
-      OdeMetrics.getInstance().registerGauge(aggLatency, "AGG_Latency");
-      OdeMetrics.getInstance().registerGauge(asdLatency, "ASD_Latency");
-      OdeMetrics.getInstance().registerGauge(isdLatency, "ISD_Latency");
-      OdeMetrics.getInstance().registerGauge(vsdLatency, "VSD_Latency");
+      aggLatency.register("AGG_Latency");
+      asdLatency.register("ASD_Latency");
+      isdLatency.register("ISD_Latency");
+      vsdLatency.register("VSD_Latency");
+      numVehicles.register("NumberOfVehicles");
    }
 
    protected Timer timer;
@@ -98,6 +102,11 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
                   //serialId is not blank and re-ordering is enabled 
                   queueDataInOrder(dataMsg);
                } // End of serial ID is not blank
+               
+               // Report number of vehicle to metrics system
+               if (payload instanceof OdeVehicleCount) {
+                  numVehicles.setValue(((OdeVehicleCount) payload).getCount());
+               }
             } else { // Not a OdeData instance
                WebSocketUtils.send(clientSession, updateDataMsg(dataMsg));
                
