@@ -3,7 +3,7 @@ import logging
 
 import httplib2
 import base64
-logger = logging.getLogger('odeClient.restAPI')
+logger = logging.getLogger('PythonSDK.odeClient.restAPI')
 
 import response
 

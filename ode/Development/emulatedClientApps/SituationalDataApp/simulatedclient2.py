@@ -26,7 +26,7 @@ except:
     print "Error Importing ODE Client. Please install the odeClient Package"
     sys.exit(-1)
 
-import depositClient
+import uploadClient
 import simulatedClientPresets
 import clientConfig
 
@@ -42,7 +42,7 @@ if not os.path.exists('logs'):
 if not os.path.exists('output'):
     os.makedirs('output')
 
-current_date_time = datetime.datetime.now().strftime("%Y-%m-%dT%H_%M_%S")
+current_date_time = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
 log_name = 'simulated_client2_{}.log'.format(current_date_time)
 logger = logging.getLogger('simulatedClient')
 logger.setLevel(logging_level)
@@ -68,7 +68,7 @@ date_format = '%Y-%m-%dT%H:%M:%S.%f%Z'
 # Same date time stamp used for log file
 
 base_config = {'OUTPUT_TO_FILE': True,
-               'OUTPUT_FILE_NAME': 'simulated_client2_output_{0}.txt'.format(current_date_time),
+               'OUTPUT_FILE_NAME': 'simulated_client2_output_{0}.json'.format(current_date_time),
                }
 config = defaultdict(lambda: None, base_config)
 
@@ -178,7 +178,7 @@ def validate_location(msg_payload,region=None):
 #
 ###
 def _main():
-    parser = clientConfig.get_parser()
+    parser = clientConfig.get_options_parser()
     (options, args) = parser.parse_args()
     
     if len(sys.argv) < 2:
@@ -188,7 +188,7 @@ def _main():
     cp = None
     config.update(vars(options))
     if config.get('CONFIG_FILE'):
-        cp = parse_config_file(config['CONFIG_FILE'])
+        cp = clientConfig.get_config_parser(config['CONFIG_FILE'])
         parse_options(cp)
 
     logger.debug("User Config: %s", config)
@@ -196,7 +196,7 @@ def _main():
             config['USERNAME'],
             config['HOST'],
             config['REQUEST_TYPE'],
-            config['DATA'])
+            config['DATA_TYPE'])
 
     logger.info(config_info)
     if config['PASSWORD'] is None:
@@ -205,64 +205,6 @@ def _main():
     global record_count
     record_count = 0.0
     _run_main(config, cp)
-
-def parse_config_file(file_path):
-    config_file = ConfigParser.ConfigParser()
-    config_file.optionxform = str
-    try:
-        config_file.readfp(open(file_path))
-    except Exception as e:
-        logger.exception('Unable to Open Config File')
-        sys.exit(1)
-    logger.info("Reading Config File: %s",file_path)
-    if config_file.has_section('ode'):
-        config['HOST'] = config_file.get('ode', 'host')
-        config['REQUEST_TYPE'] = config_file.get('ode', 'requestType')
-        config['DATA'] = config_file.get('ode', 'dataType')
-        config['UPLOAD_TEST_DATA'] = bool (config_file.getboolean('ode', 'uploadData'))
-        if config['UPLOAD_TEST_DATA']:
-          config['VALIDATION_FILE'] = config_file.get('ode', 'validationFile')
-        if config['UPLOAD_TEST_DATA']:
-            config['INPUT_FILE'] = config_file.get('ode', 'inputFile')
-
-        config['USERNAME'] = config_file.get('ode', 'userName')
-        config['PASSWORD'] = config_file.get('ode', 'password')
-
-    if config_file.has_section('queryParams'):
-        config['START_DATE'] = config_file.get('queryParams', 'startDate')
-        config['END_DATE'] = config_file.get('queryParams', 'endDate')
-        config['SKIP']  = config_file.get('queryParams','skip')
-        config['LIMIT'] = config_file.get('queryParams','limit')
-    area = None
-
-    if config_file.has_section('serviceRegion'):
-        area={}
-        for key, value in config_file.items('serviceRegion'):
-            area[key] = value
-
-    config['SERVICE_REGION'] = area
-
-    segments = [x for x in config_file.sections() if 'segment' in x]
-
-    if segments is not None:
-        road_segments = []
-        for segment in segments:
-            rs ={}
-            for key, value in config_file.items(segment):
-                rs[key]=value
-            road_segments.append(rs)
-        config['ROAD_SEGMENTS'] = road_segments
-    else:
-       config['ROAD_SEGMENTS'] = None
-
-    return config_file
-
-def parse_options(config_file):
-    if config_file.has_section('options'):
-        if config_file.has_option('options', 'captureOutput'):
-            config['OUTPUT_TO_FILE'] = bool(config_file.get('options', 'captureOutput'))
-        if config_file.has_option('options', 'captureOutputFileName'):
-            config['OUTPUT_FILE_NAME'] = config_file.get('options', 'capturedOutputFileName')
 
 def build_request(config):
     request = None
@@ -281,7 +223,7 @@ def build_request(config):
         request = client.BaseRequest("tst","veh",region)
 
     elif config.get('REQUEST_TYPE',None) and config.get('REQUEST_TYPE') == 'qry':
-        request = client.QueryRequest(config.get('DATA'),
+        request = client.QueryRequest(config.get('DATA_TYPE'),
                                       region,
                                       config.get('START_DATE', start_date),
                                       config.get('END_DATE', end_date),
@@ -311,7 +253,7 @@ def build_region(regionValues):
                                    regionValues["seLat"],
                                    regionValues["seLon"] )
 
-def _run_main(config,config_file=None):
+def _run_main(config, config_file=None):
 
     ode = client.ODEClient(config['HOST'], config['USERNAME'], config['PASSWORD'])
 

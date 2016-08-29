@@ -30,11 +30,6 @@ logger = logging.getLogger('simulatedClient.depositClient')
 base_config = {}
 config = defaultdict(lambda: None, base_config)
 
-records_per_second = 250.0
-
-rate = 1 / records_per_second
-
-
 def update_config(new_config):
     config.update(new_config)
 
@@ -48,6 +43,7 @@ def send_file(ws, filePath):
     """
     count = 0
     with open(filePath, ) as f:
+        rate = 1 / rps
         for line in f:
             time.sleep(rate) # uncomment out and  adjust to change how slow/fast data is uploaded
             try:
@@ -94,18 +90,20 @@ def on_message(ws, message):
     try:
         msg = json.loads(message, encoding='UTF-8')
         logger.debug("Message: %s",  message)
-        if msg.get('payload', {'code': None}).get('code', None) is not None and msg.get('payload').get(
-                'code').upper() == 'SUCCESS':
+        print(message)
+        #if msg.get('payload', {'code': None}).get('code', None) is not None and msg.get('payload').get(
+        #        'code').upper() == 'SUCCESS':
             # send_file(ws,config['INPUT_FILE'])
-            logger.info('Message from the Test API: %s', message)
-        elif msg.get('payload', {'code': None}).get('code', None) is not None and msg.get('payload').get(
-                'code').upper() == 'FAILURE':
-            ws.close()
-        else:
-            pass
+            #logger.info('Message from the Test API: %s', message)
+
+        #elif msg.get('payload', {'code': None}).get('code', None) is not None and msg.get('payload').get(
+        #        'code').upper() == 'FAILURE':
+        #    ws.close()
+        #else:
+        #    pass
             #logger.debug('Message from the Test API: %s', message)
-        if msg.get("payload", {'code': None}).get("code") == 'FAILURE':
-            ws.close()
+        #if msg.get("payload", {'code': None}).get("code") == 'FAILURE':
+        #    ws.close()
     except:
 
         # logger.warn(message)
@@ -124,40 +122,52 @@ def on_close(ws):
 
 
 def _main(this_config = config):
-    # parser = get_parser()
-    # (options, args) = parser.parse_args()
-
-    # config.update(vars(options))
+    parser = clientConfig.get_parser()
+    (options, args) = parser.parse_args()
+    
+    if len(sys.argv) < 2:
+      parser.print_help()
+      sys.exit()
+    
+    cp = None
+    # vars returns a dictionary (__dict__) object from the options which is a optparse.Values object
+    # then the config object is updated with the same set of key/value pairs
+    this_config.update(vars(options))
     if this_config.get('CONFIG_FILE'):
         cp = parse_config_file(this_config['CONFIG_FILE'])
+        parse_options(cp)
 
-    _run_main(this_config)
+    logger.debug("User Config: %s", this_config)
+    config_info = "User:{}, Host: {}, Request Type: {}, Data Type: {} ".format(
+            this_config['USERNAME'],
+            this_config['HOST'],
+            this_config['REQUEST_TYPE'],
+            this_config['DATA_TYPE'])
 
-
-def parse_config_file(file_path):
-    config_file = ConfigParser.ConfigParser()
-    config_file.optionxform = str
-    try:
-        config_file.readfp(open(file_path))
-    except Exception as e:
-        logger.exception('Unable to Open Config File')
+    logger.info(config_info)
+    if this_config['PASSWORD'] is None:
+        logger.exception("Missing Password. ")
         sys.exit(1)
-    logger.info("Reading: %s", file_path)
-    if config_file.has_section('ode'):
-        config['HOST'] = config_file.get('ode', 'host')
-        config['REQUEST_TYPE'] = config_file.get('ode', 'requestType')
-        config['DATA'] = config_file.get('ode', 'dataType')
-        config['VALIDATION_FILE'] = config_file.get('ode', 'validationFile')
-        config['INPUT_FILE'] = config_file.get('ode', 'inputFile')
-
-    return config_file
+    global record_count
+    record_count = 0.0
+    
+    rps = this_config['RPS']
+    
+    _run_main(this_config, cp)
 
 
-def _run_main(config):
+def parse_options(config_file):
+    if config_file.has_section('options'):
+        if config_file.has_option('options', 'captureOutput'):
+            config['OUTPUT_TO_FILE'] = bool(config_file.get('options', 'captureOutput'))
+        if config_file.has_option('options', 'captureOutputFileName'):
+            config['OUTPUT_FILE_NAME'] = config_file.get('options', 'capturedOutputFileName')
+
+def _run_main(config, config_file=None):
     subscription_type = config['REQUEST_TYPE']
 
     if subscription_type == 'sub':
-        uri = '{0}'.format(config['DATA'])
+        uri = '{0}'.format(config['DATA_TYPE'])
     else:
         logger.warn('Subscription type of [%s] is not supported', subscription_type)
         sys.exit(-1)
@@ -196,7 +206,7 @@ if __name__ == "__main__":
     logger.addHandler(ch)
     config['TEST_REQUEST']='tstvehOdeTstRequest-1072250496'
     config['CONFIG_FILE']='sample_config2.ini'
-    records_per_second = 1
+    rps = 1
 
 
     _main()

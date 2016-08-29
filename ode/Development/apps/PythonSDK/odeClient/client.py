@@ -12,13 +12,15 @@ import exceptions
 import response
 
 enableWebSocketTrace = False
-logger = logging.getLogger('odeClient')
+logger = logging.getLogger('PythonSDK.odeClient')
 websocket.enableTrace(enableWebSocketTrace)
 
 supported_types = {
-		"sub":["int","veh","agg"],
-		"qry":["int","veh","adv"],
-        "tst":["veh"]
+    "sub":["int","veh","agg"],
+    "qry":["int","veh","adv"],
+    "tst":["veh"],
+    "dep":["veh","adv","asnbase64","asnhex"]
+    
 	}
 
 class ODEClient(object):
@@ -80,17 +82,16 @@ class ODEClient(object):
                                 on_error=kwargs.get("on_error", on_error),
                                 on_close=kwargs.get("on_close", on_close),
                                 )
-        if on_open is not None:
-            self.ws.on_open = on_open
-        else:
+        if on_open is None:
             self.ws.on_open= self.on_open
-        # if on_open is None:
-        #     self.ws.on_open = self._on_open
-        # else:
-        #     self.ws.on_open =on_open
+        else:
+            self.ws.on_open = on_open
 
         self.ws.run_forever()
 
+    def disconnect(self):
+        self.ws.close()
+        
     def getMessages(self, number_of_message):
         """
         Get list messages from an Internal non-blocking FIFO queue object 

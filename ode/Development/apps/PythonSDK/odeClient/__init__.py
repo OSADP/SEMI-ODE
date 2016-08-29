@@ -1,3 +1,3 @@
 __author__ = '562474'
 import logging
-logging.getLogger('odeClient').addHandler(logging.NullHandler())
+logging.getLogger('PythonSDK.odeClient').addHandler(logging.NullHandler())
