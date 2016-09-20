@@ -11,11 +11,6 @@
    </context-param>
 
    <context-param>
-      <!-- The root context for ODE (NOT USED)-->
-      <param-name>web.server.root</param-name>
-      <param-value>ode</param-value>
-   </context-param>
-   <context-param>
       <!-- The root context for Liferay portal -->
       <param-name>liferay.ws.serverhost</param-name>
       <param-value>http://localhost:8080</param-value>
@@ -86,14 +81,24 @@
       <param-value>wss://webapp.connectedvcs.com/whtools22/websocket</param-value>
    </context-param>
    <context-param>
-      <!-- Spark Master specifies if spark job is to run locally with K worker
-           threads (local[k]) or on yarn (yarn-client or yarn-cluster). 
-           If on yarn, whether to deploy your driver on the worker nodes (yarn-cluster)
-           or locally as an external client (yarn-client) (default: client)   
+      <param-name>spark.home</param-name>
+      <param-value>/usr/hdp/current/spark-client</param-value>
+   </context-param>
+   <context-param>
+      <param-name>spark.standalone.properties.file</param-name>
+      <param-value>spark-standalone.properties</param-value>
+   </context-param>
+   <context-param>
+      <!-- Set spark.master as follows:
+               local[k] = to run locally with K worker threads
+               yarn-client = to run on yarn in client mode
+               yarn-cluster = to run on yarn in cluster mode
+               standalone = to run against externally launched spark apps 
       -->
       <param-name>spark.master</param-name>
-      <param-value>yarn-client</param-value>
+      <param-value>standalone</param-value>
    </context-param>
+   
    <context-param>
       <!-- Spark microbatch duration in milliseconds -->
       <param-name>spark.streaming.microbatch.duration.ms</param-name>
@@ -304,7 +309,7 @@
       Default: false
    -->
    <context-param>
-      <param-name>spark.run.ode.aggregator.in.vdp</param-name>
+      <param-name>spark.run.aggregator.in.transformer</param-name>
       <param-value>false</param-value>
    </context-param>
    <!-- Number of kafka consumer threads -->
@@ -312,6 +317,12 @@
       <param-name>kafka.consumer.threads</param-name>
       <param-value>9</param-value>
    </context-param>
+   <!-- sync=synchronous produce. async=asynchronous producer-->
+   <context-param>
+      <param-name>spark.kafka.produce.type</param-name>
+      <param-value>async</param-value>
+   </context-param>
+   
    <!--
       This param can be used to change the spark scheduler mode of operation.
       Valid values are FIFO and FAIR. Default = FIFO
@@ -321,19 +332,24 @@
       <param-value>FAIR</param-value>
    </context-param>
    <!--
-      This param can be used to run the spark apps with a single kafka receiver
-      supporting multiple topic partitions or route each kafka partition to 
-      a separate Spark receiver. Default = false
+      This param can be used to run the spark apps with 
+      - single: a single kafka receiver supporting multiple topic partitions or 
+      - parallel: route each kafka partition to a separate Spark receiver. 
+      - direct: does not use a receiver, instead uses Spark Direct method
       
-      When false, one receiver is used to receive all partitions. When true,
-      multiple receivers are dispatched to worker nodes to receive data in 
+      Default = single
+      
+      When single, one receiver is used to receive all partitions. 
+      When parallel, multiple receivers are dispatched to worker nodes to receive data in 
       parallel streams. the streams are then unified by spark before processing.
+      WHen direct, it uses "direct" method.
+      
       This param should probably be set to true if a single receiver
       is the cause of data bottleneck.    
    -->
    <context-param>
-      <param-name>spark.use.parallel.receivers</param-name>
-      <param-value>false</param-value>
+      <param-name>spark.receiver</param-name>
+      <param-value>single</param-value>
    </context-param>
 
    <listener>

@@ -18,6 +18,7 @@ package com.bah.ode.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.bah.ode.asn.OdeMapData;
 import com.bah.ode.asn.OdeSpatData;
@@ -40,7 +41,7 @@ public enum OdeDataType {
    OtherData("other", OdeMsgPayload.class), 
    Unknown("unknown", OdeMsgPayload.class);
    
-   private static String shortNames = shortNames();
+   private static List<String> shortNames = shortNamesAsList();
 
    private final String shortName;
    
@@ -88,14 +89,15 @@ public enum OdeDataType {
    }
 
    public static String shortNames() {
+      return shortNamesAsList().toString();
+   }
+
+   public static List<String> shortNamesAsList() {
       if (shortNames == null) {
-         ArrayList<String> result = new ArrayList<String>();
-         
+         shortNames = new ArrayList<String>();
          for (OdeDataType value : OdeDataType.values()) {
-            result.add(value.getShortName());
+            shortNames.add(value.getShortName());
          }
-         
-         shortNames = result.toString();
       }
       return shortNames;
    }

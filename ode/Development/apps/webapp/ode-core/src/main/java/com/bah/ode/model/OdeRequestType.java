@@ -17,12 +17,12 @@
 package com.bah.ode.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 public enum OdeRequestType {
    Subscription("sub"), Query("qry"), Test("tst"), Deposit("dep");
 
-   private static final String shortNames = shortNames();
+   private static List<String> shortNames = shortNamesAsList();
    private final String shortName;
 
    private OdeRequestType(String shortName) {
@@ -46,14 +46,16 @@ public enum OdeRequestType {
    }
    
    public static String shortNames() {
+      return shortNamesAsList().toString();
+   }
+
+   public static List<String> shortNamesAsList() {
       if (shortNames == null) {
-         ArrayList<String> result = new ArrayList<String>();
+         shortNames = new ArrayList<String>();
          
          for (OdeRequestType value : OdeRequestType.values()) {
-            result.add(value.getShortName());
+            shortNames.add(value.getShortName());
          }
-         
-         return Arrays.toString(result.toArray());
       }
       return shortNames;
    }

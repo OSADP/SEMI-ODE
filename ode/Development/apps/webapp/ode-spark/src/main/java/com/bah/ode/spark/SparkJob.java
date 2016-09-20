@@ -50,7 +50,7 @@ public abstract class SparkJob {
       return unifiedStream;
    }
 
-   public JavaPairDStream<String,Tuple2<String,String>> receiveDirect (
+   public JavaPairDStream<String, String> receiveDirect (
          final JavaStreamingContext ssc, MQTopic topic, String brokerList) {
       HashSet<String> topicsSet = new HashSet<String>();
       topicsSet.add(topic.getName());
@@ -65,12 +65,8 @@ public abstract class SparkJob {
             topicsSet
         );
 
-      JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata = 
-            joinPayloadAndMetadata(
-            topic, unifiedStream);
-
       
-      return payloadAndMetadata;
+      return unifiedStream;
    }
 
    public JavaPairDStream<String, Tuple2<String, String>> unifiedStream(
@@ -80,12 +76,17 @@ public abstract class SparkJob {
       SparkConf conf = ssc.sparkContext().getConf();
       JavaPairDStream<String, String> unifiedStream;
 
-      if (conf.getBoolean(AppContext.SPARK_USE_PARALLEL_RECEIVERS,
-            AppContext.DEFAULT_SPARK_USE_PARALLEL_RECEIVERS)
+      String sparkReceiver = conf.get(AppContext.SPARK_RECEIVER,
+            AppContext.DEFAULT_SPARK_RECEIVER);
+      
+      if (sparkReceiver.equalsIgnoreCase("parallel")
             && topic.getPartitions() > 1) {
          logger.info("Spark using parallel receivers each consuming a single partition");
          unifiedStream = parallelReceivers(ssc, this.getClass().getName(),
                topic, zkConnectionStrings, brokerList);
+      } else if (sparkReceiver.equalsIgnoreCase("direct")){
+         logger.info("Spark using direct receiving method");
+         unifiedStream = receiveDirect(ssc, topic, brokerList);
       } else {
          logger.info("Spark using a single receiver consuming all available partitions");
          unifiedStream = singleReceiver(ssc, this.getClass().getName(), topic,
@@ -93,47 +94,46 @@ public abstract class SparkJob {
       }
       
       JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata = 
-            joinPayloadAndMetadata(
-            topic, unifiedStream);
+            splitPayloadAndMetadataToPair(unifiedStream);
 
       
       return payloadAndMetadata;
    }
 
-   private JavaPairDStream<String, Tuple2<String, String>> joinPayloadAndMetadata(
-         MQTopic topic, JavaPairDStream<String, String> unifiedStream) {
-      // System.out.println("unifiedStream");
-      // System.out.println("===============");
-      // unifiedStream.cache().print(10);
+   private JavaPairDStream<String, Tuple2<String, String>> 
+   splitPayloadAndMetadataToPair(JavaPairDStream<String, String> unifiedStream) {
+//      System.out.println("unifiedStream");
+//      System.out.println("=============");
+//      unifiedStream.cache().print(10);
 
       JavaPairDStream<String, String> payloadStream = unifiedStream
-            .mapToPair(
-                  pam -> new Tuple2<String, String>(pam._1,
-                        JsonUtils
-                              .getJsonNode(pam._2, AppContext.PAYLOAD_STRING)
-                              .toString()));
+            .mapToPair(pam -> new Tuple2<String, String>(pam._1,
+                  JsonUtils.getJsonNode(pam._2, AppContext.PAYLOAD_STRING).toString()));
 
-      // System.out.println("payloadStream");
-      // System.out.println("===============");
-      // payloadStream.cache().print(10);
+//      System.out.println("payloadStream");
+//      System.out.println("=============");
+//      payloadStream.cache().print(10);
 
       JavaPairDStream<String, String> metadataStream = unifiedStream
             .mapToPair(pam -> new Tuple2<String, String>(pam._1,
-                  JsonUtils.getJsonNode(pam._2, AppContext.METADATA_STRING)
-                        .toString()));
+                  JsonUtils.getJsonNode(pam._2, AppContext.METADATA_STRING).toString()));
 
-      // System.out.println("metadataStream");
-      // System.out.println("===============");
-      // metadataStream.cache().print(10);
+//      System.out.println("metadataStream");
+//      System.out.println("==============");
+//      metadataStream.cache().print(10);
 
 
       JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata = 
             payloadStream.join(metadataStream);
 
-      // System.out.println("joinedStream");
-      // System.out.println("===============");
-      // joinedStream.cache().print(10);
+//      System.out.println("payloadAndMetadata");
+//      System.out.println("==================");
+//      payloadAndMetadata.cache().print(10);
       return payloadAndMetadata;
    }
+
+   public abstract JavaPairDStream<String, Tuple2<String, String>> setup(
+         JavaStreamingContext ssc, MQTopic topic, String zkConnectionStrings,
+         String brokerList);
 
 }

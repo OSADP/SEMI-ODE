@@ -90,22 +90,27 @@ public class OdeRequestManager {
       return otms.getOrCreateTopic(RequestId);
    }
 
-   public static int addSubscriber(String requestId, OdeDataType dataType) {
-      int numSubscribers = otms.addSubscriber(requestId); 
-      logger.info("Added subscriber {}. Current number of subscribers = {}", 
-            requestId, numSubscribers);
-      if (numSubscribers > 0 && !isPassThrough(dataType) &&
-            appContext.getParam(AppContext.SPARK_MASTER).startsWith("local")) {
-         LocalSparkProcessor.startStreamingContext();
+   public static int addSubscriber(OdeRequest request) {
+      int numSubscribers = otms.addSubscriber(request.getId()); 
+      try {
+         logger.info("Added subscriber {}. Current number of subscribers = {}", 
+               request.getId(), numSubscribers);
+         if (numSubscribers > 0 && !isPassThrough(request.getDataType()) &&
+               appContext.getParam(AppContext.SPARK_MASTER).startsWith("local")) {
+            LocalSparkProcessor.startStreamingContext();
+         }
+      } catch (Exception e) {
+         removeSubscriber(request);
+         throw e;
       }
       return numSubscribers;
    }
 
-   public static int removeSubscriber(String requestId, OdeDataType dataType) {
-      int numSubscribers = otms.removeSubscriber(requestId);
+   public static int removeSubscriber(OdeRequest request) {
+      int numSubscribers = otms.removeSubscriber(request.getId());
       logger.info("Removed subscriber {}. Current number of subscribers = {}", 
-            requestId, numSubscribers);
-      if (numSubscribers <= 0 && !isPassThrough(dataType) &&
+            request.getId(), numSubscribers);
+      if (numSubscribers <= 0 && !isPassThrough(request.getDataType()) &&
             appContext.getParam(AppContext.SPARK_MASTER).startsWith("local")) {
          LocalSparkProcessor.stopStreamingContext();
       }

@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.KeyPair;
 import java.security.Security;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Singleton;
@@ -33,6 +32,9 @@ import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.bah.ode.model.OdeDataType;
+import com.bah.ode.model.OdeRequestType;
 
 
 /**
@@ -153,9 +155,9 @@ public class TokenAuthenticationService {
 	    claims.setNotBeforeMinutesInThePast(2); 			// time before which the token is not yet valid (2 minutes ago)
 	    claims.setSubject(String.valueOf(userId)); 			// the subject/principal is whom the token is about
 	    
-	    List<String> requestTypes = Arrays.asList("qry", "sub");
+	    List<String> requestTypes = OdeRequestType.shortNamesAsList();
 	    claims.setStringListClaim("requestType", requestTypes); 
-	    List<String> dataTypes = Arrays.asList("veh", "qry", "int", "agg");
+	    List<String> dataTypes = OdeDataType.shortNamesAsList();
 	    claims.setStringListClaim("dataTypes", dataTypes); 
 
 	    return claims;

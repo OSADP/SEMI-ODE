@@ -112,7 +112,9 @@ public class TestUploadServer {
          if (!AppContext.loopbackTest()) {
             this.producer = new MQProducer<String, String>(
                   AppContext.getInstance().getParam(
-                  AppContext.KAFKA_METADATA_BROKER_LIST));
+                  AppContext.KAFKA_METADATA_BROKER_LIST),
+                  AppContext.getInstance().getParam(AppContext.SPARK_KAFKA_PRODUCER_TYPE,
+                                                    AppContext.DEFAULT_KAFKA_PRODUCER_TYPE));
          }
          
          DataSourceConnector connector = WebSocketServer.getConnector(requestId);
@@ -214,6 +216,7 @@ public class TestUploadServer {
                            (OdeControlData) JsonUtils.fromJson(
                                  payload.toString(), OdeControlData.class);
                             sendOdeMsgPayload(ocd, payloadType, null);
+                            WebSocketUtils.send(session, message);
          
                            break;
          

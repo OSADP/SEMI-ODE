@@ -89,8 +89,9 @@ public class DdsMessageHandler implements WebSocketMessageHandler<DdsData> {
    public DdsMessageHandler(OdeMetadata metadata) {
       if (!AppContext.loopbackTest()) {
          this.producer = new MQProducer<String, String>(
-                     AppContext.getInstance().getParam(
-                           AppContext.KAFKA_METADATA_BROKER_LIST));
+                     appContext.getParam(AppContext.KAFKA_METADATA_BROKER_LIST),
+                     appContext.getParam(AppContext.SPARK_KAFKA_PRODUCER_TYPE,
+                                         AppContext.DEFAULT_KAFKA_PRODUCER_TYPE));
       }
       this.streamId = UUID.randomUUID().toString();
       this.bundleId = new Long(0);

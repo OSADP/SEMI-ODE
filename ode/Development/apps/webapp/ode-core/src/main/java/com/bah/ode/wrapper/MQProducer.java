@@ -14,7 +14,7 @@ public class MQProducer<K, V> {
 
    Producer<K, V> producer;
 
-   public MQProducer(String brokers) {
+   public MQProducer(String brokers, String type) {
       // TODO
       /*
        * Using default encoder for now. We should define a specific encoder
@@ -27,12 +27,12 @@ public class MQProducer<K, V> {
        * partitioner based on the data type.
        */
       // props.put("partitioner.class", "com.bah.ode.wrapper.MQPartitioner");
-      this(brokers, "kafka.serializer.StringEncoder", null);
+      this(brokers, type, "kafka.serializer.StringEncoder", null);
 
    }
 
-   public MQProducer(String brokers, String encoderClass,
-         String partitionerClass) {
+   public MQProducer(String brokers, String type,
+         String encoderClass, String partitionerClass) {
 
       Properties props = new Properties();
       props.put("metadata.broker.list", brokers);
@@ -43,7 +43,7 @@ public class MQProducer<K, V> {
          props.put("partitioner.class", partitionerClass);
 
       props.put("request.required.acks", "1");
-      props.put("producer.type", "sync");
+      props.put("producer.type", type);
 
       ProducerConfig config = new ProducerConfig(props);
 

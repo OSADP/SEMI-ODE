@@ -44,8 +44,9 @@ public class DataDistributionWorker {
    private String groupId;
    private MQConsumerGroup<String, String, String> consumerGroup;
    private BaseDataPropagator propagator;
-   private TimerTask timerTask;
+   private boolean isAlive = false;
 
+   private TimerTask timerTask;
    private Timer timer;
 
    public DataDistributionWorker(
@@ -77,7 +78,7 @@ public class DataDistributionWorker {
       this.propagator = propagator;
    }
 
-   public void shutDown() {
+   public int shutDown() {
       if (consumerGroup != null) {
          logger.info("Shutting down consumerGroup {}", 
                consumerGroup.getTopic().getName());
@@ -89,88 +90,94 @@ public class DataDistributionWorker {
          timerTask = null;
       }
       
-      if (propagator.getMetadata() != null) {
-         OdeRequest request = propagator.getMetadata().getOdeRequest();
-         OdeRequestManager.removeSubscriber(request.getId(), request.getDataType());
-      }
+      int remaining = 0;
+      OdeRequest request = propagator.getMetadata().getOdeRequest();
+      remaining = OdeRequestManager.removeSubscriber(request);
+      return remaining;
    }
 
    public void startIfNotAlive(OdeMetadata metadata) {
-      try {
-         propagator.setMetadata(metadata);
-         if (!AppContext.loopbackTest() && this.consumerGroup == null) {
-            this.consumerGroup = new MQConsumerGroup<String, String, String>(
-                  appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
-                  this.groupId,
-                  metadata.getOutputTopic(),
-                  new StringDecoder(null),
-                  new StringDecoder(null),
-                  propagator);
-         }
-         
-         if (timerTask == null) {
-            logger.info("Starting distribution thread for {}...", 
-                  metadata.getOutputTopic().getName());
-            /**
-             * Sends all received and ordered records every second as a batch Records
-             * sent as map of serialId.bundleId
-             */
-            this.timerTask = new java.util.TimerTask() {
-               @Override
-               public void run() {
-                  synchronized (propagator) {
-                     TreeMap<Integer, ArrayList<OdeDataMessage>> records = propagator.records();
-                     /*
-                      * Sends the batch every second without waiting for the next bundle
-                      * if it hasn't arrived yet.
-                      */
-                     if (records.size() != 0) {
-                        Context context = timer.time();
-                        try {
-                           TreeMap<Integer, ArrayList<OdeDataMessage>> sendMap = 
-                                 new TreeMap<Integer, ArrayList<OdeDataMessage>>(records);
-                           records.clear();
-                           Iterator<Integer> iter = sendMap.navigableKeySet().iterator();
-                           while (iter.hasNext()) {
-                              int key = iter.next();
-                              ArrayList<OdeDataMessage> vList = sendMap.get(key);
-                              for (int i = 0; i < vList.size(); i++) {
-                                 OdeDataMessage msg = vList.get(i);
-                                 if (msg != null) {
-                                    propagator.filterAndSend(msg);
+      if (!isAlive) {
+         try {
+            propagator.setMetadata(metadata);
+            if (!AppContext.loopbackTest() && this.consumerGroup == null) {
+               this.consumerGroup = new MQConsumerGroup<String, String, String>(
+                     appContext.getParam(AppContext.ZK_CONNECTION_STRINGS),
+                     this.groupId,
+                     metadata.getOutputTopic(),
+                     new StringDecoder(null),
+                     new StringDecoder(null),
+                     propagator);
+            }
+            
+            if (timerTask == null) {
+               logger.info("Starting distribution thread for {}...", 
+                     metadata.getOutputTopic().getName());
+               /**
+                * Sends all received and ordered records every second as a batch Records
+                * sent as map of serialId.bundleId
+                */
+               this.timerTask = new java.util.TimerTask() {
+                  @Override
+                  public void run() {
+                     synchronized (propagator) {
+                        TreeMap<Integer, ArrayList<OdeDataMessage>> records = propagator.records();
+                        /*
+                         * Sends the batch every second without waiting for the next bundle
+                         * if it hasn't arrived yet.
+                         */
+                        if (records.size() != 0) {
+                           Context context = timer.time();
+                           try {
+                              TreeMap<Integer, ArrayList<OdeDataMessage>> sendMap = 
+                                    new TreeMap<Integer, ArrayList<OdeDataMessage>>(records);
+                              records.clear();
+                              Iterator<Integer> iter = sendMap.navigableKeySet().iterator();
+                              while (iter.hasNext()) {
+                                 int key = iter.next();
+                                 ArrayList<OdeDataMessage> vList = sendMap.get(key);
+                                 for (int i = 0; i < vList.size(); i++) {
+                                    OdeDataMessage msg = vList.get(i);
+                                    if (msg != null) {
+                                       propagator.filterAndSend(msg);
+                                    }
                                  }
                               }
+                           } catch (Exception e) {
+                              logger.error("Error Consuming message", e);
                            }
-                        } catch (Exception e) {
-                           logger.error("Error Consuming message", e);
+                           context.stop();
                         }
-                        context.stop();
                      }
                   }
+               };
+   
+               new java.util.Timer().schedule(timerTask, 
+                     appContext.getInt(AppContext.DATA_SEQUENCE_REORDER_DELAY, 
+                           AppContext.DEFAULT_DATA_SEQUENCE_REORDER_DELAY), 
+                     appContext.getInt(AppContext.DATA_SEQUENCE_REORDER_PERIOD, 
+                           AppContext.DEFAULT_DATA_SEQUENCE_REORDER_PERIOD));
+   
+   
+               if (!AppContext.loopbackTest()) {
+                  MQTopic outputTopic = propagator.getMetadata().getOutputTopic();
+                  if (outputTopic != null) {
+                     logger.info(
+                           "Starting {} consumer threads in group {} for topic {} ...",
+                           outputTopic.getPartitions(), groupId, outputTopic.getName());
+                  }
+                  consumerGroup.consume();
                }
-            };
-
-            new java.util.Timer().schedule(timerTask, 
-                  appContext.getInt(AppContext.DATA_SEQUENCE_REORDER_DELAY, 
-                        AppContext.DEFAULT_DATA_SEQUENCE_REORDER_DELAY), 
-                  appContext.getInt(AppContext.DATA_SEQUENCE_REORDER_PERIOD, 
-                        AppContext.DEFAULT_DATA_SEQUENCE_REORDER_PERIOD));
-
-
-            if (!AppContext.loopbackTest()) {
-               MQTopic outputTopic = propagator.getMetadata().getOutputTopic();
-               if (outputTopic != null) {
-                  logger.info(
-                        "Starting {} consumer threads in group {} for topic {} ...",
-                        outputTopic.getPartitions(), groupId, outputTopic.getName());
-               }
-               consumerGroup.consume();
             }
+            isAlive = true;
+         } catch (Exception e) {
+            logger.error("Error starting worker thread", e);
          }
-      } catch (Exception e) {
-         logger.error("Error starting worker thread", e);
       }
-      
+   }
+
+   public boolean isAlive() {
+      return isAlive;
    }
 
 }

@@ -12,6 +12,8 @@ import org.apache.spark.deploy.yarn.ClientArguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.util.CommonUtils;
+
 public class YarnClientManager {
 
    private static Logger logger = LoggerFactory
@@ -24,7 +26,6 @@ public class YarnClientManager {
    private String inputTopic;
    private String zkConnectionString;
    private String kafkaMetaDataBrokerList;
-   private String sparkStreamingMicrobatchDurationMs;
    private String className;
    private String userJar;
    private Client client;
@@ -64,12 +65,6 @@ public class YarnClientManager {
       return this;
    }
 
-   public YarnClientManager setSparkStreamingMicrobatchDuration(
-         String sparkStreamingMicrobatchDurationMs) {
-      this.sparkStreamingMicrobatchDurationMs = sparkStreamingMicrobatchDurationMs;
-      return this;
-   }
-
    public YarnClientManager setClass(String args) {
       this.className = args;
       return this;
@@ -80,7 +75,7 @@ public class YarnClientManager {
       return this;
    }
    
-   public YarnClientManager addFiles(String filePath)
+   public YarnClientManager addFile(String filePath)
    {
 	   filesList.add(filePath);
 	   return this;
@@ -129,7 +124,6 @@ public class YarnClientManager {
             "--arg", inputTopic, 
             "--arg", zkConnectionString,
             "--arg", kafkaMetaDataBrokerList, 
-            "--arg", sparkStreamingMicrobatchDurationMs,
             "--files", String.join(",", filesList),
             "--driver-memory", driverMemory, "--driver-cores", driverCores,
             "--executor-memory", executorMemory,"--executor-cores", executorCores
@@ -142,9 +136,10 @@ public class YarnClientManager {
             + "\nSpark Streaming Microbatch Duration (ms): {}"
             + "\nFiles: {}", userJar,
             numPartitions.toString(), inputTopic, zkConnectionString,
-            kafkaMetaDataBrokerList, sparkStreamingMicrobatchDurationMs, 
+            kafkaMetaDataBrokerList,
             String.join(",", filesList));
 
+      CommonUtils.logSparkConf(sparkConf, logger);
       ClientArguments cArgs = new ClientArguments(args, sparkConf);
       // create an instance of yarn Client
       this.client = new Client(cArgs, config, sparkConf);

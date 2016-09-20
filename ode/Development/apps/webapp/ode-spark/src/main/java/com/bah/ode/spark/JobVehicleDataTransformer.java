@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.Row;
@@ -15,8 +14,6 @@ import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.apache.spark.streaming.Durations;
-import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.slf4j.Logger;
@@ -24,8 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.metrics.SparkInstrumentation;
-import com.bah.ode.model.OdeVehicleDataFlat;
-import com.bah.ode.util.JsonUtils;
+import com.bah.ode.util.CommonUtils;
 import com.bah.ode.wrapper.MQSerialazableProducerPool;
 import com.bah.ode.wrapper.MQTopic;
 
@@ -35,40 +31,33 @@ public class JobVehicleDataTransformer extends SparkJob {
    private static Logger logger = LoggerFactory
          .getLogger(JobVehicleDataTransformer.class);
 
-   public JavaPairDStream<String, Tuple2<String, String>> setup(JavaStreamingContext ssc,
-         MQTopic topic, String zkConnectionStrings,
-         String brokerList) {
+   @Override
+   public JavaPairDStream<String, Tuple2<String, String>> setup(
+         JavaStreamingContext ssc, MQTopic topic, 
+         String zkConnectionStrings, String brokerList) {
       
 
+      logger.info("Getting Spark Conf...");
       SparkConf conf = ssc.sparkContext().getConf();
+      
+      CommonUtils.logSparkConf(conf, logger);
+      
+      logger.info("Getting payloadAndMetadata...");
       JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata = 
             super.unifiedStream(
             ssc, topic, zkConnectionStrings, brokerList);
-//      JavaPairDStream<String, Tuple2<String, String>> payloadAndMetadata = 
-//            super.receiveDirect(
-//            ssc, topic, brokerList);
       
       try {
-         Integer microbatchDuration = Integer.valueOf(conf.get(
-               AppContext.SPARK_STREAMING_MICROBATCH_DURATION_MS,
-               String.valueOf(
-                     AppContext.DEFAULT_SPARK_STREAMING_MICROBATCH_DURATION_MS)));
-
-         Integer windowDuration = Integer.valueOf(conf.get(
-               AppContext.SPARK_STREAMING_WINDOW_MICROBATCHES, String.valueOf(
-                     AppContext.DEFAULT_SPARK_STREAMING_WINDOW_MICROBATCHES)));
-
-         Integer slideDuration = Integer.valueOf(conf.get(
-               AppContext.SPARK_STREAMING_SLIDE_MICROBATCHES, String.valueOf(
-                     AppContext.DEFAULT_SPARK_STREAMING_SLIDE_MICROBATCHES)));
-
          final Broadcast<MQSerialazableProducerPool> producerPool = ssc
                .sparkContext()
-               .broadcast(new MQSerialazableProducerPool(brokerList));
+               .broadcast(new MQSerialazableProducerPool(brokerList,
+                     conf.get(AppContext.SPARK_KAFKA_PRODUCER_TYPE,
+                           AppContext.DEFAULT_KAFKA_PRODUCER_TYPE)));
 
          /*
           * Road Segment Integration
           */
+         logger.info("Integrating Road Segment...");
          payloadAndMetadata = payloadAndMetadata
                .mapToPair(new RoadSegmentIntegrator(new SparkInstrumentation(ssc.sparkContext(),"ode",  "RoadSegmentIntegrator").register(), 
                                                     Double.valueOf( conf.get(AppContext.SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE,
@@ -78,34 +67,46 @@ public class JobVehicleDataTransformer extends SparkJob {
                                                    )
                          );
 
+//         System.out.println("RoadSegmentIntegrator");
+//         System.out.println("=====================");
+//         payloadAndMetadata.cache().print(10);
+         
          /*
           * Bounding Box Sanitization ODE-38
           */
          String sanitizationLocation = ssc.sparkContext().getConf()
                .get(AppContext.SPARK_STATIC_SANITIZATION_FILE_LOCATION, "");
          if (!sanitizationLocation.equals("")) {
+            logger.info("Sanitizing...");
             SQLContext sqlContext = SqlContextSingleton
                   .getInstance(ssc.sparkContext().sc());
 
+            logger.info("Sanitizing... Creating DataFrame...");
             DataFrame sanitizationFrame = sqlContext
                   .jsonFile(sanitizationLocation);
 
+            logger.info("Sanitizing... Mapping...");
             List<String> sanitizationData = sanitizationFrame.toJavaRDD()
                   .map(new DataFrameMapper(
                         new SparkInstrumentation(ssc.sparkContext(), "ode", "RecordSanitizerDataFrameMapper").register(), 
                         sanitizationFrame.columns()))
                   .toArray();
 
+            logger.info("Sanitizing... Mapping to Pairs...");
             payloadAndMetadata = payloadAndMetadata
                   .mapToPair(new VehicleDataSanitizer(
                         new SparkInstrumentation(ssc.sparkContext(), "ode", "RecordSanitizer").register(), 
                         sanitizationData));
 
          }
+//         System.out.println("VehicleDataSanitizer");
+//         System.out.println("====================");
+//         payloadAndMetadata.cache().print(10);
 
          /*
           * Validation ODE-68
           */
+         logger.info("Validating...");
          String validationLocation = ssc.sparkContext().getConf()
                .get(AppContext.SPARK_STATIC_VALIDATION_FILE_LOCATION, "");
 
@@ -126,6 +127,9 @@ public class JobVehicleDataTransformer extends SparkJob {
                         new SparkInstrumentation(ssc.sparkContext(), "ode", "RecordValidator").register(),
                         validationData));
          }
+//         System.out.println("VehicleDataValidator");
+//         System.out.println("====================");
+//         payloadAndMetadata.cache().print(10);
 
          /*
           * Weather data integration
@@ -134,6 +138,7 @@ public class JobVehicleDataTransformer extends SparkJob {
          String weatherLocation = ssc.sparkContext().getConf()
                .get(AppContext.SPARK_STATIC_WEATHER_FILE_LOCATION, "");
          if (!weatherLocation.equals("")) {
+            logger.info("Integrating weather data...");
             JavaSparkContext sparkContext = ssc.sparkContext();
 
             JavaRDD<String> fileRDD = sparkContext.textFile(weatherLocation);
@@ -171,93 +176,51 @@ public class JobVehicleDataTransformer extends SparkJob {
                         weatherData));
 
          }
+//         System.out.println("WeatherIntegrator");
+//         System.out.println("=================");
+//         payloadAndMetadata.cache().print(10);
 
-         boolean aggInVDP = conf.getBoolean(
-               AppContext.SPARK_RUN_ODE_AGGREGATOR_IN_VDP, 
-               AppContext.DEFAULT_SPARK_RUN_ODE_AGGREGATOR_IN_VDP) ||
-               ssc.sparkContext().master().startsWith("local");
+         logger.info("Filtering...");
+         JavaPairDStream<String, Tuple2<String, String>> 
+            aggregationEligibleRecords = payloadAndMetadata
+               .filter(new SpeedValidator(
+                     new SparkInstrumentation(
+                           ssc.sparkContext(),
+                           "ode",
+                           "SpeedValidator").register()));
 
-         if (aggInVDP) {
-            // Aggregator is embedded in Transformer app as a Sliding Window operation
-            if (conf.getBoolean(
-                     AppContext.SPARK_ODE_AGGREGATOR_ENABLED, 
-                     AppContext.DEFAULT_SPARK_ODE_AGGREGATOR_ENABLED)) {
+//         System.out.println("aggregationEligibleRecords");
+//         System.out.println("==========================");
+//         aggregationEligibleRecords.print(10);
+         
+         if (conf.getBoolean(
+               AppContext.SPARK_ODE_AGGREGATOR_ENABLED, 
+               AppContext.DEFAULT_SPARK_ODE_AGGREGATOR_ENABLED)) {
+            boolean aggInVDP = conf.getBoolean(
+                  AppContext.SPARK_RUN_AGGREGATOR_IN_TRANSFORMER, 
+                  AppContext.DEFAULT_SPARK_RUN_AGGREGATOR_IN_TRANSFORMER) ||
+                  ssc.sparkContext().master().startsWith("local");
+
+            if (aggInVDP) {
+               // Aggregator is embedded in Transformer app as a Sliding Window operation
                logger.info("Aggregator is embedded in the Transformer application");
 
-               JavaPairDStream<String, Tuple2<String, String>> 
-                  aggregationEligibleRecords = payloadAndMetadata
-                     .filter(new SpeedValidator(
-                           new SparkInstrumentation(
-                                 ssc.sparkContext(),
-                                 "ode",
-                                 "SpeedValidator").register()));
+               logger.info("Calculating and distributing aggregate data...");
+               JobVehicleDataAggregator.setup(ssc, conf, 
+                     aggregationEligibleRecords, producerPool);
 
-               //Cache it for multipe use
-               aggregationEligibleRecords.cache();
-               
-               // Aggregate here
-               JavaPairDStream<String, Tuple2<String, String>> windowedEligibleRecords = 
-                     aggregationEligibleRecords.window(
-                     Durations.milliseconds(
-                                 microbatchDuration * windowDuration),
-                     Durations.milliseconds(microbatchDuration * slideDuration));
-               
-               windowedEligibleRecords.foreachRDD(
-                           new PayloadAggregator(
-                                 new SparkInstrumentation(ssc.sparkContext(), "ode", "PayloadAggregator").register(),
-                                 new VehicleSpeedAggregator(
-                                    new SparkInstrumentation(ssc.sparkContext(), "ode", "VehicleSpeedAggregator").register(),
-                                    new SparkInstrumentation(ssc.sparkContext(), "ode", "AggregateDataDistributor").register(),
-                                    producerPool, 
-                                    conf.get(AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC))));
-
+               logger.info("Distributing vehicle data...");
                /*
-                * Calculate number of tempIds to represent the number of vehicles
-                * in the system
+                * Vehicle data Distribution
                 */
-               JavaPairDStream<String, Integer> tempIdStream = 
-                     windowedEligibleRecords.mapToPair(
-                     (PairFunction<Tuple2<String, Tuple2<String, String>>, String, Integer>) 
-                     pam -> {
-                        Tuple2<String, String> value = pam._2();
-                        String sPayload = value._1();
-
-                        OdeVehicleDataFlat ovdf = 
-                              (OdeVehicleDataFlat) JsonUtils.fromJson(sPayload, 
-                                    OdeVehicleDataFlat.class);
-                        
-                        Tuple2<String, Integer> tempId = 
-                              new Tuple2<String, Integer>(ovdf.getTempId(), 1);
-                        
-                        return tempId;
-                     }).reduceByKey((v1, v2) -> v1 + v2);
-               
-               JavaDStream<Long> vehicleCount = tempIdStream.count();
-
-               vehicleCount.foreachRDD(new VehicleCountDistributor(
-                     new SparkInstrumentation(ssc.sparkContext(), "ode", "VehicleCountDistributor").register(),
-                     producerPool, 
-                     conf.get(AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC)));
-
-            } else {
-               logger.info("Aggregator is disabled");
-            }
-
-            /*
-             * Vehicle data Distribution
-             */
-            payloadAndMetadata.foreachRDD(new PayloadDistributor(
-                  new SparkInstrumentation(ssc.sparkContext(), "ode", "PayloadDistributor").register(),
-                  new SparkInstrumentation(ssc.sparkContext(), "ode", "PartitionDistributor").register(),
-                  new SparkInstrumentation(ssc.sparkContext(), "ode", "ProducerSend").register(),
-                  producerPool,
-                  null));
-
-         } else {// Aggregator is a separate Spark app
-            if (conf.getBoolean(
-                  AppContext.SPARK_ODE_AGGREGATOR_ENABLED, 
-                  AppContext.DEFAULT_SPARK_ODE_AGGREGATOR_ENABLED)) {
-               logger.info("Aggregator is running in its own application");
+               payloadAndMetadata.foreachRDD(new PayloadDistributor(
+                     new SparkInstrumentation(ssc.sparkContext(), "ode", "PayloadDistributor").register(),
+                     new SparkInstrumentation(ssc.sparkContext(), "ode", "PartitionDistributor").register(),
+                     new SparkInstrumentation(ssc.sparkContext(), "ode", "ProducerSend").register(),
+                     producerPool,
+                     null));
+            } else {// Aggregator is a separate Spark app
+               logger.info("Aggregator is running in its own application. Distributing vehicel data...");
                
                /*
                 * Vehicle data distribution/rollover to the Aggregator app
@@ -268,20 +231,19 @@ public class JobVehicleDataTransformer extends SparkJob {
                      new SparkInstrumentation(ssc.sparkContext(), "ode", "ProducerSend").register(),
                      producerPool,
                      conf.get(AppContext.SPARK_AGGREGATOR_INPUT_TOPIC)));
-            } else {
-               logger.info("Aggregator is disabled");
-               /*
-                * Vehicle data Distribution
-                */
-               payloadAndMetadata.foreachRDD(new PayloadDistributor(
-                     new SparkInstrumentation(ssc.sparkContext(), "ode", "PayloadDistributor").register(),
-                     new SparkInstrumentation(ssc.sparkContext(), "ode", "PartitionDistributor").register(),
-                     new SparkInstrumentation(ssc.sparkContext(), "ode", "ProducerSend").register(),
-                     producerPool,
-                     null));
             }
+         } else {
+            logger.info("Aggregator is disabled. Distributing vehicel data..");
+            /*
+             * Vehicle data Distribution
+             */
+            payloadAndMetadata.foreachRDD(new PayloadDistributor(
+                  new SparkInstrumentation(ssc.sparkContext(), "ode", "PayloadDistributor").register(),
+                  new SparkInstrumentation(ssc.sparkContext(), "ode", "PartitionDistributor").register(),
+                  new SparkInstrumentation(ssc.sparkContext(), "ode", "ProducerSend").register(),
+                  producerPool,
+                  null));
          }
-            
       } catch (Exception e) {
          logger.error("Error in Spark Job {}", e);
       }

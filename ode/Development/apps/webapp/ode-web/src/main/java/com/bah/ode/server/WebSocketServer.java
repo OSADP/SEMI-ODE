@@ -109,7 +109,7 @@ public class WebSocketServer {
    public void onOpen(Session session, EndpointConfig endpointConfig,
          @PathParam("rtype") String rtype, @PathParam("dtype") String dtype) {
 
-	   String sessionId = session.getId();
+      String sessionId = session.getId();
 
       logger.info("---Connected to ODE on Session ID: {}, " + "Request Type: {}, "
             + "Data Type: {}", sessionId, rtype, dtype);
@@ -217,28 +217,24 @@ public class WebSocketServer {
                      session.getId(), rtype, dtype, message);
             }
             
-            MQTopic tempTopic = null;
-            OdeRequest tempRequest = null; 
             /*
              * Since queries are finite streams, each query should be treated as
              * unique. QUeries cannot share the same data process and the same
              * output topic.
              */
+            MQTopic tempTopic = null;
             if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
                // Use the request Id to determine if there is an existing request for the same data
                if (odeRequest.getDataType() == OdeDataType.AggregateData) {
-                  tempRequest  = 
-                        OdeRequestManager.buildOdeRequest(rtype, 
-                              OdeDataType.VehicleData.getShortName(), message);
-                  
-                  tempTopic = OdeRequestManager.getTopic(tempRequest.getId());
-               } else {
-                  tempTopic = OdeRequestManager.getTopic(odeRequest.getId());
+                  OdeRequest tempRequest = OdeRequestManager.buildOdeRequest(rtype, 
+                        OdeDataType.VehicleData.getShortName(), message);
+                  odeRequest.setId(tempRequest.getId());
                }
+               tempTopic = OdeRequestManager.getTopic(odeRequest.getId());
             } else {
                odeRequest.setId(outputTopic.getName());
             }
-         
+            
             String requestId = odeRequest.getId();
             if (tempTopic == null) {
                // Note: requestId should not be null. So if we get a NPE, we have an internal error
@@ -258,30 +254,32 @@ public class WebSocketServer {
                OdeMetadata metadata = new OdeMetadata(
                      requestId, outputTopic, outputTopic, odeRequest);
                
-               startDistroWorker(requestId, metadata);
+               startDistroWorker(metadata);
                
-               if (connector == null) {
-                  connector = new DataSourceConnector(metadata, 
-                        distroWorker.getPropagator());
-                  connectors.put(outputTopic.getName(), connector);
-               } else {
-                  connector.setMetadata(metadata);
-               }
-                  
-               connector.sendRequest();
-               
-               if (odeRequest.getRequestType() !=  OdeRequestType.Deposit) {
-                  logger.info("Request sent to Data Source. Request ID: {}, Topic: {}", requestId, outputTopic.getName());
-                  status.setMessage("Data Source Connection Established");
+               try {
+                  if (connector == null) {
+                     connector = new DataSourceConnector(metadata,
+                           distroWorker.getPropagator());
+                     connectors.put(outputTopic.getName(), connector);
+                  } else {
+                     connector.setMetadata(metadata);
+                  }
+                  connector.sendRequest();
+                  if (odeRequest.getRequestType() != OdeRequestType.Deposit) {
+                     logger.info(
+                           "Request sent to Data Source. Request ID: {}, Topic: {}",
+                           requestId, outputTopic.getName());
+                     status.setMessage("Data Source Connection Established");
+                  } 
+               } catch (Exception e) {
+                  OdeRequestManager.removeSubscriber(odeRequest);
                }
             } else {
                outputTopic = tempTopic;
-               if (tempRequest != null)
-                  requestId = tempRequest.getId();
                OdeMetadata metadata = new OdeMetadata(
                      requestId, outputTopic, outputTopic, odeRequest);
                
-               startDistroWorker(requestId, metadata);
+               startDistroWorker(metadata);
                
                status.setMessage(String.format(
                      "Tapping into existing request %s using a new distributor", requestId));
@@ -291,11 +289,6 @@ public class WebSocketServer {
             status.setCode(OdeStatus.Code.SUCCESS);
             status.setRequestId(requestId);
          } catch (Exception ex) {
-            if (outputTopic != null && odeRequest != null) {
-               OdeRequestManager.removeSubscriber(
-                     outputTopic.getName(), 
-                     odeRequest.getDataType());
-            }
             status.setCode(OdeStatus.Code.FAILURE)
             .setMessage(String.format("Error processing request %s.",
                   session.getRequestURI()));
@@ -311,8 +304,8 @@ public class WebSocketServer {
          }
       }//End of Synchronized block
    }
-   private void startDistroWorker(String requestId, OdeMetadata metadata) {
-      if (odeRequest.getRequestType() !=  OdeRequestType.Deposit) {
+   private void startDistroWorker(OdeMetadata metadata) {
+      if (distroWorker.isAlive() && odeRequest.getRequestType() !=  OdeRequestType.Deposit) {
          distroWorker.shutDown();
       }
       
@@ -324,7 +317,7 @@ public class WebSocketServer {
                      AppContext.SPARK_AGGREGATOR_OUTPUT_TOPIC), 
                      MQTopic.defaultPartitions());
          
-         distroWorker.startIfNotAlive(new OdeMetadata(requestId, 
+         distroWorker.startIfNotAlive(new OdeMetadata(odeRequest.getId(), 
                metadata.getInputTopic(), tempTopic, odeRequest));
          
       } else {
@@ -337,7 +330,7 @@ public class WebSocketServer {
        * stream processing, start streaming context anyway.
        */
       if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
-         OdeRequestManager.addSubscriber(requestId, odeRequest.getDataType());
+         OdeRequestManager.addSubscriber(odeRequest);
       } else if (!OdeRequestManager.isPassThrough(odeRequest.getDataType())) {
             LocalSparkProcessor.startStreamingContext();
       }
@@ -404,10 +397,20 @@ public class WebSocketServer {
             if (odeRequest != null) {
                logger.info("Removing session {} subscriber {}", 
                      sessionId, odeRequest.getId());
-               int remaining = OdeRequestManager.removeSubscriber(
-                     odeRequest.getId(),
-                     odeRequest.getDataType());
                
+               int remaining = 0;
+               
+               if (distroWorker != null) {
+                  if (distroWorker.getPropagator()!= null &&
+                     distroWorker.getPropagator().getMetadata() != null &&
+                     distroWorker.getPropagator().getMetadata().getOdeRequest() != null) {
+                  logger.info("Shutting down distribution worker {}", 
+                        distroWorker.getPropagator().getMetadata().getOdeRequest().getId());
+                  }
+               
+                  remaining = distroWorker.shutDown();
+               }
+      
                if (remaining <= 0) {
                   if (connector != null) {
                      if (connector.getMetadata() != null &&
@@ -428,17 +431,6 @@ public class WebSocketServer {
                }
             }
                
-            if (distroWorker != null) {
-               if (distroWorker.getPropagator()!= null &&
-                  distroWorker.getPropagator().getMetadata() != null &&
-                  distroWorker.getPropagator().getMetadata().getOdeRequest() != null) {
-               logger.info("Shutting down distribution worker {}", 
-                     distroWorker.getPropagator().getMetadata().getOdeRequest().getId());
-               }
-            
-               distroWorker.shutDown();
-            }
-   
          } catch (Exception e) {
             logger.error("Error closing session " + sessionId, e);
          }

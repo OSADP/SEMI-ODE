@@ -34,7 +34,7 @@ abstract public class BaseTopicManager {
       return topic;
    }
 
-   public void removeTopic(String topicName) {
+   private void removeTopic(String topicName) {
       MQTopic topic = topics.get(topicName);
       if (topic != null) {
          topics.remove(topicName);
@@ -46,13 +46,14 @@ abstract public class BaseTopicManager {
       AtomicInteger atomicSubscribers = subscribers.get(topicName);
       if (atomicSubscribers == null || atomicSubscribers.get() == 0) {
          getOrCreateTopic(topicName);
+         atomicSubscribers = subscribers.get(topicName);
       }
 
-      int numSubscribers = subscribers.get(topicName).incrementAndGet();
-      
+      atomicSubscribers.incrementAndGet();
+         
       reportMetrics();
       
-      return numSubscribers;
+      return atomicSubscribers.get();
    }
    
    public int removeSubscriber(String topicName) {
