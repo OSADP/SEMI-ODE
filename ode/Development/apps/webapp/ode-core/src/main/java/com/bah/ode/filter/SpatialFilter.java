@@ -34,7 +34,7 @@ public class SpatialFilter extends BaseFilter {
                new OdePosition3D(nwLat, nwLon, new BigDecimal(0)), 
                new OdePosition3D(seLat, seLon, new BigDecimal(0)));
          
-         return hasPosition.isInBounds(region);
+         return hasPosition.isWithinBounds(region);
       }
       return true;
    }

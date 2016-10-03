@@ -89,8 +89,8 @@ public class DotWarehouseData extends OdeData
    }
 
    @Override
-   public boolean isInBounds(OdeGeoRegion region) {
-      return GeoUtils.isPositionInBoundsInclusive(centerPosition, region);
+   public boolean isWithinBounds(OdeGeoRegion region) {
+      return GeoUtils.isPositionWithinRegion(centerPosition, region);
    }
 
    @Override

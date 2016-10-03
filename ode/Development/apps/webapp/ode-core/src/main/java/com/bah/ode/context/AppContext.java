@@ -106,7 +106,8 @@ public class AppContext {
    public static final String DDS_NUM_VSR_IN_BUNDLE_TO_USE = "dds.num.vsr.in.bundle.to.use";
    public static final String DATA_SEQUENCE_REORDER_DELAY = "data.sequence.reorder.delay";
    public static final String DATA_SEQUENCE_REORDER_PERIOD = "data.sequence.reorder.period";
-
+   public static final String SERVICE_REGION = "service.region";
+   
    // Spark parameters
    /* 
     * All spark parameters must start with "spark." for Spark to recognize them.
@@ -163,6 +164,7 @@ public class AppContext {
    /////////////////////////////////////////////////////////////////////////////
    // Topics used by Spark
    public static final String SPARK_TRANSFORMER_INPUT_TOPIC = "spark.vehicle.transformer.input.topic";
+   public static final String SPARK_TRANSFORMER_OUTPUT_TOPIC = "spark.vehicle.transformer.output.topic";
    public static final String SPARK_AGGREGATOR_INPUT_TOPIC = "spark.vehicle.aggregator.input.topic";
    public static final String SPARK_AGGREGATOR_OUTPUT_TOPIC = "spark.vehicle.aggregator.output.topic";
    /////////////////////////////////////////////////////////////////////////////
@@ -173,6 +175,8 @@ public class AppContext {
    public static final String METRICS_POLLING_RATE_SECONDS = "metrics.polling.rate.seconds";
    public static final String METRICS_GRAPHITE_HOST = "metrics.graphite.host";
    public static final String METRICS_GRAPHITE_PORT = "metrics.graphite.port";
+
+   public static final String PASS_THROUGH_OUTPUT_TOPIC = "pass.through.output.topic";
 
 
    
@@ -227,12 +231,12 @@ public class AppContext {
       String hostname;
       try {
          hostname = InetAddress.getLocalHost().getHostName();
-         hostSpecificUid = hostname + "-" + System.currentTimeMillis();
+         //hostSpecificUid = hostname + "-" + System.currentTimeMillis();
       } catch (UnknownHostException e) {
          // Let's just use a random hostname
          hostname = UUID.randomUUID().toString();
-         hostSpecificUid = hostname;
       }
+      hostSpecificUid = hostname;
 
       this.servletContext.setInitParameter(ODE_HOSTNAME, hostname);
 
@@ -245,6 +249,8 @@ public class AppContext {
       this.servletContext.setInitParameter(WEB_SERVER_ROOT, 
            this.servletContext.getRealPath("/"));
 
+      this.servletContext.setInitParameter(SPARK_TRANSFORMER_OUTPUT_TOPIC,
+            SPARK_TRANSFORMER_OUTPUT_TOPIC + "-" + hostSpecificUid);
       if (sparkMaster.startsWith("yarn") || sparkMaster.startsWith("spark:") || sparkMaster.startsWith("local")) {
          this.servletContext.setInitParameter(SPARK_TRANSFORMER_INPUT_TOPIC,
                SPARK_TRANSFORMER_INPUT_TOPIC + "-" + hostSpecificUid);
@@ -294,6 +300,8 @@ public class AppContext {
                         AppContext.DEFAULT_SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE)))
             .set(SPARK_TRANSFORMER_INPUT_TOPIC,
                   getParam(SPARK_TRANSFORMER_INPUT_TOPIC))
+            .set(SPARK_TRANSFORMER_OUTPUT_TOPIC,
+                  getParam(SPARK_TRANSFORMER_OUTPUT_TOPIC))
             .set(SPARK_AGGREGATOR_OUTPUT_TOPIC,
                   getParam(SPARK_AGGREGATOR_OUTPUT_TOPIC))
             .set(SPARK_AGGREGATOR_INPUT_TOPIC,
@@ -531,6 +539,8 @@ public class AppContext {
                               AppContext.DEFAULT_SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE)))
                   .setConf(SPARK_TRANSFORMER_INPUT_TOPIC,
                         getParam(SPARK_TRANSFORMER_INPUT_TOPIC))
+                  .setConf(SPARK_TRANSFORMER_OUTPUT_TOPIC,
+                        getParam(SPARK_TRANSFORMER_OUTPUT_TOPIC))
                   .setConf(SPARK_AGGREGATOR_OUTPUT_TOPIC,
                         getParam(SPARK_AGGREGATOR_OUTPUT_TOPIC))
                   .setConf(SPARK_AGGREGATOR_INPUT_TOPIC,
@@ -601,6 +611,8 @@ public class AppContext {
                                  AppContext.DEFAULT_SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE)))
                      .setConf(SPARK_TRANSFORMER_INPUT_TOPIC,
                            getParam(SPARK_TRANSFORMER_INPUT_TOPIC))
+                     .setConf(SPARK_TRANSFORMER_OUTPUT_TOPIC,
+                           getParam(SPARK_TRANSFORMER_OUTPUT_TOPIC))
                      .setConf(SPARK_AGGREGATOR_OUTPUT_TOPIC,
                            getParam(SPARK_AGGREGATOR_OUTPUT_TOPIC))
                      .setConf(SPARK_AGGREGATOR_INPUT_TOPIC,

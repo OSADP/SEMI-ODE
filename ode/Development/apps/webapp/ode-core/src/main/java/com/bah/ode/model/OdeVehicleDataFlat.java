@@ -1478,7 +1478,7 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
          Line2D l = seg.toLine2D(seg);
          if (latitude != null && longitude != null) {
             Point2D p = GeoUtils.latLngToMap(latitude.doubleValue(), longitude.doubleValue());
-            if (GeoUtils.isPointInBounds(p, l, tolerance)) {
+            if (GeoUtils.isPointWithinBounds(p, l, tolerance)) {
                double dist = GeoUtils.distanceToLine(l, p);
                if (dist <= tolerance) {
                   if (dist < minDist) {
@@ -1529,8 +1529,8 @@ public final class OdeVehicleDataFlat extends OdeData implements HasPosition, Ha
    }
 
    @Override
-   public boolean isInBounds(OdeGeoRegion region) {
-      return GeoUtils.isPositionInBoundsInclusive(getPosition(), region);
+   public boolean isWithinBounds(OdeGeoRegion region) {
+      return GeoUtils.isPositionWithinRegion(getPosition(), region);
    }
 
 

@@ -87,4 +87,9 @@ abstract public class BaseTopicManager {
    }
    
    public abstract void reportMetrics();
+
+   public void removeAllSubscribers() {
+      subscribers.clear();
+      topics.clear();
+   }
 }

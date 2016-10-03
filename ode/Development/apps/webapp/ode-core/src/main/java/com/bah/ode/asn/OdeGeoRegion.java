@@ -20,7 +20,9 @@ import java.awt.geom.Point2D;
 import java.math.BigDecimal;
 
 import com.bah.ode.asn.oss.semi.GeoRegion;
+import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeObject;
+import com.bah.ode.util.GeoUtils;
 
 public class OdeGeoRegion extends OdeObject{
    private static final long serialVersionUID = 6646494196808253598L;
@@ -44,6 +46,21 @@ public class OdeGeoRegion extends OdeObject{
       
       if (serviceRegion.seCorner != null)
          this.setSeCorner(new OdePosition3D(serviceRegion.seCorner));
+   }
+
+   public OdeGeoRegion(String serviceRegion) throws OdeException {
+      String[] region = serviceRegion.split("[, ] *");
+      if (region != null && region.length == 4) {
+         nwCorner = new OdePosition3D(
+               BigDecimal.valueOf(Double.parseDouble(region[0])), 
+               BigDecimal.valueOf(Double.parseDouble(region[1])), null);
+         
+         seCorner = new OdePosition3D(
+               BigDecimal.valueOf(Double.parseDouble(region[2])), 
+               BigDecimal.valueOf(Double.parseDouble(region[3])), null);
+      } else {
+         throw new OdeException("Invalid service.region configuration.");
+      }
    }
 
    public OdePosition3D getNwCorner() {
@@ -122,6 +139,15 @@ public class OdeGeoRegion extends OdeObject{
       } else if (!seCorner.equals(other.seCorner))
          return false;
       return true;
+   }
+
+   public boolean contains(OdePosition3D pos) {
+      return GeoUtils.isPositionWithinRegion(pos, this);
+   }
+
+   public boolean contains(OdeGeoRegion requestRegion) {
+      return GeoUtils.isPositionWithinRegion(requestRegion.getNwCorner(), requestRegion)
+            && GeoUtils.isPositionWithinRegion(requestRegion.getSeCorner(), requestRegion);
    }
 
 }

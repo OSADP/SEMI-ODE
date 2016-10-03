@@ -34,6 +34,7 @@ import com.bah.ode.model.OdeVehicleCount;
 import com.bah.ode.util.JsonUtils;
 import com.bah.ode.util.WebSocketUtils;
 import com.bah.ode.wrapper.DataProcessor;
+import com.bah.ode.wrapper.MQProducer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -45,6 +46,9 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
    protected OdeMetadata metadata;
    protected List<OdeFilter> filters;
    private TreeMap<Integer, ArrayList<OdeDataMessage>> records;
+   protected MQProducer<String, String> producer;
+   private String filterTopic;
+
    
    //Metrics
    protected Meter baseMeter = OdeMetrics.getInstance().meter("TotalRecordsPropagated");
@@ -65,16 +69,17 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
 
    protected Timer timer;
 
-   public BaseDataPropagator(Session clientSession, OdeMetadata metadata) {
-      this(clientSession);
+   public BaseDataPropagator(Session session, OdeMetadata metadata) {
       this.metadata = metadata;
-      filters = createFilters();
-   }
-
-   public BaseDataPropagator(Session session) {
       this.clientSession = session;
       timer = OdeMetrics.getInstance().timer(this.getClass().getName(), "timer");
       this.records = new TreeMap<Integer, ArrayList<OdeDataMessage>>();
+      this.producer = new MQProducer<String, String>(
+            AppContext.getInstance().getParam(AppContext.KAFKA_METADATA_BROKER_LIST),
+            AppContext.getInstance().getParam(AppContext.SPARK_KAFKA_PRODUCER_TYPE,
+                                              AppContext.DEFAULT_KAFKA_PRODUCER_TYPE));
+      filters = createFilters();
+      filterTopic = "Filtered-" + metadata.getOutputTopic().getName();
    }
 
    protected abstract List<OdeFilter> createFilters();
@@ -281,9 +286,8 @@ public abstract class BaseDataPropagator implements DataProcessor<String, String
           for (OdeFilter filter : filters) {
              if (!filter.pass(payload)) {
                 allPassed = false;
-                logger.info("Filtered by {}: {}",
-                      filter.getClass().getSimpleName(),
-                      payload.toString());
+                producer.send(filterTopic + filter.getClass().getSimpleName(), 
+                      null, payload.toString());
                 break;
              }
           }

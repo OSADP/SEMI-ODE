@@ -19,6 +19,7 @@ import com.bah.ode.api.sec.TokenAuthenticationService;
 import com.bah.ode.api.sec.TokenRepository;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.model.OdeStatus;
+import com.bah.ode.server.OdeRequestManager;
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
@@ -44,6 +45,9 @@ public class MainAuthenticationFilter implements ContainerRequestFilter {
          return;
       
       String auth = requestContext.getHeaderString(SecurityService.AUTH_HEADER);
+      if (requestContext.getHeaderString("removeAllSubscribers") != null) {
+         OdeRequestManager.removeAllSubscribers();
+      }
 
       if (auth == null) {
          abortRequest(requestContext, Response.Status.UNAUTHORIZED,
@@ -100,7 +104,7 @@ public class MainAuthenticationFilter implements ContainerRequestFilter {
       String[] lap = SecurityService.decode(authenticationHederValue);
 
       // If login or password fail
-      if (lap == null || lap.length != 2) {
+      if (lap == null || lap.length < 2) {
          abortRequest(crc, Response.Status.UNAUTHORIZED,
                "Missing UserName or Password");
       }

@@ -60,9 +60,8 @@ public class PartitionDistributor extends BaseDistributor implements
                   InternalDataMessage idm = new InternalDataMessage(key,
                         payload, metadata);
                   if (key.startsWith(AppContext.SANITIZED_STRING)) {
-                     if (metadata.getOdeRequest() != null && 
-                         metadata.getOdeRequest().getId() != null) {
-                        String sanitizationTopic = "Sanitized-" + metadata.getOdeRequest().getId();
+                     if (metadata.getOutputTopic() != null) {
+                        String sanitizationTopic = "Sanitized-" + metadata.getOutputTopic().getName();
                         send(producer, sanitizationTopic, key, record._2()._1());
                      }
                   } else {
