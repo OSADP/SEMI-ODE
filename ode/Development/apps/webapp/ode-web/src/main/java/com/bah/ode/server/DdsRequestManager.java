@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.asn.OdeGeoRegion;
 import com.bah.ode.context.AppContext;
 import com.bah.ode.dds.client.ws.AsdDecoder;
 import com.bah.ode.dds.client.ws.DdsClientFactory;
@@ -84,7 +85,7 @@ public class DdsRequestManager extends AbstractDataSourceManager {
    }
 
 
-   public static DdsRequest buildDdsRequest(OdeRequest odeRequest)
+   private DdsRequest buildDdsRequest(OdeRequest odeRequest)
                throws DataSourceManagerException, OdeException, IOException {
       OdeStatus status = new OdeStatus();
       DdsRequest ddsRequest;
@@ -92,6 +93,19 @@ public class DdsRequestManager extends AbstractDataSourceManager {
       if (requestType == OdeRequestType.Subscription) {
          ddsRequest = new DdsSubRequest()
                .setSystemSubName(systemName(odeRequest).getName());
+         String serviceRegion = appContext.getParam(AppContext.SERVICE_REGION);
+         if (serviceRegion == null) {
+            ddsRequest
+            .setNwLat(odeRequest.getNwLat()).setNwLon(odeRequest.getNwLon())
+            .setSeLat(odeRequest.getSeLat()).setSeLon(odeRequest.getSeLon());
+         } else {
+            OdeGeoRegion geoRegion = new OdeGeoRegion(serviceRegion);
+            ddsRequest
+            .setNwLat(geoRegion.getNwCorner().getLatitude())
+            .setNwLon(geoRegion.getNwCorner().getLongitude())
+            .setSeLat(geoRegion.getSeCorner().getLatitude())
+            .setSeLon(geoRegion.getSeCorner().getLongitude());
+         }
       } else if (requestType == OdeRequestType.Query) {
          DdsQryRequest qryRequest = new DdsQryRequest()
             .setSystemQueryName(systemName(odeRequest).getName());
@@ -118,6 +132,9 @@ public class DdsRequestManager extends AbstractDataSourceManager {
             }
          }
          ddsRequest = qryRequest;
+         ddsRequest
+         .setNwLat(odeRequest.getNwLat()).setNwLon(odeRequest.getNwLon())
+         .setSeLat(odeRequest.getSeLat()).setSeLon(odeRequest.getSeLon());
       } else if (requestType == OdeRequestType.Deposit) {
          OdeDepRequest odeDepReq = (OdeDepRequest) odeRequest;
          if (StringUtils.isNotEmpty(odeDepReq.getData()))
@@ -137,9 +154,7 @@ public class DdsRequestManager extends AbstractDataSourceManager {
 
       if (requestType != OdeRequestType.Deposit) {
          ddsRequest
-            .setResultEncoding(DdsRequest.EncodeType.base64.name())
-            .setNwLat(odeRequest.getNwLat()).setNwLon(odeRequest.getNwLon())
-            .setSeLat(odeRequest.getSeLat()).setSeLon(odeRequest.getSeLon());
+            .setResultEncoding(DdsRequest.EncodeType.base64.name());
 
          OdeDataType dataType = odeRequest.getDataType();
          switch (dataType) {

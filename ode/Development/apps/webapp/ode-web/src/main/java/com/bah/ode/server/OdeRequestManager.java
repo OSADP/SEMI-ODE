@@ -3,18 +3,12 @@ package com.bah.ode.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bah.ode.asn.OdeGeoRegion;
+import com.bah.ode.asn.OdePosition3D;
 import com.bah.ode.context.AppContext;
+import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeDataType;
-import com.bah.ode.model.OdeDepRequest;
-import com.bah.ode.model.OdePolyline;
-import com.bah.ode.model.OdeQryRequest;
 import com.bah.ode.model.OdeRequest;
-import com.bah.ode.model.OdeRequestType;
-import com.bah.ode.model.OdeStatus;
-import com.bah.ode.model.OdeSubRequest;
-import com.bah.ode.model.OdeTstRequest;
-import com.bah.ode.server.WebSocketServer.WebSocketServerException;
-import com.bah.ode.util.JsonUtils;
 import com.bah.ode.wrapper.MQTopic;
 
 public class OdeRequestManager {
@@ -26,72 +20,39 @@ public class OdeRequestManager {
    private static OutboundTopicManagerSingleton otms = 
          OutboundTopicManagerSingleton.getInstance();
    
-   private static String buildRequestId(OdeRequest odeRequest) {
-      String baseName = otms.buildTopicName(odeRequest);
-      return odeRequest.getRequestType().getShortName() +
-            odeRequest.getDataType().getShortName() + baseName;
-   }
-
-   public static OdeRequest buildOdeRequest(String rtype, String dtype, String message)
-         throws WebSocketServerException {
-      OdeRequest odeRequest = null;
-      OdeRequestType requestType = OdeRequestType.getByShortName(rtype);
-      if (requestType == OdeRequestType.Subscription) {
-         odeRequest = (OdeRequest) JsonUtils.fromJson(message,
-               OdeSubRequest.class);
-      } else if (requestType == OdeRequestType.Query) {
-         odeRequest = (OdeRequest) JsonUtils.fromJson(message,
-               OdeQryRequest.class);
-      } else if (requestType == OdeRequestType.Test) {
-         odeRequest = (OdeRequest) JsonUtils.fromJson(message,
-               OdeTstRequest.class);
-      } else if (requestType == OdeRequestType.Deposit) {
-         odeRequest = (OdeRequest) JsonUtils.fromJson(message,
-               OdeDepRequest.class);
+   private static String topicName(OdeRequest request) throws OdeException {
+      String sServiceRegion = 
+            appContext.getParam(AppContext.SERVICE_REGION);
+      if (sServiceRegion != null) {
+         OdeGeoRegion requestRegion = new OdeGeoRegion(
+               new OdePosition3D(request.getNwLat(), request.getNwLon(), null),
+               new OdePosition3D(request.getSeLat(), request.getSeLon(), null));
+         OdeGeoRegion serviceRegion = new OdeGeoRegion(sServiceRegion);
+         if (serviceRegion.contains(requestRegion)) {
+            // Send only the intersection data straight through
+            // All other data should go throught he transformation engine
+            if (request.getDataType() == OdeDataType.IntersectionData)
+               return AppContext.PASS_THROUGH_OUTPUT_TOPIC;
+            else
+               return appContext.getParam(AppContext.SPARK_TRANSFORMER_OUTPUT_TOPIC);
+         } else { 
+            return request.getId();
+         }
       } else {
-         OdeStatus status = new OdeStatus()
-            .setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR)
-            .setMessage(
-                  String.format(
-                        "Invalid request type %s. Valid request types are %s.",
-                        rtype, OdeRequestType.shortNames()));
-         logger.error(status.toString());
-         throw new WebSocketServerException(status.toString());
+         return request.getId();
       }
-      odeRequest.setRequestType(requestType);
-
-      OdeDataType dataType = OdeDataType.getByShortName(dtype);
-      if (dataType == null) {
-         OdeStatus status = new OdeStatus()
-            .setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
-            .setMessage(
-                  String.format(
-                        "Invalid data type %s. Valid data types are %s.",
-                        dtype, OdeDataType.shortNames()));
-         logger.error(status.toString());
-         throw new WebSocketServerException(status.toString());
-      }
-      odeRequest.setDataType(dataType);
-      
-      OdePolyline polyline = odeRequest.getPolyline();
-      
-      if (polyline != null)
-         polyline.updateAllStartPoints();
-      
-      odeRequest.setId(buildRequestId(odeRequest));
-      return odeRequest;
-   }
-
-   public static MQTopic getTopic(String RequestId) {
-      return otms.getTopic(RequestId);
    }
    
-   public static MQTopic getOrCreateTopic(String RequestId) {
-      return otms.getOrCreateTopic(RequestId);
+   public static MQTopic getTopic(OdeRequest request) throws OdeException {
+      return otms.getTopic(topicName(request));
+   }
+   
+   public static MQTopic getOrCreateTopic(OdeRequest request) throws OdeException {
+      return otms.getOrCreateTopic(topicName(request));
    }
 
-   public static int addSubscriber(OdeRequest request) {
-      int numSubscribers = otms.addSubscriber(request.getId()); 
+   public static int addSubscriber(OdeRequest request) throws OdeException {
+      int numSubscribers = otms.addSubscriber(topicName(request)); 
       try {
          logger.info("Added subscriber {}. Current number of subscribers = {}", 
                request.getId(), numSubscribers);
@@ -106,8 +67,8 @@ public class OdeRequestManager {
       return numSubscribers;
    }
 
-   public static int removeSubscriber(OdeRequest request) {
-      int numSubscribers = otms.removeSubscriber(request.getId());
+   public static int removeSubscriber(OdeRequest request) throws OdeException {
+      int numSubscribers = otms.removeSubscriber(topicName(request));
       logger.info("Removed subscriber {}. Current number of subscribers = {}", 
             request.getId(), numSubscribers);
       if (numSubscribers <= 0 && !isPassThrough(request.getDataType()) &&
@@ -133,6 +94,10 @@ public class OdeRequestManager {
             return true;
          }
       }
+   }
+
+   public static void removeAllSubscribers() {
+      otms.removeAllSubscribers();
    }
 
 }

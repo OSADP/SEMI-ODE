@@ -128,8 +128,14 @@ public class DdsDecoder implements WebSocketMessageDecoder<DdsData> {
                }
             }
             break;
+            
+            case ERROR: {
+               logger.error("Received Error message from DDS: {}", message);
+            }
+            break;
+            
             default:
-               logger.error("Received {} message {}", tag, message);
+               logger.error("Received {} message: {}", tag, message);
             }
          }
       } catch (Exception e) {

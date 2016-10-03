@@ -332,8 +332,7 @@ public class GeoUtils {
       return a.distance(b);
    }
 
-   public static boolean isPointInBounds(Point2D p, Line2D l,
-         double tolerance) {
+   public static boolean isPointWithinBounds(Point2D p, Line2D l, double tolerance) {
       // Make sure the point p is inside the bounding rectangle of the segment
       // a-b
       return ( (p.getX() >= (Math.min(l.getX1(), l.getX2()) - tolerance))
@@ -342,7 +341,7 @@ public class GeoUtils {
             && (p.getY() <= (Math.max(l.getY1(), l.getY2()) + tolerance)));
    }
 
-   public static boolean isPositionInBoundsInclusive(OdePosition3D pos, OdeGeoRegion region) {
+   public static boolean isPositionWithinRegion(OdePosition3D pos, OdeGeoRegion region) {
       if (pos == null || region == null)
          return false;
       

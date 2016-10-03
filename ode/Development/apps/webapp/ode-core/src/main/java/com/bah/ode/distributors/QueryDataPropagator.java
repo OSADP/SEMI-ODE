@@ -39,10 +39,6 @@ public class QueryDataPropagator extends BaseDataPropagator {
       limit = queryReq.getLimit();
    }
 
-   public QueryDataPropagator(Session session) {
-      super(session);
-   }
-
    @Override
    protected List<OdeFilter> createFilters() {
       List<OdeFilter> filters = new ArrayList<OdeFilter>();

@@ -178,6 +178,12 @@
       <param-name>data.sequence.reorder.period</param-name>
       <param-value>1000</param-value>
    </context-param>
+   <!-- ODE default service region: nwLat,nwLon,seLat,seLon -->
+   <context-param>
+      <param-name>service.region</param-name>
+      <param-value>43,-84,42,-82</param-value>
+   </context-param>
+   
    <context-param>
       <!-- List of Zookeeper server host names and port numbers-->
       <param-name>zk.connection.strings</param-name>

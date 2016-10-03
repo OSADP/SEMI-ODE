@@ -15,10 +15,6 @@ public class DepositDataPropagator extends BaseDataPropagator {
       super(clientSession, metadata);
    }
 
-   public DepositDataPropagator(Session session) {
-      super(session);
-   }
-
    @Override
    protected List<OdeFilter> createFilters() {
       return null;

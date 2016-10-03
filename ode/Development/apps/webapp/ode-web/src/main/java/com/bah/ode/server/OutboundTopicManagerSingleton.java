@@ -33,4 +33,8 @@ public class OutboundTopicManagerSingleton extends BaseTopicManager {
       numSubscribersGauge.setValue((long) getNumSubscribers());
    }
 
+   public void removeAllSubscribers() {
+      super.removeAllSubscribers();
+   }
+
 }

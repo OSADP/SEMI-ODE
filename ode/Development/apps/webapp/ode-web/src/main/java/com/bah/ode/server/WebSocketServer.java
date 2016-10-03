@@ -152,10 +152,6 @@ public class WebSocketServer {
                
                outputTopic = MQTopic.create(UUID.randomUUID().toString(), 
                      MQTopic.defaultPartitions());
-
-               distroWorker = 
-                     createDistributionWorker(session, requestType, dataType);
-               
             }
             WebSocketUtils.send(session, new OdeDataMessage(msg).toJson());
     	  } // end if 
@@ -210,8 +206,8 @@ public class WebSocketServer {
 
       synchronized(WebSocketServer.class) {
          try {
-            odeRequest = OdeRequestManager.buildOdeRequest(rtype, dtype, message);
-   
+            odeRequest = OdeRequest.create(rtype, dtype, message);
+            
             if (odeRequest.getRequestType() !=  OdeRequestType.Deposit) {
                logger.info("=== Message Received on Session ID {}, Request Type {}, Data Type {} : {}", 
                      session.getId(), rtype, dtype, message);
@@ -223,18 +219,24 @@ public class WebSocketServer {
              * output topic.
              */
             MQTopic tempTopic = null;
-            if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
-               // Use the request Id to determine if there is an existing request for the same data
-               if (odeRequest.getDataType() == OdeDataType.AggregateData) {
-                  OdeRequest tempRequest = OdeRequestManager.buildOdeRequest(rtype, 
-                        OdeDataType.VehicleData.getShortName(), message);
-                  odeRequest.setId(tempRequest.getId());
+            if (AppContext.getInstance().getParam(AppContext.SERVICE_REGION) == null) {
+               if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
+                  // Use the request Id to determine if there is an existing request for the same data
+                  if (odeRequest.getDataType() == OdeDataType.AggregateData) {
+                     OdeRequest tempRequest = OdeRequest.create(rtype, 
+                           OdeDataType.VehicleData.getShortName(), message);
+                     odeRequest.setId(tempRequest.getId());
+                  }
+                  tempTopic = OdeRequestManager.getTopic(odeRequest);
+               } else {
+                  odeRequest.setId(outputTopic.getName());
                }
-               tempTopic = OdeRequestManager.getTopic(odeRequest.getId());
             } else {
-               odeRequest.setId(outputTopic.getName());
+               if (odeRequest.getRequestType() ==  OdeRequestType.Subscription) {
+                  tempTopic = OdeRequestManager.getTopic(odeRequest);
+               }
             }
-            
+
             String requestId = odeRequest.getId();
             if (tempTopic == null) {
                // Note: requestId should not be null. So if we get a NPE, we have an internal error
@@ -242,25 +244,24 @@ public class WebSocketServer {
                if (odeRequest.getRequestType() !=  OdeRequestType.Deposit)
                   logger.info("Creating new data request: {}", requestId );
                
-               // No client topic exists, create a new one
-               
-               outputTopic = OdeRequestManager.getOrCreateTopic(requestId);
+               // For subscriptions, get an existing topic or create a new one if none exists already
+               if (odeRequest.getRequestType() ==  OdeRequestType.Subscription)
+                  outputTopic = OdeRequestManager.getOrCreateTopic(odeRequest);
                
                /* By default inputTopic is the same as outputTopic. Non-default
                 * happens when data has to go to the spark processor which 
                 * currently only processes vehicle data.
                 */
-               
                OdeMetadata metadata = new OdeMetadata(
                      requestId, outputTopic, outputTopic, odeRequest);
-               
-               startDistroWorker(metadata);
+
+               startDistroWorker(session, metadata);
                
                try {
                   if (connector == null) {
                      connector = new DataSourceConnector(metadata,
                            distroWorker.getPropagator());
-                     connectors.put(outputTopic.getName(), connector);
+                     connectors.put(odeRequest.getId(), connector);
                   } else {
                      connector.setMetadata(metadata);
                   }
@@ -273,13 +274,14 @@ public class WebSocketServer {
                   } 
                } catch (Exception e) {
                   OdeRequestManager.removeSubscriber(odeRequest);
+                  throw e;
                }
             } else {
                outputTopic = tempTopic;
                OdeMetadata metadata = new OdeMetadata(
                      requestId, outputTopic, outputTopic, odeRequest);
                
-               startDistroWorker(metadata);
+               startDistroWorker(session, metadata);
                
                status.setMessage(String.format(
                      "Tapping into existing request %s using a new distributor", requestId));
@@ -304,7 +306,13 @@ public class WebSocketServer {
          }
       }//End of Synchronized block
    }
-   private void startDistroWorker(OdeMetadata metadata) {
+   private void startDistroWorker(Session session, OdeMetadata metadata) throws OdeException {
+      
+      if (distroWorker == null) {
+         distroWorker = 
+               createDistributionWorker(session, metadata);
+      }
+      
       if (distroWorker.isAlive() && odeRequest.getRequestType() !=  OdeRequestType.Deposit) {
          distroWorker.shutDown();
       }
@@ -348,8 +356,11 @@ public class WebSocketServer {
       shutDown(session, new CloseReason(CloseCodes.VIOLATED_POLICY, throwable.getMessage()));
    }
    
-   private DataDistributionWorker createDistributionWorker(Session session, 
-         OdeRequestType requestType, OdeDataType dataType) {
+   private DataDistributionWorker createDistributionWorker(
+         Session session, OdeMetadata metatdata) {
+      
+      OdeRequestType requestType = metatdata.getOdeRequest().getRequestType();
+      OdeDataType dataType = metatdata.getOdeRequest().getDataType();
       
       logger.info("Creating new Propagator for client session {}, "
             + "requestType {} and dataType {}",
@@ -357,14 +368,14 @@ public class WebSocketServer {
       
       BaseDataPropagator propagator;
       if (dataType == OdeDataType.AggregateData) {
-         propagator = new AggregateDataPropagator(session);
+         propagator = new AggregateDataPropagator(session, metatdata);
       } else if (requestType == OdeRequestType.Query ||
             requestType == OdeRequestType.Test) {
-         propagator = new QueryDataPropagator(session);
+         propagator = new QueryDataPropagator(session, metatdata);
       } else if (requestType == OdeRequestType.Deposit) {
-         propagator = new DepositDataPropagator(session);
+         propagator = new DepositDataPropagator(session, metatdata);
       } else {
-         propagator = new SubscriptionDataPropagator(session);
+         propagator = new SubscriptionDataPropagator(session, metatdata);
       }
       
       return new DataDistributionWorker(session, propagator);
@@ -408,7 +419,11 @@ public class WebSocketServer {
                         distroWorker.getPropagator().getMetadata().getOdeRequest().getId());
                   }
                
-                  remaining = distroWorker.shutDown();
+                  try {
+                     remaining = distroWorker.shutDown();
+                  } catch (Exception e) {
+                     logger.error("Error Shutting Down Distribution Worker for Session " + sessionId, e);
+                  }
                }
       
                if (remaining <= 0) {

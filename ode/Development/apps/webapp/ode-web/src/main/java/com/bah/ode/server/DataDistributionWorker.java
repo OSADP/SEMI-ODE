@@ -78,7 +78,7 @@ public class DataDistributionWorker {
       this.propagator = propagator;
    }
 
-   public int shutDown() {
+   public int shutDown() throws OdeException {
       if (consumerGroup != null) {
          logger.info("Shutting down consumerGroup {}", 
                consumerGroup.getTopic().getName());
