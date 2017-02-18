@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import com.bah.ode.asn.OdeGeoRegion;
 import com.bah.ode.asn.OdePosition3D;
 import com.bah.ode.context.AppContext;
-import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeDataType;
+import com.bah.ode.model.OdeException;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.wrapper.MQTopic;
 

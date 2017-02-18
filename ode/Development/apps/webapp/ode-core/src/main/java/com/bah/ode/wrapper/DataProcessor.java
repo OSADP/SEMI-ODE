@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.concurrent.Future;
 
-import com.bah.ode.exception.OdeException;
 import com.bah.ode.model.OdeDataMessage;
+import com.bah.ode.model.OdeException;
 
 public interface DataProcessor<D, R> {
    Future<R> process(D data) throws DataProcessorException;

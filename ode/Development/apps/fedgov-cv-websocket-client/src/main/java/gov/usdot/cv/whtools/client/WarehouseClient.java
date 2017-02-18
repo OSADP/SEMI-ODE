@@ -12,14 +12,6 @@
  */
 package gov.usdot.cv.whtools.client;
 
-import gov.usdot.cv.whtools.client.CASClient.CASLoginException;
-import gov.usdot.cv.whtools.client.config.ConfigException;
-import gov.usdot.cv.whtools.client.config.ConfigUtils;
-import gov.usdot.cv.whtools.client.config.WarehouseConfig;
-import gov.usdot.cv.whtools.client.handler.AbstractFileListener;
-import gov.usdot.cv.whtools.client.handler.RequestHandler;
-import gov.usdot.cv.whtools.client.handler.ResponseHandler;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -44,6 +36,15 @@ import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_17;
 import org.java_websocket.handshake.ServerHandshake;
+
+import gov.usdot.cv.whtools.client.CASClient.CASLoginException;
+import gov.usdot.cv.whtools.client.OdeClient.OdeLoginException;
+import gov.usdot.cv.whtools.client.config.ConfigException;
+import gov.usdot.cv.whtools.client.config.ConfigUtils;
+import gov.usdot.cv.whtools.client.config.WarehouseConfig;
+import gov.usdot.cv.whtools.client.handler.AbstractFileListener;
+import gov.usdot.cv.whtools.client.handler.RequestHandler;
+import gov.usdot.cv.whtools.client.handler.ResponseHandler;
 
 public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 
@@ -86,6 +87,36 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 		}
 		return wsClient;
 	}
+
+   @SuppressWarnings("unchecked")
+   public static WarehouseClient configureOde(WarehouseConfig wsConfig, ResponseHandler handler)
+         throws URISyntaxException, KeyManagementException,
+         KeyStoreException, NoSuchAlgorithmException, CertificateException,
+         IOException, OdeLoginException, UnrecoverableKeyException {
+      
+      OdeClient odeClient = OdeClient.configure(wsConfig);
+      String jSessionID = odeClient.login();
+      
+      @SuppressWarnings("rawtypes")
+      Map headers = new HashMap();
+      headers.put(
+            "Cookie",
+            CASClient.JSESSIONID_KEY + "=" + jSessionID);
+
+      WarehouseClient wsClient = new WarehouseClient(new URI(wsConfig.warehouseURL),
+            new Draft_17(), headers); // more about drafts here:
+      // http://github.com/TooTallNate/Java-WebSocket/wiki/Drafts
+      wsClient.handler = handler;
+
+      if (wsConfig.warehouseURL.startsWith("wss")) {
+         SSLContext wsSSLContext = SSLBuilder.buildSSLContext(
+               wsConfig.keystoreFile,
+               wsConfig.keystorePassword);
+         wsClient.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(
+               wsSSLContext));
+      }
+      return wsClient;
+   }
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private WarehouseClient(URI serverUri, Draft draft, Map headers) {
@@ -153,7 +184,7 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 
 		
 
-		RequestHandler watcher = new RequestHandler(wsConfig.requestDir, new AbstractFileListener() {
+		RequestHandler requestHandler = new RequestHandler(wsConfig.requestDir, new AbstractFileListener() {
 			@Override
 			public void sendRequest(File file) {
 				try {
@@ -162,7 +193,7 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 					
 					ResponseHandler responseHandler = new ResponseHandler(wsConfig);
 					WarehouseClient wsClient = WarehouseClient.configure(wsConfig, responseHandler);
-					logger.info("Opening WebSocket to " + wsConfig.warehouseURL);
+					logger.info("Opening WebSocket to " + wsConfig.odeWsURL);
 					wsClient.connectBlocking();
 					wsClient.send(request);
 				} catch (Exception e) {
@@ -171,9 +202,30 @@ public class WarehouseClient extends org.java_websocket.client.WebSocketClient {
 			}
 		});
 		
-		watcher.start();
+		requestHandler.start();
 		
-		StringBuilder depositConfigErrors = new StringBuilder();
+      RequestHandler odeRequestHandler = new RequestHandler(wsConfig.odeRequestDir, new AbstractFileListener() {
+         @Override
+         public void sendRequest(File file) {
+            try {
+               String request = FileUtils.readFileToString(file);
+               logger.info("Sending request " + request);
+               
+               ResponseHandler responseHandler = new ResponseHandler(wsConfig);
+               WarehouseClient wsClient = WarehouseClient.configureOde(wsConfig, responseHandler);
+               logger.info("Opening WebSocket to " + wsConfig.odeWsURL);
+               wsClient.connectBlocking();
+               wsClient.send(request);
+            } catch (Exception e) {
+               logger.error("Error sending request ", e);
+            }
+         }
+      });
+      
+
+      odeRequestHandler.start();
+      
+      StringBuilder depositConfigErrors = new StringBuilder();
 		if (wsConfig.systemDepositName == null)
 			depositConfigErrors.append("systemDepositName is required, ");
 		if (wsConfig.encodeType == null)

@@ -36,6 +36,11 @@ public class WarehouseConfig {
 	public String encodeType;
 	public String depositFileDir;
 	public int depositDelay;
+   public String odeRestURL;
+   public String odeUserName;
+   public String odePassword;
+   public String odeWsURL;
+   public String odeRequestDir;
 		
 	@Override
 	public String toString() {

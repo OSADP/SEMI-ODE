@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
-import com.bah.ode.exception.OdeException;
 import com.bah.ode.metrics.OdeMetrics;
 import com.bah.ode.metrics.OdeMetrics.Meter;
 import com.bah.ode.model.InternalDataMessage;
@@ -41,6 +40,7 @@ import com.bah.ode.model.OdeControlData;
 import com.bah.ode.model.OdeData;
 import com.bah.ode.model.OdeDataMessage;
 import com.bah.ode.model.OdeDataType;
+import com.bah.ode.model.OdeException;
 import com.bah.ode.model.OdeIntersectionData;
 import com.bah.ode.model.OdeMsgPayload;
 import com.bah.ode.model.OdeStatus;

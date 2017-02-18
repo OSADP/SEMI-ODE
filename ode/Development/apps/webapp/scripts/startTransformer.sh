@@ -12,7 +12,7 @@ zookeeperConnectionString=ip-10-0-16-115.ec2.internal:2181,ip-10-0-16-10.ec2.int
 kafkaBrokers=ip-10-0-16-115.ec2.internal:6667,ip-10-0-16-143.ec2.internal:6667,ip-10-0-16-10.ec2.internal:6667
 driverMemory=1G
 executorMemory=6G
-maxCores=3
+maxCores=2
 
 echo sudo /usr/hdp/current/spark-client/bin/spark-submit  \
   --name $appName \

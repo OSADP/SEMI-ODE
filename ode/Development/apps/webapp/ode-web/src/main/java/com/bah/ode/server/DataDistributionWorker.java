@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import com.bah.ode.context.AppContext;
 import com.bah.ode.distributors.BaseDataPropagator;
-import com.bah.ode.exception.OdeException;
 import com.bah.ode.metrics.OdeMetrics;
 import com.bah.ode.metrics.OdeMetrics.Context;
 import com.bah.ode.metrics.OdeMetrics.Timer;
 import com.bah.ode.model.OdeDataMessage;
+import com.bah.ode.model.OdeException;
 import com.bah.ode.model.OdeMetadata;
 import com.bah.ode.model.OdeRequest;
 import com.bah.ode.wrapper.MQConsumerGroup;

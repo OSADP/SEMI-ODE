@@ -20,7 +20,7 @@ import java.awt.geom.Point2D;
 import java.math.BigDecimal;
 
 import com.bah.ode.asn.oss.semi.GeoRegion;
-import com.bah.ode.exception.OdeException;
+import com.bah.ode.model.OdeException;
 import com.bah.ode.model.OdeObject;
 import com.bah.ode.util.GeoUtils;
 

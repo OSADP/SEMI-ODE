@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 import com.bah.ode.asn.OdeGeoRegion;
 import com.bah.ode.asn.OdePosition3D;
-import com.bah.ode.exception.OdeException;
 
 import junit.framework.TestCase;
 

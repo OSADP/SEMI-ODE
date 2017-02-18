@@ -2,9 +2,14 @@
     "warehouseURL": "wss://webapp.connectedvcs.com/whtools22/websocket",
 
     "casURL": "https://cas.connectedvcs.com/accounts/v1/tickets",
-    "casUserName": "YourUserName",
-    "casPassword": "YourPassword",
-    
+    "casUserName": "Musavi_hamid@bah.com",
+    "casPassword": "CV2015",
+
+   "odeRestURL":"http://ec2-52-87-98-38.compute-1.amazonaws.com/ode/api/auth/login",
+   "odeUserName":"musavi_hamid@bah.com",
+   "odePassword":"eode",
+   "odeWsURL":"http://ec2-52-87-98-38.compute-1.amazonaws.com/ode/api/ws/sub/veh",
+   "odeRequestDir":"oderequests",
     "requestDir": "requests",
     "responseDir": "responses",
     

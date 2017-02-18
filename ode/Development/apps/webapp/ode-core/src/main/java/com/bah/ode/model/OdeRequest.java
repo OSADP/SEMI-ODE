@@ -19,7 +19,6 @@ package com.bah.ode.model;
 import java.math.BigDecimal;
 
 import com.bah.ode.context.AppContext;
-import com.bah.ode.exception.OdeException;
 import com.bah.ode.util.JsonUtils;
 
 @SuppressWarnings("serial")
